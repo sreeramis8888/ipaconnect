@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
@@ -46,10 +47,8 @@ class CampaignCard extends StatelessWidget {
             child: AspectRatio(
               aspectRatio: 16 / 7,
               child: hasChapter
-                  ? Image.asset(
-                      'assets/pngs/graduation_hat.png',
-                      fit: BoxFit.cover,
-                    )
+                  ? SvgPicture.asset(
+                                              'assets/svg/icons/ipa_logo.svg')
                   : Container(color: kGreyLight),
             ),
           ),

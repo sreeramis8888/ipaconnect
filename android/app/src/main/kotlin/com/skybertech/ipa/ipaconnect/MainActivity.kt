@@ -1,4 +1,4 @@
-package com.skybertech.ipa.ipaconnect
+package com.skybertech.ipaconnect
 
 import io.flutter.embedding.android.FlutterActivity
 

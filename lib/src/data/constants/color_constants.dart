@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-const Color kPrimaryColor = Color(0xFF0C1E8A);
+const Color kPrimaryColor = Color(0xFF0D74BC);
+const Color kBackgroundColor = Color(0xFF0D0F22);
+const Color kCardBackgroundColor = Color(0xFF021730);
 const Color kPrimaryLightColor = Color(0xFFEEF1FF);
 
 const Color kTertiary = Color(0xFFE8EAED);
@@ -8,6 +10,10 @@ const Color kInputFieldcolor = Color(0xFF6F7782);
 //Common Colors
 const Color kWhite = Color.fromARGB(255, 255, 255, 255);
 const Color kGrey = Color.fromARGB(255, 200, 200, 200);
+
+const Color kTextColor = Color(0xFFF7F7F7);
+
+const Color kSecondaryTextColor = Color(0xFFAEB9E1);
 
 const Color kGreyLight = Color(0xFFCCCCCC);
 const Color kGreyDark = Color.fromARGB(255, 118, 121, 124);

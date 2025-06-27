@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   switch (settings?.name) {
     // case 'Splash':
     //   return MaterialPageRoute(builder: (context) => SplashScreen());
+    case 'HomePage':
+      return MaterialPageRoute(builder: (context) => HomePage());
     // case 'PhoneNumber':
     //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     // case 'MainPage':

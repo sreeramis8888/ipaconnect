@@ -13,7 +13,7 @@ import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
-import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_ontainer.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
 import 'package:shimmer/shimmer.dart';
@@ -76,7 +76,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         final asyncNews = ref.watch(newsProvider);
         final asyncEvents = ref.watch(eventsProvider);
 
-
         return RefreshIndicator(
           color: kPrimaryColor,
           onRefresh: () async {
@@ -84,7 +83,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             // ref.invalidate(fetchEventsProvider);
           },
           child: Scaffold(
-            backgroundColor: kPrimaryLightColor,
+            backgroundColor: kBackgroundColor,
             body: asyncPromotions.when(
               data: (promotions) {
                 final banners = promotions
@@ -104,7 +103,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
                 return SafeArea(
                   child: Container(
-                    decoration: const BoxDecoration(color: kWhite),
+                    decoration: const BoxDecoration(color: kBackgroundColor),
                     child: Stack(
                       children: [
                         SingleChildScrollView(
@@ -112,42 +111,42 @@ class _HomePageState extends ConsumerState<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                height: 45.0, // Match the toolbarHeight
+                                padding: EdgeInsets.only(left: 20),
+                                height: 45.0,
                                 child: Row(
                                   children: [
                                     InkWell(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const WebViewScreen(
-                                              backgroundColor: kPrimaryColor,
-                                              url:
-                                                  'https://www.indotransworld.org/',
-                                              title: 'familytree Connect',
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const WebViewScreen(
+                                                backgroundColor: kPrimaryColor,
+                                                url:
+                                                    'https://www.indotransworld.org/',
+                                                title: 'familytree Connect',
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      },
-                                      child: Image.asset(
-                                          width: 60,
-                                          height: 60,
-                                          'assets/pngs/familytree_logo.png'),
-                                    ),
-                               
+                                          );
+                                        },
+                                        child: SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                          child: SvgPicture.asset(
+                                              'assets/svg/icons/ipa_logo.svg'),
+                                        ))
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              // Padding(
-                              //   padding:
-                              //       const EdgeInsets.only(left: 15, top: 10),
-                              //   child: Text('Welcome, ${widget.user.name} ',
-                              //       style:
-                              //           kLargeTitleB.copyWith(color: kBlack)),
-                              // ),
-
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 15, top: 10),
+                                child: Text('Welcome, SREERAM ',
+                                    style: kLargeTitleB.copyWith(
+                                        color: kTextColor)),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(
                                     left: 15, right: 15, top: 10, bottom: 10),
@@ -155,13 +154,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   children: [
                                     Flexible(
                                       child: Text(
+                                        style: kSmallerTitleR.copyWith(
+                                            color: kTextColor),
                                         'Here\'s to growing your family story, one branch at a time.',
                                       ),
                                     )
                                   ],
                                 ),
                               ),
-                              
                               if (banners.isNotEmpty)
                                 Column(
                                   children: [
@@ -195,37 +195,43 @@ class _HomePageState extends ConsumerState<HomePage> {
                                               left: 20, top: 10),
                                           child: Text('Quick Actions',
                                               style: kBodyTitleB.copyWith(
-                                                  color: kBlack)),
+                                                  color: kTextColor)),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        CustomIconContainer(label: 'CSR',
-                                       
-                                            icon:
-                                                SvgPicture.asset('assets/svg/icons/csr_icon.svg')),
-                                        CustomIconContainer(label: 'Events',
-                                       
-                                            icon:
-                                                SvgPicture.asset('assets/svg/icons/event_icon.svg')),
-                                        CustomIconContainer(
-                                       label: 'Connect Card',
-                                            icon:
-                                                SvgPicture.asset('assets/svg/icons/card_icon.svg')),
-                                        CustomIconContainer(label: 'Offers',
-                                       
-                                            icon:
-                                                SvgPicture.asset('assets/svg/icons/offer_icon.svg')),
-                                      
-                                      ],
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 15, right: 15, top: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          CustomIconContainer(
+                                              label: 'CSR',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/csr_icon.svg')),
+                                          CustomIconContainer(
+                                              label: 'Events',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/event_icon.svg')),
+                                          CustomIconContainer(
+                                              label: 'Card',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/card_icon.svg')),
+                                          CustomIconContainer(
+                                              label: 'Offers',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/offer_icon.svg')),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-
                               const SizedBox(height: 16),
                               asyncEvents.when(
                                   data: (events) {
@@ -342,7 +348,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                               255, 39, 38, 38)),
                                   ],
                                 ),
-
                               if (posters.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 20),
@@ -382,9 +387,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ],
                                   ),
                                 ),
-
                               const SizedBox(height: 16),
-
                               asyncNews.when(
                                 data: (news) {
                                   return news.isNotEmpty
@@ -409,7 +412,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                             selectedIndexProvider
                                                                 .notifier)
                                                         .updateIndex(3),
-                                                    child:  Text('see all',
+                                                    child: Text('see all',
                                                         style: kSmallTitleR),
                                                   )
                                                 ],
@@ -467,44 +470,42 @@ class _HomePageState extends ConsumerState<HomePage> {
                               const SizedBox(
                                 height: 20,
                               ),
-                        Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: Column(
-                                    children: [
-                                      CarouselSlider(
-                                        items: posters
-                                            .asMap()
-                                            .entries
-                                            .map((entry) {
-                                          int index = entry.key;
-                                          Promotion poster = entry.value;
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Column(
+                                  children: [
+                                    CarouselSlider(
+                                      items:
+                                          posters.asMap().entries.map((entry) {
+                                        int index = entry.key;
+                                        Promotion poster = entry.value;
 
-                                          return KeyedSubtree(
+                                        return KeyedSubtree(
                                             key: ValueKey(index),
-                                            child: CampaignCard(tag: 'CSR', onDonate: () {
-                                              
-                                            },)
-                                          );
-                                        }).toList(),
-                                        options: CarouselOptions(
-                                          height: 420,
-                                          scrollPhysics: posters.length > 1
-                                              ? null
-                                              : const NeverScrollableScrollPhysics(),
-                                          autoPlay: posters.length > 1,
-                                          viewportFraction: 1,
-                                          autoPlayInterval:
-                                              const Duration(seconds: 5),
-                                          onPageChanged: (index, reason) {
-                                            setState(() {
-                                              _currentPosterIndex = index;
-                                            });
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                            child: CampaignCard(
+                                              tag: 'CSR',
+                                              onDonate: () {},
+                                            ));
+                                      }).toList(),
+                                      options: CarouselOptions(
+                                        height: 420,
+                                        scrollPhysics: posters.length > 1
+                                            ? null
+                                            : const NeverScrollableScrollPhysics(),
+                                        autoPlay: posters.length > 1,
+                                        viewportFraction: 1,
+                                        autoPlayInterval:
+                                            const Duration(seconds: 5),
+                                        onPageChanged: (index, reason) {
+                                          setState(() {
+                                            _currentPosterIndex = index;
+                                          });
+                                        },
+                                      ),
+                                    )
+                                  ],
                                 ),
+                              ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -541,8 +542,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 );
               },
-              loading: () =>
-                  Center(child: LoadingAnimation()),
+              loading: () => Center(child: LoadingAnimation()),
               error: (error, stackTrace) =>
                   const Center(child: Text('NO PROMOTIONS YET')),
             ),
@@ -778,7 +778,7 @@ Widget customNotice({
       width: MediaQuery.of(context).size.width - 32,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: kPrimaryLightColor,
+        color: kCardBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: kBlack.withOpacity(0.2),
