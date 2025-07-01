@@ -46,7 +46,7 @@ Widget customButton({
               : Text(
                   label,
                   style: TextStyle(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: labelColor,
                     fontSize: fontSize.toDouble(),
                   ),

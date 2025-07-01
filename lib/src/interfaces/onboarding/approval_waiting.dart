@@ -16,18 +16,6 @@ class ApprovalWaitingPage extends StatelessWidget {
         backgroundColor: kBackgroundColor,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              NavigationService().pushNamedReplacement('PhoneNumber');
-            },
-            icon: Icon(Icons.logout, color: kPrimaryColor),
-            label: Text(
-              'Logout',
-              style: kSmallTitleB.copyWith(color: kPrimaryColor),
-            ),
-          ),
-        ],
       ),
       backgroundColor: kBackgroundColor,
       body: Center(
@@ -56,6 +44,17 @@ class ApprovalWaitingPage extends StatelessWidget {
                 'Access to the app will be made available to you soon! Thank you for your patience.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, color: Color(0xFFAEB9E1)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: () {
+                NavigationService().pushNamedReplacement('PhoneNumber');
+              },
+              icon: Icon(Icons.logout, color: kPrimaryColor),
+              label: Text(
+                'Logout',
+                style: kSmallTitleB.copyWith(color: kPrimaryColor),
               ),
             ),
           ],

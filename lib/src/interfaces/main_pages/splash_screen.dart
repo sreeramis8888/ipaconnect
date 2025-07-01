@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:ipaconnect/src/data/models/appversion_model.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/services/api_service.dart';
 import 'package:ipaconnect/src/data/services/deep_link_service.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
@@ -284,41 +286,41 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     NavigationService navigationService = NavigationService();
     await checktoken();
     Timer(Duration(seconds: 2), () async {
-      // if (!isAppUpdateRequired) {
-      //   print('Logged in : $LoggedIn');
-      //   if (LoggedIn) {
-      //     final container = ProviderContainer();
-      //     final asyncUser = container.read(userProvider);
-      //     UserModel? user;
-      //     if (asyncUser is AsyncData<UserModel>) {
-      //       user = asyncUser.value;
-      //     } else {
-      //       await container.read(userProvider.notifier).refreshUser();
-      //       final refreshed = container.read(userProvider);
-      //       if (refreshed is AsyncData<UserModel>) {
-      //         user = refreshed.value;
-      //       }
-      //     }
-      //     if (user != null &&
-      //         user.status?.toLowerCase() == 'awaiting_payment') {
-      //       navigationService.pushNamedReplacement('MySubscriptionPage');
-      //       return;
-      //     }
+      if (!isAppUpdateRequired) {
+        print('Logged in : $LoggedIn');
+        if (LoggedIn) {
+          final container = ProviderContainer();
+          final asyncUser = container.read(userProvider);
+          UserModel? user;
+          if (asyncUser is AsyncData<UserModel>) {
+            user = asyncUser.value;
+          } else {
+            await container.read(userProvider.notifier).refreshUser();
+            final refreshed = container.read(userProvider);
+            if (refreshed is AsyncData<UserModel>) {
+              user = refreshed.value;
+            }
+          }
+          if (user != null &&
+              user.status == 'awaiting_payment') {
+            navigationService.pushNamedReplacement('MySubscriptionPage');
+            return;
+          }
 
-      //     final pendingDeepLink = _deepLinkService.pendingDeepLink;
-      //     if (pendingDeepLink != null) {
-      //       navigationService.pushNamedReplacement('MainPage').then((_) {
-      //         _deepLinkService.handleDeepLink(pendingDeepLink);
-      //         _deepLinkService.clearPendingDeepLink();
-      //       });
-      //     } else {
-      //       navigationService.pushNamedReplacement('MainPage');
-      //     }
-      //   }
-      //   else {
+          final pendingDeepLink = _deepLinkService.pendingDeepLink;
+          if (pendingDeepLink != null) {
+            navigationService.pushNamedReplacement('MainPage').then((_) {
+              _deepLinkService.handleDeepLink(pendingDeepLink);
+              _deepLinkService.clearPendingDeepLink();
+            });
+          } else {
+            navigationService.pushNamedReplacement('MainPage');
+          }
+        }
+        else {
       navigationService.pushNamedReplacement('PhoneNumber');
-      //   }
-      // }
+        }
+      }
     });
   }
 
@@ -327,7 +329,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     String? savedId = await SecureStorage.read('id') ?? '';
     log('token:$savedtoken');
     log('userId:$savedId');
-    if (savedtoken != '' && savedtoken.isNotEmpty && savedId != '') {
+    if (savedtoken != '' && savedtoken.isNotEmpty) {
       setState(() {
         LoggedIn = true;
         token = savedtoken;

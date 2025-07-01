@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
 
-enum UserStatus { active, inactive, deleted }
 
 @freezed
 abstract class UserModel with _$UserModel {
@@ -21,9 +20,9 @@ abstract class UserModel with _$UserModel {
     String? location,
     String? password,
     String? hierarchy, 
-    @Default(UserStatus.active)
-    @JsonKey(unknownEnumValue: UserStatus.active)
-    UserStatus status,
+
+
+    String? status,
     @JsonKey(name: 'is_ipa_member') @Default(false) bool isIpaMember,
     @JsonKey(name: 'is_admin') @Default(false) bool isAdmin,
     String? role, 

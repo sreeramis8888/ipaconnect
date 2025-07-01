@@ -17,7 +17,8 @@ class NewsApiService {
       final List<dynamic> data = response.data!['data'];
       return data.map((json) => NewsModel.fromJson(json)).toList();
     } else {
-      throw Exception(response.message ?? 'Unknown error occurred while fetching news');
+      throw Exception(
+          response.message ?? 'Unknown error occurred while fetching news');
     }
   }
 }

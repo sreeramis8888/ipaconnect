@@ -31,8 +31,7 @@ mixin _$UserModel {
   String? get location;
   String? get password;
   String? get hierarchy;
-  @JsonKey(unknownEnumValue: UserStatus.active)
-  UserStatus get status;
+  String? get status;
   @JsonKey(name: 'is_ipa_member')
   bool get isIpaMember;
   @JsonKey(name: 'is_admin')
@@ -135,7 +134,7 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String? location,
       String? password,
       String? hierarchy,
-      @JsonKey(unknownEnumValue: UserStatus.active) UserStatus status,
+      String? status,
       @JsonKey(name: 'is_ipa_member') bool isIpaMember,
       @JsonKey(name: 'is_admin') bool isAdmin,
       String? role,
@@ -168,7 +167,7 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? location = freezed,
     Object? password = freezed,
     Object? hierarchy = freezed,
-    Object? status = null,
+    Object? status = freezed,
     Object? isIpaMember = null,
     Object? isAdmin = null,
     Object? role = freezed,
@@ -228,10 +227,10 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
           ? _self.hierarchy
           : hierarchy // ignore: cast_nullable_to_non_nullable
               as String?,
-      status: null == status
+      status: freezed == status
           ? _self.status
           : status // ignore: cast_nullable_to_non_nullable
-              as UserStatus,
+              as String?,
       isIpaMember: null == isIpaMember
           ? _self.isIpaMember
           : isIpaMember // ignore: cast_nullable_to_non_nullable
@@ -273,8 +272,7 @@ class _UserModel implements UserModel {
       this.location,
       this.password,
       this.hierarchy,
-      @JsonKey(unknownEnumValue: UserStatus.active)
-      this.status = UserStatus.active,
+      this.status,
       @JsonKey(name: 'is_ipa_member') this.isIpaMember = false,
       @JsonKey(name: 'is_admin') this.isAdmin = false,
       this.role,
@@ -313,8 +311,7 @@ class _UserModel implements UserModel {
   @override
   final String? hierarchy;
   @override
-  @JsonKey(unknownEnumValue: UserStatus.active)
-  final UserStatus status;
+  final String? status;
   @override
   @JsonKey(name: 'is_ipa_member')
   final bool isIpaMember;
@@ -430,7 +427,7 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String? location,
       String? password,
       String? hierarchy,
-      @JsonKey(unknownEnumValue: UserStatus.active) UserStatus status,
+      String? status,
       @JsonKey(name: 'is_ipa_member') bool isIpaMember,
       @JsonKey(name: 'is_admin') bool isAdmin,
       String? role,
@@ -463,7 +460,7 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? location = freezed,
     Object? password = freezed,
     Object? hierarchy = freezed,
-    Object? status = null,
+    Object? status = freezed,
     Object? isIpaMember = null,
     Object? isAdmin = null,
     Object? role = freezed,
@@ -523,10 +520,10 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
           ? _self.hierarchy
           : hierarchy // ignore: cast_nullable_to_non_nullable
               as String?,
-      status: null == status
+      status: freezed == status
           ? _self.status
           : status // ignore: cast_nullable_to_non_nullable
-              as UserStatus,
+              as String?,
       isIpaMember: null == isIpaMember
           ? _self.isIpaMember
           : isIpaMember // ignore: cast_nullable_to_non_nullable

@@ -150,7 +150,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 26),
               customButton(
-                label: 'SEND REQUEST',
+                label: 'Send Request',
                 onPressed: () {
                   NavigationService navigationService = NavigationService();
                   navigationService.pushNamedReplacement('ApprovalWaitingPage');

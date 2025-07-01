@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
-import 'package:ipaconnect/src/interfaces/onboarding/approva_waiting.dart';
+import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 
 import '../../interfaces/onboarding/registration.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   switch (settings?.name) {
-    // case 'Splash':
-    //   return MaterialPageRoute(builder: (context) => SplashScreen());
-    case 'HomePage':
-      return MaterialPageRoute(builder: (context) => HomePage());
     case 'Splash':
       return MaterialPageRoute(builder: (context) => SplashScreen());
+    case 'MainPage':
+      return MaterialPageRoute(builder: (context) => MainPage());
     case 'PhoneNumber':
       return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     case 'RegistrationPage':
@@ -81,8 +80,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //   return MaterialPageRoute(builder: (context) => NotificationPage());
     // case 'AboutPage':
     //   return MaterialPageRoute(builder: (context) => AboutPage());
-    // case 'News':
-    //   return MaterialPageRoute(builder: (context) => NewsPage());
+    // case 'NewsModel':
+    //   return MaterialPageRoute(builder: (context) => NewsModelPage());
     // case 'MemberCreation':
     //   return MaterialPageRoute(builder: (context) => MemberCreationPage());
     // case 'MyEvents':

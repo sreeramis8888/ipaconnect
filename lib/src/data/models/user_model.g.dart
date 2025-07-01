@@ -20,9 +20,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       location: json['location'] as String?,
       password: json['password'] as String?,
       hierarchy: json['hierarchy'] as String?,
-      status: $enumDecodeNullable(_$UserStatusEnumMap, json['status'],
-              unknownValue: UserStatus.active) ??
-          UserStatus.active,
+      status: json['status'] as String?,
       isIpaMember: json['is_ipa_member'] as bool? ?? false,
       isAdmin: json['is_admin'] as bool? ?? false,
       role: json['role'] as String?,
@@ -49,16 +47,10 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'location': instance.location,
       'password': instance.password,
       'hierarchy': instance.hierarchy,
-      'status': _$UserStatusEnumMap[instance.status]!,
+      'status': instance.status,
       'is_ipa_member': instance.isIpaMember,
       'is_admin': instance.isAdmin,
       'role': instance.role,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };
-
-const _$UserStatusEnumMap = {
-  UserStatus.active: 'active',
-  UserStatus.inactive: 'inactive',
-  UserStatus.deleted: 'deleted',
-};

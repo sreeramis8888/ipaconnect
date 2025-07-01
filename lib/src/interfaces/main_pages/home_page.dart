@@ -25,7 +25,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import '../../data/models/promotions_model.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({
+ final  UserModel user;
+  const HomePage( {required this.user,
     super.key,
   });
 
@@ -74,7 +75,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Consumer(
       builder: (context, ref, child) {
         final asyncPromotions = ref.watch(promotionsProvider);
-        final asyncNews = ref.watch(newsProvider);
+        final asyncNewsModel = ref.watch(newsProvider);
         final asyncEvents = ref.watch(eventsProvider);
 
         return RefreshIndicator(
@@ -236,7 +237,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                               const SizedBox(height: 16),
                               asyncEvents.when(
                                   data: (events) {
-           
                                     return events.isNotEmpty
                                         ? Column(
                                             children: [
@@ -390,7 +390,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   ),
                                 ),
                               const SizedBox(height: 16),
-                              asyncNews.when(
+                              asyncNewsModel.when(
                                 data: (news) {
                                   return news.isNotEmpty
                                       ? Column(
@@ -402,7 +402,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                   left: 15, top: 10, right: 15),
                                               child: Row(
                                                 children: [
-                                                  Text('Latest News',
+                                                  Text('Latest NewsModel',
                                                       style:
                                                           kSubHeadingB.copyWith(
                                                               color:
@@ -429,7 +429,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                     Axis.horizontal,
                                                 itemCount: news.length,
                                                 itemBuilder: (context, index) {
-                                                  final individualNews =
+                                                  final individualNewsModel =
                                                       news[index];
                                                   return Padding(
                                                     padding: const EdgeInsets
@@ -449,12 +449,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                                       .notifier)
                                                               .updateIndex(3);
                                                         },
-                                                        imageUrl: individualNews
-                                                                .media ??
-                                                            '',
-                                                        title: individualNews
-                                                                .title ??
-                                                            '',
+                                                        imageUrl:
+                                                            individualNewsModel
+                                                                    .media ??
+                                                                '',
+                                                        title:
+                                                            individualNewsModel
+                                                                    .title ??
+                                                                '',
                                                       ),
                                                     ),
                                                   );

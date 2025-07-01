@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/loading_notifier.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/animated_logo.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../data/services/navigation_service.dart';
@@ -45,7 +46,10 @@ class PhoneNumberScreen extends ConsumerWidget {
             children: [
               const SizedBox(height: 70),
               Center(
-                child: SvgPicture.asset('assets/svg/ipa_login_logo.svg'),
+                child: AnimatedSvgLogoPresets.subtle(
+                  assetPath: 'assets/svg/ipa_login_logo.svg',
+                  size: 100,
+                ),
               ),
               const SizedBox(height: 70),
               Text(
@@ -294,7 +298,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           children: [
             const SizedBox(height: 70),
             Center(
-              child: SvgPicture.asset('assets/svg/ipa_login_logo.svg'),
+              child: AnimatedSvgLogoPresets.subtle(
+                  assetPath: 'assets/svg/ipa_login_logo.svg'),
             ),
             const SizedBox(height: 70),
             Text(

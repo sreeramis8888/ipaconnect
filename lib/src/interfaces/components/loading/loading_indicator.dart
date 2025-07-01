@@ -14,10 +14,10 @@ class LoadingAnimation extends StatelessWidget {
       height: size,
       child: LoadingIndicator(
         indicatorType: Indicator.lineSpinFadeLoader,
-        colors: const [Colors.white],
+        colors: const [kPrimaryColor],
         strokeWidth: 2,
-        backgroundColor: Colors.black,
-        pathBackgroundColor: Colors.black,
+   
+   
       ),
     );
   }

@@ -35,7 +35,7 @@ class MyApp extends ConsumerWidget {
       scaffoldMessengerKey: SnackbarService.scaffoldMessengerKey,
       onGenerateRoute: router.generateRoute,
       initialRoute: 'Splash',
-      title: 'ITCC',
+      title: 'IPA',
       theme: ThemeData(
         textTheme: GoogleFonts.robotoTextTheme(
           Theme.of(context).textTheme,

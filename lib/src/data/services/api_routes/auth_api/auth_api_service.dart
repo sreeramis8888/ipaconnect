@@ -24,7 +24,6 @@ class AuthApiService {
   Future<String> verifyOtp(String phone, String otp) async {
     final response = await _apiService.post('/auth/verify', {'phone': phone, 'otp': otp});
     if (response.success && response.data != null) {
-      // The token is returned in response.data['data']
       return response.data!['data'].toString();
     } else {
       throw Exception(response.message ?? 'Failed to verify OTP');

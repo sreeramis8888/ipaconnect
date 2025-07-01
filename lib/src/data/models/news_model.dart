@@ -4,6 +4,8 @@ part 'news_model.g.dart';
 
 @JsonSerializable()
 class NewsModel {
+
+  final String? id;
   final String? category;
   final String? title;
   final String? content;
@@ -14,6 +16,7 @@ class NewsModel {
   final DateTime? updatedAt;
 
   NewsModel({
+    this.id,
     this.category,
     this.title,
     this.content,
