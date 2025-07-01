@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 
 const kExtraLight = FontWeight.w300;
 const kUltraLight = FontWeight.w200;
@@ -28,31 +29,31 @@ const double kSize12 = 12;
 
 final kDisplayTitleR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kDisplay,
 );
 
 final kDisplayTitleM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kDisplay,
 );
 
 final kDisplayTitleSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kDisplay,
 );
 
 final kDisplayTitleB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kDisplay,
 );
 
 final kDisplayTitleEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kDisplay,
 );
 
@@ -60,31 +61,31 @@ final kDisplayTitleEB = GoogleFonts.roboto(
 
 final kLargeTitleR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kLarge,
 );
 
 final kLargeTitleM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kLarge,
 );
 
 final kLargeTitleSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kLarge,
 );
 
 final kLargeTitleB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kLarge,
 );
 
 final kLargeTitleEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kLarge,
 );
 
@@ -92,31 +93,31 @@ final kLargeTitleEB = GoogleFonts.roboto(
 
 final kHeadTitleR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kHeading,
 );
 
 final kHeadTitleM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kHeading,
 );
 
 final kHeadTitleSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kHeading,
 );
 
 final kHeadTitleB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kHeading,
 );
 
 final kHeadTitleEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kHeading,
 );
 
@@ -124,37 +125,37 @@ final kHeadTitleEB = GoogleFonts.roboto(
 
 final kSubHeadingL = GoogleFonts.roboto(
   fontWeight: kLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSubHeading,
 );
 
 final kSubHeadingR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSubHeading,
 );
 
 final kSubHeadingM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSubHeading,
 );
 
 final kSubHeadingSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSubHeading,
 );
 
 final kSubHeadingB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSubHeading,
 );
 
 final kSubHeadingEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSubHeading,
 );
 
@@ -162,37 +163,37 @@ final kSubHeadingEB = GoogleFonts.roboto(
 
 final kBodyTitleL = GoogleFonts.roboto(
   fontWeight: kLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kBody,
 );
 
 final kBodyTitleR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kBody,
 );
 
 final kBodyTitleM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kBody,
 );
 
 final kBodyTitleSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kBody,
 );
 
 final kBodyTitleB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kBody,
 );
 
 final kBodyTitleEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kBody,
 );
 
@@ -200,43 +201,43 @@ final kBodyTitleEB = GoogleFonts.roboto(
 
 final kSmallTitleUL = GoogleFonts.roboto(
   fontWeight: kUltraLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
 final kSmallTitleL = GoogleFonts.roboto(
   fontWeight: kLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
 final kSmallTitleR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
 final kSmallTitleM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
 final kSmallTitleSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
 final kSmallTitleB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
 final kSmallTitleEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize14,
 );
 
@@ -244,54 +245,54 @@ final kSmallTitleEB = GoogleFonts.roboto(
 
 final kSmallerTitleL = GoogleFonts.roboto(
   fontWeight: kLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleEL = GoogleFonts.roboto(
   fontWeight: kExtraLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleUL = GoogleFonts.roboto(
   fontWeight: kUltraLight,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleR = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleRWithGradient = GoogleFonts.roboto(
   fontWeight: kRegular,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleM = GoogleFonts.roboto(
   fontWeight: kMedium,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleSB = GoogleFonts.roboto(
   fontWeight: kSemiBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleB = GoogleFonts.roboto(
   fontWeight: kBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );
 
 final kSmallerTitleEB = GoogleFonts.roboto(
   fontWeight: kExtraBold,
-  color: Colors.black,
+  color: kWhite,
   fontSize: kSize12,
 );

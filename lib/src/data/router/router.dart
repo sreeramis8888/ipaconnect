@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
+import 'package:ipaconnect/src/interfaces/onboarding/approva_waiting.dart';
+import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
+
+import '../../interfaces/onboarding/registration.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   switch (settings?.name) {
@@ -7,6 +12,14 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //   return MaterialPageRoute(builder: (context) => SplashScreen());
     case 'HomePage':
       return MaterialPageRoute(builder: (context) => HomePage());
+    case 'Splash':
+      return MaterialPageRoute(builder: (context) => SplashScreen());
+    case 'PhoneNumber':
+      return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
+    case 'RegistrationPage':
+      return MaterialPageRoute(builder: (context) => RegistrationPage());
+    case 'ApprovalWaitingPage':
+      return MaterialPageRoute(builder: (context) => ApprovalWaitingPage());
     // case 'PhoneNumber':
     //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     // case 'MainPage':

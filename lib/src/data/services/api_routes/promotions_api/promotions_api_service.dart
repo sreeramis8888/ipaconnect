@@ -5,7 +5,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'promotions_api_service.g.dart';
 
-
 @riverpod
 PromotionsApiService promotionsApiService(Ref ref) {
   final apiService = ref.watch(apiServiceProvider);
@@ -18,25 +17,26 @@ class PromotionsApiService {
   PromotionsApiService(this._apiService);
 
   Future<List<Promotion>> getPromotions() async {
-    try {
-      final response = await _apiService.get('/promotions/user');
-      final List<dynamic> data = response['data'] as List<dynamic>;
+    final response = await _apiService.get('/promotions/user');
+
+    if (response.success && response.data != null) {
+      final List<dynamic> data = response.data!['data'];
       return data.map((json) => Promotion.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch promotions: $e');
+    } else {
+      throw Exception(response.message ?? 'Failed to fetch promotions');
     }
   }
 
   Future<Promotion> getPromotionById(String id) async {
-    try {
-      final response = await _apiService.get('/promotions/$id');
-      return Promotion.fromJson(response['data']);
-    } catch (e) {
-      throw Exception('Failed to fetch promotion: $e');
+    final response = await _apiService.get('/promotions/$id');
+
+    if (response.success && response.data != null) {
+      return Promotion.fromJson(response.data!['data']);
+    } else {
+      throw Exception(response.message ?? 'Failed to fetch promotion');
     }
   }
 }
-
 
 @riverpod
 Future<List<Promotion>> promotions(Ref ref) async {

@@ -39,7 +39,7 @@ final eventsProvider = AutoDisposeFutureProvider<List<EventsModel>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef EventsRef = AutoDisposeFutureProviderRef<List<EventsModel>>;
-String _$promotionByIdHash() => r'7033f2fb41738c98cca0e565662747b8c43868b5';
+String _$eventByIdHash() => r'14f08102162c38c15253bafee96aaf5d47d9ad09';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -62,27 +62,27 @@ class _SystemHash {
   }
 }
 
-/// See also [promotionById].
-@ProviderFor(promotionById)
-const promotionByIdProvider = PromotionByIdFamily();
+/// See also [eventById].
+@ProviderFor(eventById)
+const eventByIdProvider = EventByIdFamily();
 
-/// See also [promotionById].
-class PromotionByIdFamily extends Family<AsyncValue<EventsModel>> {
-  /// See also [promotionById].
-  const PromotionByIdFamily();
+/// See also [eventById].
+class EventByIdFamily extends Family<AsyncValue<EventsModel?>> {
+  /// See also [eventById].
+  const EventByIdFamily();
 
-  /// See also [promotionById].
-  PromotionByIdProvider call(
+  /// See also [eventById].
+  EventByIdProvider call(
     String id,
   ) {
-    return PromotionByIdProvider(
+    return EventByIdProvider(
       id,
     );
   }
 
   @override
-  PromotionByIdProvider getProviderOverride(
-    covariant PromotionByIdProvider provider,
+  EventByIdProvider getProviderOverride(
+    covariant EventByIdProvider provider,
   ) {
     return call(
       provider.id,
@@ -101,32 +101,31 @@ class PromotionByIdFamily extends Family<AsyncValue<EventsModel>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'promotionByIdProvider';
+  String? get name => r'eventByIdProvider';
 }
 
-/// See also [promotionById].
-class PromotionByIdProvider extends AutoDisposeFutureProvider<EventsModel> {
-  /// See also [promotionById].
-  PromotionByIdProvider(
+/// See also [eventById].
+class EventByIdProvider extends AutoDisposeFutureProvider<EventsModel?> {
+  /// See also [eventById].
+  EventByIdProvider(
     String id,
   ) : this._internal(
-          (ref) => promotionById(
-            ref as PromotionByIdRef,
+          (ref) => eventById(
+            ref as EventByIdRef,
             id,
           ),
-          from: promotionByIdProvider,
-          name: r'promotionByIdProvider',
+          from: eventByIdProvider,
+          name: r'eventByIdProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$promotionByIdHash,
-          dependencies: PromotionByIdFamily._dependencies,
-          allTransitiveDependencies:
-              PromotionByIdFamily._allTransitiveDependencies,
+                  : _$eventByIdHash,
+          dependencies: EventByIdFamily._dependencies,
+          allTransitiveDependencies: EventByIdFamily._allTransitiveDependencies,
           id: id,
         );
 
-  PromotionByIdProvider._internal(
+  EventByIdProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -140,12 +139,12 @@ class PromotionByIdProvider extends AutoDisposeFutureProvider<EventsModel> {
 
   @override
   Override overrideWith(
-    FutureOr<EventsModel> Function(PromotionByIdRef provider) create,
+    FutureOr<EventsModel?> Function(EventByIdRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: PromotionByIdProvider._internal(
-        (ref) => create(ref as PromotionByIdRef),
+      override: EventByIdProvider._internal(
+        (ref) => create(ref as EventByIdRef),
         from: from,
         name: null,
         dependencies: null,
@@ -157,13 +156,13 @@ class PromotionByIdProvider extends AutoDisposeFutureProvider<EventsModel> {
   }
 
   @override
-  AutoDisposeFutureProviderElement<EventsModel> createElement() {
-    return _PromotionByIdProviderElement(this);
+  AutoDisposeFutureProviderElement<EventsModel?> createElement() {
+    return _EventByIdProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is PromotionByIdProvider && other.id == id;
+    return other is EventByIdProvider && other.id == id;
   }
 
   @override
@@ -177,18 +176,17 @@ class PromotionByIdProvider extends AutoDisposeFutureProvider<EventsModel> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin PromotionByIdRef on AutoDisposeFutureProviderRef<EventsModel> {
+mixin EventByIdRef on AutoDisposeFutureProviderRef<EventsModel?> {
   /// The parameter `id` of this provider.
   String get id;
 }
 
-class _PromotionByIdProviderElement
-    extends AutoDisposeFutureProviderElement<EventsModel>
-    with PromotionByIdRef {
-  _PromotionByIdProviderElement(super.provider);
+class _EventByIdProviderElement
+    extends AutoDisposeFutureProviderElement<EventsModel?> with EventByIdRef {
+  _EventByIdProviderElement(super.provider);
 
   @override
-  String get id => (origin as PromotionByIdProvider).id;
+  String get id => (origin as EventByIdProvider).id;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

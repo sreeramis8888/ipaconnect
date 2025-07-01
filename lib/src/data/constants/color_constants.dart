@@ -6,7 +6,7 @@ const Color kCardBackgroundColor = Color(0xFF021730);
 const Color kPrimaryLightColor = Color(0xFFEEF1FF);
 
 const Color kTertiary = Color(0xFFE8EAED);
-const Color kInputFieldcolor = Color(0xFF6F7782);
+const Color kInputFieldcolor = Color(0xFF1C1E4D);
 //Common Colors
 const Color kWhite = Color.fromARGB(255, 255, 255, 255);
 const Color kGrey = Color.fromARGB(255, 200, 200, 200);

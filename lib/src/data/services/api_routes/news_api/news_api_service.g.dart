@@ -6,12 +6,11 @@ part of 'news_api_service.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$newsApiServiceHash() => r'206441ab3870d41b66bb71f101ae69df050aa4a2';
+String _$newsApiServiceHash() => r'15abdfb35e3e3308602fae74e29a620b26f8f63d';
 
 /// See also [newsApiService].
 @ProviderFor(newsApiService)
-final newsApiServiceProvider =
-    AutoDisposeProvider<PromotionsApiService>.internal(
+final newsApiServiceProvider = AutoDisposeProvider<NewsApiService>.internal(
   newsApiService,
   name: r'newsApiServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -23,7 +22,7 @@ final newsApiServiceProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef NewsApiServiceRef = AutoDisposeProviderRef<PromotionsApiService>;
+typedef NewsApiServiceRef = AutoDisposeProviderRef<NewsApiService>;
 String _$newsHash() => r'1c4ef2ffb2b24f88cf9546ed7746a7239c4f53c5';
 
 /// See also [news].

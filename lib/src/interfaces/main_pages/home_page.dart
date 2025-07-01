@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/api_routes/events_api/events_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/news_api/news_api_service.dart';
@@ -235,6 +236,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               const SizedBox(height: 16),
                               asyncEvents.when(
                                   data: (events) {
+           
                                     return events.isNotEmpty
                                         ? Column(
                                             children: [

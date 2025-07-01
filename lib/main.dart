@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
-import 'package:ipaconnect/src/data/services/notification_service.dart';
+import 'package:ipaconnect/src/data/services/notification_service/notification_service.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/router/router.dart' as router;
@@ -34,7 +34,7 @@ class MyApp extends ConsumerWidget {
       navigatorKey: NavigationService.navigatorKey,
       scaffoldMessengerKey: SnackbarService.scaffoldMessengerKey,
       onGenerateRoute: router.generateRoute,
-      initialRoute: 'HomePage',
+      initialRoute: 'Splash',
       title: 'ITCC',
       theme: ThemeData(
         textTheme: GoogleFonts.robotoTextTheme(
