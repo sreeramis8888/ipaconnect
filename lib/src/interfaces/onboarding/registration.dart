@@ -1,9 +1,16 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
+import 'package:ipaconnect/src/data/services/image_upload.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
+import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
 import '../../data/constants/color_constants.dart';
@@ -11,7 +18,8 @@ import '../../data/services/navigation_service.dart';
 import '../additional_screens/crop_image_screen.dart';
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({Key? key}) : super(key: key);
+  final String phone;
+  const RegistrationPage({super.key, required this.phone});
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -71,8 +79,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: SafeArea(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      SecureStorage.deleteAll();
+                      NavigationService().pushNamedReplacement('PhoneNumber');
+                    },
+                    icon: Icon(Icons.logout, color: kPrimaryColor),
+                    label: Text(
+                      'Logout',
+                      style: kSmallTitleB.copyWith(color: kPrimaryColor),
+                    ),
+                  ),
+                ),
+              ),
               SizedBox(
-                height: 100,
+                height: 30,
               ),
               Center(
                 child: Stack(
@@ -149,11 +173,34 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     val == null || val.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 26),
-              customButton(
-                label: 'Send Request',
-                onPressed: () {
-                  NavigationService navigationService = NavigationService();
-                  navigationService.pushNamedReplacement('ApprovalWaitingPage');
+              Consumer(
+                builder: (context, ref, child) {
+                  return customButton(
+                    label: 'Send Request',
+                    onPressed: () async {
+                      // String tempImagePath = await saveUint8ListToFile(
+                      //     _profileImage!, 'profile.png');
+                      // final String profileUrl= await imageUpload(tempImagePath);
+                      UserDataApiService userDataApiService =
+                          ref.watch(userDataApiServiceProvider);
+                      final response = await userDataApiService.updateUser(
+                          id,
+                          UserModel(
+                              name: _nameController.text,
+                              email: _emailController.text,
+                              fcm: fcmToken,
+                              image: 'profile.png',
+                              location: _locationController.text,
+                              phone: widget.phone));
+                      log(response.data.toString(), name: 'EDIT USER');
+                      if (response.success == true) {
+                        NavigationService navigationService =
+                            NavigationService();
+                        navigationService
+                            .pushNamedReplacement('ApprovalWaitingPage');
+                      }
+                    },
+                  );
                 },
               )
             ],

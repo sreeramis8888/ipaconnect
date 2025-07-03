@@ -194,5 +194,153 @@ class _GetUserDetailsByIdProviderElement
   @override
   String get userId => (origin as GetUserDetailsByIdProvider).userId;
 }
+
+String _$fetchAllUsersHash() => r'97e4e1e52b782f429aaa5af7cf5bf78da2f99e3e';
+
+/// See also [fetchAllUsers].
+@ProviderFor(fetchAllUsers)
+const fetchAllUsersProvider = FetchAllUsersFamily();
+
+/// See also [fetchAllUsers].
+class FetchAllUsersFamily extends Family<AsyncValue<List<UserModel>>> {
+  /// See also [fetchAllUsers].
+  const FetchAllUsersFamily();
+
+  /// See also [fetchAllUsers].
+  FetchAllUsersProvider call({
+    int pageNo = 1,
+    int limit = 10,
+  }) {
+    return FetchAllUsersProvider(
+      pageNo: pageNo,
+      limit: limit,
+    );
+  }
+
+  @override
+  FetchAllUsersProvider getProviderOverride(
+    covariant FetchAllUsersProvider provider,
+  ) {
+    return call(
+      pageNo: provider.pageNo,
+      limit: provider.limit,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchAllUsersProvider';
+}
+
+/// See also [fetchAllUsers].
+class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
+  /// See also [fetchAllUsers].
+  FetchAllUsersProvider({
+    int pageNo = 1,
+    int limit = 10,
+  }) : this._internal(
+          (ref) => fetchAllUsers(
+            ref as FetchAllUsersRef,
+            pageNo: pageNo,
+            limit: limit,
+          ),
+          from: fetchAllUsersProvider,
+          name: r'fetchAllUsersProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$fetchAllUsersHash,
+          dependencies: FetchAllUsersFamily._dependencies,
+          allTransitiveDependencies:
+              FetchAllUsersFamily._allTransitiveDependencies,
+          pageNo: pageNo,
+          limit: limit,
+        );
+
+  FetchAllUsersProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.pageNo,
+    required this.limit,
+  }) : super.internal();
+
+  final int pageNo;
+  final int limit;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<UserModel>> Function(FetchAllUsersRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchAllUsersProvider._internal(
+        (ref) => create(ref as FetchAllUsersRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        pageNo: pageNo,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<UserModel>> createElement() {
+    return _FetchAllUsersProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchAllUsersProvider &&
+        other.pageNo == pageNo &&
+        other.limit == limit;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, pageNo.hashCode);
+    hash = _SystemHash.combine(hash, limit.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchAllUsersRef on AutoDisposeFutureProviderRef<List<UserModel>> {
+  /// The parameter `pageNo` of this provider.
+  int get pageNo;
+
+  /// The parameter `limit` of this provider.
+  int get limit;
+}
+
+class _FetchAllUsersProviderElement
+    extends AutoDisposeFutureProviderElement<List<UserModel>>
+    with FetchAllUsersRef {
+  _FetchAllUsersProviderElement(super.provider);
+
+  @override
+  int get pageNo => (origin as FetchAllUsersProvider).pageNo;
+  @override
+  int get limit => (origin as FetchAllUsersProvider).limit;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

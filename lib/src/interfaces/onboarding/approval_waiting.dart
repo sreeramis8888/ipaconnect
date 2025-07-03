@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
+import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 import '../../data/constants/color_constants.dart';
@@ -49,6 +50,7 @@ class ApprovalWaitingPage extends StatelessWidget {
             const SizedBox(height: 12),
             TextButton.icon(
               onPressed: () {
+                SecureStorage.deleteAll();
                 NavigationService().pushNamedReplacement('PhoneNumber');
               },
               icon: Icon(Icons.logout, color: kPrimaryColor),

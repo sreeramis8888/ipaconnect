@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/feed_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/notifiers/feed_notifier.dart';
@@ -124,10 +125,11 @@ class _FeedViewState extends ConsumerState<FeedView> {
     List<FeedModel> filteredFeeds = filterFeeds(feeds);
 
     return RefreshIndicator(
-      backgroundColor: kWhite,
+      backgroundColor: kPrimaryColor,
       color: Colors.red,
       onRefresh: () => ref.read(feedNotifierProvider.notifier).refreshFeed(),
       child: Scaffold(
+        backgroundColor: kBackgroundColor,
         body: Stack(
           children: [
             Column(
@@ -154,7 +156,11 @@ class _FeedViewState extends ConsumerState<FeedView> {
                           child: LoadingAnimation(),
                         )
                       : filteredFeeds.isEmpty
-                          ? const Center(child: Text('No FEEDS'))
+                          ? Center(
+                              child: Text(
+                              'No Feeds',
+                              style: kBodyTitleB,
+                            ))
                           : ListView.builder(
                               controller: _scrollController,
                               padding: const EdgeInsets.all(16.0),
@@ -274,12 +280,12 @@ class _FeedViewState extends ConsumerState<FeedView> {
             //   id: id,
             // );
             return ReusableBusinessPost(
-                author: user??UserModel(name: 'Unkown'),
+                author: user ?? UserModel(name: 'Unkown'),
                 withImage: feed.media != null ? true : false,
                 business: feed,
                 onLike: () async {
                   final feedApiService = ref.watch(feedApiServiceProvider);
-                  await feedApiService.likeFeed(feedId:  feed.id!);
+                  await feedApiService.likeFeed(feedId: feed.id!);
                   ref.read(feedNotifierProvider.notifier).refreshFeed();
                 },
                 onComment: () async {},
@@ -499,13 +505,12 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
               ),
               onPressed: () async {
                 if (commentController.text != '') {
-                  FocusScope.of(context).unfocus();   final feedApiService = ref.watch(feedApiServiceProvider);
-                  await feedApiService. commentFeed(
+                  FocusScope.of(context).unfocus();
+                  final feedApiService = ref.watch(feedApiServiceProvider);
+                  await feedApiService.commentFeed(
                       feedId: widget.business.id!,
                       comment: commentController.text);
-                  await ref
-                      .read(feedNotifierProvider.notifier)
-                      .refreshFeed();
+                  await ref.read(feedNotifierProvider.notifier).refreshFeed();
                   commentController.clear();
                   commentFocusNode.unfocus();
                 }

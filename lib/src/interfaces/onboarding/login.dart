@@ -413,7 +413,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
         snackbarService.showSnackBar('Login successful');
 
-        NavigationService().pushNamedReplacement('RegistrationPage');
+        NavigationService().pushNamedReplacement('RegistrationPage',arguments: fullPhone);
       } else {
         snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
       }

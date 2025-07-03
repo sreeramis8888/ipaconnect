@@ -13,12 +13,14 @@ import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/promotion_shimmers.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/business_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_list_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_page.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
+import 'package:ipaconnect/src/interfaces/onboarding/registration.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/user_status_sreens.dart';
 
@@ -95,14 +97,14 @@ class _MainPageState extends ConsumerState<MainPage> {
       HomePage(
         user: user,
       ),
-      Text(''),
+      BusinessCategoriesPage(),
       PeoplePage(),
       NewsListPage(),
       ProfilePage(user: user),
     ];
     _activeIcons = [
       'assets/svg/icons/nav_icons/active_home.svg',
-      'assets/svg/iconsnav_icons//active_business.svg',
+      'assets/svg/icons/nav_icons/active_business.svg',
       'assets/svg/icons/nav_icons/active_chat.svg',
       'assets/svg/icons/nav_icons/active_news.svg',
       'assets/svg/icons/nav_icons/active_profile.svg',
@@ -121,6 +123,8 @@ class _MainPageState extends ConsumerState<MainPage> {
   }
 
   Widget _buildStatusPage(String status, UserModel user) {
+    final List<String> labels = ['Home', 'Business', 'Chat', 'News', 'Profile'];
+
     final selectedIndex = ref.watch(selectedIndexProvider);
     switch (status.toLowerCase()) {
       case 'active':
@@ -128,107 +132,119 @@ class _MainPageState extends ConsumerState<MainPage> {
           body: Center(
             child: _widgetOptions.elementAt(selectedIndex),
           ),
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              color: kWhite,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+          bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: .5,
+                color: kPrimaryColor,
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
-              ),
-              child: BottomNavigationBar(
-                type: BottomNavigationBarType.fixed,
-                items: List.generate(4, (index) {
-                  final isSelected = selectedIndex == index;
-                  final isProfile = index == 2;
-
-                  Widget iconWidget;
-
-                  if (isProfile) {
-                    if (isSelected) {
-                      iconWidget = user.image != null && user.image != ''
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(user.image!),
-                              radius: 15,
-                            )
-                          : SvgPicture.asset(
-                              'assets/svg/icons/dummy_person_small.svg',
-                              height: 24,
-                              width: 24,
-                            );
-                    } else {
-                      iconWidget = IconResolver(
-                        iconPath: _inactiveIcons[index],
-                        color: Colors.grey,
-                      );
-                    }
-                  } else {
+                child: BottomNavigationBar(
+                  currentIndex: selectedIndex,
+                  selectedItemColor: Colors.white,
+                  unselectedItemColor: Colors.white54,
+                  onTap: _onItemTapped,
+                  showSelectedLabels: true,
+                  showUnselectedLabels: false,
+                  backgroundColor:
+                      const Color(0xFF0D0D1F), // dark navy background
+                  elevation: 0,
+                  type: BottomNavigationBarType.fixed,
+                  items: List.generate(5, (index) {
+                    final isSelected = selectedIndex == index;
+                    Widget iconWidget;
                     iconWidget = IconResolver(
                       iconPath: isSelected
                           ? _activeIcons[index]
                           : _inactiveIcons[index],
                       color: isSelected ? kWhite : Colors.grey,
                     );
-                  }
-
-                  return BottomNavigationBarItem(
-                    label: '',
-                    icon: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      padding: isSelected
-                          ? const EdgeInsets.all(10)
-                          : EdgeInsets.zero,
-                      decoration: isSelected
-                          ? BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: kPrimaryLightColor,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.red.withOpacity(0.6),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
+                    return BottomNavigationBarItem(
+                      label: '',
+                      icon: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (isSelected)
+                            Column(
+                              children: [
+                                Transform.translate(
+                                  offset: Offset(0, -7),
+                                  child: Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Container(
+                                      width: 38,
+                                      height: 5,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                          bottom: Radius.circular(6),
+                                        ),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            kPrimaryColor.withOpacity(0.85),
+                                            kPrimaryColor.withOpacity(0.25),
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                kPrimaryColor.withOpacity(0.95),
+                                            blurRadius: 38,
+                                            spreadRadius: 10,
+                                            offset: Offset(0, 8),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
-                            )
-                          : null,
-                      child: AnimatedScale(
-                        duration: const Duration(milliseconds: 300),
-                        scale: isSelected ? 1.2 : 1.0,
-                        child: iconWidget,
+                            ),
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              AnimatedScale(
+                                duration: const Duration(milliseconds: 300),
+                                scale: isSelected ? 1.2 : 1.0,
+                                child: iconWidget,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            labels[index],
+                            style: TextStyle(
+                              color:
+                                  isSelected ? Colors.white : Color(0xFFAEB9E1),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  );
-                }),
-                currentIndex: selectedIndex,
-                selectedItemColor: kPrimaryColor,
-                unselectedItemColor: Colors.grey,
-                onTap: (index) {
-                  HapticFeedback.selectionClick();
-                  _onItemTapped(index);
-                },
-                showSelectedLabels: false,
-                showUnselectedLabels: false,
-                backgroundColor: Colors
-                    .transparent, // Set transparent to allow container color
-                elevation: 0,
+                    );
+                  }),
+                ),
               ),
-            ),
+            ],
           ),
         );
       case 'inactive':
-        return const UserInactivePage();
+        return RegistrationPage(
+          phone: user.phone ?? '',
+        );
       case 'deleted':
         return const UserDeletedPage();
       case 'awaiting-payment':
@@ -249,6 +265,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         });
         // Return a loading screen while navigation occurs
         return const Scaffold(
+          backgroundColor: kBackgroundColor,
           body: Center(
             child: LoadingAnimation(),
           ),
@@ -291,7 +308,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                 ref.read(selectedIndexProvider.notifier).updateIndex(0);
               }
             },
-            child: _buildStatusPage(user.status ?? 'unknown', user),
+            child: _buildStatusPage(user.status ?? '', user),
           );
         },
       );

@@ -15,7 +15,6 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       image: json['image'] as String?,
       phone: json['phone'] as String?,
       fcm: json['fcm'] as String?,
-      otp: json['otp'] as String?,
       profession: json['proffession'] as String?,
       location: json['location'] as String?,
       password: json['password'] as String?,
@@ -30,6 +29,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      rejectReason: json['reject_reason'] as String?,
     );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
@@ -42,7 +42,6 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'image': instance.image,
       'phone': instance.phone,
       'fcm': instance.fcm,
-      'otp': instance.otp,
       'proffession': instance.profession,
       'location': instance.location,
       'password': instance.password,
@@ -53,4 +52,5 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'role': instance.role,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
+      'reject_reason': instance.rejectReason,
     };

@@ -17,7 +17,7 @@ class EventsApiService {
   EventsApiService(this._apiService);
 
   Future<List<EventsModel>> getEvents() async {
-    final response = await _apiService.get('/events/user');
+    final response = await _apiService.get('/events');
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];

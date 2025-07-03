@@ -79,10 +79,11 @@ class ApiService {
           'Content-Type': 'application/json',
           'accept': '*/*',
           'Authorization': 'Bearer $token',
+          'x-api-key': apiKey
         },
         body: json.encode(data),
       );
-
+      log(name: 'HITTING API', '$baseUrl$endpoint');
       final decoded = json.decode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -107,6 +108,7 @@ class ApiService {
           'Content-Type': 'application/json',
           'accept': '*/*',
           'Authorization': 'Bearer $token',
+          'x-api-key': apiKey
         },
         body: json.encode(data),
       );
@@ -135,6 +137,7 @@ class ApiService {
           'Content-Type': 'application/json',
           'accept': '*/*',
           'Authorization': 'Bearer $token',
+          'x-api-key': apiKey
         },
         body: json.encode(data),
       );
@@ -159,7 +162,8 @@ class ApiService {
 
 @riverpod
 ApiService apiService(Ref ref) {
-  return ApiService(apiKey: dotenv.env['API_KEY'] ?? '',
+  return ApiService(
+    apiKey: dotenv.env['API_KEY'] ?? '',
     baseUrl: dotenv.env['BASE_URL'] ?? '',
   );
 }

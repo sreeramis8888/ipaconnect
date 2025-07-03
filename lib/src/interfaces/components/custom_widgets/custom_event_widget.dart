@@ -32,9 +32,9 @@ Widget eventWidget({
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 10),
     decoration: BoxDecoration(
-      border: Border.all(color: const Color.fromARGB(255, 237, 234, 234)),
+      border: Border.all(color: kStrokeColor),
       borderRadius: BorderRadius.circular(12),
-      color: kWhite,
+      color: kCardBackgroundColor,
     ),
     clipBehavior: Clip.antiAlias,
     child: Column(
@@ -87,13 +87,14 @@ Widget eventWidget({
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: kPrimaryColor.withOpacity(0.05),
+                      color: kWhite,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       formattedDate,
                       style: const TextStyle(
-                          color: kPrimaryColor, fontWeight: FontWeight.bold),
+                          color: kCardBackgroundColor,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   // const SizedBox(width: 8),
@@ -107,19 +108,30 @@ Widget eventWidget({
               Row(
                 children: [
                   Expanded(
-                      child: customButton(
-                    label: 'Register Now',
+                      child: ElevatedButton(
                     onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kPrimaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 15),
+                    ),
+                    child: const Text(
+                      'Register Now',
+                      style: TextStyle(color: kWhite),
+                    ),
                   )),
                   const SizedBox(width: 10),
                   Container(
                     decoration: BoxDecoration(
-                      color: kWhite,
+                      color: kStrokeColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    padding: const EdgeInsets.all(8),
-                    child:
-                        const Icon(Icons.bookmark_border, color: Colors.black),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
+                    child: const Icon(Icons.bookmark_border, color: kWhite),
                   ),
                 ],
               ),

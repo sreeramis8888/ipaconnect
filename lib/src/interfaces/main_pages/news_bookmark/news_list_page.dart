@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/news_api/news_api_service.dart';
 import 'package:ipaconnect/src/data/utils/get_time_ago.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
@@ -18,9 +19,9 @@ class NewsListPage extends ConsumerWidget {
     final asyncNewsModel = ref.watch(newsProvider);
 
     return Scaffold(
-        backgroundColor: kWhite,
+        backgroundColor: kBackgroundColor,
         appBar: AppBar(
-          backgroundColor: kWhite,
+          backgroundColor: kBackgroundColor,
           scrolledUnderElevation: 0,
           titleSpacing: 0,
           title: Padding(
@@ -31,7 +32,8 @@ class NewsListPage extends ConsumerWidget {
                 SizedBox(width: 8),
                 Text(
                   "NewsModel",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold, color: kWhite),
                 ),
               ],
             ),
@@ -134,12 +136,18 @@ class NewsListPage extends ConsumerWidget {
               );
             } else {
               return Center(
-                child: Text('No NewsModel'),
+                child: Text(
+                  'No News',
+                  style: kBodyTitleB,
+                ),
               );
             }
           },
           loading: () => const Center(child: LoadingAnimation()),
-          error: (error, stackTrace) => const Text('No NewsModel'),
+          error: (error, stackTrace) => Text(
+            'No News',
+            style: kBodyTitleB,
+          ),
         ));
   }
 }

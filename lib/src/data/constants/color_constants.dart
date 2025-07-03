@@ -4,6 +4,7 @@ const Color kPrimaryColor = Color(0xFF0D74BC);
 const Color kBackgroundColor = Color(0xFF0D0F22);
 const Color kCardBackgroundColor = Color(0xFF021730);
 const Color kPrimaryLightColor = Color(0xFFEEF1FF);
+const Color kStrokeColor = Color(0xFF0D2A4D);
 
 const Color kTertiary = Color(0xFFE8EAED);
 const Color kInputFieldcolor = Color(0xFF1C1E4D);

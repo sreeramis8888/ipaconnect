@@ -16,7 +16,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'PhoneNumber':
       return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     case 'RegistrationPage':
-      return MaterialPageRoute(builder: (context) => RegistrationPage());
+          String phone = settings?.arguments as String;
+      return MaterialPageRoute(builder: (context) => RegistrationPage(phone: phone,));
     case 'ApprovalWaitingPage':
       return MaterialPageRoute(builder: (context) => ApprovalWaitingPage());
     // case 'PhoneNumber':

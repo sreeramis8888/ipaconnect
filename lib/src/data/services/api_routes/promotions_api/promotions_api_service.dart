@@ -23,7 +23,7 @@ class PromotionsApiService {
       final List<dynamic> data = response.data!['data'];
       return data.map((json) => Promotion.fromJson(json)).toList();
     } else {
-      throw Exception(response.message ?? 'Failed to fetch promotions');
+      return [];
     }
   }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:shimmer/shimmer.dart';
+
 
 Widget buildShimmerPromotionsColumn({
   required BuildContext context,
@@ -7,15 +9,9 @@ Widget buildShimmerPromotionsColumn({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      SizedBox(
-        height: 90,
-      ),
-      shimmerTop(
-        context: context,
-      ),
-      SizedBox(
-        height: 20,
-      ),
+      const SizedBox(height: 90),
+      shimmerTop(context: context),
+      const SizedBox(height: 20),
       shimmerBanner(context: context),
       const SizedBox(height: 16),
       shimmerNotice(context: context),
@@ -32,32 +28,28 @@ Widget shimmerTop({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      // Toolbar with shimmer for the small circle (Image.asset)
-
       const SizedBox(height: 20),
-      // Shimmer for the welcome text
       Padding(
         padding: const EdgeInsets.only(left: 15, top: 10),
         child: Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+          baseColor: kCardBackgroundColor,
+          highlightColor: kPrimaryLightColor,
           child: Container(
-            height: 25, // Approximate height for the text
-            width: 150, // Width for "Welcome,"
-            color: Colors.grey,
+            height: 25,
+            width: 150,
+            color: kCardBackgroundColor,
           ),
         ),
       ),
-      // Conditional shimmer for the admin type
       Padding(
         padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
         child: Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+          baseColor: kCardBackgroundColor,
+          highlightColor: kPrimaryLightColor,
           child: Container(
-            height: 20, // Approximate height for the text
-            width: 250, // Width for "user.name - (adminType)"
-            color: Colors.grey,
+            height: 20,
+            width: 250,
+            color: kCardBackgroundColor,
           ),
         ),
       ),
@@ -71,13 +63,13 @@ Widget shimmerBanner({
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kPrimaryLightColor,
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 175,
         decoration: BoxDecoration(
-          color: Colors.grey[300],
+          color: kCardBackgroundColor,
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
@@ -91,13 +83,13 @@ Widget shimmerNotice({
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kPrimaryLightColor,
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.grey[300],
+          color: kCardBackgroundColor,
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
@@ -111,13 +103,13 @@ Widget shimmerPoster({
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kPrimaryLightColor,
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 400,
         decoration: BoxDecoration(
-          color: Colors.grey[300],
+          color: kCardBackgroundColor,
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),

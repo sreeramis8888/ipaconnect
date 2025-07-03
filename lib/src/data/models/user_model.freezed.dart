@@ -25,7 +25,6 @@ mixin _$UserModel {
   String? get image;
   String? get phone;
   String? get fcm;
-  String? get otp;
   @JsonKey(name: 'proffession')
   String? get profession;
   String? get location;
@@ -39,6 +38,8 @@ mixin _$UserModel {
   String? get role;
   DateTime? get createdAt;
   DateTime? get updatedAt;
+  @JsonKey(name: 'reject_reason')
+  String? get rejectReason;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -64,7 +65,6 @@ mixin _$UserModel {
             (identical(other.image, image) || other.image == image) &&
             (identical(other.phone, phone) || other.phone == phone) &&
             (identical(other.fcm, fcm) || other.fcm == fcm) &&
-            (identical(other.otp, otp) || other.otp == otp) &&
             (identical(other.profession, profession) ||
                 other.profession == profession) &&
             (identical(other.location, location) ||
@@ -81,7 +81,9 @@ mixin _$UserModel {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.rejectReason, rejectReason) ||
+                other.rejectReason == rejectReason));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -96,7 +98,6 @@ mixin _$UserModel {
         image,
         phone,
         fcm,
-        otp,
         profession,
         location,
         password,
@@ -106,12 +107,13 @@ mixin _$UserModel {
         isAdmin,
         role,
         createdAt,
-        updatedAt
+        updatedAt,
+        rejectReason
       ]);
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, uid: $uid, memberId: $memberId, email: $email, image: $image, phone: $phone, fcm: $fcm, otp: $otp, profession: $profession, location: $location, password: $password, hierarchy: $hierarchy, status: $status, isIpaMember: $isIpaMember, isAdmin: $isAdmin, role: $role, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserModel(id: $id, name: $name, uid: $uid, memberId: $memberId, email: $email, image: $image, phone: $phone, fcm: $fcm, profession: $profession, location: $location, password: $password, hierarchy: $hierarchy, status: $status, isIpaMember: $isIpaMember, isAdmin: $isAdmin, role: $role, createdAt: $createdAt, updatedAt: $updatedAt, rejectReason: $rejectReason)';
   }
 }
 
@@ -129,7 +131,6 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String? image,
       String? phone,
       String? fcm,
-      String? otp,
       @JsonKey(name: 'proffession') String? profession,
       String? location,
       String? password,
@@ -139,7 +140,8 @@ abstract mixin class $UserModelCopyWith<$Res> {
       @JsonKey(name: 'is_admin') bool isAdmin,
       String? role,
       DateTime? createdAt,
-      DateTime? updatedAt});
+      DateTime? updatedAt,
+      @JsonKey(name: 'reject_reason') String? rejectReason});
 }
 
 /// @nodoc
@@ -162,7 +164,6 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? image = freezed,
     Object? phone = freezed,
     Object? fcm = freezed,
-    Object? otp = freezed,
     Object? profession = freezed,
     Object? location = freezed,
     Object? password = freezed,
@@ -173,6 +174,7 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
     Object? role = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? rejectReason = freezed,
   }) {
     return _then(_self.copyWith(
       id: freezed == id
@@ -207,10 +209,6 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
           ? _self.fcm
           : fcm // ignore: cast_nullable_to_non_nullable
               as String?,
-      otp: freezed == otp
-          ? _self.otp
-          : otp // ignore: cast_nullable_to_non_nullable
-              as String?,
       profession: freezed == profession
           ? _self.profession
           : profession // ignore: cast_nullable_to_non_nullable
@@ -251,6 +249,10 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
           ? _self.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      rejectReason: freezed == rejectReason
+          ? _self.rejectReason
+          : rejectReason // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -267,7 +269,6 @@ class _UserModel implements UserModel {
       this.image,
       this.phone,
       this.fcm,
-      this.otp,
       @JsonKey(name: 'proffession') this.profession,
       this.location,
       this.password,
@@ -277,7 +278,8 @@ class _UserModel implements UserModel {
       @JsonKey(name: 'is_admin') this.isAdmin = false,
       this.role,
       this.createdAt,
-      this.updatedAt});
+      this.updatedAt,
+      @JsonKey(name: 'reject_reason') this.rejectReason});
   factory _UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
@@ -299,8 +301,6 @@ class _UserModel implements UserModel {
   final String? phone;
   @override
   final String? fcm;
-  @override
-  final String? otp;
   @override
   @JsonKey(name: 'proffession')
   final String? profession;
@@ -324,6 +324,9 @@ class _UserModel implements UserModel {
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
+  @override
+  @JsonKey(name: 'reject_reason')
+  final String? rejectReason;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -354,7 +357,6 @@ class _UserModel implements UserModel {
             (identical(other.image, image) || other.image == image) &&
             (identical(other.phone, phone) || other.phone == phone) &&
             (identical(other.fcm, fcm) || other.fcm == fcm) &&
-            (identical(other.otp, otp) || other.otp == otp) &&
             (identical(other.profession, profession) ||
                 other.profession == profession) &&
             (identical(other.location, location) ||
@@ -371,7 +373,9 @@ class _UserModel implements UserModel {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt));
+                other.updatedAt == updatedAt) &&
+            (identical(other.rejectReason, rejectReason) ||
+                other.rejectReason == rejectReason));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -386,7 +390,6 @@ class _UserModel implements UserModel {
         image,
         phone,
         fcm,
-        otp,
         profession,
         location,
         password,
@@ -396,12 +399,13 @@ class _UserModel implements UserModel {
         isAdmin,
         role,
         createdAt,
-        updatedAt
+        updatedAt,
+        rejectReason
       ]);
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, uid: $uid, memberId: $memberId, email: $email, image: $image, phone: $phone, fcm: $fcm, otp: $otp, profession: $profession, location: $location, password: $password, hierarchy: $hierarchy, status: $status, isIpaMember: $isIpaMember, isAdmin: $isAdmin, role: $role, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserModel(id: $id, name: $name, uid: $uid, memberId: $memberId, email: $email, image: $image, phone: $phone, fcm: $fcm, profession: $profession, location: $location, password: $password, hierarchy: $hierarchy, status: $status, isIpaMember: $isIpaMember, isAdmin: $isAdmin, role: $role, createdAt: $createdAt, updatedAt: $updatedAt, rejectReason: $rejectReason)';
   }
 }
 
@@ -422,7 +426,6 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String? image,
       String? phone,
       String? fcm,
-      String? otp,
       @JsonKey(name: 'proffession') String? profession,
       String? location,
       String? password,
@@ -432,7 +435,8 @@ abstract mixin class _$UserModelCopyWith<$Res>
       @JsonKey(name: 'is_admin') bool isAdmin,
       String? role,
       DateTime? createdAt,
-      DateTime? updatedAt});
+      DateTime? updatedAt,
+      @JsonKey(name: 'reject_reason') String? rejectReason});
 }
 
 /// @nodoc
@@ -455,7 +459,6 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? image = freezed,
     Object? phone = freezed,
     Object? fcm = freezed,
-    Object? otp = freezed,
     Object? profession = freezed,
     Object? location = freezed,
     Object? password = freezed,
@@ -466,6 +469,7 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
     Object? role = freezed,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
+    Object? rejectReason = freezed,
   }) {
     return _then(_UserModel(
       id: freezed == id
@@ -500,10 +504,6 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
           ? _self.fcm
           : fcm // ignore: cast_nullable_to_non_nullable
               as String?,
-      otp: freezed == otp
-          ? _self.otp
-          : otp // ignore: cast_nullable_to_non_nullable
-              as String?,
       profession: freezed == profession
           ? _self.profession
           : profession // ignore: cast_nullable_to_non_nullable
@@ -544,6 +544,10 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
           ? _self.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
               as DateTime?,
+      rejectReason: freezed == rejectReason
+          ? _self.rejectReason
+          : rejectReason // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
