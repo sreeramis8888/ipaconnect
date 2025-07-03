@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
@@ -16,10 +17,15 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'PhoneNumber':
       return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     case 'RegistrationPage':
-          String phone = settings?.arguments as String;
-      return MaterialPageRoute(builder: (context) => RegistrationPage(phone: phone,));
+      String phone = settings?.arguments as String;
+      return MaterialPageRoute(
+          builder: (context) => RegistrationPage(
+                phone: phone,
+              ));
     case 'ApprovalWaitingPage':
       return MaterialPageRoute(builder: (context) => ApprovalWaitingPage());
+    case 'CategoryPage':
+      return MaterialPageRoute(builder: (context) => Categorypage());
     // case 'PhoneNumber':
     //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     // case 'MainPage':
