@@ -49,7 +49,7 @@ class BusinessCategoriesPage extends StatelessWidget {
                     ),
                     tabs: [
                       Tab(text: "Business Category"),
-                      Tab(text: "Job Search"),
+                      Tab(text: "Job Profiles"),
                     ],
                   ),
                 ),

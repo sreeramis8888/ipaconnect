@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/news_model.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_backButton.dart';
 import 'package:shimmer/shimmer.dart';
 import 'bookmark_page.dart';
 
@@ -37,18 +38,20 @@ class NewsModelDetailView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-        backgroundColor: kWhite,
+        backgroundColor: kBackgroundColor,
         appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            "NewsModel",
-            style: TextStyle(fontSize: 17),
-          ),
-          backgroundColor: kWhite,
+          backgroundColor: kBackgroundColor,
           scrolledUnderElevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.all(8),
+            child: PrimaryBackButton(),
+          ),
           actions: [
             IconButton(
-              icon: Icon(Icons.bookmark_border),
+              icon: Icon(
+                Icons.bookmark_border,
+                color: kWhite,
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -122,8 +125,8 @@ class _NewsModelDetailContentViewState
                 children: [
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                          color: Color.fromARGB(255, 224, 219, 219)),
+                      backgroundColor: kCardBackgroundColor,
+                      side: const BorderSide(color: kStrokeColor),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -141,18 +144,17 @@ class _NewsModelDetailContentViewState
                     },
                     child: const Row(
                       children: [
-                        Icon(Icons.arrow_back, color: kPrimaryColor),
+                        Icon(Icons.arrow_back, color: kWhite),
                         SizedBox(width: 8),
-                        Text('Previous',
-                            style: TextStyle(color: kPrimaryColor)),
+                        Text('Previous', style: TextStyle(color: kWhite)),
                       ],
                     ),
                   ),
                   SizedBox(width: 10),
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                          color: Color.fromARGB(255, 224, 219, 219)),
+                      backgroundColor: kCardBackgroundColor,
+                      side: const BorderSide(color: kStrokeColor),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -170,9 +172,9 @@ class _NewsModelDetailContentViewState
                     },
                     child: const Row(
                       children: [
-                        Text('Next', style: TextStyle(color: kPrimaryColor)),
+                        Text('Next', style: TextStyle(color: kWhite)),
                         SizedBox(width: 8),
-                        Icon(Icons.arrow_forward, color: kPrimaryColor),
+                        Icon(Icons.arrow_forward, color: kWhite),
                       ],
                     ),
                   ),
@@ -210,49 +212,29 @@ class NewsModelContent extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.network(
-                      newsItem.media ?? '',
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return ShimmerLoadingEffect(
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return ShimmerLoadingEffect(
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    top: 16,
-                    right: 16,
-                    child: IconButton(
-                      icon: Icon(
-                        isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: isBookmarked ? kPrimaryColor : kWhite,
-                        size: 28,
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.network(
+                  newsItem.media ?? '',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return ShimmerLoadingEffect(
+                      child: Container(
+                        width: double.infinity,
+                        color: Colors.grey[300],
                       ),
-                      onPressed: () {
-                        ref
-                            .read(bookmarkedNewsModelProvider.notifier)
-                            .toggleBookmark(newsItem.id!);
-                      },
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return ShimmerLoadingEffect(
+                      child: Container(
+                        width: double.infinity,
+                        color: Colors.grey[300],
+                      ),
+                    );
+                  },
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -305,12 +287,11 @@ class NewsModelContent extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      newsItem.content ?? '',
-                      style: kBodyTitleR.copyWith(
-                        height: 1.5,
-                      ),
-                    ),
+                    Text(newsItem.content ?? '',
+                        style: TextStyle(
+                            color: kSecondaryTextColor,
+                            fontWeight: FontWeight.w300,
+                            fontSize: 15)),
                   ],
                 ),
               ),

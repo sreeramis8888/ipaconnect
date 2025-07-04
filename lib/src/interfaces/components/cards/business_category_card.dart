@@ -56,8 +56,8 @@ class CategoryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 74,
-                  height: 74,
+                  width: 64,
+                  height: 64,
                   child: Center(
                     child: ClipOval(
                       child: Image.network(
@@ -67,12 +67,12 @@ class CategoryCard extends StatelessWidget {
 
                           return ClipOval(
                               child: ShimmerContainer(
-                            width: 74,
-                            height: 74,
+                            width: 64,
+                            height: 64,
                           ));
                         },
-                        width: 74,
-                        height: 74,
+                        width: 64,
+                        height: 64,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(

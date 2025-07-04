@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -26,7 +25,7 @@ class PrimaryBackButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Transform.translate(
-            offset: Offset(3, 0),
+            offset: Offset(4, 0),
             child: SvgPicture.asset(
               'assets/svg/icons/arrow_back_ios.svg',
               color: Color(0xFFAEB9E1),

@@ -86,49 +86,46 @@ class NewsListPage extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search NewsModel',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            Icons.filter_alt_outlined,
-                            color: Colors.red[400],
-                            size: 22,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            cursorColor: kWhite,
+                            style: kBodyTitleR.copyWith(
+                              fontSize: 14,
+                              color: kSecondaryTextColor,
+                            ),
+                            decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 16),
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                size: 20,
+                                color: kSecondaryTextColor,
+                              ),
+                              hintText: 'Search Products',
+                              hintStyle: kBodyTitleR.copyWith(
+                                fontSize: 14,
+                                color: kSecondaryTextColor,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
                           ),
-                          onPressed: () {
-                            // Filter action
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide:
-                              BorderSide(color: Colors.grey[300]!, width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide:
-                              BorderSide(color: Colors.grey[300]!, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide:
-                              BorderSide(color: Colors.red[400]!, width: 1.5),
-                        ),
-                        filled: true,
-                        fillColor: kWhite,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      ),
+                        )
+                      ],
                     ),
                   ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: news.length,
                       itemBuilder: (context, index) {
-                        return NewsModelCard(
-                            news: news[index], allNewsModel: news);
+                        return NewsCard(news: news[index], allNewsModel: news);
                       },
                     ),
                   ),
@@ -152,12 +149,11 @@ class NewsListPage extends ConsumerWidget {
   }
 }
 
-class NewsModelCard extends ConsumerWidget {
+class NewsCard extends ConsumerWidget {
   final NewsModel news;
   final List<NewsModel> allNewsModel;
 
-  const NewsModelCard(
-      {Key? key, required this.news, required this.allNewsModel})
+  const NewsCard({Key? key, required this.news, required this.allNewsModel})
       : super(key: key);
 
   @override
@@ -180,8 +176,8 @@ class NewsModelCard extends ConsumerWidget {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-            color: kWhite,
-            border: Border.all(color: kTertiary),
+            color: kCardBackgroundColor,
+            border: Border.all(color: kStrokeColor),
             borderRadius: BorderRadius.circular(10)),
         child: Row(
           children: [

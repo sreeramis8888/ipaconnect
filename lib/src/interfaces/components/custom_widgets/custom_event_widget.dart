@@ -93,6 +93,7 @@ Widget eventWidget({
                     child: Text(
                       formattedDate,
                       style: const TextStyle(
+                          fontSize: 14,
                           color: kCardBackgroundColor,
                           fontWeight: FontWeight.bold),
                     ),

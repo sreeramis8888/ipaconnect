@@ -126,7 +126,7 @@ class BookmarkPage extends ConsumerWidget {
                       );
                     }
                   },
-                  child: BookmarkNewsModelCard(
+                  child: BookmarkNewsCard(
                     news: newsItem,
                     onBookmarkRemoved: () {
                       ref
@@ -141,11 +141,11 @@ class BookmarkPage extends ConsumerWidget {
   }
 }
 
-class BookmarkNewsModelCard extends StatelessWidget {
+class BookmarkNewsCard extends StatelessWidget {
   final NewsModel news;
   final VoidCallback onBookmarkRemoved;
 
-  const BookmarkNewsModelCard({
+  const BookmarkNewsCard({
     Key? key,
     required this.news,
     required this.onBookmarkRemoved,

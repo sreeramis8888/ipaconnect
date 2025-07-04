@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
@@ -25,7 +26,9 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'ApprovalWaitingPage':
       return MaterialPageRoute(builder: (context) => ApprovalWaitingPage());
     case 'CategoryPage':
-      return MaterialPageRoute(builder: (context) => Categorypage());
+      BusinessCategoryModel category =
+          settings?.arguments as BusinessCategoryModel;
+      return MaterialPageRoute(builder: (context) => Categorypage(category:category ,));
     // case 'PhoneNumber':
     //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     // case 'MainPage':

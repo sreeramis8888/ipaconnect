@@ -31,34 +31,6 @@ class BusinesscategoryApiService {
       return [];
     }
   }
-
-  Future<ConversationModel?> create1to1Conversation(String recipientId) async {
-    final response = await _apiService.post('/chat/conversations', {
-      'recipient_id': recipientId,
-    });
-    log(name: 'Recipient_id', recipientId);
-    log(response.data.toString());
-    log(response.data.toString());
-    if (response.success && response.data != null) {
-      return ConversationModel.fromJson(response.data!['data']);
-    } else {
-      return null;
-    }
-  }
-
-  Future<bool> markDelivered(String messageId) async {
-    final response = await _apiService.patch('/chat/messages/delivered', {
-      'message_id': messageId,
-    });
-    return response.success;
-  }
-
-  Future<bool> markSeen(String messageId) async {
-    final response = await _apiService.patch('/chat/messages/seen', {
-      'message_id': messageId,
-    });
-    return response.success;
-  }
 }
 
 @riverpod

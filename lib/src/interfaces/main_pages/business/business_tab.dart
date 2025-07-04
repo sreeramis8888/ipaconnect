@@ -22,10 +22,10 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _fetchInitialUsers();
+    _fetchInitialCategories();
   }
 
-  Future<void> _fetchInitialUsers() async {
+  Future<void> _fetchInitialCategories() async {
     await ref
         .read(businessCategoryNotifierProvider.notifier)
         .fetchMoreCategories();
@@ -71,7 +71,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                       size: 20,
                       color: kSecondaryTextColor,
                     ),
-                    hintText: 'Search Members',
+                    hintText: 'Search Categories',
                     hintStyle: kBodyTitleR.copyWith(
                       fontSize: 14,
                       color: kSecondaryTextColor,
@@ -125,7 +125,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                               onTap: () {
                                 NavigationService navigationService =
                                     NavigationService();
-                                navigationService.pushNamed('CategoryPage');
+                                navigationService.pushNamed('CategoryPage',arguments: category);
                               },
                               child: CategoryCard(
                                 title: category.name,

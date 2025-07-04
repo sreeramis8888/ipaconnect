@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CompanyCard extends StatelessWidget {
@@ -10,6 +13,7 @@ class CompanyCard extends StatelessWidget {
   final String location;
   final bool isActive;
   final String? imageUrl;
+  final VoidCallback? onViewDetails;
 
   const CompanyCard({
     Key? key,
@@ -20,13 +24,14 @@ class CompanyCard extends StatelessWidget {
     required this.location,
     required this.isActive,
     this.imageUrl,
+    this.onViewDetails,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF2A2D3E),
+        color: kCardBackgroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -43,90 +48,64 @@ class CompanyCard extends StatelessWidget {
                 topRight: Radius.circular(16),
               ),
             ),
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: Image.network(
-                    imageUrl ?? '',
-                    fit: BoxFit.cover,
-                    height: 120,
-                    width: double.infinity,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Shimmer.fromColors(
-                        baseColor: kCardBackgroundColor,
-                        highlightColor: kInputFieldcolor,
-                        child: Container(
-                          height: 120,
-                          color: kCardBackgroundColor,
-                        ),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Shimmer.fromColors(
-                        baseColor: kCardBackgroundColor,
-                        highlightColor: kPrimaryLightColor,
-                        child: Container(
-                          height: 120,
-                          color: kCardBackgroundColor,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.3),
-                      shape: BoxShape.circle,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              child: Image.network(
+                imageUrl ?? '',
+                fit: BoxFit.cover,
+                height: 120,
+                width: double.infinity,
+                errorBuilder: (context, error, stackTrace) {
+                  return Shimmer.fromColors(
+                    baseColor: kCardBackgroundColor,
+                    highlightColor: kInputFieldcolor,
+                    child: Container(
+                      height: 120,
+                      color: kCardBackgroundColor,
                     ),
-                    child: const Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
-                      size: 20,
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Shimmer.fromColors(
+                    baseColor: kCardBackgroundColor,
+                    highlightColor: kPrimaryLightColor,
+                    child: Container(
+                      height: 120,
+                      color: kCardBackgroundColor,
                     ),
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
           ),
-
-          // Company Details
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Company Name and Active Status
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(
-                        companyName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text(companyName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: kSubHeadingB),
                     ),
                     if (isActive)
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Color(0xFF05C168).withOpacity(.3),
+                          ),
+                          color: Color(0xFF05C168).withOpacity(.2),
+                          borderRadius: BorderRadius.circular(5),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -140,14 +119,9 @@ class CompanyCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 4),
-                            const Text(
-                              'Active',
-                              style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            Text('Active',
+                                style: kSmallerTitleR.copyWith(
+                                    fontSize: 10, color: Color(0xFF14CA74))),
                           ],
                         ),
                       ),
@@ -159,23 +133,18 @@ class CompanyCard extends StatelessWidget {
                 // Rating
                 Row(
                   children: [
-                    Text(
-                      rating.toString(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    Text(rating.toString(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style:
+                            kSmallTitleR.copyWith(color: kSecondaryTextColor)),
                     const SizedBox(width: 4),
                     ...List.generate(
                       3,
                       (index) => const Icon(
                         Icons.star,
                         color: Colors.amber,
-                        size: 16,
+                        size: 12,
                       ),
                     ),
                   ],
@@ -186,8 +155,8 @@ class CompanyCard extends StatelessWidget {
                 // Position
                 Row(
                   children: [
-                    const Icon(Icons.person_outline,
-                        color: Colors.grey, size: 16),
+                    const Icon(FontAwesomeIcons.userTie,
+                        color: kSecondaryTextColor, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -195,7 +164,7 @@ class CompanyCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Colors.grey,
+                          color: kSecondaryTextColor,
                           fontSize: 14,
                         ),
                       ),
@@ -208,8 +177,8 @@ class CompanyCard extends StatelessWidget {
                 // Industry
                 Row(
                   children: [
-                    const Icon(Icons.business_outlined,
-                        color: Colors.grey, size: 16),
+                    const Icon(Icons.business_center_sharp,
+                        color: kSecondaryTextColor, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -217,7 +186,7 @@ class CompanyCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Colors.grey,
+                          color: kSecondaryTextColor,
                           fontSize: 14,
                         ),
                       ),
@@ -230,8 +199,8 @@ class CompanyCard extends StatelessWidget {
                 // Location
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined,
-                        color: Colors.grey, size: 16),
+                    const Icon(Icons.location_on_rounded,
+                        color: kSecondaryTextColor, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -239,7 +208,7 @@ class CompanyCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          color: Colors.grey,
+                          color: kSecondaryTextColor,
                           fontSize: 14,
                         ),
                       ),
@@ -251,34 +220,15 @@ class CompanyCard extends StatelessWidget {
 
                 // View Details Button
                 SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E88E5),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    width: double.infinity,
+                    child: customButton(
+                      icon: Icon(
+                        Icons.remove_red_eye,
+                        color: kWhite,
                       ),
-                      elevation: 0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(Icons.visibility_outlined, size: 18),
-                        SizedBox(width: 8),
-                        Text(
-                          'View Details',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                      label: 'View Details',
+                      onPressed: onViewDetails,
+                    )),
               ],
             ),
           ),

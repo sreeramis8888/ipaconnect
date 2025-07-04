@@ -37,10 +37,10 @@ class _FeedViewState extends ConsumerState<FeedView> {
     super.initState();
 
     _scrollController.addListener(_onScroll);
-    _fetchInitialUsers();
+    _fetchInitialFeeds();
   }
 
-  Future<void> _fetchInitialUsers() async {
+  Future<void> _fetchInitialFeeds() async {
     await ref.read(feedNotifierProvider.notifier).fetchMoreFeed();
   }
 
@@ -192,34 +192,34 @@ class _FeedViewState extends ConsumerState<FeedView> {
                 ),
               ],
             ),
-            Positioned(
-              right: 30,
-              bottom: 30,
-              child: GestureDetector(
-                onTap: () {
-                  // if (subscriptionType != 'free') {
-                  _openModalSheet(sheet: 'post');
-                  // } else {
-                  //   showDialog(
-                  //     context: context,
-                  //     builder: (context) => const UpgradeDialog(),
-                  //   );
-                  // }
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: kPrimaryColor,
-                  ),
-                  child: Icon(
-                    Icons.add,
-                    color: kWhite,
-                    size: 27,
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   right: 30,
+            //   bottom: 30,
+            //   child: GestureDetector(
+            //     onTap: () {
+            //       // if (subscriptionType != 'free') {
+            //       _openModalSheet(sheet: 'post');
+            //       // } else {
+            //       //   showDialog(
+            //       //     context: context,
+            //       //     builder: (context) => const UpgradeDialog(),
+            //       //   );
+            //       // }
+            //     },
+            //     child: Container(
+            //       padding: EdgeInsets.all(10),
+            //       decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(10),
+            //         color: kPrimaryColor,
+            //       ),
+            //       child: Icon(
+            //         Icons.add,
+            //         color: kWhite,
+            //         size: 27,
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
         // floatingActionButton: FloatingActionButton.extended(
