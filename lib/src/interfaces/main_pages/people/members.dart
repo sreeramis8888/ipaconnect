@@ -643,7 +643,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                     child: Column(
                       children: [
                         ListTile(
-                          tileColor: kStrokeColor,
+                          tileColor: kCardBackgroundColor,
                           leading: SizedBox(
                             height: 40,
                             width: 40,
@@ -701,8 +701,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                     ref.read(chatApiServiceProvider);
                                 final conversation = await chatApi
                                     .create1to1Conversation(userId);
-                                Navigator.of(context)
-                                    .pop();
+                                Navigator.of(context).pop();
                                 if (conversation != null) {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
@@ -724,7 +723,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                           ),
                         ),
                         const Divider(
-                          thickness: .5,
+                          thickness: .2,
                           color: kPrimaryColor,
                           height: 1,
                         ),

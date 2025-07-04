@@ -17,6 +17,7 @@ import 'package:ipaconnect/src/interfaces/components/custom_widgets/board_of_dir
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/shimmers/promotion_shimmers.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -561,7 +562,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                   );
                 },
-                loading: () => Center(child: LoadingAnimation()),
+                loading: () => Center(child: buildShimmerPromotionsColumn(context: context)),
                 error: (error, stackTrace) {
                   log(error.toString(), name: 'PROMOTION FETCH ERROR');
                   return Center(child: Text('NO PROMOTIONS YET'));

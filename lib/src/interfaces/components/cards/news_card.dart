@@ -11,7 +11,7 @@ Widget newsCard({
   return GestureDetector(
     onTap: onTap,
     child: Card(
-      color: kWhite,
+      color: kCardBackgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
@@ -42,7 +42,7 @@ Widget newsCard({
             child: Text(
               title,
               style: kSmallTitleR,
-              maxLines: 2, 
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),

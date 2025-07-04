@@ -264,10 +264,10 @@ class _MainPageState extends ConsumerState<MainPage> {
           // );
         });
         // Return a loading screen while navigation occurs
-        return const Scaffold(
+        return Scaffold(
           backgroundColor: kBackgroundColor,
           body: Center(
-            child: LoadingAnimation(),
+            child: buildShimmerPromotionsColumn(context: context),
           ),
         );
     }
@@ -283,7 +283,8 @@ class _MainPageState extends ConsumerState<MainPage> {
         loading: () {
           return Scaffold(
               backgroundColor: kBackgroundColor,
-              body: buildShimmerPromotionsColumn(context: context));
+              body: SingleChildScrollView(
+                  child: buildShimmerPromotionsColumn(context: context)));
         },
         error: (error, stackTrace) {
           log('im inside details main page error $error $stackTrace');
