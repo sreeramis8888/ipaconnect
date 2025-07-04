@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/notifiers/job_profiles_notifier.dart';
 import 'package:ipaconnect/src/data/models/job_profile_model.dart';
+import 'package:ipaconnect/src/interfaces/components/cards/job_profile_card.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class JobSearchTab extends ConsumerStatefulWidget {
@@ -94,154 +95,24 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 8.0),
                         itemCount: jobProfiles.length + (isLoading ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == jobProfiles.length && isLoading) {
-                            return const Center(
-                                child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(),
-                            ));
-                          }
-                          if (index < jobProfiles.length) {
-                            final JobProfileModel profile = jobProfiles[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 20.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: kCardBackgroundColor,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          profile.name ?? '-',
-                                          style: kHeadTitleSB,
-                                        ),
-                                        Text(
-                                          profile.updatedAt != null
-                                              ? 'Resume Updated On: '
-                                                  '${profile.updatedAt!.day.toString().padLeft(2, '0')}/'
-                                                  '${profile.updatedAt!.month.toString().padLeft(2, '0')}/'
-                                                  '${profile.updatedAt!.year}'
-                                              : '',
-                                          style: kBodyTitleR.copyWith(
-                                            color: kSecondaryTextColor,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      profile.designation ?? '-',
-                                      style: kBodyTitleR.copyWith(
-                                        color: kSecondaryTextColor,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    if (profile.experience != null)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 6),
-                                        decoration: BoxDecoration(
-                                          color: kBlue.withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          profile.experience!,
-                                          style: kBodyTitleSB.copyWith(
-                                            color: kWhite,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ),
-                                    const SizedBox(height: 12),
-                                    if (profile.noticePeriod != null)
-                                      Text(
-                                        profile.noticePeriod!,
-                                        style: kBodyTitleR.copyWith(
-                                          color: kSecondaryTextColor,
-                                          fontSize: 15,
-                                        ),
-                                      ),
-                                    const SizedBox(height: 8),
-                                    if (profile.email != null)
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.email,
-                                              color: kWhite, size: 18),
-                                          const SizedBox(width: 8),
-                                          Text(profile.email!,
-                                              style: kBodyTitleR.copyWith(
-                                                  fontSize: 14)),
-                                        ],
-                                      ),
-                                    if (profile.phone != null)
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.phone,
-                                              color: kWhite, size: 18),
-                                          const SizedBox(width: 8),
-                                          Text(profile.phone!,
-                                              style: kBodyTitleR.copyWith(
-                                                  fontSize: 14)),
-                                        ],
-                                      ),
-                                    if (profile.location != null)
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.location_on,
-                                              color: kWhite, size: 18),
-                                          const SizedBox(width: 8),
-                                          Text(profile.location!,
-                                              style: kBodyTitleR.copyWith(
-                                                  fontSize: 14)),
-                                        ],
-                                      ),
-                                    const SizedBox(height: 16),
-                                    Text('Resume',
-                                        style: kBodyTitleR.copyWith(
-                                            color: kSecondaryTextColor,
-                                            fontSize: 14)),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/svg/icons/card_icon.svg',
-                                          width: 32,
-                                          height: 32,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(profile.resume ?? 'CV.pdf',
-                                            style: kBodyTitleSB.copyWith(
-                                                fontSize: 15)),
-                                        const Spacer(),
-                                        IconButton(
-                                          icon: const Icon(
-                                              Icons.download_rounded,
-                                              color: kWhite,
-                                              size: 28),
-                                          onPressed: () {
-                                            // TODO: Implement download logic
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
+                itemBuilder: (context, index) {
+  if (index == jobProfiles.length && isLoading) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+  if (index < jobProfiles.length) {
+    final profile = jobProfiles[index];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: JobProfileCard(profile: profile),
+    );
+  }
+  return const SizedBox.shrink();
+},
                       ),
           ),
         ],
