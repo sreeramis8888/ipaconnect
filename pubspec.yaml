@@ -70,6 +70,9 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   dio: ^5.8.0+1
   open_file: ^3.5.10
+  youtube_player_iframe: ^5.2.1
+  flutter_slider_drawer: 3.0.2
+  flutter_advanced_drawer: 1.5.0
   
 dev_dependencies:
   flutter_test:
@@ -99,5 +102,6 @@ flutter:
     - assets/
     - assets/svg/
     - assets/svg/icons/
+    - assets/svg/icons/menu_icons/
     - assets/svg/icons/nav_icons/
     - .env

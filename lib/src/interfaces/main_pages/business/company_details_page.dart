@@ -5,7 +5,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
 import 'package:ipaconnect/src/data/utils/youtube_player.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_backButton.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
@@ -68,7 +68,9 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               expandedHeight: 210,
               leading: Padding(
                 padding: const EdgeInsets.all(8),
-                child: PrimaryBackButton(),
+                child: CustomRoundButton(offset:  Offset(4, 0),
+                  iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+                ),
               ),
               title: Text(
                 company.name ?? '',

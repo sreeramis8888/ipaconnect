@@ -4,7 +4,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/notifiers/companies_notifier.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_backButton.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/company_card.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/company_details_page.dart';
@@ -59,7 +59,12 @@ class _CategorypageState extends ConsumerState<Categorypage> {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: PrimaryBackButton(),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(offset:  Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
         ),
         title: Text(
           widget.category.name,

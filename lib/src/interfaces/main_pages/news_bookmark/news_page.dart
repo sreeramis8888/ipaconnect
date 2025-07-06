@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/news_model.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_backButton.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:shimmer/shimmer.dart';
 import 'bookmark_page.dart';
 
@@ -44,7 +44,10 @@ class NewsModelDetailView extends ConsumerWidget {
           scrolledUnderElevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8),
-            child: PrimaryBackButton(),
+            child: CustomRoundButton(
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              offset: Offset(4, 0),
+            ),
           ),
           actions: [
             IconButton(
@@ -112,7 +115,7 @@ class _NewsModelDetailContentViewState
                       ref.read(currentNewsIndexProvider.notifier).state = index;
                     },
                     itemBuilder: (context, index) {
-                      return NewsModelContent(
+                      return NewsContent(
                         key: PageStorageKey<int>(index),
                         newsItem: widget.news[index],
                       );
@@ -188,10 +191,10 @@ class _NewsModelDetailContentViewState
   }
 }
 
-class NewsModelContent extends ConsumerWidget {
+class NewsContent extends ConsumerWidget {
   final NewsModel newsItem;
 
-  const NewsModelContent({
+  const NewsContent({
     Key? key,
     required this.newsItem,
   }) : super(key: key);

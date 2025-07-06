@@ -3,14 +3,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_backButton.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/custom_shimmer.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final String category;
   final ProductModel product;
-  const ProductDetailsPage({super.key, required this.product, required this.category});
+  const ProductDetailsPage(
+      {super.key, required this.product, required this.category});
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -43,7 +44,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: PrimaryBackButton(),
+          child: CustomRoundButton(offset:  Offset(4, 0),
+            iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+          ),
         ),
         title: Text('View Product',
             style:
@@ -155,7 +158,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                    widget.category??'',
+                      widget.category ?? '',
                       style: kBodyTitleR.copyWith(
                           color: Colors.white, fontSize: 11),
                     ),

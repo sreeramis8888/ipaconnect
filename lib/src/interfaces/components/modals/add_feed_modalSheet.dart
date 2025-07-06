@@ -192,7 +192,7 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                         selectedImage = null;
 
                         navigationService
-                            .pop(); // Close the dialog after completion
+                            .pop(); 
                         snackbarService.showSnackBar(
                             'Your Post Will Be Reviewed By Admin');
                       } finally {
