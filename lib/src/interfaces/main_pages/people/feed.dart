@@ -20,6 +20,7 @@ import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.d
 import 'package:ipaconnect/src/interfaces/components/modals/add_feed_modalSheet.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:ipaconnect/src/data/services/image_upload.dart';
 import '../../components/custom_widgets/expandable_text.dart';
 
 class FeedView extends ConsumerStatefulWidget {
@@ -61,22 +62,22 @@ class _FeedViewState extends ConsumerState<FeedView> {
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
       if (pickedFile != null) {
-        final File imageFile = File(pickedFile.path);
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CropImageScreen(imageFile: imageFile),
+            builder: (context) => CropImageScreen(
+              imageFile: File(pickedFile.path),
+              width: 3,
+              height: 4,
+            ),
           ),
         );
 
         if (result != null) {
-          final tempDir = await getTemporaryDirectory();
           final timestamp = DateTime.now().millisecondsSinceEpoch;
-          final tempFile = File('${tempDir.path}/cropped_image_$timestamp.jpg');
-          if (!tempFile.existsSync()) {
-            tempFile.createSync(recursive: true);
-          }
-          await tempFile.writeAsBytes(result.bytes);
+          final filePath =
+              await saveUint8ListToFile(result, 'cropped_image_$timestamp.png');
+          final tempFile = File(filePath);
 
           setState(() {
             _feedImage = tempFile;
@@ -96,6 +97,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
     feedContentController.clear();
     _feedImage = null;
     showModalBottomSheet(
+        backgroundColor: kCardBackgroundColor,
         isScrollControlled: true,
         context: context,
         builder: (context) {
@@ -192,34 +194,34 @@ class _FeedViewState extends ConsumerState<FeedView> {
                 ),
               ],
             ),
-            // Positioned(
-            //   right: 30,
-            //   bottom: 30,
-            //   child: GestureDetector(
-            //     onTap: () {
-            //       // if (subscriptionType != 'free') {
-            //       _openModalSheet(sheet: 'post');
-            //       // } else {
-            //       //   showDialog(
-            //       //     context: context,
-            //       //     builder: (context) => const UpgradeDialog(),
-            //       //   );
-            //       // }
-            //     },
-            //     child: Container(
-            //       padding: EdgeInsets.all(10),
-            //       decoration: BoxDecoration(
-            //         borderRadius: BorderRadius.circular(10),
-            //         color: kPrimaryColor,
-            //       ),
-            //       child: Icon(
-            //         Icons.add,
-            //         color: kWhite,
-            //         size: 27,
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Positioned(
+              right: 30,
+              bottom: 30,
+              child: GestureDetector(
+                onTap: () {
+                  // if (subscriptionType != 'free') {
+                  _openModalSheet(sheet: 'post');
+                  // } else {
+                  //   showDialog(
+                  //     context: context,
+                  //     builder: (context) => const UpgradeDialog(),
+                  //   );
+                  // }
+                },
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: kPrimaryColor,
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    color: kWhite,
+                    size: 27,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
         // floatingActionButton: FloatingActionButton.extended(
@@ -388,7 +390,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 30),
           child: Container(
             decoration: const BoxDecoration(
-              color: kWhite,
+              color: kCardBackgroundColor,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(20.0),
                 bottom: Radius.circular(20.0),

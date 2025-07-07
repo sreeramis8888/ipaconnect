@@ -449,10 +449,10 @@ class _BusinessTab extends ConsumerWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: CompanyCard(
+                      userName: company.user?.name ?? '',
                       companyUserId: company.user?.id ?? '',
                       companyName: company.name ?? '',
                       rating: company.rating ?? 0,
-                      position: '',
                       industry: company.category ?? '',
                       location: company.contactInfo?.address ?? '',
                       isActive: company.status == 'active',

@@ -307,7 +307,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                           onTap: () {
                                                             navigationService
                                                                 .pushNamed(
-                                                                    'ViewMoreEvent',
+                                                                    'EventDetails',
                                                                     arguments:
                                                                         event);
                                                           },

@@ -9,7 +9,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.dart';
-import 'package:ipaconnect/src/data/utils/unit8list_to_file.dart' as util_file;
+
 import 'package:ipaconnect/src/data/services/image_upload.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
@@ -145,8 +145,8 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
         ),
       );
       if (cropResult != null && cropResult is Uint8List) {
-        final filePath = await util_file.saveUint8ListToFile(
-            cropResult, 'company_image.jpg');
+        final filePath =
+            await saveUint8ListToFile(cropResult, 'company_image.jpg');
         localImageFile = File(filePath);
         final url = await imageUpload(filePath);
         setState(() {
@@ -865,7 +865,6 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                                   establishedDate?.toIso8601String(),
                               'company_size': companySize,
                               'services': services,
-                              'user': id,
                               'tags': tags,
                               'opening_hours': {
                                 'sunday': sunday,

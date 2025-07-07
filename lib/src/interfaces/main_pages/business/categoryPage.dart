@@ -152,11 +152,11 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                             return Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 10),
-                              child: CompanyCard(
+                              child: CompanyCard(userName: company.user?.name??'',
                                 companyUserId: company.user?.id ?? '',
                                 companyName: company.name ?? '',
                                 rating: 4.9,
-                                position: company.user?.name ?? '',
+                       
                                 industry: company.category ?? '',
                                 location: company.contactInfo?.address ?? '',
                                 isActive:

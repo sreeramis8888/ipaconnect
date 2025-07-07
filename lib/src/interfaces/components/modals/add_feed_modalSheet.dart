@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/feed_api/feed_api_service.dart';
 import 'package:ipaconnect/src/data/services/image_upload.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 
@@ -62,13 +64,7 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Add Business',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    Text('Add Post', style: kHeadTitleB),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => Navigator.of(context).pop(),
@@ -100,7 +96,7 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                             width: double.infinity,
                             height: 110,
                             decoration: BoxDecoration(
-                              color: Colors.grey[200],
+                              color: kStrokeColor,
                               borderRadius: BorderRadius.circular(10),
                               border: state.hasError
                                   ? Border.all(color: Colors.red)
@@ -117,9 +113,7 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                                         SizedBox(height: 10),
                                         Text(
                                           'Upload Image',
-                                          style: TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 102, 101, 101)),
+                                          style: TextStyle(color: kWhite),
                                         ),
                                       ],
                                     ),
@@ -148,8 +142,10 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                   },
                 ),
                 const SizedBox(height: 20),
-                TextFormField(
-                  controller: widget.textController,
+                CustomTextFormField(
+                  backgroundColor: kStrokeColor,
+                  labelText: 'Add Content',
+                  textController: widget.textController,
                   maxLines: ((MediaQuery.sizeOf(context).height) / 150).toInt(),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -157,12 +153,6 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                     }
                     return null;
                   },
-                  decoration: InputDecoration(
-                    hintText: 'Add content',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
@@ -183,16 +173,16 @@ class _ShowAddFeedModalState extends ConsumerState<ShowAddFeedModal> {
                             selectedImage!.path,
                           );
                         }
-                final        feedApiService = ref.watch(feedApiServiceProvider);
-                        await feedApiService. uploadFeed(
+                        final feedApiService =
+                            ref.watch(feedApiServiceProvider);
+                        await feedApiService.uploadFeed(
                           media: mediaUrl,
                           content: widget.textController.text,
                         );
                         widget.textController.clear();
                         selectedImage = null;
 
-                        navigationService
-                            .pop(); 
+                        navigationService.pop();
                         snackbarService.showSnackBar(
                             'Your Post Will Be Reviewed By Admin');
                       } finally {

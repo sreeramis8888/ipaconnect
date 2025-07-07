@@ -10,8 +10,8 @@ import 'package:ipaconnect/src/interfaces/components/dropdown/company_card_optio
 class CompanyCard extends StatelessWidget {
   final String companyName;
   final double rating;
+  final String userName;
   final String companyUserId;
-  final String position;
   final String industry;
   final String location;
   final bool isActive;
@@ -24,14 +24,16 @@ class CompanyCard extends StatelessWidget {
     Key? key,
     required this.companyName,
     required this.rating,
-    required this.position,
+
     required this.industry,
     required this.location,
     required this.isActive,
     this.imageUrl,
     this.onViewDetails,
     this.onEdit,
-    this.onDelete, required this.companyUserId,
+    this.onDelete,
+    required this.companyUserId,
+    required this.userName,
   }) : super(key: key);
 
   @override
@@ -170,7 +172,7 @@ class CompanyCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            position,
+                            userName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -245,7 +247,7 @@ class CompanyCard extends StatelessWidget {
             ],
           ),
         ),
-        if (companyUserId==id)
+        if (companyUserId == id)
           Positioned(
             top: 4,
             right: 8,

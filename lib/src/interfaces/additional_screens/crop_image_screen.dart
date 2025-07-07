@@ -8,8 +8,10 @@ import '../../data/constants/color_constants.dart';
 
 class CropImageScreen extends StatefulWidget {
   final File imageFile;
-
-  const CropImageScreen({super.key, required this.imageFile});
+  final int width;
+  final int height;
+  const CropImageScreen(
+      {super.key, required this.imageFile, this.width = 16, this.height = 9});
 
   @override
   _CropImageScreenState createState() => _CropImageScreenState();
@@ -36,7 +38,6 @@ class _CropImageScreenState extends State<CropImageScreen> {
       _isLoading = true;
     });
 
-    // Method 1: Try the standard approach
     final croppedResult = await controller.onCropImage();
 
     if (croppedResult != null) {
@@ -56,7 +57,7 @@ class _CropImageScreenState extends State<CropImageScreen> {
         ),
         actions: [
           _isLoading
-              ?  Padding(
+              ? Padding(
                   padding: EdgeInsets.all(16.0),
                   child: SizedBox(
                     width: 20,
@@ -83,7 +84,9 @@ class _CropImageScreenState extends State<CropImageScreen> {
                 cropController: controller,
                 image: FileImage(widget.imageFile),
                 shape: CustomCropShape.Ratio,
-                ratio: Ratio(width: 16, height: 9),
+                ratio: Ratio(
+                    width: widget.width.toDouble(),
+                    height: widget.height.toDouble()),
                 borderRadius: 0,
                 canRotate: true,
                 canMove: true,

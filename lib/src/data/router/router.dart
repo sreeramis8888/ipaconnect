@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
+import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/event/event_details.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/event/event_member_list.dart';
+
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
@@ -30,11 +34,16 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'CategoryPage':
       BusinessCategoryModel category =
           settings?.arguments as BusinessCategoryModel;
-      return MaterialPageRoute(builder: (context) => Categorypage(category:category ,));
+      return MaterialPageRoute(
+          builder: (context) => Categorypage(
+                category: category,
+              ));
     case 'ProfilePreview':
-      UserModel user =
-          settings?.arguments as UserModel;
-      return MaterialPageRoute(builder: (context) => ProfilePreview(user:user ,));
+      UserModel user = settings?.arguments as UserModel;
+      return MaterialPageRoute(
+          builder: (context) => ProfilePreview(
+                user: user,
+              ));
     // case 'PhoneNumber':
     //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     // case 'MainPage':
@@ -60,24 +69,24 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //       builder: (context) => ProfilePreviewUsingId(
     //             userId: userId,
     //           ));
-    // case 'ViewMoreEvent':
-    //   Event event = settings?.arguments as Event;
-    //   return MaterialPageRoute(
-    //       builder: (context) => ViewMoreEventPage(
-    //             event: event,
-    //           ));
+    case 'EventDetails':
+      EventsModel event = settings?.arguments as EventsModel;
+      return MaterialPageRoute(
+          builder: (context) => EventDetailsPage(
+                event: event,
+              ));
     // case 'MemberAllocation':
     //   UserModel newUser = settings?.arguments as UserModel;
     //   return MaterialPageRoute(
     //       builder: (context) => AllocateMember(
     //             newUser: newUser,
     //           ));
-    // case 'EventMemberList':
-    //   Event event = settings?.arguments as Event;
-    //   return MaterialPageRoute(
-    //       builder: (context) => EventMemberList(
-    //             event: event,
-    //           ));
+    case 'EventMemberList':
+      EventsModel event = settings?.arguments as EventsModel;
+      return MaterialPageRoute(
+          builder: (context) => EventMemberList(
+                event: event,
+              ));
     // case 'EditUser':
     //   return MaterialPageRoute(builder: (context) => EditUser());
     // case 'IndividualPage':
