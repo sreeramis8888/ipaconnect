@@ -452,10 +452,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                   child: Row(
                                                     children: [
                                                       Text('Latest News',
-                                                          style: kSubHeadingB
-                                                              .copyWith(
-                                                                  color:
-                                                                      kPrimaryColor)),
+                                                          style: kBodyTitleB),
                                                       const Spacer(),
                                                       InkWell(
                                                         onTap: () => ref
@@ -618,11 +615,28 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                   );
                 },
-                loading: () => Center(
-                    child: buildShimmerPromotionsColumn(context: context)),
+                loading: () => SafeArea(
+                  child: Scaffold(
+                    backgroundColor: kBackgroundColor,
+                    body: Container(
+                      decoration: const BoxDecoration(color: kBackgroundColor),
+                      child: SingleChildScrollView(
+                        child: buildShimmerPromotionsColumn(context: context),
+                      ),
+                    ),
+                  ),
+                ),
                 error: (error, stackTrace) {
                   log(error.toString(), name: 'PROMOTION FETCH ERROR');
-                  return Center(child: Text('NO PROMOTIONS YET'));
+                  return SafeArea(
+                    child: Scaffold(
+                      backgroundColor: kBackgroundColor,
+                      body: Container(
+                        decoration: const BoxDecoration(color: kBackgroundColor),
+                        child: const Center(child: Text('NO PROMOTIONS YET')),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),

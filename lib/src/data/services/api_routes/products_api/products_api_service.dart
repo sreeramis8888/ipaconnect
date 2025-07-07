@@ -28,6 +28,42 @@ class ProductsApiService {
     }
   }
 
+  Future<ProductModel?> postProduct({
+    required String userId,
+    required String userName,
+    required String companyId,
+    required String name,
+    required String description,
+    required double actualPrice,
+    required double discountPrice,
+    required List<String> imageUrls,
+    required List<String> tags,
+    required bool isPublic,
+    required String status,
+  }) async {
+    final body = {
+      'user': {
+        '_id': userId,
+        'name': userName,
+      },
+      'company': companyId,
+      'name': name,
+      'description': description,
+      'actual_price': actualPrice,
+      'discount_price': discountPrice,
+      'images': imageUrls.map((url) => {'url': url}).toList(),
+      'tags': tags,
+      'is_public': isPublic,
+      'status': status,
+    };
+    final response = await _apiService.post('/product', body);
+    if (response.success && response.data != null) {
+      return ProductModel.fromJson(response.data!['data']);
+    } else {
+      return null;
+    }
+  }
+
   // Future<Promotion> getProducsById(String id) async {
   //   final response = await _apiService.get('/promotions/$id');
 

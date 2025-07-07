@@ -37,7 +37,7 @@ class JobProfileCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: kCardBackgroundColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -64,8 +64,8 @@ class JobProfileCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 4),
-          Text(profile.designation ?? '-',
-              style: kBodyTitleR.copyWith(color: kSecondaryTextColor)),
+          Text(profile.designation ?? 'Developer',
+              style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
 
           const SizedBox(height: 12),
           if (profile.experience != null)
@@ -73,7 +73,7 @@ class JobProfileCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: kBlue.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Text(profile.experience!,
                   style: kBodyTitleSB.copyWith(color: kWhite, fontSize: 12)),
@@ -94,7 +94,7 @@ class JobProfileCard extends StatelessWidget {
                     color: kWhite,
                   )),
             ]),
-
+          const SizedBox(height: 11),
           if (profile.phone != null)
             Row(children: [
               const Icon(Icons.phone, color: kWhite, size: 16),
@@ -104,7 +104,7 @@ class JobProfileCard extends StatelessWidget {
                     color: kWhite,
                   )),
             ]),
-
+          const SizedBox(height: 11),
           if (profile.location != null)
             Row(children: [
               const Icon(Icons.location_on, color: kWhite, size: 16),
@@ -131,7 +131,10 @@ class JobProfileCard extends StatelessWidget {
               Expanded(
                 child: Text('CV.pdf',
                     overflow: TextOverflow.ellipsis,
-                    style: kBodyTitleSB.copyWith(fontSize: 15)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                        color: kSecondaryTextColor)),
               ),
               IconButton(
                 icon:

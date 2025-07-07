@@ -139,103 +139,106 @@ class _MainPageState extends ConsumerState<MainPage> {
                 height: .5,
                 color: kPrimaryColor,
               ),
-              Container(
-                height: 80,
-                decoration: BoxDecoration(
-                  color: kWhite,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: BottomNavigationBar(
-                  currentIndex: selectedIndex,
-                  selectedItemColor: Colors.white,
-                  unselectedItemColor: Colors.white54,
-                  onTap: _onItemTapped,
-                  showSelectedLabels: true,
-                  showUnselectedLabels: false,
-                  backgroundColor:
-                      const Color(0xFF0D0D1F), // dark navy background
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
-                  items: List.generate(5, (index) {
-                    final isSelected = selectedIndex == index;
-                    Widget iconWidget;
-                    iconWidget = IconResolver(
-                      iconPath: isSelected
-                          ? _activeIcons[index]
-                          : _inactiveIcons[index],
-                      color: isSelected ? kWhite : Colors.grey,
-                    );
-                    return BottomNavigationBarItem(
-                      label: '',
-                      icon: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (isSelected)
-                            Column(
-                              children: [
-                                Transform.translate(
-                                  offset: Offset(0, -7),
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: Container(
-                                      width: 38,
-                                      height: 5,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.vertical(
-                                          bottom: Radius.circular(6),
-                                        ),
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            kPrimaryColor.withOpacity(0.85),
-                                            kPrimaryColor.withOpacity(0.25),
-                                          ],
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                                kPrimaryColor.withOpacity(0.95),
-                                            blurRadius: 38,
-                                            spreadRadius: 10,
-                                            offset: Offset(0, 8),
+              ClipRect(
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: kWhite,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: BottomNavigationBar(
+                    currentIndex: selectedIndex,
+                    selectedItemColor: Colors.white,
+                    unselectedItemColor: Colors.white54,
+                    onTap: _onItemTapped,
+                    showSelectedLabels: true,
+                    showUnselectedLabels: false,
+                    backgroundColor:
+                        const Color(0xFF0D0D1F), // dark navy background
+                    elevation: 0,
+                    type: BottomNavigationBarType.fixed,
+                    items: List.generate(5, (index) {
+                      final isSelected = selectedIndex == index;
+                      Widget iconWidget;
+                      iconWidget = IconResolver(
+                        iconPath: isSelected
+                            ? _activeIcons[index]
+                            : _inactiveIcons[index],
+                        color: isSelected ? kWhite : Colors.grey,
+                      );
+                      return BottomNavigationBarItem(
+                        label: '',
+                        icon: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (isSelected)
+                              Column(
+                                children: [
+                                  Transform.translate(
+                                    offset: Offset(0, -7),
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: Container(
+                                        width: 38,
+                                        height: 5,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.vertical(
+                                            bottom: Radius.circular(6),
                                           ),
-                                        ],
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              kPrimaryColor.withOpacity(0.85),
+                                              kPrimaryColor.withOpacity(0.25),
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: kPrimaryColor
+                                                  .withOpacity(0.95),
+                                              blurRadius: 38,
+                                              spreadRadius: 10,
+                                              offset: Offset(0, 8),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
+                                ],
+                              ),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                AnimatedScale(
+                                  duration: const Duration(milliseconds: 300),
+                                  scale: isSelected ? 1.2 : 1.0,
+                                  child: iconWidget,
                                 ),
                               ],
                             ),
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              AnimatedScale(
-                                duration: const Duration(milliseconds: 300),
-                                scale: isSelected ? 1.2 : 1.0,
-                                child: iconWidget,
+                            const SizedBox(height: 2),
+                            Text(
+                              labels[index],
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : Color(0xFFAEB9E1),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            labels[index],
-                            style: TextStyle(
-                              color:
-                                  isSelected ? Colors.white : Color(0xFFAEB9E1),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
                 ),
               ),
             ],
@@ -291,15 +294,6 @@ class _MainPageState extends ConsumerState<MainPage> {
           return PhoneNumberScreen();
         },
         data: (user) {
-          // if (user.fcm == null || user.fcm == '') {
-          //   editUser({"fcm": fcmToken, "name": user.name, "phone": user.phone});
-          // }
-          // // Force name completion before anything else
-          // if (user.name == null || user.name!.trim().isEmpty) {
-          //   // Show the non-skippable profile completion screen
-          //   // return const ProfileCompletionScreen();
-          // }
-          // subscriptionType = user.subscription ?? 'free';
           _initialize(user: user);
           return PopScope(
             canPop: selectedIndex != 0 ? false : true,

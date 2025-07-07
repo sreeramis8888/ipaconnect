@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -25,7 +24,7 @@ class ContactRow extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.poppins(color: kBlack, fontSize: 13),
+            style: GoogleFonts.poppins(color: kWhite, fontSize: 13),
           ),
         )
       ],

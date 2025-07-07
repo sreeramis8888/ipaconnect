@@ -17,6 +17,7 @@ class CustomTextFormField extends StatelessWidget {
   final bool? isAward;
   final String? title;
   final TextInputType textInputType;
+  final Color backgroundColor;
   const CustomTextFormField({
     super.key,
     required this.labelText,
@@ -30,6 +31,7 @@ class CustomTextFormField extends StatelessWidget {
     this.title,
     this.textInputType = TextInputType.text,
     this.companyIndex,
+    this.backgroundColor = kInputFieldcolor,
   });
 
   @override
@@ -123,7 +125,7 @@ class CustomTextFormField extends StatelessWidget {
                 hintText: labelText,
                 labelStyle: const TextStyle(color: Colors.grey),
                 floatingLabelBehavior: FloatingLabelBehavior.never,
-                fillColor: kInputFieldcolor,
+                fillColor: backgroundColor,
                 filled: true,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),

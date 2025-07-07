@@ -8,6 +8,8 @@ import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_product_modal_sheet.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart' as globals;
 
 class CompanyDetailsPage extends ConsumerStatefulWidget {
   final CompanyModel company;
@@ -68,8 +70,12 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               expandedHeight: 210,
               leading: Padding(
                 padding: const EdgeInsets.all(8),
-                child: CustomRoundButton(offset:  Offset(4, 0),
-                  iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+                child: InkWell(
+                  onTap: () => Navigator.pop(context),
+                  child: CustomRoundButton(
+                    offset: Offset(4, 0),
+                    iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+                  ),
                 ),
               ),
               title: Text(
@@ -425,81 +431,102 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     final products = ref.watch(productsNotifierProvider);
     final isLoading = ref.read(productsNotifierProvider.notifier).isLoading;
     final isFirstLoad = ref.read(productsNotifierProvider.notifier).isFirstLoad;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-          // Search Bar
-          Row(
+    final isOwner = widget.company.user?.id == globals.id;
+    // Example categories, replace with real data if needed
+    final categories = <String>[widget.company.category ?? 'General'];
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: TextField(
-                  cursorColor: kWhite,
-                  style: kBodyTitleR.copyWith(
+              const SizedBox(height: 8),
+              // Search Bar
+              TextField(
+                cursorColor: kWhite,
+                style: kBodyTitleR.copyWith(
+                  fontSize: 14,
+                  color: kSecondaryTextColor,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  filled: true,
+                  fillColor: kCardBackgroundColor,
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    size: 20,
+                    color: kSecondaryTextColor,
+                  ),
+                  hintText: 'Search Products',
+                  hintStyle: kBodyTitleR.copyWith(
                     fontSize: 14,
                     color: kSecondaryTextColor,
                   ),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 16),
-                    filled: true,
-                    fillColor: kCardBackgroundColor,
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      size: 20,
-                      color: kSecondaryTextColor,
-                    ),
-                    hintText: 'Search Products',
-                    hintStyle: kBodyTitleR.copyWith(
-                      fontSize: 14,
-                      color: kSecondaryTextColor,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none,
-                    ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 16),
+              // Product Grid
+              isFirstLoad
+                  ? const Center(child: LoadingAnimation())
+                  : products.isEmpty
+                      ? Expanded(
+                          child: Center(
+                            child: Text(
+                              'No Products yet',
+                              style: kSmallTitleR,
+                            ),
+                          ),
+                        )
+                      : Expanded(
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 220,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 0.50,
+                            ),
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              final product = products[index];
+                              return ProductCard(
+                                category: widget.company.category ?? '',
+                                product: product,
+                              );
+                            },
+                          ),
+                        ),
             ],
           ),
-          const SizedBox(height: 16),
-          // Product Grid
-          isFirstLoad
-              ? const Center(child: LoadingAnimation())
-              : products.isEmpty
-                  ? Expanded(
-                      child: Center(
-                        child: Text(
-                          'No Products yet',
-                          style: kSmallTitleR,
-                        ),
-                      ),
-                    )
-                  : Expanded(
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 220,
-                          mainAxisSpacing: 16,
-                          crossAxisSpacing: 16,
-                          childAspectRatio: 0.50,
-                        ),
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final product = products[index];
-                          return ProductCard(
-                            category: widget.company.category ?? '',
-                            product: product,
-                          );
-                        },
-                      ),
-                    ),
-        ],
-      ),
+        ),
+        if (isOwner)
+          Positioned(
+            bottom: 24,
+            right: 24,
+            child: FloatingActionButton(
+              backgroundColor: kPrimaryColor,
+              child: const Icon(Icons.add, color: kWhite),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => AddProductModalSheet(
+                    categories: categories,
+                    companyId: widget.company.id ?? '',
+                  ),
+                );
+              },
+            ),
+          ),
+      ],
     );
   }
 }

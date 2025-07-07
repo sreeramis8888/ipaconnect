@@ -209,5 +209,174 @@ class _GetCompaniesProviderElement
   @override
   String? get categoryId => (origin as GetCompaniesProvider).categoryId;
 }
+
+String _$getCompaniesByUserIdHash() =>
+    r'b790a053b9fe6dc55ecc084fce2bb9f1464313b6';
+
+/// See also [getCompaniesByUserId].
+@ProviderFor(getCompaniesByUserId)
+const getCompaniesByUserIdProvider = GetCompaniesByUserIdFamily();
+
+/// See also [getCompaniesByUserId].
+class GetCompaniesByUserIdFamily
+    extends Family<AsyncValue<List<CompanyModel>>> {
+  /// See also [getCompaniesByUserId].
+  const GetCompaniesByUserIdFamily();
+
+  /// See also [getCompaniesByUserId].
+  GetCompaniesByUserIdProvider call({
+    required String userId,
+    int pageNo = 1,
+    int limit = 10,
+  }) {
+    return GetCompaniesByUserIdProvider(
+      userId: userId,
+      pageNo: pageNo,
+      limit: limit,
+    );
+  }
+
+  @override
+  GetCompaniesByUserIdProvider getProviderOverride(
+    covariant GetCompaniesByUserIdProvider provider,
+  ) {
+    return call(
+      userId: provider.userId,
+      pageNo: provider.pageNo,
+      limit: provider.limit,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getCompaniesByUserIdProvider';
+}
+
+/// See also [getCompaniesByUserId].
+class GetCompaniesByUserIdProvider
+    extends AutoDisposeFutureProvider<List<CompanyModel>> {
+  /// See also [getCompaniesByUserId].
+  GetCompaniesByUserIdProvider({
+    required String userId,
+    int pageNo = 1,
+    int limit = 10,
+  }) : this._internal(
+          (ref) => getCompaniesByUserId(
+            ref as GetCompaniesByUserIdRef,
+            userId: userId,
+            pageNo: pageNo,
+            limit: limit,
+          ),
+          from: getCompaniesByUserIdProvider,
+          name: r'getCompaniesByUserIdProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getCompaniesByUserIdHash,
+          dependencies: GetCompaniesByUserIdFamily._dependencies,
+          allTransitiveDependencies:
+              GetCompaniesByUserIdFamily._allTransitiveDependencies,
+          userId: userId,
+          pageNo: pageNo,
+          limit: limit,
+        );
+
+  GetCompaniesByUserIdProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+    required this.pageNo,
+    required this.limit,
+  }) : super.internal();
+
+  final String userId;
+  final int pageNo;
+  final int limit;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<CompanyModel>> Function(GetCompaniesByUserIdRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetCompaniesByUserIdProvider._internal(
+        (ref) => create(ref as GetCompaniesByUserIdRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+        pageNo: pageNo,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<CompanyModel>> createElement() {
+    return _GetCompaniesByUserIdProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetCompaniesByUserIdProvider &&
+        other.userId == userId &&
+        other.pageNo == pageNo &&
+        other.limit == limit;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
+    hash = _SystemHash.combine(hash, pageNo.hashCode);
+    hash = _SystemHash.combine(hash, limit.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetCompaniesByUserIdRef
+    on AutoDisposeFutureProviderRef<List<CompanyModel>> {
+  /// The parameter `userId` of this provider.
+  String get userId;
+
+  /// The parameter `pageNo` of this provider.
+  int get pageNo;
+
+  /// The parameter `limit` of this provider.
+  int get limit;
+}
+
+class _GetCompaniesByUserIdProviderElement
+    extends AutoDisposeFutureProviderElement<List<CompanyModel>>
+    with GetCompaniesByUserIdRef {
+  _GetCompaniesByUserIdProviderElement(super.provider);
+
+  @override
+  String get userId => (origin as GetCompaniesByUserIdProvider).userId;
+  @override
+  int get pageNo => (origin as GetCompaniesByUserIdProvider).pageNo;
+  @override
+  int get limit => (origin as GetCompaniesByUserIdProvider).limit;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

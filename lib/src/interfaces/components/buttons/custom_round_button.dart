@@ -8,6 +8,7 @@ class CustomRoundButton extends StatelessWidget {
   final Color iconColor;
   final Offset offset;
   final double padding;
+  final Gradient? gradient;
 
   const CustomRoundButton({
     super.key,
@@ -16,21 +17,23 @@ class CustomRoundButton extends StatelessWidget {
     this.iconColor = const Color(0xFFAEB9E1),
     this.offset = const Offset(0, 0),
     this.padding = 8.0,
+    this.gradient,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color.fromARGB(255, 1, 17, 36),
-            kCardBackgroundColor,
-          ],
-          stops: const [0.1, 0.5],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        gradient: gradient ??
+            const LinearGradient(
+              colors: [
+                Color.fromARGB(255, 1, 17, 36),
+                kCardBackgroundColor,
+              ],
+              stops: [0.1, 0.5],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
         border: Border.all(color: kStrokeColor),
         borderRadius: BorderRadius.circular(30),
       ),

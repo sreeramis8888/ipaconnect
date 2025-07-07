@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
-
 
 class SelectionDropDown extends StatefulWidget {
   final String? hintText;
@@ -11,7 +9,7 @@ class SelectionDropDown extends StatefulWidget {
   final String? value;
   final ValueChanged<String?> onChanged;
   final FormFieldValidator<String>? validator;
-
+  final Color backgroundColor;
   const SelectionDropDown({
     this.label,
     required this.items,
@@ -20,6 +18,7 @@ class SelectionDropDown extends StatefulWidget {
     this.validator,
     Key? key,
     this.hintText,
+    this.backgroundColor = kInputFieldcolor,
   }) : super(key: key);
 
   @override
@@ -96,10 +95,10 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                 ),
                 iconSize: 24,
                 isExpanded: true,
-                dropdownColor: kWhite,
+                dropdownColor: kInputFieldcolor,
                 menuMaxHeight: 300,
                 decoration: InputDecoration(
-                  fillColor: kInputFieldcolor,
+                  fillColor: widget.backgroundColor,
                   filled: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -107,16 +106,17 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: const BorderSide(color: Colors.transparent),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        const BorderSide(color: Color(0xFF3182CE), width: 2),
+                    borderSide: const BorderSide(
+                      color: Colors.transparent,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: const BorderSide(color: Colors.transparent),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -124,12 +124,12 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                   ),
                   focusedErrorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.red),
+                    borderSide: const BorderSide(color: Colors.transparent),
                   ),
                 ),
                 style: const TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF2D3748),
+                  color: kWhite,
                 ),
               ),
             ],

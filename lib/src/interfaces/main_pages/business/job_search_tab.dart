@@ -100,7 +100,7 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
     return const Center(
       child: Padding(
         padding: EdgeInsets.all(16.0),
-        child: CircularProgressIndicator(),
+        child: LoadingAnimation(),
       ),
     );
   }

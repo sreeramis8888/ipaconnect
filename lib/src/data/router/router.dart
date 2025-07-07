@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
@@ -29,6 +31,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       BusinessCategoryModel category =
           settings?.arguments as BusinessCategoryModel;
       return MaterialPageRoute(builder: (context) => Categorypage(category:category ,));
+    case 'ProfilePreview':
+      UserModel user =
+          settings?.arguments as UserModel;
+      return MaterialPageRoute(builder: (context) => ProfilePreview(user:user ,));
     // case 'PhoneNumber':
     //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     // case 'MainPage':

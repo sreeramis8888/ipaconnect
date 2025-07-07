@@ -53,7 +53,7 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               label: 'Request NFC',
               onTap: () => navigationService.pushNamed('RequestNFC'),
             ),
-            if (user.isAdmin)
+            if (user.isAdmin??false)
               _menuItem(
                 icon: SvgPicture.asset(
                   'assets/svg/icons/menu_icons/levels.svg',

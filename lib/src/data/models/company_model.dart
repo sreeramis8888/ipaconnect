@@ -3,7 +3,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'company_model.g.dart';
 
-
 @JsonSerializable(explicitToJson: true)
 class CompanyModel {
   @JsonKey(name: '_id')

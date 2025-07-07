@@ -210,10 +210,7 @@ class NewsCard extends ConsumerWidget {
                   children: [
                     Text(
                       news.title ?? '',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: kBodyTitleB,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),

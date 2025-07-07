@@ -155,6 +155,30 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<Map<String, dynamic>>> delete(String endpoint) async {
+    try {
+      final response = await _client.delete(
+        Uri.parse('$baseUrl$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+          'Authorization': 'Bearer $token',
+          'x-api-key': apiKey
+        },
+      );
+      log(name: 'HITTING API', '$baseUrl$endpoint');
+      final decoded = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return ApiResponse.success(decoded, response.statusCode);
+      } else {
+        final message = decoded['message'] ?? 'Failed to delete data';
+        return ApiResponse.error(message, response.statusCode);
+      }
+    } catch (e) {
+      return ApiResponse.error('Failed to connect to the server: $e');
+    }
+  }
+
   void dispose() {
     _client.close();
   }

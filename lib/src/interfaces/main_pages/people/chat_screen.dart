@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -503,10 +504,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           if (_isLoadingMore)
             Container(
               padding: const EdgeInsets.all(16),
-              child: const CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(kPrimaryColor),
-              ),
+              child: const LoadingAnimation(),
             ),
           Expanded(
             child: ListView.builder(

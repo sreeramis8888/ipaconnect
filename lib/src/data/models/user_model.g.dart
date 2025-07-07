@@ -7,7 +7,6 @@ part of 'user_model.dart';
 // **************************************************************************
 
 _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
-      id: json['_id'] as String?,
       name: json['name'] as String?,
       uid: json['uid'] as String?,
       memberId: json['member_id'] as String?,
@@ -15,26 +14,35 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       image: json['image'] as String?,
       phone: json['phone'] as String?,
       fcm: json['fcm'] as String?,
+      otp: json['otp'] as String?,
       profession: json['proffession'] as String?,
       location: json['location'] as String?,
       password: json['password'] as String?,
-      hierarchy: json['hierarchy'] as String?,
       status: json['status'] as String?,
-      isIpaMember: json['is_ipa_member'] as bool? ?? false,
-      isAdmin: json['is_admin'] as bool? ?? false,
+      isIpaMember: json['is_ipa_member'] as bool?,
+      isAdmin: json['is_admin'] as bool?,
+      hierarchy: json['hierarchy'] as String?,
       role: json['role'] as String?,
+      lastSeen: json['last_seen'] == null
+          ? null
+          : DateTime.parse(json['last_seen'] as String),
+      online: json['online'] as bool?,
+      rejectReason: json['reject_reason'] as String?,
+      bio: json['bio'] as String?,
+      socialMedia: (json['social_media'] as List<dynamic>?)
+          ?.map((e) => SocialMedia.fromJson(e as Map<String, dynamic>))
+          .toList(),
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
-      rejectReason: json['reject_reason'] as String?,
+      id: json['_id'] as String?,
     );
 
 Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
     <String, dynamic>{
-      '_id': instance.id,
       'name': instance.name,
       'uid': instance.uid,
       'member_id': instance.memberId,
@@ -42,15 +50,32 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'image': instance.image,
       'phone': instance.phone,
       'fcm': instance.fcm,
+      'otp': instance.otp,
       'proffession': instance.profession,
       'location': instance.location,
       'password': instance.password,
-      'hierarchy': instance.hierarchy,
       'status': instance.status,
       'is_ipa_member': instance.isIpaMember,
       'is_admin': instance.isAdmin,
+      'hierarchy': instance.hierarchy,
       'role': instance.role,
+      'last_seen': instance.lastSeen?.toIso8601String(),
+      'online': instance.online,
+      'reject_reason': instance.rejectReason,
+      'bio': instance.bio,
+      'social_media': instance.socialMedia,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
-      'reject_reason': instance.rejectReason,
+      '_id': instance.id,
+    };
+
+_SocialMedia _$SocialMediaFromJson(Map<String, dynamic> json) => _SocialMedia(
+      name: json['name'] as String?,
+      url: json['url'] as String?,
+    );
+
+Map<String, dynamic> _$SocialMediaToJson(_SocialMedia instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'url': instance.url,
     };

@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+
 Future<String> imageUpload(String imagePath) async {
   File imageFile = File(imagePath);
   Uint8List imageBytes = await imageFile.readAsBytes();
@@ -27,9 +28,9 @@ Future<String> imageUpload(String imagePath) async {
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   var request = http.MultipartRequest(
     'POST',
-    Uri.parse('$baseUrl/upload/single'),
+    Uri.parse('$baseUrl/upload'),
   );
-  request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+  request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
 
   var response = await request.send();
 
@@ -46,14 +47,12 @@ Future<String> imageUpload(String imagePath) async {
 String extractImageUrl(String responseBody) {
   final responseJson = jsonDecode(responseBody);
   log(name: "image upload response", responseJson.toString());
-  return responseJson['data']['fileUrl'];
+  return responseJson['data'];
 }
 
-
-
-  Future<String> saveUint8ListToFile(Uint8List bytes, String fileName) async {
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/$fileName');
-    await file.writeAsBytes(bytes);
-    return file.path;
-  }
+Future<String> saveUint8ListToFile(Uint8List bytes, String fileName) async {
+  final tempDir = await getTemporaryDirectory();
+  final file = File('${tempDir.path}/$fileName');
+  await file.writeAsBytes(bytes);
+  return file.path;
+}

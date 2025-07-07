@@ -8,6 +8,9 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/cards/company_card.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/company_details_page.dart';
+import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
+import 'package:ipaconnect/src/data/models/company_model.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/business/add_company_page.dart';
 
 class Categorypage extends ConsumerStatefulWidget {
   final BusinessCategoryModel category;
@@ -61,7 +64,8 @@ class _CategorypageState extends ConsumerState<Categorypage> {
           padding: const EdgeInsets.all(8),
           child: InkWell(
             onTap: () => Navigator.pop(context),
-            child: CustomRoundButton(offset:  Offset(4, 0),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
               iconPath: 'assets/svg/icons/arrow_back_ios.svg',
             ),
           ),
@@ -149,6 +153,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 10),
                               child: CompanyCard(
+                                companyUserId: company.user?.id ?? '',
                                 companyName: company.name ?? '',
                                 rating: 4.9,
                                 position: company.user?.name ?? '',
@@ -165,6 +170,60 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                                           CompanyDetailsPage(company: company),
                                     ),
                                   );
+                                },
+                                onEdit: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddCompanyPage(
+                                          companyToEdit: company),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    // Refresh companies after edit
+                                    await ref
+                                        .read(
+                                            companiesNotifierProvider.notifier)
+                                        .refreshCompanies();
+                                  }
+                                },
+                                onDelete: () async {
+                                  final confirmed = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Delete Company'),
+                                      content: Text(
+                                          'Are you sure you want to delete this company?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: Text('Delete',
+                                              style:
+                                                  TextStyle(color: Colors.red)),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirmed == true) {
+                                    final container =
+                                        ProviderScope.containerOf(context);
+                                    final companyApi = container
+                                        .read(companyApiServiceProvider);
+                                    final deleted = await companyApi
+                                        .deleteCompany(company.id!);
+                                    if (deleted) {
+                                      await ref
+                                          .read(companiesNotifierProvider
+                                              .notifier)
+                                          .refreshCompanies();
+                                    }
+                                  }
                                 },
                               ),
                             );
