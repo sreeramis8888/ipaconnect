@@ -75,6 +75,7 @@ dependencies:
   flutter_advanced_drawer: 1.5.0
   mobile_scanner: ^6.0.10
   image_gallery_saver_plus: ^4.0.1
+  file_picker: ^10.2.0
   
 dev_dependencies:
   flutter_test:

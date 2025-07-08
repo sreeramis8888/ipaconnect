@@ -171,7 +171,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
                               itemBuilder: (context, index) {
                                 if (index == filteredFeeds.length) {
                                   return isLoading
-                                      ? const ReusableFeedPostSkeleton()
+                                      ? const LoadingAnimation()
                                       : const SizedBox.shrink();
                                 }
 
@@ -268,8 +268,8 @@ class _FeedViewState extends ConsumerState<FeedView> {
   Widget _buildPost({bool withImage = false, required FeedModel feed}) {
     return Consumer(
       builder: (context, ref, child) {
-        final asyncUser = ref
-            .watch(getUserDetailsByIdProvider(userId: feed.author?.id ?? ''));
+        final asyncUser =
+            ref.watch(getUserDetailsByIdProvider(userId: feed.user?.id ?? ''));
         return asyncUser.when(
           data: (user) {
             // var receiver = ChatUser(
@@ -302,7 +302,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
                   //     sender: sender);
                 });
           },
-          loading: () => const ReusableFeedPostSkeleton(),
+          loading: () => const LoadingAnimation(),
           error: (error, stackTrace) {
             return const Center(
               child: Text('No Posts'),
@@ -408,8 +408,11 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
-                  title: const Text('Comments'),
-                  backgroundColor: kWhite,
+                  title: Text(
+                    'Comments',
+                    style: kBodyTitleB,
+                  ),
+                  backgroundColor: kStrokeColor,
                   automaticallyImplyLeading: false,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
@@ -418,7 +421,10 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                   ),
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(
+                        Icons.close,
+                        color: kWhite,
+                      ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -487,10 +493,11 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
               focusNode: commentFocusNode,
               controller: commentController,
               decoration: InputDecoration(
+                hintStyle: kSmallTitleR,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 hintText: "Add a comment...",
                 filled: true,
-                fillColor: Colors.grey[200],
+                fillColor: kStrokeColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   borderSide: BorderSide.none,
@@ -532,7 +539,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: kWhite,
+      color: kCardBackgroundColor,
       margin: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -559,30 +566,18 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.author.name ?? 'Unknown User',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                      Text(widget.author.name ?? 'Unknown User',
+                          style: kBodyTitleB),
                       Text(
                         timeAgo(widget.business.createdAt!),
                         style: TextStyle(
-                          color: Colors.grey[600],
+                          color: kSecondaryTextColor,
                           fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
-                if (widget.business.author != id)
-                  IconButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.grey),
-                    onPressed: () {
-                      // Show options menu
-                    },
-                  ),
               ],
             ),
           ),
@@ -607,19 +602,19 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
             child: ExpandableText(text: widget.business.content ?? ''),
           ),
 
-          const SizedBox(height: 12),
+          // const SizedBox(height: 12),
 
           // Hashtags
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              '#FamilyHistory #FoundersStory',
-              style: TextStyle(
-                color: Colors.blue[700],
-                fontSize: 14,
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          //   child: Text(
+          //     '#FamilyHistory #FoundersStory',
+          //     style: TextStyle(
+          //       color: Colors.blue[700],
+          //       fontSize: 14,
+          //     ),
+          //   ),
+          // ),
 
           const SizedBox(height: 16),
 
@@ -641,13 +636,13 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     children: [
                       Icon(
                         isLiked ? Icons.favorite : Icons.favorite_outline,
-                        color: isLiked ? Colors.red : kBlack,
+                        color: isLiked ? Colors.red : kSecondaryTextColor,
                         size: 30,
                       ),
                       Text(
                         '$likes',
                         style: TextStyle(
-                          color: Colors.grey[700],
+                          color: kSecondaryTextColor,
                           fontSize: 14,
                         ),
                       ),
@@ -662,12 +657,15 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                   onTap: _openCommentModal,
                   child: Row(
                     children: [
-                      SvgPicture.asset('assets/svg/icons/comment.svg'),
+                      SvgPicture.asset(
+                        'assets/svg/icons/comment.svg',
+                        color: kSecondaryTextColor,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${widget.business.comments?.length ?? 0}',
                         style: TextStyle(
-                          color: Colors.grey[700],
+                          color: kSecondaryTextColor,
                           fontSize: 14,
                         ),
                       ),
@@ -678,30 +676,25 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                 const SizedBox(width: 24),
 
                 // Share button with count
-                if (widget.business.author != id)
+                if (widget.business.user?.id != id)
                   GestureDetector(
                     onTap: () => widget.onShare(),
                     child: Row(
                       children: [
-                        SvgPicture.asset('assets/svg/icons/share.svg'),
-                        const SizedBox(width: 4),
-                        Text(
-                          '32', // You can replace this with actual share count
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 14,
-                          ),
+                        SvgPicture.asset(
+                          'assets/svg/icons/share.svg',
+                          color: kSecondaryTextColor,
                         ),
+                        const SizedBox(width: 4),
                       ],
                     ),
                   ),
 
                 const Spacer(),
 
-                // Bookmark button
                 Icon(
                   Icons.bookmark_border,
-                  color: Colors.grey[600],
+                  color: kSecondaryTextColor,
                   size: 29,
                 ),
               ],
@@ -741,11 +734,11 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
 
           const SizedBox(height: 16),
 
-          // Divider
-          Container(
-            height: 8,
-            color: Colors.grey[100],
-          ),
+          // // Divider
+          // Container(
+          //   height: 8,
+          //   color: Colors.grey[100],
+          // ),
         ],
       ),
     );
@@ -791,113 +784,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class ReusableFeedPostSkeleton extends StatelessWidget {
-  const ReusableFeedPostSkeleton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: kWhite,
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 16.0),
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color.fromARGB(255, 213, 208, 208)),
-        borderRadius: BorderRadius.circular(6.0),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 15),
-                _buildShimmerContainer(height: 12, width: 100),
-                const SizedBox(height: 15),
-              ],
-            ),
-            // Image Skeleton
-            _buildShimmerContainer(height: 400.0, width: double.infinity),
-            const SizedBox(height: 16),
-            // Content Text Skeleton
-            _buildShimmerContainer(height: 14, width: double.infinity),
-            const SizedBox(height: 16),
-            // User Info Skeleton
-            Row(
-              children: [
-                // User Avatar
-                ClipOval(
-                  child: _buildShimmerContainer(height: 30, width: 30),
-                ),
-                const SizedBox(width: 8),
-                // User Info (Name, Company)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildShimmerContainer(height: 12, width: 100),
-                    const SizedBox(height: 4),
-                    _buildShimmerContainer(height: 12, width: 60),
-                  ],
-                ),
-                const Spacer(),
-                // Post Date Skeleton
-                _buildShimmerContainer(height: 12, width: 80),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Action Buttons Skeleton
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    _buildShimmerCircle(height: 30, width: 30),
-                    const SizedBox(width: 8),
-                    _buildShimmerCircle(height: 30, width: 30),
-                    const SizedBox(width: 8),
-                    _buildShimmerCircle(height: 30, width: 30),
-                  ],
-                ),
-                // Likes Count Skeleton
-                _buildShimmerContainer(height: 14, width: 60),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerContainer(
-      {required double height, required double width}) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        height: height,
-        width: width,
-        color: Colors.grey[300],
-      ),
-    );
-  }
-
-  Widget _buildShimmerCircle({required double height, required double width}) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        height: height,
-        width: width,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          shape: BoxShape.circle,
-        ),
       ),
     );
   }

@@ -27,6 +27,7 @@ class _ExpandableTextState extends State<ExpandableText> {
       if (match.start > start) {
         spans.add(TextSpan(
           text: text.substring(start, match.start),
+          style: const TextStyle(color: Colors.white),
         ));
       }
 
@@ -47,7 +48,10 @@ class _ExpandableTextState extends State<ExpandableText> {
     }
 
     if (start < text.length) {
-      spans.add(TextSpan(text: text.substring(start)));
+      spans.add(TextSpan(
+        text: text.substring(start),
+        style: const TextStyle(color: Colors.white),
+      ));
     }
 
     return spans;
@@ -55,7 +59,7 @@ class _ExpandableTextState extends State<ExpandableText> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultTextStyle = const TextStyle(fontSize: 14, color: Colors.black);
+    final defaultTextStyle = const TextStyle(fontSize: 14, color: Colors.white);
     final fullSpans = _buildTextSpans(widget.text);
 
     final TextPainter textPainter = TextPainter(
@@ -91,7 +95,7 @@ class _ExpandableTextState extends State<ExpandableText> {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 _isExpanded ? 'Read less' : 'Read more',
-                style: const TextStyle(color: Colors.blue),
+                style: const TextStyle(color: Colors.blue), // Keep blue
               ),
             ),
           ),

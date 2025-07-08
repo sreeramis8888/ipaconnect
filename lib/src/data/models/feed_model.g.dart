@@ -12,9 +12,9 @@ FeedModel _$FeedModelFromJson(Map<String, dynamic> json) => FeedModel(
       media: json['media'] as String?,
       link: json['link'] as String?,
       content: json['content'] as String?,
-      author: json['author'] == null
+      user: json['user'] == null
           ? null
-          : Author.fromJson(json['author'] as Map<String, dynamic>),
+          : Author.fromJson(json['user'] as Map<String, dynamic>),
       likes: (json['like'] as List<dynamic>?)?.map((e) => e as String).toList(),
       status: json['status'] as String?,
       createdAt: json['createdAt'] == null
@@ -34,7 +34,7 @@ Map<String, dynamic> _$FeedModelToJson(FeedModel instance) => <String, dynamic>{
       'media': instance.media,
       'link': instance.link,
       'content': instance.content,
-      'author': instance.author?.toJson(),
+      'user': instance.user?.toJson(),
       'like': instance.likes,
       'status': instance.status,
       'createdAt': instance.createdAt?.toIso8601String(),
@@ -44,20 +44,16 @@ Map<String, dynamic> _$FeedModelToJson(FeedModel instance) => <String, dynamic>{
 
 Author _$AuthorFromJson(Map<String, dynamic> json) => Author(
       id: json['_id'] as String?,
-      fullName: json['fullName'] as String?,
-      college: json['college'] as String?,
+      name: json['name'] as String?,
+      proffession: json['proffession'] as String?,
       image: json['image'] as String?,
-      memberId: json['memberId'] as String?,
-      companyName: json['companyName'] as String?,
     );
 
 Map<String, dynamic> _$AuthorToJson(Author instance) => <String, dynamic>{
       '_id': instance.id,
-      'fullName': instance.fullName,
-      'college': instance.college,
+      'name': instance.name,
       'image': instance.image,
-      'memberId': instance.memberId,
-      'companyName': instance.companyName,
+      'proffession': instance.proffession,
     };
 
 FeedUser _$FeedUserFromJson(Map<String, dynamic> json) => FeedUser(

@@ -3,37 +3,32 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/models/campaign_model.dart';
+import 'package:ipaconnect/src/data/models/home_model.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
 class CampaignCard extends StatelessWidget {
-  final String tag;
-  final VoidCallback onDonate;
+  final CampaignModel campaign;
   final VoidCallback? onLearnMore;
 
   const CampaignCard({
     Key? key,
-    required this.tag,
-    required this.onDonate,
+    required this.campaign,
     this.onLearnMore,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Dummy campaign data
     final int collected = 3200;
     final int target = 5000;
-    final String dueDate = DateFormat('dd MMM yyyy').format(DateTime.now().add(const Duration(days: 10)));
-    final String title = 'Support Education for Underprivileged Children';
-    final String description = 'Help us raise funds to provide educational resources to those in need.';
-    final bool hasChapter = true;
 
     final progress = (collected / target).clamp(0.0, 1.0);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: kTertiary),
-        color: kWhite,
+        border: Border.all(color: kStrokeColor),
+        color: kCardBackgroundColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -45,11 +40,8 @@ class CampaignCard extends StatelessWidget {
               topRight: Radius.circular(16),
             ),
             child: AspectRatio(
-              aspectRatio: 16 / 7,
-              child: hasChapter
-                  ? SvgPicture.asset(
-                                              'assets/svg/icons/ipa_logo.svg')
-                  : Container(color: kGreyLight),
+              aspectRatio: 15 / 8,
+              child: Image.network(campaign.media ?? ''),
             ),
           ),
           Padding(
@@ -60,14 +52,14 @@ class CampaignCard extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: kRed,
+                        color: kPrimaryColor,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        '#$tag',
+                        '#tag',
                         style: const TextStyle(
                             color: kWhite,
                             fontWeight: FontWeight.bold,
@@ -102,44 +94,46 @@ class CampaignCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text('DUE DATE',
-                        style: kSmallerTitleB.copyWith(
-                            color: kGrey, fontSize: 10)),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade100,
-                        borderRadius: BorderRadius.circular(6),
+                if (campaign.targetDate != null)
+                  Row(
+                    children: [
+                      Text('DUE DATE',
+                          style: kSmallerTitleB.copyWith(
+                              color: kGrey, fontSize: 10)),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: kStrokeColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_month,
+                                color: kWhite, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              DateFormat('d MMMM y')
+                                  .format(campaign.targetDate!),
+                              style: kSmallerTitleB.copyWith(
+                                  color: kPrimaryLightColor),
+                            ),
+                          ],
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calendar_month,
-                              color: kRed, size: 12),
-                          const SizedBox(width: 4),
-                          Text(
-                            dueDate,
-                            style: kSmallerTitleB.copyWith(
-                                color: kPrimaryLightColor),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 const SizedBox(height: 10),
                 Text(
-                  title,
+                  campaign.name ?? '',
                   style: kSubHeadingB,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  description,
+                  campaign.description ?? '',
                   style: kSmallerTitleR,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -149,20 +143,20 @@ class CampaignCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: customButton(
-                        labelColor: kBlack,
-                        sideColor: kPrimaryColor,
-                        buttonColor: kPrimaryColor,
+                        labelColor: kWhite,
+                        sideColor: kStrokeColor,
+                        buttonColor: kStrokeColor,
                         label: 'Learn More',
                         onPressed: onLearnMore ?? () {},
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: customButton(
-                        label: 'Donate Now',
-                        onPressed: onDonate,
-                      ),
-                    ),
+                    // const SizedBox(width: 12),
+                    // Expanded(
+                    //   child: customButton(
+                    //     label: 'Donate Now',
+                    //     onPressed: onDonate,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],

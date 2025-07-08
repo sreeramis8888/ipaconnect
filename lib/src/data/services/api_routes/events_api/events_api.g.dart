@@ -23,24 +23,7 @@ final eventsApiServiceProvider = AutoDisposeProvider<EventsApiService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef EventsApiServiceRef = AutoDisposeProviderRef<EventsApiService>;
-String _$fetchEventsHash() => r'88031911777f2fd1d093417df5f49dcf1102ef07';
-
-/// See also [fetchEvents].
-@ProviderFor(fetchEvents)
-final fetchEventsProvider =
-    AutoDisposeFutureProvider<List<EventsModel>>.internal(
-  fetchEvents,
-  name: r'fetchEventsProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$fetchEventsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef FetchEventsRef = AutoDisposeFutureProviderRef<List<EventsModel>>;
-String _$fetchEventByIdHash() => r'903429b7627413c046f6d9529b9b5c156e19788a';
+String _$fetchEventsHash() => r'667a62b73e1a114c607f847ca16403ddbdf0bdec';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -62,6 +45,154 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// See also [fetchEvents].
+@ProviderFor(fetchEvents)
+const fetchEventsProvider = FetchEventsFamily();
+
+/// See also [fetchEvents].
+class FetchEventsFamily extends Family<AsyncValue<List<EventsModel>>> {
+  /// See also [fetchEvents].
+  const FetchEventsFamily();
+
+  /// See also [fetchEvents].
+  FetchEventsProvider call({
+    int pageNo = 1,
+    int limit = 10,
+  }) {
+    return FetchEventsProvider(
+      pageNo: pageNo,
+      limit: limit,
+    );
+  }
+
+  @override
+  FetchEventsProvider getProviderOverride(
+    covariant FetchEventsProvider provider,
+  ) {
+    return call(
+      pageNo: provider.pageNo,
+      limit: provider.limit,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchEventsProvider';
+}
+
+/// See also [fetchEvents].
+class FetchEventsProvider extends AutoDisposeFutureProvider<List<EventsModel>> {
+  /// See also [fetchEvents].
+  FetchEventsProvider({
+    int pageNo = 1,
+    int limit = 10,
+  }) : this._internal(
+          (ref) => fetchEvents(
+            ref as FetchEventsRef,
+            pageNo: pageNo,
+            limit: limit,
+          ),
+          from: fetchEventsProvider,
+          name: r'fetchEventsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$fetchEventsHash,
+          dependencies: FetchEventsFamily._dependencies,
+          allTransitiveDependencies:
+              FetchEventsFamily._allTransitiveDependencies,
+          pageNo: pageNo,
+          limit: limit,
+        );
+
+  FetchEventsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.pageNo,
+    required this.limit,
+  }) : super.internal();
+
+  final int pageNo;
+  final int limit;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<EventsModel>> Function(FetchEventsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchEventsProvider._internal(
+        (ref) => create(ref as FetchEventsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        pageNo: pageNo,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<EventsModel>> createElement() {
+    return _FetchEventsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchEventsProvider &&
+        other.pageNo == pageNo &&
+        other.limit == limit;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, pageNo.hashCode);
+    hash = _SystemHash.combine(hash, limit.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchEventsRef on AutoDisposeFutureProviderRef<List<EventsModel>> {
+  /// The parameter `pageNo` of this provider.
+  int get pageNo;
+
+  /// The parameter `limit` of this provider.
+  int get limit;
+}
+
+class _FetchEventsProviderElement
+    extends AutoDisposeFutureProviderElement<List<EventsModel>>
+    with FetchEventsRef {
+  _FetchEventsProviderElement(super.provider);
+
+  @override
+  int get pageNo => (origin as FetchEventsProvider).pageNo;
+  @override
+  int get limit => (origin as FetchEventsProvider).limit;
+}
+
+String _$fetchEventByIdHash() => r'903429b7627413c046f6d9529b9b5c156e19788a';
 
 /// See also [fetchEventById].
 @ProviderFor(fetchEventById)

@@ -10,7 +10,7 @@ class FeedModel {
   String? media;
   String? link;
   String? content;
-  Author? author;
+  Author? user;
   @JsonKey(name: 'like')
   List<String>? likes;
   String? status;
@@ -25,7 +25,7 @@ class FeedModel {
     this.media,
     this.link,
     this.content,
-    this.author,
+    this.user,
     this.likes,
     this.status,
     this.createdAt,
@@ -42,23 +42,17 @@ class FeedModel {
 class Author {
   @JsonKey(name: '_id')
   final String? id;
-  final String? fullName;
-  final String? college;
+  final String? name;
   final String? image;
-  final String? memberId;
-  final String? companyName;
+  final String? proffession;
 
-  Author({
+  Author( {
     this.id,
-    this.fullName,
-    this.college,
-    this.image,
-    this.memberId,
-    this.companyName,
+    this.name,this.proffession,
+  this.image,
   });
 
-  factory Author.fromJson(Map<String, dynamic> json) =>
-      _$AuthorFromJson(json);
+  factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);
   Map<String, dynamic> toJson() => _$AuthorToJson(this);
 }
 

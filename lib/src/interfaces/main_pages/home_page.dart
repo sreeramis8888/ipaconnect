@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,9 +6,6 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
-import 'package:ipaconnect/src/data/services/api_routes/events_api/events_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/news_api/news_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/promotions_api/promotions_api_service.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
@@ -17,19 +13,17 @@ import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/board_of_director_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
-import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/promotion_shimmers.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
 import 'package:shimmer/shimmer.dart';
-
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
 import '../../data/models/promotions_model.dart';
 import 'package:ipaconnect/src/interfaces/components/sidebar/custom_sidebar.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
-
 import '../components/custom_widgets/custom_video.dart';
+import 'package:ipaconnect/src/data/services/api_routes/home_api/home_api_service.dart';
+import 'campaigns/campaign_detail_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final UserModel user;
@@ -72,7 +66,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   double _estimateTextHeight(String text, double fontSize) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final int numLines = (text.length / (screenWidth / fontSize)).ceil();
-    return numLines * fontSize * 1.2 + 40;
+    return numLines * fontSize * 1.2 - 10;
   }
 
   CarouselController controller = CarouselController();
@@ -84,14 +78,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     NavigationService navigationService = NavigationService();
     return Consumer(
       builder: (context, ref, child) {
-        final asyncPromotions = ref.watch(promotionsProvider);
-        final asyncNewsModel = ref.watch(newsProvider);
-        final asyncEvents = ref.watch(eventsProvider);
-
+        final asyncHomeData = ref.watch(homeDataProvider);
         return RefreshIndicator(
           color: kPrimaryColor,
           onRefresh: () async {
-            ref.invalidate(promotionsApiServiceProvider);
+            ref.invalidate(homeDataProvider);
           },
           child: AdvancedDrawer(
             backdropColor: kBackgroundColor,
@@ -103,22 +94,21 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             child: GestureDetector(
               onHorizontalDragStart: (_) {},
-              child: asyncPromotions.when(
-                data: (promotions) {
-                  final banners = promotions
-                      .where((promo) => promo.type == 'banner')
-                      .toList();
-                  final notices = promotions
-                      .where((promo) => promo.type == 'notice')
-                      .toList();
-                  final posters = promotions
-                      .where((promo) => promo.type == 'poster')
-                      .toList();
-                  final videos = promotions
-                      .where((promo) => promo.type == 'video')
-                      .toList();
+              child: asyncHomeData.when(
+                data: (homeData) {
+                  if (homeData == null) {
+                    return const Center(child: Text('No home data available'));
+                  }
+                  final banners = homeData.banners;
+                  final notices = homeData.notices;
+                  final posters = homeData.posters;
+                  final videos = homeData.videos;
+                  final event = homeData.event;
+                  final news = homeData.news;
+                  final campaign = homeData.campaign; // Store for later use
                   final filteredVideos = videos
-                      .where((video) => video.link!.startsWith('http'))
+                      .where((video) =>
+                          video.link != null && video.link!.startsWith('http'))
                       .toList();
                   return SafeArea(
                     child: Scaffold(
@@ -277,84 +267,60 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-                                  asyncEvents.when(
-                                      data: (events) {
-                                        return events.isNotEmpty
-                                            ? Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                left: 15,
-                                                                top: 10),
-                                                        child: Text('Events',
-                                                            style: kBodyTitleB),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  CarouselSlider(
-                                                    items: events.map((event) {
-                                                      return Container(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.92,
-                                                        child: GestureDetector(
-                                                          onTap: () {
-                                                            navigationService
-                                                                .pushNamed(
-                                                                    'EventDetails',
-                                                                    arguments:
-                                                                        event);
-                                                          },
-                                                          child: eventWidget(
-                                                            context: context,
-                                                            event: event,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }).toList(),
-                                                    options: CarouselOptions(
-                                                      enableInfiniteScroll:
-                                                          false,
-                                                      height: 340,
-                                                      scrollPhysics: events
-                                                                  .length >
-                                                              1
-                                                          ? null
-                                                          : const NeverScrollableScrollPhysics(),
-                                                      autoPlay:
-                                                          events.length > 1
-                                                              ? true
-                                                              : false,
-                                                      viewportFraction: 1,
-                                                      autoPlayInterval:
-                                                          const Duration(
-                                                              seconds: 3),
-                                                      onPageChanged:
-                                                          (index, reason) {
-                                                        setState(() {
-                                                          _currentEventIndex =
-                                                              index;
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : const SizedBox();
-                                      },
-                                      loading: () => const Center(
-                                          child: LoadingAnimation()),
-                                      error: (error, stackTrace) {
-                                        print(error);
-                                        print(stackTrace);
-                                        return const SizedBox();
-                                      }),
+
+                                  if (event != null)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 15, top: 10),
+                                                child: Text('Event',
+                                                    style: kBodyTitleB),
+                                              ),
+                                              const Spacer(),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 15, top: 10),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    navigationService.pushNamed(
+                                                        'EventsPage');
+                                                  },
+                                                  child: Text('View All',
+                                                      style:
+                                                          kSmallTitleR.copyWith(
+                                                              color:
+                                                                  kPrimaryColor)),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 8.0),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                navigationService.pushNamed(
+                                                    'EventDetails',
+                                                    arguments: event);
+                                              },
+                                              child: eventWidget(
+                                                context: context,
+                                                event: event,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
                                   const SizedBox(height: 16),
                                   if (notices.isNotEmpty)
                                     Column(
@@ -435,135 +401,123 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         ],
                                       ),
                                     ),
-                                  const SizedBox(height: 16),
-                                  asyncNewsModel.when(
-                                    data: (news) {
-                                      return news.isNotEmpty
-                                          ? Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 15,
-                                                          top: 10,
-                                                          right: 15),
-                                                  child: Row(
-                                                    children: [
-                                                      Text('Latest News',
-                                                          style: kBodyTitleB),
-                                                      const Spacer(),
-                                                      InkWell(
-                                                        onTap: () => ref
-                                                            .read(
-                                                                selectedIndexProvider
-                                                                    .notifier)
-                                                            .updateIndex(3),
-                                                        child: Text('see all',
-                                                            style:
-                                                                kSmallTitleR),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                SizedBox(
-                                                  height: 180,
-                                                  child: ListView.builder(
-                                                    controller:
-                                                        ScrollController(),
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    itemCount: news.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      final individualNewsModel =
-                                                          news[index];
-                                                      return Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal:
-                                                                    8.0),
-                                                        child: SizedBox(
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.45,
-                                                          child: newsCard(
-                                                            onTap: () {
-                                                              ref
-                                                                  .read(selectedIndexProvider
-                                                                      .notifier)
-                                                                  .updateIndex(
-                                                                      3);
-                                                            },
-                                                            imageUrl:
-                                                                individualNewsModel
-                                                                        .media ??
-                                                                    '',
-                                                            title:
-                                                                individualNewsModel
-                                                                        .title ??
-                                                                    '',
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : const SizedBox();
-                                    },
-                                    loading: () =>
-                                        const Center(child: LoadingAnimation()),
-                                    error: (error, stackTrace) =>
-                                        const SizedBox(),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20),
-                                    child: Column(
+                                  // News section: use news from homeData
+                                  if (news.isNotEmpty)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        CarouselSlider(
-                                          items: posters
-                                              .asMap()
-                                              .entries
-                                              .map((entry) {
-                                            int index = entry.key;
-                                            Promotion poster = entry.value;
-
-                                            return KeyedSubtree(
-                                                key: ValueKey(index),
-                                                child: CampaignCard(
-                                                  tag: 'CSR',
-                                                  onDonate: () {},
-                                                ));
-                                          }).toList(),
-                                          options: CarouselOptions(
-                                            height: 420,
-                                            scrollPhysics: posters.length > 1
-                                                ? null
-                                                : const NeverScrollableScrollPhysics(),
-                                            autoPlay: posters.length > 1,
-                                            viewportFraction: 1,
-                                            autoPlayInterval:
-                                                const Duration(seconds: 5),
-                                            onPageChanged: (index, reason) {
-                                              setState(() {
-                                                _currentPosterIndex = index;
-                                              });
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 15, top: 30, right: 15),
+                                          child: Row(
+                                            children: [
+                                              Text('Latest News',
+                                                  style: kBodyTitleB),
+                                              const Spacer(),
+                                              InkWell(
+                                                onTap: () => ref
+                                                    .read(selectedIndexProvider
+                                                        .notifier)
+                                                    .updateIndex(3),
+                                                child: Text('see all',
+                                                    style: kSmallTitleR),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        SizedBox(
+                                          height: 180,
+                                          child: ListView.builder(
+                                            controller: ScrollController(),
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: news.length,
+                                            itemBuilder: (context, index) {
+                                              final individualNewsModel =
+                                                  news[index];
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.45,
+                                                  child: newsCard(
+                                                    onTap: () {
+                                                      ref
+                                                          .read(
+                                                              selectedIndexProvider
+                                                                  .notifier)
+                                                          .updateIndex(3);
+                                                    },
+                                                    imageUrl:
+                                                        individualNewsModel
+                                                                .media ??
+                                                            '',
+                                                    title: individualNewsModel
+                                                            .title ??
+                                                        '',
+                                                  ),
+                                                ),
+                                              );
                                             },
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
-                                  ),
+                                  if (campaign != null)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 15, top: 10),
+                                              child: Text('Campaign',
+                                                  style: kBodyTitleB),
+                                            ),
+                                            const Spacer(),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 15, top: 10),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  navigationService.pushNamed(
+                                                      'CampaignsPage');
+                                                },
+                                                child: Text('View All ',
+                                                    style:
+                                                        kSmallTitleR.copyWith(
+                                                            color:
+                                                                kPrimaryColor)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0, vertical: 8.0),
+                                          child: CampaignCard(
+                                            campaign: campaign,
+                                            onLearnMore: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      CampaignDetailPage(
+                                                          campaign: campaign),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   const SizedBox(
                                     height: 20,
                                   ),
@@ -627,13 +581,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                   ),
                 ),
                 error: (error, stackTrace) {
-                  log(error.toString(), name: 'PROMOTION FETCH ERROR');
+                  log(error.toString(), name: 'HOME FETCH ERROR');
                   return SafeArea(
                     child: Scaffold(
                       backgroundColor: kBackgroundColor,
                       body: Container(
-                        decoration: const BoxDecoration(color: kBackgroundColor),
-                        child: const Center(child: Text('NO PROMOTIONS YET')),
+                        decoration:
+                            const BoxDecoration(color: kBackgroundColor),
+                        child: const Center(child: Text('NO HOME DATA YET')),
                       ),
                     ),
                   );
@@ -866,8 +821,7 @@ Widget customNotice({
   required Promotion notice,
 }) {
   return Padding(
-    padding: const EdgeInsets.symmetric(
-        horizontal: 16), // Adjust spacing between posters
+    padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Container(
       width: MediaQuery.of(context).size.width - 32,
       padding: const EdgeInsets.all(16),
@@ -878,13 +832,12 @@ Widget customNotice({
             color: kBlack.withOpacity(0.2),
             blurRadius: 10,
             spreadRadius: 0,
-            offset: const Offset(
-                0, 5), // Horizontal (0), Vertical (5) for bottom shadow
+            offset: const Offset(0, 5),
           ),
         ],
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
-          color: kPrimaryColor,
+          color: kStrokeColor,
           width: 1.0,
         ),
       ),
@@ -899,37 +852,13 @@ Widget customNotice({
                 Center(
                   child: Text(
                     'Notice',
-                    style: kSubHeadingB.copyWith(color: kPrimaryColor),
+                    style: kSubHeadingB,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Center(
-                  child: Container(
-                      width: 70, // Width of the line
-                      height: 1, // Thickness of the line
-                      color: kPrimaryColor // Line color
-                      ),
-                ),
-                const SizedBox(height: 4),
-                Center(
-                  child: Text(
-                    notice.title!,
-                    style: kSmallTitleB.copyWith(color: kBlack),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Center(
-                  child: Container(
-                      width: 70, // Width of the line
-                      height: 1, // Thickness of the line
-                      color: kPrimaryColor // Line color
-                      ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   notice.description?.trim() ?? '',
-                  style: const TextStyle(color: kGreyDark // Set the font color
-                      ),
+                  style: const TextStyle(color: kSecondaryTextColor),
                 ),
               ],
             ),

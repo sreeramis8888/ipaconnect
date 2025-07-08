@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_details.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_member_list.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/event/events_page.dart';
 
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
@@ -152,6 +153,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //           ));
     // case 'MyEnquiries':
     //   return MaterialPageRoute(builder: (context) => const MyEnquiriesPage());
+    case 'EventsPage':
+      return MaterialPageRoute(builder: (context) => EventsPage());
     default:
       return MaterialPageRoute(
         builder: (context) => Scaffold(

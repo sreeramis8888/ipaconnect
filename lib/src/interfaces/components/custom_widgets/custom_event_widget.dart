@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
 Widget eventWidget({
@@ -109,21 +110,16 @@ Widget eventWidget({
               Row(
                 children: [
                   Expanded(
-                      child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: kPrimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 15),
+                    child: customButton(
+                      label: 'Register Now',
+                      onPressed: () {
+                        NavigationService navigationService =
+                            NavigationService();
+                        navigationService.pushNamed('EventDetails',
+                            arguments: event);
+                      },
                     ),
-                    child: const Text(
-                      'Register Now',
-                      style: TextStyle(color: kWhite),
-                    ),
-                  )),
+                  ),
                   const SizedBox(width: 10),
                   Container(
                     decoration: BoxDecoration(

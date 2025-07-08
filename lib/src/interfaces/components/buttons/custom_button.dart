@@ -17,7 +17,7 @@ Widget customButton({
   final Gradient effectiveGradient = gradient ??
       const LinearGradient(
         stops: [0.4, .9],
-        colors: [defaultGradientStart, defaultGradientEnd],
+        colors: [Color(0xFF1E3A81), Color(0xFF355BBB)],
       );
 
   final BorderRadius borderRadius = BorderRadius.circular(8);
@@ -26,16 +26,16 @@ Widget customButton({
     height: buttonHeight.toDouble(),
     width: double.infinity,
     child: Material(
-      color: Colors.transparent, // Important to avoid white bleed
-      borderRadius: borderRadius, // Apply same radius
+      color: Colors.transparent,
+      borderRadius: borderRadius,
       child: InkWell(
         onTap: isLoading || onPressed == null ? null : onPressed,
-        borderRadius: borderRadius, // Apply same radius here
+        borderRadius: borderRadius,
         child: Ink(
           decoration: BoxDecoration(
             gradient: gradient == null ? effectiveGradient : gradient,
             color: gradient == null ? null : buttonColor,
-            borderRadius: borderRadius, // Apply same radius here too
+            borderRadius: borderRadius,
             border: Border.all(color: sideColor),
           ),
           child: Center(
@@ -53,7 +53,7 @@ Widget customButton({
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (icon != null) ...[
-                        icon!,
+                        icon,
                         const SizedBox(width: 8),
                       ],
                       Text(

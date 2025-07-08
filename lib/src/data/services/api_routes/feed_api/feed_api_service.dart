@@ -21,7 +21,7 @@ class FeedApiService {
 
   Future<List<FeedModel>> getFeeds({int pageNo = 1, int limit = 10}) async {
     final response = await _apiService
-        .get('/requirements/self?page_no=$pageNo&limit=$limit');
+        .get('/requirements?page_no=$pageNo&limit=$limit&status=published');
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];

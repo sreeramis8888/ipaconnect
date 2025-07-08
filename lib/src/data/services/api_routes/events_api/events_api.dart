@@ -18,16 +18,18 @@ class EventsApiService {
   final ApiService _apiService;
   EventsApiService(this._apiService);
 
-  Future<List<EventsModel>> fetchEvents() async {
-    final response = await _apiService.get('/event/list');
-    if (response.success && response.data != null) {
-      final List<dynamic> data = response.data!['data'];
-      return data.map((json) => EventsModel.fromJson(json)).toList();
-    } else {
-      SnackbarService().showSnackBar(response.message ?? 'Failed to fetch events', type: SnackbarType.error);
-      throw Exception(response.message ?? 'Failed to fetch events');
-    }
-  }
+  // Future<List<EventsModel>> fetchEvents() async {
+  //   final response = await _apiService.get('/events/list');
+  //   if (response.success && response.data != null) {
+  //     final List<dynamic> data = response.data!['data'];
+  //     return data.map((json) => EventsModel.fromJson(json)).toList();
+  //   } else {
+  //     SnackbarService().showSnackBar(
+  //         response.message ?? 'Failed to fetch events',
+  //         type: SnackbarType.error);
+  //     throw Exception(response.message ?? 'Failed to fetch events');
+  //   }
+  // }
 
   Future<EventsModel> fetchEventById(String id) async {
     final response = await _apiService.get('/event/single/$id');
@@ -35,7 +37,9 @@ class EventsApiService {
       final dynamic data = response.data!['data'];
       return EventsModel.fromJson(data);
     } else {
-      SnackbarService().showSnackBar(response.message ?? 'Failed to fetch event', type: SnackbarType.error);
+      SnackbarService().showSnackBar(
+          response.message ?? 'Failed to fetch event',
+          type: SnackbarType.error);
       throw Exception(response.message ?? 'Failed to fetch event');
     }
   }
@@ -46,7 +50,9 @@ class EventsApiService {
       final dynamic data = response.data!['data'];
       return AttendanceUserListModel.fromJson(data);
     } else {
-      SnackbarService().showSnackBar(response.message ?? 'Failed to fetch attendance', type: SnackbarType.error);
+      SnackbarService().showSnackBar(
+          response.message ?? 'Failed to fetch attendance',
+          type: SnackbarType.error);
       throw Exception(response.message ?? 'Failed to fetch attendance');
     }
   }
@@ -57,7 +63,9 @@ class EventsApiService {
       final List<dynamic> data = response.data!['data'];
       return data.map((json) => EventsModel.fromJson(json)).toList();
     } else {
-      SnackbarService().showSnackBar(response.message ?? 'Failed to fetch my events', type: SnackbarType.error);
+      SnackbarService().showSnackBar(
+          response.message ?? 'Failed to fetch my events',
+          type: SnackbarType.error);
       throw Exception(response.message ?? 'Failed to fetch my events');
     }
   }
@@ -67,7 +75,8 @@ class EventsApiService {
     if (response.success) {
       SnackbarService().showSnackBar('RSVP marked successfully');
     } else {
-      SnackbarService().showSnackBar(response.message ?? 'Failed to mark RSVP', type: SnackbarType.error);
+      SnackbarService().showSnackBar(response.message ?? 'Failed to mark RSVP',
+          type: SnackbarType.error);
       throw Exception(response.message ?? 'Failed to mark RSVP');
     }
   }
@@ -76,31 +85,52 @@ class EventsApiService {
     required String eventId,
     required String userId,
   }) async {
-    final response = await _apiService.post('/event/attend/$eventId', {'userId': userId});
+    final response =
+        await _apiService.post('/event/attend/$eventId', {'userId': userId});
     if (response.success && response.data != null) {
       final dynamic data = response.data!['data'];
       return AttendanceUserModel.fromJson(data);
     } else {
-      SnackbarService().showSnackBar(response.message ?? 'Failed to mark attendance', type: SnackbarType.error);
+      SnackbarService().showSnackBar(
+          response.message ?? 'Failed to mark attendance',
+          type: SnackbarType.error);
       return null;
+    }
+  }
+
+  Future<List<EventsModel>> fetchEventsPaginated(
+      {required int page, required int limit}) async {
+    final response =
+        await _apiService.get('/events?page_no=$page&limit=$limit');
+    if (response.success && response.data != null) {
+      final List<dynamic> data = response.data!['data'];
+      return data.map((json) => EventsModel.fromJson(json)).toList();
+    } else {
+      SnackbarService().showSnackBar(
+          response.message ?? 'Failed to fetch events',
+          type: SnackbarType.error);
+      return [];
     }
   }
 }
 
 @riverpod
-Future<List<EventsModel>> fetchEvents(Ref ref) async {
+Future<List<EventsModel>> fetchEvents(Ref ref ,  {int pageNo = 1, int limit = 10}) async {
   final eventsApiService = ref.watch(eventsApiServiceProvider);
-  return eventsApiService.fetchEvents();
+  return eventsApiService.fetchEventsPaginated(page:  pageNo, limit: limit);
 }
 
 @riverpod
-Future<EventsModel> fetchEventById(FetchEventByIdRef ref, {required String id}) async {
+Future<EventsModel> fetchEventById(FetchEventByIdRef ref,
+    {required String id}) async {
   final eventsApiService = ref.watch(eventsApiServiceProvider);
   return eventsApiService.fetchEventById(id);
 }
 
 @riverpod
-Future<AttendanceUserListModel> fetchEventAttendance(FetchEventAttendanceRef ref, {required String eventId}) async {
+Future<AttendanceUserListModel> fetchEventAttendance(
+    FetchEventAttendanceRef ref,
+    {required String eventId}) async {
   final eventsApiService = ref.watch(eventsApiServiceProvider);
   return eventsApiService.fetchEventAttendance(eventId);
 }
