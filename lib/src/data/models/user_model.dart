@@ -21,14 +21,14 @@ abstract class UserModel with _$UserModel {
     String? status,
     @JsonKey(name: 'is_ipa_member') bool? isIpaMember,
     @JsonKey(name: 'is_admin') bool? isAdmin,
-    String? hierarchy, // ObjectId
-    String? role, // ObjectId
+    String? hierarchy,
+    String? role, 
     @JsonKey(name: 'last_seen') DateTime? lastSeen,
     bool? online,
     @JsonKey(name: 'reject_reason') String? rejectReason,
     String? bio,
     @JsonKey(name: 'social_media')
-    List<SocialMedia>? socialMedia,
+    List<UserSocialMedia>? socialMedia,
     @JsonKey(name: 'createdAt') DateTime? createdAt,
     @JsonKey(name: 'updatedAt') DateTime? updatedAt,
   @JsonKey(name: '_id') String? id,
@@ -39,12 +39,12 @@ abstract class UserModel with _$UserModel {
 }
 
 @freezed
-abstract class SocialMedia with _$SocialMedia {
-  factory SocialMedia({
+abstract class UserSocialMedia with _$UserSocialMedia {
+  factory UserSocialMedia({
     String? name,
     String? url,
-  }) = _SocialMedia;
+  }) = _UserSocialMedia;
 
-  factory SocialMedia.fromJson(Map<String, dynamic> json) =>
-      _$SocialMediaFromJson(json);
+  factory UserSocialMedia.fromJson(Map<String, dynamic> json) =>
+      _$UserSocialMediaFromJson(json);
 }

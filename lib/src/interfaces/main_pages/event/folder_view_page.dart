@@ -15,6 +15,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'dart:typed_data';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 
 class FolderViewPage extends ConsumerStatefulWidget {
   final String folderId;
@@ -166,103 +167,20 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
 
   Future<void> _showDeleteConfirmation(EventFile file) async {
     final fileType = file.type == 'image' ? 'Image' : 'Video';
-    return showDialog(
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: kWhite,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.delete_outline,
-                  color: Colors.red.shade700,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Delete $fileType',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Are you sure you want to delete this $fileType?',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'This action cannot be undone.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: TextButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _deleteFile(file);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.shade50,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Delete',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.red.shade700,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
-        );
-      },
+      builder: (context) => ConfirmationDialog(
+        title: 'Delete $fileType',
+        content: 'Are you sure you want to delete this $fileType?\nThis action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        icon: Icon(Icons.delete_outline, color: Colors.red.shade700, size: 24),
+        confirmColor: Colors.red.shade700,
+      ),
     );
+    if (confirmed == true) {
+      _deleteFile(file);
+    }
   }
 
   Future<void> _downloadImage(String imageUrl) async {

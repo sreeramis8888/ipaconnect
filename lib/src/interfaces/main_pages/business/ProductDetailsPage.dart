@@ -44,7 +44,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: CustomRoundButton(offset:  Offset(4, 0),
+          child: CustomRoundButton(
+            offset: Offset(4, 0),
             iconPath: 'assets/svg/icons/arrow_back_ios.svg',
           ),
         ),
@@ -133,10 +134,30 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   Text('Product Information',
                       style: kBodyTitleB.copyWith(fontSize: 16)),
                   SizedBox(height: 6),
-                  Text(product.description ?? '-',
-                      style: TextStyle(
-                          color: kSecondaryTextColor,
-                          fontWeight: FontWeight.w200)),
+                  if (product.specifications.isNotEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: product.specifications
+                          .map((spec) => Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('• ',
+                                      style: TextStyle(
+                                          color: kSecondaryTextColor)),
+                                  Expanded(
+                                      child: Text(spec,
+                                          style: TextStyle(
+                                              color: kSecondaryTextColor,
+                                              fontWeight: FontWeight.w200))),
+                                ],
+                              ))
+                          .toList(),
+                    )
+                  else
+                    Text('-',
+                        style: TextStyle(
+                            color: kSecondaryTextColor,
+                            fontWeight: FontWeight.w200)),
                   SizedBox(height: 16),
                   Row(
                     children: [

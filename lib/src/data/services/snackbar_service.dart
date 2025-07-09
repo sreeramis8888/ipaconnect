@@ -34,14 +34,20 @@ class SnackbarService {
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: bgColor.withOpacity(0.3), blurRadius: 12, offset: Offset(0, 4)),
-            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: Offset(0, 2)),
+            BoxShadow(
+                color: bgColor.withOpacity(0.3),
+                blurRadius: 12,
+                offset: Offset(0, 4)),
+            BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: Offset(0, 2)),
           ],
         ),
         child: Row(
           children: [
-            _iconBox(icon, iconColor),
-            SizedBox(width: 16),
+            // _iconBox( icon, iconColor),
+            // SizedBox(width: 16),
             Expanded(child: _messageText(message)),
             _okButton(),
           ],
@@ -59,14 +65,14 @@ class SnackbarService {
     return scaffoldMessengerKey.currentState!.showSnackBar(snackBar);
   }
 
-  Widget _iconBox(IconData icon, Color color) => Container(
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: color, size: 24),
-      );
+  // Widget _iconBox(IconData icon, Color color) => Container(
+  //       padding: EdgeInsets.all(8),
+  //       decoration: BoxDecoration(
+  //         color: Colors.white.withOpacity(0.2),
+  //         borderRadius: BorderRadius.circular(12),
+  //       ),
+  //       child: Icon( icon, color: color, size: 24),
+  //     );
 
   Widget _messageText(String message) => Text(
         message,

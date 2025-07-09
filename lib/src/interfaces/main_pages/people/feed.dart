@@ -18,6 +18,7 @@ import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_feed_modalSheet.dart';
+import 'package:ipaconnect/src/interfaces/components/shimmers/feed_shimmer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ipaconnect/src/data/services/image_upload.dart';
@@ -128,7 +129,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
 
     return RefreshIndicator(
       backgroundColor: kPrimaryColor,
-      color: Colors.red,
+      color: kCardBackgroundColor,
       onRefresh: () => ref.read(feedNotifierProvider.notifier).refreshFeed(),
       child: Scaffold(
         backgroundColor: kBackgroundColor,
@@ -155,7 +156,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
                 Expanded(
                   child: isFirstLoad
                       ? Center(
-                          child: LoadingAnimation(),
+                          child: FeedShimmer(),
                         )
                       : filteredFeeds.isEmpty
                           ? Center(
@@ -171,7 +172,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
                               itemBuilder: (context, index) {
                                 if (index == filteredFeeds.length) {
                                   return isLoading
-                                      ? const LoadingAnimation()
+                                      ? const FeedShimmer()
                                       : const SizedBox.shrink();
                                 }
 
@@ -302,7 +303,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
                   //     sender: sender);
                 });
           },
-          loading: () => const LoadingAnimation(),
+          loading: () => const FeedShimmer(),
           error: (error, stackTrace) {
             return const Center(
               child: Text('No Posts'),
@@ -337,11 +338,16 @@ class ReusableBusinessPost extends ConsumerStatefulWidget {
 }
 
 class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   FocusNode commentFocusNode = FocusNode();
   bool isLiked = false;
-  bool showHeartAnimation = false;
+
   late AnimationController _animationController;
+
+  late AnimationController _burstController;
+  List<Animation<Offset>> _burstAnimations = [];
+  bool showHeartBurst = false;
+
   TextEditingController commentController = TextEditingController();
   int likes = 0;
 
@@ -352,31 +358,55 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   }
 
   initialize() async {
-    if (widget.business.likes != null) {
-      if (widget.business.likes!.contains(id)) {
-        isLiked = true;
-      }
+    if (widget.business.likes != null && widget.business.likes!.contains(id)) {
+      isLiked = true;
     }
     likes = widget.business.likes?.length ?? 0;
+
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 700),
       vsync: this,
     );
+    _burstController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _burstAnimations = [
+      Tween<Offset>(begin: Offset.zero, end: const Offset(-40, -70))
+          .animate(_burstController),
+      Tween<Offset>(begin: Offset.zero, end: const Offset(0, -80))
+          .animate(_burstController),
+      Tween<Offset>(begin: Offset.zero, end: const Offset(40, -70))
+          .animate(_burstController),
+      Tween<Offset>(begin: Offset.zero, end: const Offset(-30, -30))
+          .animate(_burstController),
+      Tween<Offset>(begin: Offset.zero, end: const Offset(30, -30))
+          .animate(_burstController),
+    ];
   }
 
   void _toggleLike() {
+    final isNowLiked = !isLiked;
+
     setState(() {
-      likes = isLiked == true ? likes - 1 : likes + 1;
-      isLiked = !isLiked;
-      showHeartAnimation = true;
+      likes = isNowLiked ? likes + 1 : likes - 1;
+      isLiked = isNowLiked;
       widget.onLike();
     });
-    _animationController.forward().then((_) {
-      _animationController.reset();
+
+    if (isNowLiked) {
       setState(() {
-        showHeartAnimation = false;
+        showHeartBurst = true;
       });
-    });
+
+      _animationController.forward(from: 0.0);
+      _burstController.forward(from: 0.0).whenComplete(() {
+        setState(() {
+          showHeartBurst = false;
+        });
+      });
+    }
   }
 
   void _openCommentModal() {
@@ -539,7 +569,8 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: kCardBackgroundColor,
+      decoration: BoxDecoration(
+          color: kCardBackgroundColor, borderRadius: BorderRadius.circular(5)),
       margin: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -750,39 +781,60 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
-            constraints: const BoxConstraints(
-              maxHeight: 400,
-            ),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                }
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
+            height: 300,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Shimmer.fromColors(
+                  baseColor: kCardBackgroundColor,
+                  highlightColor: kStrokeColor,
                   child: Container(
-                    height: 300,
-                    color: Colors.grey[300],
+                    color: kCardBackgroundColor,
                   ),
-                );
-              },
+                ),
+                Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 300,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox.shrink();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: kCardBackgroundColor,
+                      child: const Center(
+                        child: Icon(Icons.broken_image,
+                            color: Colors.grey, size: 60),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-          if (showHeartAnimation)
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 300),
-              opacity: showHeartAnimation ? 1.0 : 0.0,
-              child: Icon(
-                Icons.favorite,
-                color: Colors.red.withOpacity(0.8),
-                size: 100,
-              ),
-            ),
+          if (showHeartBurst)
+            ..._burstAnimations.map((animation) {
+              return AnimatedBuilder(
+                animation: _burstController,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: animation.value,
+                    child: Opacity(
+                      opacity: 1.0 - _burstController.value,
+                      child: const Icon(
+                        Icons.favorite,
+                        color: Colors.redAccent,
+                        size: 74,
+                      ),
+                    ),
+                  );
+                },
+              );
+            }).toList(),
         ],
       ),
     );

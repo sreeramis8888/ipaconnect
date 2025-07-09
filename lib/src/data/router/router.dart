@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/analytics/analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_details.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_member_list.dart';
@@ -9,6 +12,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/event/events_page.dart';
 
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
@@ -17,151 +21,103 @@ import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 import '../../interfaces/onboarding/registration.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
+  Widget? page;
+  RouteTransitionsBuilder transitionsBuilder = (context, animation, secondaryAnimation, child) {
+    const begin = Offset(0.0, 1.0);
+    const end = Offset.zero;
+    const curve = Curves.easeOutCubic;
+    var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+    return SlideTransition(
+      position: animation.drive(tween),
+      child: child,
+    );
+  };
+  Duration transitionDuration = const Duration(milliseconds: 300);
+
   switch (settings?.name) {
     case 'Splash':
-      return MaterialPageRoute(builder: (context) => SplashScreen());
+      page = SplashScreen();
+      transitionsBuilder = (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      };
+      transitionDuration = const Duration(milliseconds: 500);
+      break;
     case 'MainPage':
-      return MaterialPageRoute(builder: (context) => MainPage());
+      page = MainPage();
+    case 'EditUser':
+      page = EditUser();
+    case 'Analytics':
+      page = AnalyticsPage();
+      break;
     case 'PhoneNumber':
-      return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
+      page = PhoneNumberScreen();
+      break;
     case 'RegistrationPage':
       String phone = settings?.arguments as String;
-      return MaterialPageRoute(
-          builder: (context) => RegistrationPage(
-                phone: phone,
-              ));
+      page = RegistrationPage(phone: phone);
+      transitionsBuilder = (context, animation, secondaryAnimation, child) {
+        return ScaleTransition(
+          scale: animation,
+          child: child,
+        );
+      };
+      transitionDuration = const Duration(milliseconds: 400);
+      break;
     case 'ApprovalWaitingPage':
-      return MaterialPageRoute(builder: (context) => ApprovalWaitingPage());
+      page = ApprovalWaitingPage();
+      transitionsBuilder = (context, animation, secondaryAnimation, child) {
+        return RotationTransition(
+          turns: animation,
+          child: child,
+        );
+      };
+      transitionDuration = const Duration(milliseconds: 500);
+      break;
     case 'CategoryPage':
-      BusinessCategoryModel category =
-          settings?.arguments as BusinessCategoryModel;
-      return MaterialPageRoute(
-          builder: (context) => Categorypage(
-                category: category,
-              ));
+      BusinessCategoryModel category = settings?.arguments as BusinessCategoryModel;
+      page = Categorypage(category: category);
+      break;
     case 'ProfilePreview':
       UserModel user = settings?.arguments as UserModel;
-      return MaterialPageRoute(
-          builder: (context) => ProfilePreview(
-                user: user,
-              ));
-    // case 'PhoneNumber':
-    //   return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
-    // case 'MainPage':
-    //   return MaterialPageRoute(builder: (context) => const MainPage());
-    // case 'ProfileCompletion':
-    //   return MaterialPageRoute(
-    //       builder: (context) => const ProfileCompletionScreen());
-    // case 'Card':
-    //   UserModel user = settings?.arguments as UserModel;
-    //   return MaterialPageRoute(
-    //       builder: (context) => IDCardScreen(
-    //             user: user,
-    //           ));
-    // case 'ProfilePreview':
-    //   UserModel user = settings?.arguments as UserModel;
-    //   return MaterialPageRoute(
-    //       builder: (context) => ProfilePreview(
-    //             user: user,
-    //           ));
-    // case 'ProfilePreviewUsingID':
-    //   String userId = settings?.arguments as String;
-    //   return MaterialPageRoute(
-    //       builder: (context) => ProfilePreviewUsingId(
-    //             userId: userId,
-    //           ));
+      page = ProfilePreview(user: user);
+      break;
     case 'EventDetails':
       EventsModel event = settings?.arguments as EventsModel;
-      return MaterialPageRoute(
-          builder: (context) => EventDetailsPage(
-                event: event,
-              ));
-    // case 'MemberAllocation':
-    //   UserModel newUser = settings?.arguments as UserModel;
-    //   return MaterialPageRoute(
-    //       builder: (context) => AllocateMember(
-    //             newUser: newUser,
-    //           ));
+      page = EventDetailsPage(event: event);
+      transitionsBuilder = (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide from right
+        const end = Offset.zero;
+        const curve = Curves.easeOutCubic;
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      };
+      transitionDuration = const Duration(milliseconds: 300);
+      break;
     case 'EventMemberList':
       EventsModel event = settings?.arguments as EventsModel;
-      return MaterialPageRoute(
-          builder: (context) => EventMemberList(
-                event: event,
-              ));
-    // case 'EditUser':
-    //   return MaterialPageRoute(builder: (context) => EditUser());
-    // case 'IndividualPage':
-    //   final args = settings?.arguments as Map<String, dynamic>?;
-    //   Participant sender = args?['sender'];
-    //   Participant receiver = args?['receiver'];
-
-    //   return MaterialPageRoute(
-    //       builder: (context) => IndividualPage(
-    //             receiver: receiver,
-    //             sender: sender,
-    //           ));
-    // case 'ChangeNumber':
-    //   return MaterialPageRoute(builder: (context) => ChangeNumberPage());
-    // case 'NotificationPage':
-    //   return MaterialPageRoute(builder: (context) => NotificationPage());
-    // case 'AboutPage':
-    //   return MaterialPageRoute(builder: (context) => AboutPage());
-    // case 'NewsModel':
-    //   return MaterialPageRoute(builder: (context) => NewsModelPage());
-    // case 'MemberCreation':
-    //   return MaterialPageRoute(builder: (context) => MemberCreationPage());
-    // case 'MyEvents':
-    //   return MaterialPageRoute(builder: (context) => MyEventsPage());
-    // case 'MyProducts':
-    //   return MaterialPageRoute(builder: (context) => MyProductPage());
-    // case 'EnterProductsPage':
-    //   return MaterialPageRoute(builder: (context) => EnterProductsPage());
-    // case 'MyBusinesses':
-    //   return MaterialPageRoute(builder: (context) => MyBusinessesPage());
-    // case 'AnalyticsPage':
-    //   return MaterialPageRoute(builder: (context) => AnalyticsPage());
-    // case 'SendAnalyticRequest':
-    //   return MaterialPageRoute(builder: (context) => SendAnalyticRequestPage());
-
-    // case 'RequestNFC':
-    //   return MaterialPageRoute(builder: (context) => RequestNFCPage());
-    // case 'MyReviews':
-    //   return MaterialPageRoute(builder: (context) => MyReviewsPage());
-    // case 'States':
-    //   return MaterialPageRoute(builder: (context) => StatesPage());
-
-    // case 'MySubscriptionPage':
-    //   return MaterialPageRoute(builder: (context) => MySubscriptionPage());
-
-    // case 'Terms':
-    //   return MaterialPageRoute(builder: (context) => TermsAndConditionsPage());
-
-    // case 'PrivacyPolicy':
-    //   return MaterialPageRoute(builder: (context) => PrivacyPolicyPage());
-
-    // case 'ProfileAnalytics':
-    //   UserModel user = settings?.arguments as UserModel;
-    //   return MaterialPageRoute(
-    //       builder: (context) => ProfileAnalyticsPage(
-    //             user: user,
-    //           ));
-    // case 'ActivityPage':
-    //   String chapterId = settings?.arguments as String;
-    //   return MaterialPageRoute(
-    //       builder: (context) => ActivityPage(
-    //             chapterId: chapterId,
-    //           ));
-    // case 'MyEnquiries':
-    //   return MaterialPageRoute(builder: (context) => const MyEnquiriesPage());
+      page = EventMemberList(event: event);
+      break;
     case 'EventsPage':
-      return MaterialPageRoute(builder: (context) => EventsPage());
+      page = EventsPage();
+      break;
     default:
       return MaterialPageRoute(
-        builder: (context) => Scaffold(
+        builder: (context) => Scaffold(backgroundColor: kCardBackgroundColor,
           body: Center(
-            child: Text('No path for ${settings?.name}'),
+            child: Text('No path for  ${settings?.name}',style: kSmallTitleB,),
           ),
         ),
       );
   }
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page!,
+    transitionsBuilder: transitionsBuilder,
+    transitionDuration: transitionDuration,
+  );
 }

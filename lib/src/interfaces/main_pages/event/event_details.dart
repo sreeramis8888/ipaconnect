@@ -150,7 +150,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                             ),
                             if (widget.event.status != null)
                               Positioned(
-                                top: 60,
+                                top: 20,
                                 right: 16,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(

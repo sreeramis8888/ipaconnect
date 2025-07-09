@@ -47,13 +47,22 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
             const SizedBox(height: 32),
             _menuItem(
               icon: SvgPicture.asset(
+                color: kWhite,
+                'assets/svg/icons/menu_icons/analytics.svg',
+                height: 24,
+              ),
+              label: 'Analytics',
+              onTap: () => navigationService.pushNamed('Analytics'),
+            ),
+            _menuItem(
+              icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/request_nfc.svg',
                 height: 24,
               ),
               label: 'Request NFC',
               onTap: () => navigationService.pushNamed('RequestNFC'),
             ),
-            if (user.isAdmin??false)
+            if (user.isAdmin ?? false)
               _menuItem(
                 icon: SvgPicture.asset(
                   'assets/svg/icons/menu_icons/levels.svg',

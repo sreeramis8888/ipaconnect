@@ -6,7 +6,7 @@ part of 'campaigns_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$campaignsNotifierHash() => r'6f371d297bedb9f006ac69a743bf8352b133f08b';
+String _$campaignsNotifierHash() => r'2dc60f90ba6898e6ebdcbfab7f5ab950994fe243';
 
 /// See also [CampaignsNotifier].
 @ProviderFor(CampaignsNotifier)

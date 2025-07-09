@@ -11,7 +11,9 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       user: UserRef.fromJson(json['user'] as Map<String, dynamic>),
       company: json['company'] as String,
       name: json['name'] as String,
-      description: json['description'] as String,
+      specifications: (json['specifications'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       actualPrice: (json['actual_price'] as num).toDouble(),
       discountPrice: (json['discount_price'] as num).toDouble(),
       images: (json['images'] as List<dynamic>)
@@ -30,7 +32,7 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'user': instance.user.toJson(),
       'company': instance.company,
       'name': instance.name,
-      'description': instance.description,
+      'specifications': instance.specifications,
       'actual_price': instance.actualPrice,
       'discount_price': instance.discountPrice,
       'images': instance.images.map((e) => e.toJson()).toList(),

@@ -11,6 +11,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/business/company_details_pa
 import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
 import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/add_company_page.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 
 class Categorypage extends ConsumerStatefulWidget {
   final BusinessCategoryModel category;
@@ -152,11 +153,11 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                             return Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 10),
-                              child: CompanyCard(userName: company.user?.name??'',
+                              child: CompanyCard(
+                                userName: company.user?.name ?? '',
                                 companyUserId: company.user?.id ?? '',
                                 companyName: company.name ?? '',
                                 rating: 4.9,
-                       
                                 industry: company.category ?? '',
                                 location: company.contactInfo?.address ?? '',
                                 isActive:
@@ -190,24 +191,14 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                                 onDelete: () async {
                                   final confirmed = await showDialog<bool>(
                                     context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Delete Company'),
-                                      content: Text(
-                                          'Are you sure you want to delete this company?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, false),
-                                          child: Text('Cancel'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, true),
-                                          child: Text('Delete',
-                                              style:
-                                                  TextStyle(color: Colors.red)),
-                                        ),
-                                      ],
+                                    builder: (context) => ConfirmationDialog(
+                                      title: 'Delete Company',
+                                      content:
+                                          'Are you sure you want to delete this company?',
+                                      confirmText: 'Delete',
+                                      cancelText: 'Cancel',
+                                      icon: const Icon(Icons.delete_outline,
+                                          color: Colors.red, size: 24),
                                     ),
                                   );
                                   if (confirmed == true) {

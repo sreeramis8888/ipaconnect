@@ -33,8 +33,8 @@ mixin _$UserModel {
   bool? get isIpaMember;
   @JsonKey(name: 'is_admin')
   bool? get isAdmin;
-  String? get hierarchy; // ObjectId
-  String? get role; // ObjectId
+  String? get hierarchy;
+  String? get role;
   @JsonKey(name: 'last_seen')
   DateTime? get lastSeen;
   bool? get online;
@@ -42,7 +42,7 @@ mixin _$UserModel {
   String? get rejectReason;
   String? get bio;
   @JsonKey(name: 'social_media')
-  List<SocialMedia>? get socialMedia;
+  List<UserSocialMedia>? get socialMedia;
   @JsonKey(name: 'createdAt')
   DateTime? get createdAt;
   @JsonKey(name: 'updatedAt')
@@ -164,7 +164,7 @@ abstract mixin class $UserModelCopyWith<$Res> {
       bool? online,
       @JsonKey(name: 'reject_reason') String? rejectReason,
       String? bio,
-      @JsonKey(name: 'social_media') List<SocialMedia>? socialMedia,
+      @JsonKey(name: 'social_media') List<UserSocialMedia>? socialMedia,
       @JsonKey(name: 'createdAt') DateTime? createdAt,
       @JsonKey(name: 'updatedAt') DateTime? updatedAt,
       @JsonKey(name: '_id') String? id});
@@ -291,7 +291,7 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
       socialMedia: freezed == socialMedia
           ? _self.socialMedia
           : socialMedia // ignore: cast_nullable_to_non_nullable
-              as List<SocialMedia>?,
+              as List<UserSocialMedia>?,
       createdAt: freezed == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -332,7 +332,7 @@ class _UserModel implements UserModel {
       this.online,
       @JsonKey(name: 'reject_reason') this.rejectReason,
       this.bio,
-      @JsonKey(name: 'social_media') final List<SocialMedia>? socialMedia,
+      @JsonKey(name: 'social_media') final List<UserSocialMedia>? socialMedia,
       @JsonKey(name: 'createdAt') this.createdAt,
       @JsonKey(name: 'updatedAt') this.updatedAt,
       @JsonKey(name: '_id') this.id})
@@ -374,10 +374,8 @@ class _UserModel implements UserModel {
   final bool? isAdmin;
   @override
   final String? hierarchy;
-// ObjectId
   @override
   final String? role;
-// ObjectId
   @override
   @JsonKey(name: 'last_seen')
   final DateTime? lastSeen;
@@ -388,10 +386,10 @@ class _UserModel implements UserModel {
   final String? rejectReason;
   @override
   final String? bio;
-  final List<SocialMedia>? _socialMedia;
+  final List<UserSocialMedia>? _socialMedia;
   @override
   @JsonKey(name: 'social_media')
-  List<SocialMedia>? get socialMedia {
+  List<UserSocialMedia>? get socialMedia {
     final value = _socialMedia;
     if (value == null) return null;
     if (_socialMedia is EqualUnmodifiableListView) return _socialMedia;
@@ -531,7 +529,7 @@ abstract mixin class _$UserModelCopyWith<$Res>
       bool? online,
       @JsonKey(name: 'reject_reason') String? rejectReason,
       String? bio,
-      @JsonKey(name: 'social_media') List<SocialMedia>? socialMedia,
+      @JsonKey(name: 'social_media') List<UserSocialMedia>? socialMedia,
       @JsonKey(name: 'createdAt') DateTime? createdAt,
       @JsonKey(name: 'updatedAt') DateTime? updatedAt,
       @JsonKey(name: '_id') String? id});
@@ -658,7 +656,7 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
       socialMedia: freezed == socialMedia
           ? _self._socialMedia
           : socialMedia // ignore: cast_nullable_to_non_nullable
-              as List<SocialMedia>?,
+              as List<UserSocialMedia>?,
       createdAt: freezed == createdAt
           ? _self.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -676,25 +674,26 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
 }
 
 /// @nodoc
-mixin _$SocialMedia {
+mixin _$UserSocialMedia {
   String? get name;
   String? get url;
 
-  /// Create a copy of SocialMedia
+  /// Create a copy of UserSocialMedia
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  $SocialMediaCopyWith<SocialMedia> get copyWith =>
-      _$SocialMediaCopyWithImpl<SocialMedia>(this as SocialMedia, _$identity);
+  $UserSocialMediaCopyWith<UserSocialMedia> get copyWith =>
+      _$UserSocialMediaCopyWithImpl<UserSocialMedia>(
+          this as UserSocialMedia, _$identity);
 
-  /// Serializes this SocialMedia to a JSON map.
+  /// Serializes this UserSocialMedia to a JSON map.
   Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is SocialMedia &&
+            other is UserSocialMedia &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.url, url) || other.url == url));
   }
@@ -705,27 +704,28 @@ mixin _$SocialMedia {
 
   @override
   String toString() {
-    return 'SocialMedia(name: $name, url: $url)';
+    return 'UserSocialMedia(name: $name, url: $url)';
   }
 }
 
 /// @nodoc
-abstract mixin class $SocialMediaCopyWith<$Res> {
-  factory $SocialMediaCopyWith(
-          SocialMedia value, $Res Function(SocialMedia) _then) =
-      _$SocialMediaCopyWithImpl;
+abstract mixin class $UserSocialMediaCopyWith<$Res> {
+  factory $UserSocialMediaCopyWith(
+          UserSocialMedia value, $Res Function(UserSocialMedia) _then) =
+      _$UserSocialMediaCopyWithImpl;
   @useResult
   $Res call({String? name, String? url});
 }
 
 /// @nodoc
-class _$SocialMediaCopyWithImpl<$Res> implements $SocialMediaCopyWith<$Res> {
-  _$SocialMediaCopyWithImpl(this._self, this._then);
+class _$UserSocialMediaCopyWithImpl<$Res>
+    implements $UserSocialMediaCopyWith<$Res> {
+  _$UserSocialMediaCopyWithImpl(this._self, this._then);
 
-  final SocialMedia _self;
-  final $Res Function(SocialMedia) _then;
+  final UserSocialMedia _self;
+  final $Res Function(UserSocialMedia) _then;
 
-  /// Create a copy of SocialMedia
+  /// Create a copy of UserSocialMedia
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -748,27 +748,27 @@ class _$SocialMediaCopyWithImpl<$Res> implements $SocialMediaCopyWith<$Res> {
 
 /// @nodoc
 @JsonSerializable()
-class _SocialMedia implements SocialMedia {
-  _SocialMedia({this.name, this.url});
-  factory _SocialMedia.fromJson(Map<String, dynamic> json) =>
-      _$SocialMediaFromJson(json);
+class _UserSocialMedia implements UserSocialMedia {
+  _UserSocialMedia({this.name, this.url});
+  factory _UserSocialMedia.fromJson(Map<String, dynamic> json) =>
+      _$UserSocialMediaFromJson(json);
 
   @override
   final String? name;
   @override
   final String? url;
 
-  /// Create a copy of SocialMedia
+  /// Create a copy of UserSocialMedia
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  _$SocialMediaCopyWith<_SocialMedia> get copyWith =>
-      __$SocialMediaCopyWithImpl<_SocialMedia>(this, _$identity);
+  _$UserSocialMediaCopyWith<_UserSocialMedia> get copyWith =>
+      __$UserSocialMediaCopyWithImpl<_UserSocialMedia>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$SocialMediaToJson(
+    return _$UserSocialMediaToJson(
       this,
     );
   }
@@ -777,7 +777,7 @@ class _SocialMedia implements SocialMedia {
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _SocialMedia &&
+            other is _UserSocialMedia &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.url, url) || other.url == url));
   }
@@ -788,29 +788,30 @@ class _SocialMedia implements SocialMedia {
 
   @override
   String toString() {
-    return 'SocialMedia(name: $name, url: $url)';
+    return 'UserSocialMedia(name: $name, url: $url)';
   }
 }
 
 /// @nodoc
-abstract mixin class _$SocialMediaCopyWith<$Res>
-    implements $SocialMediaCopyWith<$Res> {
-  factory _$SocialMediaCopyWith(
-          _SocialMedia value, $Res Function(_SocialMedia) _then) =
-      __$SocialMediaCopyWithImpl;
+abstract mixin class _$UserSocialMediaCopyWith<$Res>
+    implements $UserSocialMediaCopyWith<$Res> {
+  factory _$UserSocialMediaCopyWith(
+          _UserSocialMedia value, $Res Function(_UserSocialMedia) _then) =
+      __$UserSocialMediaCopyWithImpl;
   @override
   @useResult
   $Res call({String? name, String? url});
 }
 
 /// @nodoc
-class __$SocialMediaCopyWithImpl<$Res> implements _$SocialMediaCopyWith<$Res> {
-  __$SocialMediaCopyWithImpl(this._self, this._then);
+class __$UserSocialMediaCopyWithImpl<$Res>
+    implements _$UserSocialMediaCopyWith<$Res> {
+  __$UserSocialMediaCopyWithImpl(this._self, this._then);
 
-  final _SocialMedia _self;
-  final $Res Function(_SocialMedia) _then;
+  final _UserSocialMedia _self;
+  final $Res Function(_UserSocialMedia) _then;
 
-  /// Create a copy of SocialMedia
+  /// Create a copy of UserSocialMedia
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -818,7 +819,7 @@ class __$SocialMediaCopyWithImpl<$Res> implements _$SocialMediaCopyWith<$Res> {
     Object? name = freezed,
     Object? url = freezed,
   }) {
-    return _then(_SocialMedia(
+    return _then(_UserSocialMedia(
       name: freezed == name
           ? _self.name
           : name // ignore: cast_nullable_to_non_nullable

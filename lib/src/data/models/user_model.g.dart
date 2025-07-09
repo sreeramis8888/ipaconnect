@@ -30,7 +30,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       rejectReason: json['reject_reason'] as String?,
       bio: json['bio'] as String?,
       socialMedia: (json['social_media'] as List<dynamic>?)
-          ?.map((e) => SocialMedia.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => UserSocialMedia.fromJson(e as Map<String, dynamic>))
           .toList(),
       createdAt: json['createdAt'] == null
           ? null
@@ -69,12 +69,13 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       '_id': instance.id,
     };
 
-_SocialMedia _$SocialMediaFromJson(Map<String, dynamic> json) => _SocialMedia(
+_UserSocialMedia _$UserSocialMediaFromJson(Map<String, dynamic> json) =>
+    _UserSocialMedia(
       name: json['name'] as String?,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$SocialMediaToJson(_SocialMedia instance) =>
+Map<String, dynamic> _$UserSocialMediaToJson(_UserSocialMedia instance) =>
     <String, dynamic>{
       'name': instance.name,
       'url': instance.url,

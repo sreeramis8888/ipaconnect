@@ -18,6 +18,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_list_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_page.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/registration.dart';
@@ -100,7 +101,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       BusinessCategoriesPage(),
       PeoplePage(),
       NewsListPage(),
-      ProfilePage(user: user),
+      ProfilePreview(user: user),
     ];
     _activeIcons = [
       'assets/svg/icons/nav_icons/active_home.svg',
@@ -129,6 +130,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     switch (status.toLowerCase()) {
       case 'active':
         return Scaffold(
+          backgroundColor: Color(0xFF00031A),
           body: Center(
             child: _widgetOptions.elementAt(selectedIndex),
           ),
@@ -158,8 +160,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                     onTap: _onItemTapped,
                     showSelectedLabels: true,
                     showUnselectedLabels: false,
-                    backgroundColor:
-                        const Color(0xFF0D0D1F), // dark navy background
+                    backgroundColor: Color(0xFF00031A),
                     elevation: 0,
                     type: BottomNavigationBarType.fixed,
                     items: List.generate(5, (index) {
@@ -268,7 +269,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         });
         // Return a loading screen while navigation occurs
         return Scaffold(
-          backgroundColor: kBackgroundColor,
+          backgroundColor: Color(0xFF00031A),
           body: Center(
             child: buildShimmerPromotionsColumn(context: context),
           ),
@@ -285,7 +286,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       return asyncUser.when(
         loading: () {
           return Scaffold(
-              backgroundColor: kBackgroundColor,
+              backgroundColor: Color(0xFF00031A),
               body: SingleChildScrollView(
                   child: buildShimmerPromotionsColumn(context: context)));
         },

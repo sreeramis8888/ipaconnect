@@ -5,7 +5,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 
 class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
-  final Ref< AsyncValue<UserModel>> ref;
+  final Ref<AsyncValue<UserModel>> ref;
 
   UserNotifier(this.ref) : super(const AsyncValue.loading()) {
     _initializeUser();
@@ -19,7 +19,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
 
   Future<void> refreshUser() async {
     if (mounted) {
-      state = const AsyncValue.loading(); 
+      state = const AsyncValue.loading();
       await _fetchUserDetails();
     }
   }
@@ -42,16 +42,21 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
     state = state.whenData((user) => user.copyWith(name: name));
   }
 
-
   void updateProfession({
     String? profession,
   }) {
-    state = state.whenData((user) => user.copyWith(name:     profession,
-));
+    state = state.whenData((user) => user.copyWith(
+          profession: profession,
+        ));
   }
 
-
-
+  void updateBio({
+    String? bio,
+  }) {
+    state = state.whenData((user) => user.copyWith(
+          bio: bio,
+        ));
+  }
 
   void updateEmail(String? email) {
     state = state.whenData((user) => user.copyWith(email: email));
@@ -77,9 +82,20 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
   //   state = state.whenData((user) => user.copyWith(certificates: certificates));
   // }
 
-  // void updateSocialMedia(List<Link> social) {
-  //   state = state.whenData((user) => user.copyWith(social: social));
-  // }
+void updateSocialMediaEntry(List<UserSocialMedia> currentList, String name, String url) {
+  final List<UserSocialMedia> updatedList = [...currentList];
+  final index = updatedList.indexWhere((item) => item.name == name);
+
+  if (index != -1) {
+    // Update existing entry
+    updatedList[index] = updatedList[index].copyWith(url: url);
+  } else {
+    // Add new entry
+    updatedList.add(UserSocialMedia(name: name, url: url));
+  }
+
+  state = state.whenData((user) => user.copyWith(socialMedia: updatedList));
+}
   // void updateCompanyLogo(String? companyLogo) {
   //   state = state.whenData((user) => user.copyWith(company: Company(logo: companyLogo)));
   // }
@@ -155,8 +171,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
       (user) => user.copyWith(phone: phone),
     );
   }
-
-
 }
 
 final userProvider =

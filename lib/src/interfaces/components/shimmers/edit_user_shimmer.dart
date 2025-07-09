@@ -8,7 +8,7 @@ class EditUserShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kWhite,
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [
@@ -17,7 +17,7 @@ class EditUserShimmer extends StatelessWidget {
             onPressed: () {},
           ),
         ],
-        backgroundColor: kPrimaryLightColor,
+        backgroundColor: kBackgroundColor,
         elevation: 0,
       ),
       body: Padding(
@@ -53,13 +53,13 @@ class EditUserShimmer extends StatelessWidget {
 
   Widget _buildShimmerCircle({double radius = 25}) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: radius * 2,
         height: radius * 2,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: kCardBackgroundColor,
           shape: BoxShape.circle,
         ),
       ),
@@ -69,25 +69,25 @@ class EditUserShimmer extends StatelessWidget {
   Widget _buildShimmerLine(
       {double width = double.infinity, double height = 16}) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: width,
         height: height,
-        color: Colors.grey.shade300,
+        color: kCardBackgroundColor,
       ),
     );
   }
 
   Widget _buildShimmerField({double height = 50}) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: double.infinity,
         height: height,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: kCardBackgroundColor,
           borderRadius: BorderRadius.circular(8),
         ),
       ),

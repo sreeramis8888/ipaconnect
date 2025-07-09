@@ -90,7 +90,8 @@ class CompanyApiService {
       snackbarService.showSnackBar('Company Deleted Successfully');
       return true;
     } else {
-      snackbarService.showSnackBar('Failed to Delete Company');
+      snackbarService.showSnackBar('Failed to Delete Company',
+          type: SnackbarType.error);
       return false;
     }
   }

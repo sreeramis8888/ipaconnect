@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/glowing_animated_avatar.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
@@ -18,6 +19,7 @@ import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/company_card.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/add_company_page.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 
 class ReviewsState extends StateNotifier<int> {
   ReviewsState() : super(1);
@@ -75,7 +77,7 @@ class _ProfilePreviewState extends ConsumerState<ProfilePreview>
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color(0xFF1E62B3), Color(0xFF030920)],
+              colors: [Color.fromARGB(255, 17, 53, 97), Color(0xFF030920)],
             ),
           ),
         ),
@@ -92,19 +94,9 @@ class _ProfilePreviewState extends ConsumerState<ProfilePreview>
             scrolledUnderElevation: 0,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: Padding(
-              padding: const EdgeInsets.all(8),
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: CustomRoundButton(
-                  iconPath: 'assets/svg/icons/arrow_back_ios.svg',
-                  offset: Offset(4, 0),
-                ),
-              ),
-            ),
             centerTitle: true,
-            title: Text('Full Profile',
-                style: TextStyle(fontSize: 16, color: kWhite)),
+            title:
+                Text('Profile', style: TextStyle(fontSize: 16, color: kWhite)),
           ),
           body: SingleChildScrollView(
             child: Column(
@@ -169,6 +161,7 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = NavigationService();
     return Container(
       color: Colors.transparent,
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -237,7 +230,9 @@ class _ProfileHeader extends StatelessWidget {
               _HeaderButton(
                 icon: Icons.edit,
                 label: 'Edit Profile',
-                onTap: () {},
+                onTap: () {
+                  navigationService.pushNamed('EditUser');
+                },
               ),
               const SizedBox(width: 16),
               _HeaderButton(
@@ -483,21 +478,12 @@ class _BusinessTab extends ConsumerWidget {
                       onDelete: () async {
                         final confirmed = await showDialog<bool>(
                           context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Delete Company'),
-                            content: Text(
-                                'Are you sure you want to delete this company?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: Text('Delete',
-                                    style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
+                          builder: (context) => ConfirmationDialog(
+                            title: 'Delete Company',
+                            content: 'Are you sure you want to delete this company?',
+                            confirmText: 'Delete',
+                            cancelText: 'Cancel',
+                            icon: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
                           ),
                         );
                         if (confirmed == true) {

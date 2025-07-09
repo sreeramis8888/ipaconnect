@@ -28,7 +28,7 @@ class MyApp extends ConsumerWidget {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle.dark.copyWith(
         // Status bar color
-        statusBarColor: Color(0xFF030920),
+        statusBarColor: Colors.transparent,
         // Status bar brightness (optional)
         statusBarIconBrightness: Brightness.light, // For Android (dark icons)
         statusBarBrightness: Brightness.light, // For iOS (dark icons)

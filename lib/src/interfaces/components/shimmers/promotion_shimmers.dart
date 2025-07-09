@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:shimmer/shimmer.dart';
 
-
 Widget buildShimmerPromotionsColumn({
   required BuildContext context,
 }) {
@@ -33,7 +32,7 @@ Widget shimmerTop({
         padding: const EdgeInsets.only(left: 15, top: 10),
         child: Shimmer.fromColors(
           baseColor: kCardBackgroundColor,
-          highlightColor: kPrimaryLightColor,
+          highlightColor: kStrokeColor,
           child: Container(
             height: 25,
             width: 150,
@@ -45,7 +44,7 @@ Widget shimmerTop({
         padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
         child: Shimmer.fromColors(
           baseColor: kCardBackgroundColor,
-          highlightColor: kPrimaryLightColor,
+          highlightColor: kStrokeColor,
           child: Container(
             height: 20,
             width: 250,
@@ -64,7 +63,7 @@ Widget shimmerBanner({
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Shimmer.fromColors(
       baseColor: kCardBackgroundColor,
-      highlightColor: kPrimaryLightColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 175,
@@ -84,7 +83,7 @@ Widget shimmerNotice({
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Shimmer.fromColors(
       baseColor: kCardBackgroundColor,
-      highlightColor: kPrimaryLightColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 200,
@@ -104,7 +103,7 @@ Widget shimmerPoster({
     padding: const EdgeInsets.symmetric(horizontal: 16),
     child: Shimmer.fromColors(
       baseColor: kCardBackgroundColor,
-      highlightColor: kPrimaryLightColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 400,

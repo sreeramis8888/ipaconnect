@@ -10,7 +10,7 @@ class ProductModel {
   final UserRef user;
   final String company;
   final String name;
-  final String description;
+  final List<String> specifications;
 
   @JsonKey(name: 'actual_price')
   final double actualPrice;
@@ -34,7 +34,7 @@ class ProductModel {
     required this.user,
     required this.company,
     required this.name,
-    required this.description,
+    required this.specifications,
     required this.actualPrice,
     required this.discountPrice,
     required this.images,

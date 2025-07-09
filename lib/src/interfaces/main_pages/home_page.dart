@@ -19,7 +19,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '../../data/models/promotions_model.dart';
-import 'package:ipaconnect/src/interfaces/components/sidebar/custom_sidebar.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/sidebar/custom_sidebar.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../components/custom_widgets/custom_video.dart';
 import 'package:ipaconnect/src/data/services/api_routes/home_api/home_api_service.dart';
@@ -718,11 +718,11 @@ Widget _buildBanners(
                 fit: BoxFit.fill,
                 errorBuilder: (context, error, stackTrace) {
                   return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
+                    baseColor: kCardBackgroundColor,
+                    highlightColor: kStrokeColor,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
+                        color: kBackgroundColor,
                       ),
                     ),
                   );
@@ -733,12 +733,11 @@ Widget _buildBanners(
                   }
 
                   return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
+                    baseColor: kCardBackgroundColor,
+                    highlightColor: kStrokeColor,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8.0),
+                        color: kBackgroundColor,
                       ),
                     ),
                   );

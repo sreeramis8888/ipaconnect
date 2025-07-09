@@ -24,7 +24,6 @@ class CompanyCard extends StatelessWidget {
     Key? key,
     required this.companyName,
     required this.rating,
-
     required this.industry,
     required this.location,
     required this.isActive,
@@ -107,36 +106,36 @@ class CompanyCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: kSubHeadingB),
                         ),
-                        if (isActive)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Color(0xFF05C168).withOpacity(.3),
-                              ),
-                              color: Color(0xFF05C168).withOpacity(.2),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.green,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text('Active',
-                                    style: kSmallerTitleR.copyWith(
-                                        fontSize: 10,
-                                        color: Color(0xFF14CA74))),
-                              ],
-                            ),
-                          ),
+                        // if (isActive)
+                        //   Container(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 8, vertical: 4),
+                        //     decoration: BoxDecoration(
+                        //       border: Border.all(
+                        //         color: Color(0xFF05C168).withOpacity(.3),
+                        //       ),
+                        //       color: Color(0xFF05C168).withOpacity(.2),
+                        //       borderRadius: BorderRadius.circular(5),
+                        //     ),
+                        //     child: Row(
+                        //       mainAxisSize: MainAxisSize.min,
+                        //       children: [
+                        //         Container(
+                        //           width: 6,
+                        //           height: 6,
+                        //           decoration: const BoxDecoration(
+                        //             color: Colors.green,
+                        //             shape: BoxShape.circle,
+                        //           ),
+                        //         ),
+                        //         const SizedBox(width: 4),
+                        //         Text('Active',
+                        //             style: kSmallerTitleR.copyWith(
+                        //                 fontSize: 10,
+                        //                 color: Color(0xFF14CA74))),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     ),
 
