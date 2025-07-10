@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:custom_image_crop/custom_image_crop.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 
 import '../../data/constants/color_constants.dart';
 
@@ -10,8 +11,14 @@ class CropImageScreen extends StatefulWidget {
   final File imageFile;
   final int width;
   final int height;
+  final CustomCropShape shape; // Add this line
+
   const CropImageScreen(
-      {super.key, required this.imageFile, this.width = 16, this.height = 9});
+      {super.key,
+      required this.imageFile,
+      this.width = 16,
+      this.height = 9,
+      this.shape = CustomCropShape.Ratio}); // Add shape default
 
   @override
   _CropImageScreenState createState() => _CropImageScreenState();
@@ -50,9 +57,16 @@ class _CropImageScreenState extends State<CropImageScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crop Image'),
+        backgroundColor: kCardBackgroundColor,
+        title: Text(
+          'Crop Image',
+          style: kBodyTitleB,
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(
+            Icons.close,
+            color: kWhite,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -64,12 +78,15 @@ class _CropImageScreenState extends State<CropImageScreen> {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: kBlack,
+                      color: kWhite,
                     ),
                   ),
                 )
               : IconButton(
-                  icon: const Icon(Icons.check),
+                  icon: const Icon(
+                    Icons.check,
+                    color: kWhite,
+                  ),
                   onPressed: _cropImage,
                 ),
         ],
@@ -83,11 +100,11 @@ class _CropImageScreenState extends State<CropImageScreen> {
                 backgroundColor: Colors.black,
                 cropController: controller,
                 image: FileImage(widget.imageFile),
-                shape: CustomCropShape.Ratio,
+                shape: widget.shape, // Use the shape parameter
                 ratio: Ratio(
                     width: widget.width.toDouble(),
                     height: widget.height.toDouble()),
-                borderRadius: 0,
+                borderRadius: widget.shape == CustomCropShape.Circle ? 1000 : 0,
                 canRotate: true,
                 canMove: true,
                 canScale: true,
@@ -97,7 +114,7 @@ class _CropImageScreenState extends State<CropImageScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
+              color: kCardBackgroundColor,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
@@ -163,10 +180,7 @@ class _CropImageScreenState extends State<CropImageScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: IconButton(
-          icon: Icon(icon),
-          onPressed: onPressed,
-          color: Theme.of(context).primaryColor,
-        ),
+            icon: Icon(icon), onPressed: onPressed, color: kPrimaryColor),
       ),
     );
   }

@@ -37,7 +37,6 @@ class CampaignsNotifier extends _$CampaignsNotifier {
       } else {
         campaigns = [...campaigns, ...newCampaigns];
         pageNo++;
-        // Only set hasMore to false if we get fewer items than the limit
         hasMore = newCampaigns.length >= limit;
       }
 

@@ -8,8 +8,11 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/glowing_animated_avatar.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/shimmers/preview_shimmer.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/company_details_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/digital_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -21,6 +24,7 @@ import 'package:ipaconnect/src/interfaces/components/cards/company_card.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/add_company_page.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class ReviewsState extends StateNotifier<int> {
   ReviewsState() : super(1);
@@ -69,7 +73,8 @@ class _ProfilePreviewByIdState extends ConsumerState<ProfilePreviewById>
 
   @override
   Widget build(BuildContext context) {
-    final asyncUser = ref.watch(getUserDetailsByIdProvider(userId: widget.userId));
+    final asyncUser =
+        ref.watch(getUserDetailsByIdProvider(userId: widget.userId));
     return asyncUser.when(
       data: (user) {
         if (user == null) {
@@ -96,21 +101,73 @@ class _ProfilePreviewByIdState extends ConsumerState<ProfilePreviewById>
                 color: Color(0xFF030920),
               ),
             ),
-            // Main content
             Scaffold(
               backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                scrolledUnderElevation: 0,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                centerTitle: true,
-                title:
-                    Text('Profile', style: TextStyle(fontSize: 16, color: kWhite)),
-              ),
               body: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 24, left: 16, right: 16, bottom: 8),
+                      child: SizedBox(
+                        height: 84,
+                        width: double.infinity,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Center(
+                              child: Text(
+                                'Profile',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: kWhite,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DigitalCardPage(user: user),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    gradient: const RadialGradient(
+                                      center: Alignment.topLeft,
+                                      radius: 1.2,
+                                      colors: [
+                                        Color(0x802EA7FF),
+                                        Color(0x331C1B33),
+                                      ],
+                                      stops: [0.0, .7],
+                                    ),
+                                    border: Border.all(
+                                      color: Color(0x1A17B9FF),
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.qr_code,
+                                    color: kWhite,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     _ProfileHeader(user: user),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -136,8 +193,7 @@ class _ProfilePreviewByIdState extends ConsumerState<ProfilePreviewById>
                       ),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height *
-                          0.8, // Adjust as needed
+                      height: MediaQuery.of(context).size.height * 0.8,
                       child: TabBarView(
                         controller: _tabController,
                         physics: NeverScrollableScrollPhysics(),
@@ -177,8 +233,6 @@ class _ProfilePreviewByIdState extends ConsumerState<ProfilePreviewById>
   }
 }
 
-// ... rest of the code (copy all helper widgets/classes from preview.dart) ...
-
 class _ProfileHeader extends StatelessWidget {
   final UserModel user;
   const _ProfileHeader({required this.user});
@@ -195,9 +249,9 @@ class _ProfileHeader extends StatelessWidget {
             imageUrl: user.image,
             defaultAvatarAsset: 'assets/svg/icons/dummy_person_large.svg',
             size: 90,
-            glowColor: kWhite,
+            glowColor: kPrimaryColor,
             borderColor: kWhite,
-            borderWidth: 3.0,
+            borderWidth: 1.0,
           ),
           const SizedBox(height: 12),
           Text(user.name ?? '', style: kHeadTitleB.copyWith(color: kWhite)),
@@ -220,15 +274,18 @@ class _ProfileHeader extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: kCardBackgroundColor,
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(colors: [
+                    Color(0xFF1E62B3).withOpacity(.5),
+                    kStrokeColor.withOpacity(.5)
+                  ]),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
                     // SvgPicture.asset('assets/svg/icons/levels.svg', width: 18, color: kPrimaryColor),
                     const SizedBox(width: 6),
-                    Text('Premium Member',
-                        style: kSmallTitleB.copyWith(color: kPrimaryColor)),
+                    Text(user.memberId ?? '',
+                        style: kSmallTitleB.copyWith(color: kWhite)),
                   ],
                 ),
               ),
@@ -338,6 +395,7 @@ class _OverviewTab extends StatelessWidget {
                     style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
               ],
             ),
+          const SizedBox(height: 8),
           if (user.email != null && user.email!.isNotEmpty)
             Row(
               children: [
@@ -347,6 +405,7 @@ class _OverviewTab extends StatelessWidget {
                     style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
               ],
             ),
+          const SizedBox(height: 8),
           if (user.location != null && user.location!.isNotEmpty)
             Row(
               children: [
@@ -504,10 +563,12 @@ class _BusinessTab extends ConsumerWidget {
                           context: context,
                           builder: (context) => ConfirmationDialog(
                             title: 'Delete Company',
-                            content: 'Are you sure you want to delete this company?',
+                            content:
+                                'Are you sure you want to delete this company?',
                             confirmText: 'Delete',
                             cancelText: 'Cancel',
-                            icon: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.red, size: 24),
                           ),
                         );
                         if (confirmed == true) {
@@ -537,4 +598,4 @@ class _BusinessTab extends ConsumerWidget {
       ],
     );
   }
-} 
+}

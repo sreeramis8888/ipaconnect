@@ -111,33 +111,28 @@ class _CustomShimmerState extends State<CustomShimmer>
   }
 }
 
-
 class ShimmerContainer extends StatelessWidget {
   final double width;
   final double height;
   final BorderRadius? borderRadius;
-  final Color? baseColor;
-  final Color? highlightColor;
 
   const ShimmerContainer({
     Key? key,
     required this.width,
     required this.height,
     this.borderRadius,
-    this.baseColor,
-    this.highlightColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CustomShimmer(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
+      baseColor: kCardBackgroundColor,
+      highlightColor: kStrokeColor,
       child: Container(
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: baseColor ?? kCardBackgroundColor,
+          color: kCardBackgroundColor,
           borderRadius: borderRadius ?? BorderRadius.circular(8),
         ),
       ),

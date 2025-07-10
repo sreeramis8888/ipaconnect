@@ -73,7 +73,7 @@ class CustomTextFormField extends StatelessWidget {
                         .updateAddress(textController!.text);
                     break;
 
-                  case 'Enter Designation':
+                  case 'Enter your Profession':
                     ref
                         .read(userProvider.notifier)
                         .updateProfession(profession: textController!.text);
@@ -105,22 +105,24 @@ class CustomTextFormField extends StatelessWidget {
 
                     break;
                   case 'Enter Twitter':
-                  final currentSocials = ref.read(userProvider).value?.socialMedia ?? [];
-ref.read(userProvider.notifier).updateSocialMediaEntry(
-  currentSocials,
-  'twitter',
-  textController!.text,
-);
+                    final currentSocials =
+                        ref.read(userProvider).value?.socialMedia ?? [];
+                    ref.read(userProvider.notifier).updateSocialMediaEntry(
+                          currentSocials,
+                          'twitter',
+                          textController!.text,
+                        );
 
                     break;
 
                   case 'Enter Facebook':
-                       final currentSocials = ref.read(userProvider).value?.socialMedia ?? [];
-ref.read(userProvider.notifier).updateSocialMediaEntry(
-  currentSocials,
-  'facebook',
-  textController!.text,
-);
+                    final currentSocials =
+                        ref.read(userProvider).value?.socialMedia ?? [];
+                    ref.read(userProvider.notifier).updateSocialMediaEntry(
+                          currentSocials,
+                          'facebook',
+                          textController!.text,
+                        );
 
                     break;
 

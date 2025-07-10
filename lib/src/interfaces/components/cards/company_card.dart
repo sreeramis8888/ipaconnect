@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ipaconnect/src/interfaces/components/dropdown/company_card_options_dropdown.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 
 class CompanyCard extends StatelessWidget {
   final String companyName;
@@ -144,19 +145,13 @@ class CompanyCard extends StatelessWidget {
                     // Rating
                     Row(
                       children: [
-                        Text(rating.toString(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: kSmallTitleR.copyWith(
-                                color: kSecondaryTextColor)),
-                        const SizedBox(width: 4),
-                        ...List.generate(
-                          3,
-                          (index) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 12,
-                          ),
+                        StarRating(
+                          rating: rating,
+                          size: 12,
+                          showNumber: true,
+                          color: Colors.amber,
+                          numberStyle: kSmallTitleR.copyWith(
+                              color: kSecondaryTextColor, fontSize: 10),
                         ),
                       ],
                     ),

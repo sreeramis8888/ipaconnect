@@ -32,7 +32,7 @@ class EventsApiService {
   // }
 
   Future<EventsModel> fetchEventById(String id) async {
-    final response = await _apiService.get('/event/single/$id');
+    final response = await _apiService.get('/events/single/$id');
     if (response.success && response.data != null) {
       final dynamic data = response.data!['data'];
       return EventsModel.fromJson(data);
@@ -45,7 +45,7 @@ class EventsApiService {
   }
 
   Future<AttendanceUserListModel> fetchEventAttendance(String eventId) async {
-    final response = await _apiService.get('/event/attend/$eventId');
+    final response = await _apiService.get('/events/attend/$eventId');
     if (response.success && response.data != null) {
       final dynamic data = response.data!['data'];
       return AttendanceUserListModel.fromJson(data);
@@ -58,7 +58,7 @@ class EventsApiService {
   }
 
   Future<List<EventsModel>> fetchMyEvents() async {
-    final response = await _apiService.get('/event/reg-events');
+    final response = await _apiService.get('/events/reg-events');
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
       return data.map((json) => EventsModel.fromJson(json)).toList();
@@ -71,13 +71,13 @@ class EventsApiService {
   }
 
   Future<void> markEventAsRSVP(String eventId) async {
-    final response = await _apiService.patch('/event/single/$eventId', {});
+    final response = await _apiService.patch('/events/$eventId', null);
     if (response.success) {
-      SnackbarService().showSnackBar('RSVP marked successfully');
+      SnackbarService().showSnackBar('Event Registered successfully');
     } else {
       SnackbarService().showSnackBar(response.message ?? 'Failed to mark RSVP',
           type: SnackbarType.error);
-      throw Exception(response.message ?? 'Failed to mark RSVP');
+      throw Exception(response.message ?? 'Failed to register ');
     }
   }
 
@@ -86,7 +86,7 @@ class EventsApiService {
     required String userId,
   }) async {
     final response =
-        await _apiService.post('/event/attend/$eventId', {'userId': userId});
+        await _apiService.post('/events/attend/$eventId', {'userId': userId});
     if (response.success && response.data != null) {
       final dynamic data = response.data!['data'];
       return AttendanceUserModel.fromJson(data);
@@ -115,9 +115,10 @@ class EventsApiService {
 }
 
 @riverpod
-Future<List<EventsModel>> fetchEvents(Ref ref ,  {int pageNo = 1, int limit = 10}) async {
+Future<List<EventsModel>> fetchEvents(Ref ref,
+    {int pageNo = 1, int limit = 10}) async {
   final eventsApiService = ref.watch(eventsApiServiceProvider);
-  return eventsApiService.fetchEventsPaginated(page:  pageNo, limit: limit);
+  return eventsApiService.fetchEventsPaginated(page: pageNo, limit: limit);
 }
 
 @riverpod

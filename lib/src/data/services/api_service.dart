@@ -99,9 +99,10 @@ class ApiService {
 
   Future<ApiResponse<Map<String, dynamic>>> patch(
     String endpoint,
-    Map<String, dynamic> data,
+    Map<String, dynamic>? data,
   ) async {
     try {
+      log(name: 'HITTING API PATCH:', '$baseUrl$endpoint');
       final response = await _client.patch(
         Uri.parse('$baseUrl$endpoint'),
         headers: {
@@ -110,7 +111,7 @@ class ApiService {
           'Authorization': 'Bearer $token',
           'x-api-key': apiKey
         },
-        body: json.encode(data),
+        body: data != null ? json.encode(data) : null,
       );
 
       final decoded = json.decode(response.body);

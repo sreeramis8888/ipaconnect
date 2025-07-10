@@ -19,6 +19,7 @@ ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       images: (json['images'] as List<dynamic>)
           .map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
           .toList(),
+      rating: (json['rating'] as num?)?.toDouble(),
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
       isPublic: json['is_public'] as bool,
       status: json['status'] as String,
@@ -33,6 +34,7 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'company': instance.company,
       'name': instance.name,
       'specifications': instance.specifications,
+      'rating': instance.rating,
       'actual_price': instance.actualPrice,
       'discount_price': instance.discountPrice,
       'images': instance.images.map((e) => e.toJson()).toList(),

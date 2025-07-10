@@ -11,7 +11,7 @@ class ProductModel {
   final String company;
   final String name;
   final List<String> specifications;
-
+  final double? rating;
   @JsonKey(name: 'actual_price')
   final double actualPrice;
 
@@ -38,6 +38,7 @@ class ProductModel {
     required this.actualPrice,
     required this.discountPrice,
     required this.images,
+    required this.rating,
     required this.tags,
     required this.isPublic,
     required this.status,

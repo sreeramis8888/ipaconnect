@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/members_notifier.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_page.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart';
@@ -636,7 +637,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ProfilePage(user: user),
+                          builder: (context) => ProfilePreview(user: user),
                         ),
                       );
                     },

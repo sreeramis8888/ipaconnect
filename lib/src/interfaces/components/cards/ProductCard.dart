@@ -4,15 +4,16 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
-final String category;
+  final String category;
 
   const ProductCard({
     Key? key,
-    required this.product, required this.category,
-
+    required this.product,
+    required this.category,
   }) : super(key: key);
 
   @override
@@ -67,19 +68,14 @@ final String category;
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.star, color: Colors.amber, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      '5.0', // Static for now
-                      style: kSmallTitleR.copyWith(
-                          color: Colors.white, fontSize: 10),
+                    StarRating(
+                      rating: product.rating ?? 0,
+                      size: 14,
+                      showNumber: true,
+                      color: Colors.amber,
+                      numberStyle: kSmallTitleR.copyWith(color: Colors.white, fontSize: 10),
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '(10 Reviews)', // Static for now
-                      style: kSmallTitleR.copyWith(
-                          color: kSecondaryTextColor, fontSize: 10),
-                    ),
+                    // Optionally, add review count if available
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -118,11 +114,12 @@ final String category;
                   icon:
                       Icon(Icons.remove_red_eye, color: Colors.white, size: 18),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductDetailsPage(product: product,category: category,),
-                      ),
+                    Navigator.of(context).pushNamed(
+                      'ProductDetails',
+                      arguments: {
+                        'product': product,
+                        'category': category,
+                      },
                     );
                   },
                   buttonHeight: 38,

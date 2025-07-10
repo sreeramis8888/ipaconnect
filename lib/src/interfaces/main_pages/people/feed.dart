@@ -156,7 +156,10 @@ class _FeedViewState extends ConsumerState<FeedView> {
                 Expanded(
                   child: isFirstLoad
                       ? Center(
-                          child: FeedShimmer(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: FeedShimmer(),
+                          ),
                         )
                       : filteredFeeds.isEmpty
                           ? Center(
@@ -745,7 +748,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     child: Container(
                       width: 32,
                       height: 32,
-                      color: Colors.grey[200],
+                      color: kStrokeColor,
                       child: const Icon(Icons.person,
                           color: Colors.grey, size: 20),
                     ),

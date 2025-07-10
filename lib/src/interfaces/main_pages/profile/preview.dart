@@ -10,6 +10,7 @@ import 'package:ipaconnect/src/interfaces/components/animations/glowing_animated
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/company_details_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/digital_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
@@ -90,18 +91,71 @@ class _ProfilePreviewState extends ConsumerState<ProfilePreview>
         // Main content
         Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            scrolledUnderElevation: 0,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: true,
-            title:
-                Text('Profile', style: TextStyle(fontSize: 16, color: kWhite)),
-          ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                      top: 24, left: 16, right: 16, bottom: 8),
+                  child: SizedBox(
+                    height: 84,
+                    width: double.infinity,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            'Profile',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: kWhite,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DigitalCardPage(user: user),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                gradient: const RadialGradient(
+                                  center: Alignment.topLeft,
+                                  radius: 1.2,
+                                  colors: [
+                                    Color(0x802EA7FF),
+                                    Color(0x331C1B33),
+                                  ],
+                                  stops: [0.0, .7],
+                                ),
+                                border: Border.all(
+                                  color: Color(0x1A17B9FF),
+                                  width: 1.2,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.qr_code,
+                                color: kWhite,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 _ProfileHeader(user: user),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10),
@@ -480,10 +534,12 @@ class _BusinessTab extends ConsumerWidget {
                           context: context,
                           builder: (context) => ConfirmationDialog(
                             title: 'Delete Company',
-                            content: 'Are you sure you want to delete this company?',
+                            content:
+                                'Are you sure you want to delete this company?',
                             confirmText: 'Delete',
                             cancelText: 'Cancel',
-                            icon: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.red, size: 24),
                           ),
                         );
                         if (confirmed == true) {

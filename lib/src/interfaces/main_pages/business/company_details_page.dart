@@ -6,10 +6,15 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
 import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_product_modal_sheet.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart' as globals;
+import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
+import 'package:ipaconnect/src/data/models/rating_model.dart';
+import 'package:ipaconnect/src/data/services/api_routes/rating_api/rating_api_service.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 
 class CompanyDetailsPage extends ConsumerStatefulWidget {
   final CompanyModel company;
@@ -137,23 +142,16 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                             ),
                             SizedBox(height: 8),
                             // Static Rating Row
-                            Row(
-                              children: [
-                                Text(
-                                  '3.0',
-                                  style: TextStyle(
-                                    color: kSecondaryTextColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 4),
-                                Icon(Icons.star, color: Colors.amber, size: 14),
-                                Icon(Icons.star, color: Colors.amber, size: 14),
-                                Icon(Icons.star, color: Colors.amber, size: 14),
-                                Icon(Icons.star, color: Colors.grey, size: 14),
-                                Icon(Icons.star, color: Colors.grey, size: 14),
-                              ],
+                            StarRating(
+                              rating: company.rating ?? 0,
+                              size: 14,
+                              showNumber: true,
+                              color: Colors.amber,
+                              numberStyle: TextStyle(
+                                color: kSecondaryTextColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             SizedBox(height: 4),
                             // Company Name
@@ -393,37 +391,231 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
   }
 
   Widget _buildReviews() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Consumer(
+      builder: (context, ref, _) {
+        final notifier = ref.read(ratingNotifierProvider.notifier);
+        final ratings = ref.watch(ratingNotifierProvider);
+        if (notifier.isFirstLoad) {
+          notifier.fetchMoreRatings(
+              entityId: widget.company.id ?? '', entityType: 'Company');
+          return Center(child: LoadingAnimation());
+        }
+        if (ratings.isEmpty) {
+          return Column(
+            children: [
+              Text('No reviews yet', style: kBodyTitleR),
+              SizedBox(height: 8),
+              _addReviewButton(context, notifier),
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.star, color: Colors.amber, size: 20),
-            SizedBox(width: 4),
-            Text('4.6', style: kBodyTitleB),
-            SizedBox(width: 8),
-            Text('24 Reviews', style: kBodyTitleR),
+            ...ratings.map((rating) => _reviewTile(rating)).toList(),
+            if (notifier.hasMore)
+              TextButton(
+                onPressed: () => notifier.fetchMoreRatings(
+                    entityId: widget.company.id ?? '', entityType: 'Company'),
+                child: Text('Load more'),
+              ),
+            SizedBox(height: 8),
+            _addReviewButton(context, notifier),
           ],
-        ),
-        SizedBox(height: 8),
-        // Ratings bar (static for now)
-        ...List.generate(
-            5,
-            (i) => Row(
+        );
+      },
+    );
+  }
+
+  Widget _reviewTile(RatingModel rating) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: kCardBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: kPrimaryColor.withOpacity(0.15), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            backgroundColor: kPrimaryColor.withOpacity(0.15),
+            child: Icon(Icons.person, color: kPrimaryColor),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Text('${5 - i}', style: kBodyTitleR),
-                    SizedBox(width: 4),
-                    Expanded(
-                      child: LinearProgressIndicator(
-                        value: (5 - i) / 5,
-                        backgroundColor: kCardBackgroundColor,
-                        color: kPrimaryColor,
-                        minHeight: 6,
-                      ),
+                    Text(rating.userName,
+                        style: kBodyTitleSB.copyWith(color: kWhite)),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${rating.createdAt.toLocal()}'.split(' ')[0],
+                      style:
+                          kSmallerTitleR.copyWith(color: kSecondaryTextColor),
                     ),
                   ],
-                )),
-      ],
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: List.generate(
+                      5,
+                      (i) => Icon(
+                            i < rating.rating
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: Colors.amber,
+                            size: 18,
+                          )),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  rating.review,
+                  style: kBodyTitleR.copyWith(color: kSecondaryTextColor),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addReviewButton(BuildContext context, RatingNotifier notifier) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: customButton(
+        label: 'Add Review',
+        icon: Icon(Icons.rate_review, color: kWhite, size: 20),
+        onPressed: () => _showAddReviewModal(context, notifier),
+        buttonColor: kPrimaryColor,
+        labelColor: kWhite,
+        fontSize: 15,
+        buttonHeight: 44,
+      ),
+    );
+  }
+
+  void _showAddReviewModal(BuildContext context, RatingNotifier notifier) {
+    final _formKey = GlobalKey<FormState>();
+    int _rating = 0;
+    String _review = '';
+    showModalBottomSheet(
+      backgroundColor: kCardBackgroundColor,
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 24,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                    child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                            color: kGreyDark,
+                            borderRadius: BorderRadius.circular(2)))),
+                SizedBox(height: 16),
+                Center(child: Text('Add Review', style: kBodyTitleB)),
+                SizedBox(height: 18),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                        5,
+                        (i) => IconButton(
+                              icon: Icon(
+                                i < _rating
+                                    ? Icons.star_rounded
+                                    : Icons.star_border_rounded,
+                                color: Colors.amber,
+                                size: 28,
+                              ),
+                              splashRadius: 20,
+                              onPressed: () {
+                                _rating = i + 1;
+                                (context as Element).markNeedsBuild();
+                              },
+                            )),
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Write your review',
+                    labelStyle:
+                        kBodyTitleR.copyWith(color: kSecondaryTextColor),
+                    filled: true,
+                    fillColor: kBackgroundColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: kPrimaryColor.withOpacity(0.2)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: kPrimaryColor.withOpacity(0.2)),
+                    ),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                  ),
+                  maxLines: 3,
+                  style: kBodyTitleR.copyWith(color: kWhite),
+                  onChanged: (val) => _review = val,
+                  validator: (val) =>
+                      val == null || val.isEmpty ? 'Enter review' : null,
+                ),
+                SizedBox(height: 18),
+                customButton(
+                  label: 'Submit',
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await notifier.addRating(
+                        userId: 'userId',
+                        userName: 'User',
+                        targetId: widget.company.id ?? '',
+                        targetType: 'Company',
+                        rating: _rating,
+                        review: _review,
+                      );
+                      Navigator.pop(context);
+                      await notifier.refreshRatings(
+                          entityId: widget.company.id ?? '',
+                          entityType: 'Company');
+                    }
+                  },
+                  buttonColor: kPrimaryColor,
+                  labelColor: kWhite,
+                  fontSize: 16,
+                  buttonHeight: 44,
+                ),
+                SizedBox(height: 18),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

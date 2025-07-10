@@ -19,6 +19,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_list_pag
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/preview_by_id.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_page.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/registration.dart';
@@ -101,7 +102,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       BusinessCategoriesPage(),
       PeoplePage(),
       NewsListPage(),
-      ProfilePreview(user: user),
+      ProfilePreviewById(userId: user.id??''),
     ];
     _activeIcons = [
       'assets/svg/icons/nav_icons/active_home.svg',

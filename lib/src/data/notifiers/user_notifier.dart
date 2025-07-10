@@ -82,20 +82,21 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
   //   state = state.whenData((user) => user.copyWith(certificates: certificates));
   // }
 
-void updateSocialMediaEntry(List<UserSocialMedia> currentList, String name, String url) {
-  final List<UserSocialMedia> updatedList = [...currentList];
-  final index = updatedList.indexWhere((item) => item.name == name);
+  void updateSocialMediaEntry(
+      List<UserSocialMedia> currentList, String name, String url) {
+    final List<UserSocialMedia> updatedList = [...currentList];
+    final index = updatedList.indexWhere((item) => item.name == name);
 
-  if (index != -1) {
-    // Update existing entry
-    updatedList[index] = updatedList[index].copyWith(url: url);
-  } else {
-    // Add new entry
-    updatedList.add(UserSocialMedia(name: name, url: url));
+    if (index != -1) {
+      // Update existing entry
+      updatedList[index] = updatedList[index].copyWith(url: url);
+    } else {
+      // Add new entry
+      updatedList.add(UserSocialMedia(name: name, url: url));
+    }
+
+    state = state.whenData((user) => user.copyWith(socialMedia: updatedList));
   }
-
-  state = state.whenData((user) => user.copyWith(socialMedia: updatedList));
-}
   // void updateCompanyLogo(String? companyLogo) {
   //   state = state.whenData((user) => user.copyWith(company: Company(logo: companyLogo)));
   // }

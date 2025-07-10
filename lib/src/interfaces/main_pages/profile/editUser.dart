@@ -25,6 +25,9 @@ import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_
 import 'package:path/path.dart' as Path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
+import 'dart:typed_data';
+import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.dart';
+import 'package:custom_image_crop/custom_image_crop.dart';
 
 class EditUser extends ConsumerStatefulWidget {
   const EditUser({super.key});
@@ -74,14 +77,40 @@ class _EditUserState extends ConsumerState<EditUser> {
       if (imageType == 'profile') {
         setState(() {
           _isProfileImageLoading = true;
-          _profileImageFile = File(image.path);
         });
         try {
-          String profileUrl = await imageUpload(_profileImageFile!.path);
-          _profileImageSource = ImageSource.gallery;
-          ref.read(userProvider.notifier).updateProfilePicture(profileUrl);
-          print((profileUrl));
-          return _profileImageFile;
+          // 1. Crop the image
+          final croppedBytes = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CropImageScreen(
+                imageFile: File(image.path),
+                shape: CustomCropShape.Circle, // Use circle crop
+                width: 1,
+                height: 1,
+              ),
+            ),
+          );
+
+          if (croppedBytes != null && croppedBytes is Uint8List) {
+            // 2. Save cropped image to file
+            String croppedFilePath = await saveUint8ListToFile(
+              croppedBytes,
+              'profile_cropped_ [0m${DateTime.now().millisecondsSinceEpoch}.jpg',
+            );
+            File croppedFile = File(croppedFilePath);
+
+            // 3. Upload the cropped image
+            String profileUrl = await imageUpload(croppedFile.path);
+
+            setState(() {
+              _profileImageFile = croppedFile;
+              _profileImageSource = ImageSource.gallery;
+            });
+
+            ref.read(userProvider.notifier).updateProfilePicture(profileUrl);
+            print((profileUrl));
+            return croppedFile;
+          } else {}
         } catch (e) {
           print('Error uploading profile image: $e');
           snackbarService.showSnackBar('Failed to upload profile image');
@@ -113,7 +142,7 @@ class _EditUserState extends ConsumerState<EditUser> {
   Future<String> _submitData({required UserModel user}) async {
     final Map<String, dynamic> profileData = {
       'name': user.name,
-      if (user.profession != null) 'profession': user.profession,
+      if (user.profession != null) 'proffession': user.profession,
       if (user.bio != null) 'bio': user.bio,
       if (user.email != null) 'email': user.email,
       'phone': user.phone,
@@ -153,7 +182,6 @@ class _EditUserState extends ConsumerState<EditUser> {
       navigationService.pushNamedReplacement('MainPage');
     } else {
       navigationService.pop();
-      ref.read(userProvider.notifier).refreshUser();
     }
   }
 
@@ -215,7 +243,7 @@ class _EditUserState extends ConsumerState<EditUser> {
               return PopScope(
                 onPopInvoked: (didPop) {
                   if (didPop) {
-                    ref.read(userProvider.notifier).refreshUser();
+                    ref.invalidate(getUserDetailsByIdProvider);
                   }
                 },
                 child: SafeArea(
@@ -243,9 +271,8 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   actions: [
                                     TextButton(
                                         onPressed: () {
-                                          ref
-                                              .read(userProvider.notifier)
-                                              .refreshUser();
+                                          ref.invalidate(
+                                              getUserDetailsByIdProvider);
                                           navigateBasedOnPreviousPage();
                                         },
                                         child: Icon(
@@ -390,6 +417,20 @@ class _EditUserState extends ConsumerState<EditUser> {
                                         textController: bioController,
                                         labelText: 'Bio',
                                         maxLines: 5),
+                                    const SizedBox(height: 20.0),
+                                    CustomTextFormField(
+                                      backgroundColor: kCardBackgroundColor,
+                                      title: 'Profession',
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please Enter Your Profession';
+                                        }
+
+                                        return null;
+                                      },
+                                      textController: professionController,
+                                      labelText: 'Enter your Profession',
+                                    ),
                                   ],
                                 ),
                               ),
@@ -416,12 +457,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   backgroundColor: kCardBackgroundColor,
                                   title: 'Address',
                                   textController: addressController,
-                                  labelText: 'Enter your Address',
-                                  onChanged: () {
-                                    ref
-                                        .read(userProvider.notifier)
-                                        .updateAddress(addressController.text);
-                                  },
+                                  labelText: 'Enter Personal Address',
                                 ),
                               ),
                               Padding(
@@ -517,7 +553,8 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       //             ));
                                       if (response.contains('success')) {
                                         snackbarService.showSnackBar(response);
-                                        ref.invalidate(userProvider);
+                                        ref.invalidate(
+                                            getUserDetailsByIdProvider);
                                         navigateBasedOnPreviousPage();
                                       } else {
                                         snackbarService.showSnackBar(response,

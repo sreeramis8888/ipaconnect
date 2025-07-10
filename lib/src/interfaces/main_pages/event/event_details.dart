@@ -485,11 +485,6 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                     : _canRegister()
                         ? kPrimaryColor
                         : Colors.grey[400]!,
-                sideColor: registered
-                    ? Colors.green
-                    : _canRegister()
-                        ? kPrimaryColor
-                        : Colors.grey[400]!,
                 fontSize: 14,
               ),
             )

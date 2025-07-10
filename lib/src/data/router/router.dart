@@ -19,6 +19,7 @@ import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 
 import '../../interfaces/onboarding/registration.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   Widget? page;
@@ -105,6 +106,21 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'EventsPage':
       page = EventsPage();
+      break;
+    case 'ProductDetails':
+      final args = settings?.arguments as Map<String, dynamic>;
+      page = ProductDetailsPage(product: args['product'], category: args['category']);
+      transitionsBuilder = (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide from right
+        const end = Offset.zero;
+        const curve = Curves.easeOutCubic;
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      };
+      transitionDuration = const Duration(milliseconds: 300);
       break;
     default:
       return MaterialPageRoute(

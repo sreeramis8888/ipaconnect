@@ -37,18 +37,19 @@ class CustomIconContainer extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           icon,
-          const SizedBox(height: 4),
-          Text(
-            maxLines: 2,
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: kSecondaryTextColor,
-              fontWeight: FontWeight.w500,
+          if (label != '') const SizedBox(height: 4),
+          if (label != '')
+            Text(
+              maxLines: 2,
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: kSecondaryTextColor,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
         ],
       ),
     );

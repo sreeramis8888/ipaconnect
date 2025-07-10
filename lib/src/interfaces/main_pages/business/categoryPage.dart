@@ -157,7 +157,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                                 userName: company.user?.name ?? '',
                                 companyUserId: company.user?.id ?? '',
                                 companyName: company.name ?? '',
-                                rating: 4.9,
+                                rating: company.rating ?? 0,
                                 industry: company.category ?? '',
                                 location: company.contactInfo?.address ?? '',
                                 isActive:

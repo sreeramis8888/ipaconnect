@@ -48,14 +48,13 @@ class _HomePageState extends ConsumerState<HomePage> {
     double maxHeight = 0.0;
 
     for (var notice in notices) {
-      // Estimate height based on the length of title and description
       final double titleHeight =
-          _estimateTextHeight(notice.title!, 18.0); // Font size 18 for title
+          _estimateTextHeight(notice.title!, 18.0); 
       final double descriptionHeight = _estimateTextHeight(
-          notice.description!, 14.0); // Font size 14 for description
+          notice.description!, 14.0); 
 
       final double itemHeight =
-          titleHeight + descriptionHeight; // Adding padding
+          titleHeight + descriptionHeight; 
       if (itemHeight > maxHeight) {
         maxHeight = itemHeight + MediaQuery.sizeOf(context).width * 0.05;
       }
@@ -401,7 +400,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         ],
                                       ),
                                     ),
-                                  // News section: use news from homeData
                                   if (news.isNotEmpty)
                                     Column(
                                       crossAxisAlignment:
