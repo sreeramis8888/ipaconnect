@@ -76,4 +76,14 @@ class CompaniesNotifier extends _$CompaniesNotifier {
       isLoading = false;
     }
   }
+
+  void updateCompanyRating({required String companyId, required double newRating}) {
+    companies = companies.map((company) {
+      if (company.id == companyId) {
+        return company.copyWith(rating: newRating);
+      }
+      return company;
+    }).toList();
+    state = companies;
+  }
 }

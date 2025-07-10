@@ -34,9 +34,9 @@ class ProductsNotifier extends _$ProductsNotifier {
     isLoading = true;
 
     try {
-      final refreshedProducts = await ref.read(
-          getProductsProvider(pageNo: pageNo, limit: limit, companyId: companyId??'')
-              .future);
+      final refreshedProducts = await ref.read(getProductsProvider(
+              pageNo: pageNo, limit: limit, companyId: companyId ?? '')
+          .future);
 
       if (refreshedProducts.isEmpty) {
         hasMore = false;
@@ -56,15 +56,16 @@ class ProductsNotifier extends _$ProductsNotifier {
     }
   }
 
-  Future<void> refreshCompanies(String? companyId) async {
+  Future<void> refreshProducts(String? companyId) async {
     if (isLoading) return;
 
     isLoading = true;
 
     try {
       pageNo = 1;
-      final refreshedProducts = await ref.read(
-          getProductsProvider(pageNo: pageNo, limit: limit,companyId: companyId??'').future);
+      final refreshedProducts = await ref.read(getProductsProvider(
+              pageNo: pageNo, limit: limit, companyId: companyId ?? '')
+          .future);
 
       products = refreshedProducts;
       hasMore = refreshedProducts.length >= limit;
@@ -77,5 +78,16 @@ class ProductsNotifier extends _$ProductsNotifier {
     } finally {
       isLoading = false;
     }
+  }
+
+  void updateProductRating(
+      {required String productId, required double newRating}) {
+    products = products.map((product) {
+      if (product.id == productId) {
+        return product.copyWith(rating: newRating);
+      }
+      return product;
+    }).toList();
+    state = products;
   }
 }

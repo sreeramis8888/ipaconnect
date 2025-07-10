@@ -59,6 +59,44 @@ class CompanyModel {
       _$CompanyModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$CompanyModelToJson(this);
+
+  CompanyModel copyWith({
+    String? id,
+    String? name,
+    String? overview,
+    String? category,
+    String? image,
+    String? status,
+    DateTime? establishedDate,
+    String? companySize,
+    List<String>? services,
+    List<String>? tags,
+    UserModel? user,
+    double? rating,
+    SocialMedia? socialMedia,
+    OpeningHours? openingHours,
+    ContactInfo? contactInfo,
+    Gallery? gallery,
+  }) {
+    return CompanyModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      overview: overview ?? this.overview,
+      category: category ?? this.category,
+      image: image ?? this.image,
+      status: status ?? this.status,
+      establishedDate: establishedDate ?? this.establishedDate,
+      companySize: companySize ?? this.companySize,
+      services: services ?? this.services,
+      tags: tags ?? this.tags,
+      user: user ?? this.user,
+      rating: rating ?? this.rating,
+      socialMedia: socialMedia ?? this.socialMedia,
+      openingHours: openingHours ?? this.openingHours,
+      contactInfo: contactInfo ?? this.contactInfo,
+      gallery: gallery ?? this.gallery,
+    );
+  }
 }
 
 @JsonSerializable()

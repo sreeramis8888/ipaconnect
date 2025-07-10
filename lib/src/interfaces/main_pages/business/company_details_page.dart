@@ -15,6 +15,10 @@ import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
 import 'package:ipaconnect/src/data/models/rating_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/rating_api/rating_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/review_bar_chart.dart';
+import 'package:ipaconnect/src/data/notifiers/companies_notifier.dart';
+import 'company_reviews_page.dart';
 
 class CompanyDetailsPage extends ConsumerStatefulWidget {
   final CompanyModel company;
@@ -142,16 +146,30 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                             ),
                             SizedBox(height: 8),
                             // Static Rating Row
-                            StarRating(
-                              rating: company.rating ?? 0,
-                              size: 14,
-                              showNumber: true,
-                              color: Colors.amber,
-                              numberStyle: TextStyle(
-                                color: kSecondaryTextColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            Consumer(
+                              builder: (context, ref, _) {
+                                final ratings = ref.watch(ratingNotifierProvider);
+                                double avgRating = 0;
+                                if (ratings.isNotEmpty) {
+                                  avgRating = ratings
+                                          .map((r) => r.rating)
+                                          .fold(0, (a, b) => a + b) /
+                                      ratings.length;
+                                } else {
+                                  avgRating = company.rating ?? 0;
+                                }
+                                return StarRating(
+                                  rating: avgRating,
+                                  size: 14,
+                                  showNumber: true,
+                                  color: Colors.amber,
+                                  numberStyle: TextStyle(
+                                    color: kSecondaryTextColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              },
                             ),
                             SizedBox(height: 4),
                             // Company Name
@@ -216,95 +234,138 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
 
   Widget _buildOverviewTab(BuildContext context) {
     final company = widget.company;
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      children: [
-        const SizedBox(height: 16),
-        // Company Overview
-        Text('Company Overview', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        Text(company.overview ?? '-',
-            style: TextStyle(
-                fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
-        const SizedBox(height: 16),
-        // Industry
-        Text('Industry', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        Text(company.category ?? '-',
-            style: TextStyle(
-                fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
-        const SizedBox(height: 16),
-        // Services
-        Text('Services', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        if (company.services != null && company.services!.isNotEmpty)
-          ...company.services!
-              .map((s) => Text('• $s',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w300, color: kSecondaryTextColor)))
-              .toList()
-        else
-          Text('-', style: kBodyTitleR),
-        const SizedBox(height: 16),
-        // Location (Map Placeholder)
-        Text('Location', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        Container(
-          height: 120,
-          decoration: BoxDecoration(
-            color: kCardBackgroundColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: Text(
-              company.contactInfo?.address ?? '-',
-              style: kBodyTitleR,
-              textAlign: TextAlign.center,
+    return Consumer(
+      builder: (context, ref, _) {
+        final notifier = ref.read(ratingNotifierProvider.notifier);
+        final ratings = ref.watch(ratingNotifierProvider);
+        // Fetch ratings if not already loaded
+        if (notifier.isFirstLoad) {
+          notifier.fetchMoreRatings(
+              entityId: company.id ?? '', entityType: 'Company');
+        }
+        return ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          children: [
+            const SizedBox(height: 16),
+            // Company Overview
+            Text('Company Overview', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            Text(company.overview ?? '-',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
+            const SizedBox(height: 16),
+            // Industry
+            Text('Industry', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            Text(company.category ?? '-',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
+            const SizedBox(height: 16),
+            // Services
+            Text('Services', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            if (company.services != null && company.services!.isNotEmpty)
+              ...company.services!
+                  .map((s) => Text('• $s',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w300,
+                          color: kSecondaryTextColor)))
+                  .toList()
+            else
+              Text('-', style: kBodyTitleR),
+            const SizedBox(height: 16),
+            // Location (Map Placeholder)
+            Text('Location', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: kCardBackgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text(
+                  company.contactInfo?.address ?? '-',
+                  style: kBodyTitleR,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // Website
-        Text('Website', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        Text(company.contactInfo?.website ?? 'Link',
-            style: TextStyle(color: kSecondaryTextColor)),
-        const SizedBox(height: 16),
-        // Established
-        Text('Established', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        Text(
-            company.establishedDate != null
-                ? '${company.establishedDate!.year}'
-                : '-',
-            style: TextStyle(color: kSecondaryTextColor)),
-        const SizedBox(height: 16),
-        // Team Size
-        Text('Team Size', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        Text(company.companySize ?? '-',
-            style: TextStyle(color: kSecondaryTextColor)),
-        const SizedBox(height: 16),
-        // Opening Hours
-        Text('Opening Hours', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        _buildOpeningHours(),
-        const SizedBox(height: 16),
-        // Photo Gallery (Placeholder)
-        Text('Photo Gallery', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        _buildPhotoGallery(),
-        const SizedBox(height: 16),
-        // Video Gallery (Placeholder)
-        Text('Video Gallery', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        _buildVideoGallery(),
-        const SizedBox(height: 16),
-        // Reviews (Placeholder)
-        Text('Reviews', style: kBodyTitleB),
-        const SizedBox(height: 4),
-        _buildReviews(),
-      ],
+            const SizedBox(height: 16),
+            // Website
+            Text('Website', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            Text(company.contactInfo?.website ?? 'Link',
+                style: TextStyle(color: kSecondaryTextColor)),
+            const SizedBox(height: 16),
+            // Established
+            Text('Established', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            Text(
+                company.establishedDate != null
+                    ? '${company.establishedDate!.year}'
+                    : '-',
+                style: TextStyle(color: kSecondaryTextColor)),
+            const SizedBox(height: 16),
+            // Team Size
+            Text('Team Size', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            Text(company.companySize ?? '-',
+                style: TextStyle(color: kSecondaryTextColor)),
+            const SizedBox(height: 16),
+            Text('Opening Hours', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            _buildOpeningHours(),
+            const SizedBox(height: 16),
+            Text('Photo Gallery', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            _buildPhotoGallery(),
+            const SizedBox(height: 16),
+            Text('Video Gallery', style: kBodyTitleB),
+            const SizedBox(height: 4),
+            _buildVideoGallery(),
+            const SizedBox(height: 16),
+
+            ReviewBarChart(
+              reviews: ratings,
+              onViewAll: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CompanyReviewsPage(company: company),
+                  ),
+                );
+              },
+              onWriteReview: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: kCardBackgroundColor,
+                  builder: (context) => AddReviewModal(
+                    entityId: company.id ?? '',
+                    entityType: 'Company',
+                    notifier: notifier,
+                    onSubmitted: () async {
+                      final ratings = ref.read(ratingNotifierProvider);
+                      if (ratings.isNotEmpty) {
+                        final avgRating = ratings
+                            .map((r) => r.rating)
+                            .fold(0, (a, b) => a + b) /
+                            ratings.length;
+                        ref.read(companiesNotifierProvider.notifier).updateCompanyRating(
+                          companyId: company.id ?? '',
+                          newRating: avgRating,
+                        );
+                      }
+                    },
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        );
+      },
     );
   }
 
@@ -390,241 +451,11 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     );
   }
 
-  Widget _buildReviews() {
-    return Consumer(
-      builder: (context, ref, _) {
-        final notifier = ref.read(ratingNotifierProvider.notifier);
-        final ratings = ref.watch(ratingNotifierProvider);
-        if (notifier.isFirstLoad) {
-          notifier.fetchMoreRatings(
-              entityId: widget.company.id ?? '', entityType: 'Company');
-          return Center(child: LoadingAnimation());
-        }
-        if (ratings.isEmpty) {
-          return Column(
-            children: [
-              Text('No reviews yet', style: kBodyTitleR),
-              SizedBox(height: 8),
-              _addReviewButton(context, notifier),
-            ],
-          );
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...ratings.map((rating) => _reviewTile(rating)).toList(),
-            if (notifier.hasMore)
-              TextButton(
-                onPressed: () => notifier.fetchMoreRatings(
-                    entityId: widget.company.id ?? '', entityType: 'Company'),
-                child: Text('Load more'),
-              ),
-            SizedBox(height: 8),
-            _addReviewButton(context, notifier),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _reviewTile(RatingModel rating) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: kCardBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: kPrimaryColor.withOpacity(0.15), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundColor: kPrimaryColor.withOpacity(0.15),
-            child: Icon(Icons.person, color: kPrimaryColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(rating.userName,
-                        style: kBodyTitleSB.copyWith(color: kWhite)),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${rating.createdAt.toLocal()}'.split(' ')[0],
-                      style:
-                          kSmallerTitleR.copyWith(color: kSecondaryTextColor),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(
-                      5,
-                      (i) => Icon(
-                            i < rating.rating
-                                ? Icons.star_rounded
-                                : Icons.star_border_rounded,
-                            color: Colors.amber,
-                            size: 18,
-                          )),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  rating.review,
-                  style: kBodyTitleR.copyWith(color: kSecondaryTextColor),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _addReviewButton(BuildContext context, RatingNotifier notifier) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: customButton(
-        label: 'Add Review',
-        icon: Icon(Icons.rate_review, color: kWhite, size: 20),
-        onPressed: () => _showAddReviewModal(context, notifier),
-        buttonColor: kPrimaryColor,
-        labelColor: kWhite,
-        fontSize: 15,
-        buttonHeight: 44,
-      ),
-    );
-  }
-
-  void _showAddReviewModal(BuildContext context, RatingNotifier notifier) {
-    final _formKey = GlobalKey<FormState>();
-    int _rating = 0;
-    String _review = '';
-    showModalBottomSheet(
-      backgroundColor: kCardBackgroundColor,
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 24,
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Center(
-                    child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                            color: kGreyDark,
-                            borderRadius: BorderRadius.circular(2)))),
-                SizedBox(height: 16),
-                Center(child: Text('Add Review', style: kBodyTitleB)),
-                SizedBox(height: 18),
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                        5,
-                        (i) => IconButton(
-                              icon: Icon(
-                                i < _rating
-                                    ? Icons.star_rounded
-                                    : Icons.star_border_rounded,
-                                color: Colors.amber,
-                                size: 28,
-                              ),
-                              splashRadius: 20,
-                              onPressed: () {
-                                _rating = i + 1;
-                                (context as Element).markNeedsBuild();
-                              },
-                            )),
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Write your review',
-                    labelStyle:
-                        kBodyTitleR.copyWith(color: kSecondaryTextColor),
-                    filled: true,
-                    fillColor: kBackgroundColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: kPrimaryColor.withOpacity(0.2)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: kPrimaryColor.withOpacity(0.2)),
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  ),
-                  maxLines: 3,
-                  style: kBodyTitleR.copyWith(color: kWhite),
-                  onChanged: (val) => _review = val,
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Enter review' : null,
-                ),
-                SizedBox(height: 18),
-                customButton(
-                  label: 'Submit',
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await notifier.addRating(
-                        userId: 'userId',
-                        userName: 'User',
-                        targetId: widget.company.id ?? '',
-                        targetType: 'Company',
-                        rating: _rating,
-                        review: _review,
-                      );
-                      Navigator.pop(context);
-                      await notifier.refreshRatings(
-                          entityId: widget.company.id ?? '',
-                          entityType: 'Company');
-                    }
-                  },
-                  buttonColor: kPrimaryColor,
-                  labelColor: kWhite,
-                  fontSize: 16,
-                  buttonHeight: 44,
-                ),
-                SizedBox(height: 18),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildProductsTab(BuildContext context) {
     final products = ref.watch(productsNotifierProvider);
     final isLoading = ref.read(productsNotifierProvider.notifier).isLoading;
     final isFirstLoad = ref.read(productsNotifierProvider.notifier).isFirstLoad;
     final isOwner = widget.company.user?.id == globals.id;
-    // Example categories, replace with real data if needed
     final categories = <String>[widget.company.category ?? 'General'];
     return Stack(
       children: [

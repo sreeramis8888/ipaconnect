@@ -3,6 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
+import 'package:ipaconnect/src/data/services/api_routes/products_api/products_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/custom_shimmer.dart';
@@ -11,6 +13,7 @@ import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
 import 'package:ipaconnect/src/data/models/rating_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/rating_api/rating_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final String category;
@@ -27,6 +30,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   late final PageController _pageController;
   bool _showReviews = false;
   int _modalRating = 5;
+  int _reviewsToShow = 3;
 
   @override
   void initState() {
@@ -52,9 +56,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: CustomRoundButton(
-            offset: Offset(4, 0),
-            iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
           ),
         ),
         title: Text('View Product',
@@ -216,12 +223,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ),
                   SizedBox(height: 16),
                   Text('Ratings', style: kBodyTitleB.copyWith(fontSize: 15)),
-                  StarRating(
-                    rating: product.rating ?? 0,
-                    size: 20,
-                    showNumber: true,
-                    color: Colors.amber,
-                    numberStyle: kBodyTitleR.copyWith(fontSize: 14),
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final ratings = ref.watch(ratingNotifierProvider);
+                      double avgRating = 0;
+                      if (ratings.isNotEmpty) {
+                        avgRating = ratings
+                                .map((r) => r.rating)
+                                .fold(0, (a, b) => a + b) /
+                            ratings.length;
+                      } else {
+                        avgRating = product.rating ?? 0;
+                      }
+                      return StarRating(
+                        rating: avgRating,
+                        size: 20,
+                        showNumber: true,
+                        color: Colors.amber,
+                        numberStyle: kBodyTitleR.copyWith(fontSize: 14),
+                      );
+                    },
                   ),
                   SizedBox(height: 4),
                   !_showReviews
@@ -234,8 +255,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 // Optionally, trigger fetchMoreRatings here
                               });
                             },
-                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
-                            label: Text('View Reviews', style: kBodyTitleR.copyWith(color: kPrimaryColor)),
+                            icon: Icon(Icons.arrow_drop_down,
+                                color: kPrimaryColor),
+                            label: Text('View Reviews',
+                                style:
+                                    kBodyTitleR.copyWith(color: kPrimaryColor)),
                           ),
                         )
                       : _buildReviewsSection(context),
@@ -260,29 +284,42 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         final notifier = ref.read(ratingNotifierProvider.notifier);
         final ratings = ref.watch(ratingNotifierProvider);
         if (notifier.isFirstLoad) {
-          notifier.fetchMoreRatings(entityId: widget.product.id ?? '', entityType: 'Product');
+          notifier.fetchMoreRatings(
+              entityId: widget.product.id ?? '', entityType: 'Product');
           return Center(child: CircularProgressIndicator());
         }
         if (ratings.isEmpty) {
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('No reviews yet', style: kBodyTitleR),
               SizedBox(height: 8),
-              _addReviewButton(context, notifier),
+              _addReviewButton(context, notifier, ref),
             ],
           );
         }
+        final reviewsToDisplay = ratings.take(_reviewsToShow).toList();
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...ratings.map((rating) => _reviewTile(rating)).toList(),
+            ...reviewsToDisplay.map((rating) => _reviewTile(rating)).toList(),
+            if (_reviewsToShow < ratings.length)
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _reviewsToShow += 3;
+                  });
+                },
+                child: Text('View More'),
+              ),
             if (notifier.hasMore)
               TextButton(
-                onPressed: () => notifier.fetchMoreRatings(entityId: widget.product.id ?? '', entityType: 'Product'),
+                onPressed: () => notifier.fetchMoreRatings(
+                    entityId: widget.product.id ?? '', entityType: 'Product'),
                 child: Text('Load more'),
               ),
             SizedBox(height: 8),
-            _addReviewButton(context, notifier),
+            _addReviewButton(context, notifier, ref),
           ],
         );
       },
@@ -319,12 +356,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               children: [
                 Row(
                   children: [
-                    Text(rating.userName,
+                    Text(rating.user.name ?? '',
                         style: kBodyTitleSB.copyWith(color: kWhite)),
                     const SizedBox(width: 8),
                     Text(
                       '${rating.createdAt.toLocal()}'.split(' ')[0],
-                      style: kSmallerTitleR.copyWith(color: kSecondaryTextColor),
+                      style:
+                          kSmallerTitleR.copyWith(color: kSecondaryTextColor),
                     ),
                   ],
                 ),
@@ -353,137 +391,37 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     );
   }
 
-  Widget _addReviewButton(BuildContext context, RatingNotifier notifier) {
+  Widget _addReviewButton(
+      BuildContext context, RatingNotifier notifier, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: customButton(
-        label: 'Add Review',
-        icon: Icon(Icons.rate_review, color: kWhite, size: 20),
-        onPressed: () => _showAddReviewModal(context, notifier),
-        buttonColor: kPrimaryColor,
-        labelColor: kWhite,
-        fontSize: 15,
-        buttonHeight: 44,
+        label: 'Write a Review',
+        onPressed: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: kCardBackgroundColor,
+          builder: (context) => AddReviewModal(
+            onSubmitted: () async {
+              // After review is added, update product rating locally
+              final ratings = ref.read(ratingNotifierProvider);
+              if (ratings.isNotEmpty) {
+                final avgRating =
+                    ratings.map((r) => r.rating).fold(0, (a, b) => a + b) /
+                        ratings.length;
+                ref.read(productsNotifierProvider.notifier).updateProductRating(
+                      productId: widget.product.id,
+                      newRating: avgRating,
+                    );
+              }
+            },
+            entityId: widget.product.id,
+            entityType: 'Product',
+            notifier: notifier,
+          ),
+        ),
+        buttonColor: kStrokeColor,
       ),
-    );
-  }
-
-  void _showAddReviewModal(BuildContext context, RatingNotifier notifier) {
-    final _formKey = GlobalKey<FormState>();
-    String _review = '';
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              decoration: BoxDecoration(
-                color: kCardBackgroundColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 20,
-                right: 20,
-                top: 24,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                        child: Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                                color: kGreyDark,
-                                borderRadius: BorderRadius.circular(2)))),
-                    SizedBox(height: 16),
-                    Center(child: Text('Add Review', style: kLargeTitleSB)),
-                    SizedBox(height: 18),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                            5,
-                            (i) => IconButton(
-                                  icon: Icon(
-                                    i < _modalRating
-                                        ? Icons.star_rounded
-                                        : Icons.star_border_rounded,
-                                    color: Colors.amber,
-                                    size: 28,
-                                  ),
-                                  splashRadius: 20,
-                                  onPressed: () {
-                                    setModalState(() {
-                                      _modalRating = i + 1;
-                                    });
-                                  },
-                                )),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Write your review',
-                        labelStyle:
-                            kBodyTitleR.copyWith(color: kSecondaryTextColor),
-                        filled: true,
-                        fillColor: kBackgroundColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: kPrimaryColor.withOpacity(0.2)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide:
-                              BorderSide(color: kPrimaryColor.withOpacity(0.2)),
-                        ),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                      ),
-                      maxLines: 3,
-                      style: kBodyTitleR.copyWith(color: kWhite),
-                      onChanged: (val) => _review = val,
-                      validator: (val) =>
-                          val == null || val.isEmpty ? 'Enter review' : null,
-                    ),
-                    SizedBox(height: 18),
-                    customButton(
-                      label: 'Submit',
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await notifier.addRating(
-                            userId: 'userId',
-                            userName: 'User',
-                            targetId: widget.product.id ?? '',
-                            targetType: 'Product',
-                            rating: _modalRating,
-                            review: _review,
-                          );
-                          Navigator.pop(context);
-                          await notifier.refreshRatings(entityId: widget.product.id ?? '', entityType: 'Product');
-                        }
-                      },
-                      buttonColor: kPrimaryColor,
-                      labelColor: kWhite,
-                      fontSize: 16,
-                      buttonHeight: 44,
-                    ),
-                    SizedBox(height: 18),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }

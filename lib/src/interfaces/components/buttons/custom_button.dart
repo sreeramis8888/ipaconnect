@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const Color defaultGradientEnd = Color(0xFF00C0F3);
 const Color defaultGradientStart = Color(0xFF0D74BC);
+
 Widget customButton({
   required String label,
   required Function()? onPressed,
@@ -14,13 +15,13 @@ Widget customButton({
   Color sideColor = Colors.transparent,
   Widget? icon,
 }) {
-  final Gradient effectiveGradient = gradient ??
-      const LinearGradient(
-        stops: [0.4, .9],
-        colors: [Color(0xFF1E3A81), Color(0xFF355BBB)],
-      );
+  final Gradient effectiveGradient = const LinearGradient(
+    stops: [0.4, .9],
+    colors: [Color(0xFF1E3A81), Color(0xFF355BBB)],
+  );
 
   final BorderRadius borderRadius = BorderRadius.circular(8);
+  final bool useDefaultGradient = gradient == null && buttonColor == null;
 
   return SizedBox(
     height: buttonHeight.toDouble(),
@@ -33,8 +34,10 @@ Widget customButton({
         borderRadius: borderRadius,
         child: Ink(
           decoration: BoxDecoration(
-            gradient: gradient == null ? effectiveGradient : gradient,
-            color: gradient == null ? null : buttonColor,
+            gradient:
+                gradient ?? (useDefaultGradient ? effectiveGradient : null),
+            color:
+                (gradient == null && buttonColor != null) ? buttonColor : null,
             borderRadius: borderRadius,
             border: Border.all(color: sideColor),
           ),
