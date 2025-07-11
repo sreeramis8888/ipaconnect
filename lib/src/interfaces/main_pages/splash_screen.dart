@@ -225,7 +225,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   //       final appVersionResponse = AppVersionResponse.fromJson(response.data!);
   //       await checkForUpdate(appVersionResponse, context);
   //     } else {
-  //       log('Failed to fetch app version: [38;5;9m${response.statusCode}[0m');
+  //       log('Failed to fetch app version: ${response.statusCode}');
   //       log('Failed to fetch app version: $errorMessage');
   //       setState(() {
   //         hasVersionCheckError = true;

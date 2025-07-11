@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart'
 import 'package:ipaconnect/src/data/notifiers/store_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/cart_notifier.dart';
 import 'package:ipaconnect/src/data/models/store_model.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/store/my_orders_page.dart';
 
 class StorePage extends ConsumerStatefulWidget {
   const StorePage({Key? key}) : super(key: key);
@@ -79,6 +80,16 @@ class _StorePageState extends ConsumerState<StorePage> {
                   ),
                 ),
             ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.receipt_long, color: kWhite),
+            tooltip: 'My Orders',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyOrdersPage()),
+              );
+            },
           ),
         ],
       ),

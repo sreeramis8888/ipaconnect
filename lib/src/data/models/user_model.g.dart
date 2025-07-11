@@ -6,7 +6,7 @@ part of 'user_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
+UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       name: json['name'] as String?,
       uid: json['uid'] as String?,
       memberId: json['member_id'] as String?,
@@ -43,8 +43,7 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       id: json['_id'] as String?,
     );
 
-Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'name': instance.name,
       'uid': instance.uid,
       'member_id': instance.memberId,
@@ -59,25 +58,25 @@ Map<String, dynamic> _$UserModelToJson(_UserModel instance) =>
       'status': instance.status,
       'is_ipa_member': instance.isIpaMember,
       'is_admin': instance.isAdmin,
-      'hierarchy': instance.hierarchy,
+      'hierarchy': instance.hierarchy?.toJson(),
       'role': instance.role,
       'last_seen': instance.lastSeen?.toIso8601String(),
       'online': instance.online,
       'reject_reason': instance.rejectReason,
       'bio': instance.bio,
-      'social_media': instance.socialMedia,
+      'social_media': instance.socialMedia?.map((e) => e.toJson()).toList(),
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       '_id': instance.id,
     };
 
-_UserSocialMedia _$UserSocialMediaFromJson(Map<String, dynamic> json) =>
-    _UserSocialMedia(
+UserSocialMedia _$UserSocialMediaFromJson(Map<String, dynamic> json) =>
+    UserSocialMedia(
       name: json['name'] as String?,
       url: json['url'] as String?,
     );
 
-Map<String, dynamic> _$UserSocialMediaToJson(_UserSocialMedia instance) =>
+Map<String, dynamic> _$UserSocialMediaToJson(UserSocialMedia instance) =>
     <String, dynamic>{
       'name': instance.name,
       'url': instance.url,

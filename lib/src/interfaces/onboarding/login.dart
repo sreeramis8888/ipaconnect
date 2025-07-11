@@ -10,6 +10,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/loading_notifier.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/animated_logo.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../data/services/navigation_service.dart';
@@ -17,19 +18,35 @@ import '../../data/services/snackbar_service.dart';
 import '../../data/utils/secure_storage.dart';
 import '../components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/data/services/api_routes/auth_api/auth_api_service.dart';
-
-TextEditingController _mobileController = TextEditingController();
-TextEditingController _otpController = TextEditingController();
-
 final countryCodeProvider = StateProvider<String?>((ref) => '91');
-
-class PhoneNumberScreen extends ConsumerWidget {
+class PhoneNumberScreen extends ConsumerStatefulWidget {
   const PhoneNumberScreen({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PhoneNumberScreen> createState() => _PhoneNumberScreenState();
+}
+
+class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
+  late TextEditingController _mobileController;
+  bool _isDisposed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _mobileController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _mobileController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider);
     final countryCode = ref.watch(countryCodeProvider);
 
@@ -113,12 +130,16 @@ class PhoneNumberScreen extends ConsumerWidget {
                             ),
                           ),
                           onCountryChanged: (value) {
-                            ref.read(countryCodeProvider.notifier).state =
-                                value.dialCode;
+                            if (!_isDisposed) {
+                              ref.read(countryCodeProvider.notifier).state =
+                                  value.dialCode;
+                            }
                           },
                           initialCountryCode: 'IN',
                           onChanged: (PhoneNumber phone) {
-                            print(phone.completeNumber);
+                            if (!_isDisposed) {
+                              print(phone.completeNumber);
+                            }
                           },
                           flagsButtonPadding:
                               const EdgeInsets.only(left: 10, right: 10.0),
@@ -167,48 +188,74 @@ class PhoneNumberScreen extends ConsumerWidget {
   }
 
   Future<void> _handleOtpGeneration(BuildContext context, WidgetRef ref) async {
+    if (_isDisposed) return;
+    
     SnackbarService snackbarService = SnackbarService();
     final countryCode = ref.watch(countryCodeProvider);
     FocusScope.of(context).unfocus();
     ref.read(loadingProvider.notifier).startLoading();
-
     try {
       String phone = _mobileController.text.trim();
-      String fullPhone = '+${countryCode ?? '91'}$phone';
       if (countryCode == '971') {
         if (phone.length != 9) {
           snackbarService.showSnackBar('Please Enter valid mobile number');
-          return;
+        } else {
+          final authApiService = ref.watch(authApiServiceProvider);
+          final data = await authApiService.submitPhoneNumber(
+              countryCode == '971' ? '9710' : countryCode ?? '91',
+              context,
+              phone);
+          final verificationId = data['verificationId'];
+          final resendToken = data['resendToken'];
+          if (verificationId != null && verificationId.isNotEmpty && !_isDisposed) {
+            log('Otp Sent successfully');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => OTPScreen(countryCode: countryCode??'',
+                  fullPhone: '+$countryCode${phone}',
+                  verificationId: verificationId,
+                  resendToken: resendToken ?? '',
+                ),
+              ),
+            );
+          } else {
+            snackbarService.showSnackBar('Failed');
+          }
         }
       } else {
         if (phone.length != 10) {
           snackbarService.showSnackBar('Please Enter valid mobile number');
-          return;
+        } else {
+          final authApiService = ref.watch(authApiServiceProvider);
+          final data = await authApiService.submitPhoneNumber(
+              countryCode == '971' ? '9710' : countryCode ?? '91',
+              context,
+              phone);
+          final verificationId = data['verificationId'];
+          final resendToken = data['resendToken'];
+          if (verificationId != null && verificationId.isNotEmpty && !_isDisposed) {
+            log('Otp Sent successfully');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => OTPScreen(countryCode: countryCode??'',
+                  fullPhone: '+$countryCode${phone}',
+                  verificationId: verificationId,
+                  resendToken: resendToken ?? '',
+                ),
+              ),
+            );
+          } else {
+            snackbarService.showSnackBar('Failed');
+          }
         }
-      }
-      final authApiService = ref.watch(authApiServiceProvider);
-      final otp = await authApiService.login(fullPhone);
-      if (otp != null && otp.isNotEmpty) {
-        log('Otp Sent successfully');
-        log(otp, name: 'AUTH');
-        Navigator.of(context).pushReplacement(
-          _createFadeRoute(
-            OTPScreen(
-              phone: phone,
-              verificationId: '',
-              resendToken: '',
-            ),
-          ),
-        );
-      } else {
-        snackbarService.showSnackBar('Failed to send OTP',
-            type: SnackbarType.warning);
       }
     } catch (e) {
       log(e.toString());
-      snackbarService.showSnackBar('Failed to send OTP');
+      snackbarService.showSnackBar('Failed');
     } finally {
-      ref.read(loadingProvider.notifier).stopLoading();
+      if (!_isDisposed) {
+        ref.read(loadingProvider.notifier).stopLoading();
+      }
     }
   }
 
@@ -229,10 +276,12 @@ class PhoneNumberScreen extends ConsumerWidget {
 class OTPScreen extends ConsumerStatefulWidget {
   final String verificationId;
   final String resendToken;
-  final String phone;
+  final String fullPhone;
+  final String countryCode;
   const OTPScreen({
-    required this.phone,
+    required this.fullPhone,
     required this.resendToken,
+    required this.countryCode,
     super.key,
     required this.verificationId,
   });
@@ -248,16 +297,33 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   bool _isButtonDisabled = true;
 
+  late TextEditingController _otpController;
+
   @override
   void initState() {
     super.initState();
+    _otpController = TextEditingController();
     startTimer();
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _otpController.dispose();
+    super.dispose();
+  }
+
   void startTimer() {
+    if (!mounted) return;
+    
     _isButtonDisabled = true;
     _start = 59;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      
       if (_start == 0) {
         setState(() {
           _isButtonDisabled = false;
@@ -272,15 +338,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   }
 
   void resendCode() {
+    if (!mounted) return;
+    
     startTimer();
-
-    // resendOTP(widget.phone, widget.verificationId, widget.resendToken);
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+    final authApiService = ref.watch(authApiServiceProvider);
+    authApiService.resendOTP(
+        widget.fullPhone, widget.verificationId, widget.resendToken);
   }
 
   @override
@@ -296,7 +359,19 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 70),
+            const SizedBox(height: 40),
+            // Add back button
+     Padding(
+            padding: const EdgeInsets.all(8),
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: CustomRoundButton(
+                offset: Offset(4, 0),
+                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              ),
+            ),
+          ),
+            const SizedBox(height: 30),
             Center(
               child: AnimatedSvgLogoPresets.subtle(
                   assetPath: 'assets/svg/ipa_login_logo.svg'),
@@ -393,27 +468,44 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   Future<void> _handleOtpVerification(
       BuildContext context, WidgetRef ref) async {
+    if (!mounted) return;
+    
     ref.read(loadingProvider.notifier).startLoading();
     SnackbarService snackbarService = SnackbarService();
     try {
-      String phone = widget.phone.trim();
+      String phone = widget.fullPhone.trim();
       final countryCode = ref.watch(countryCodeProvider);
-      String fullPhone = '+${countryCode ?? '91'}$phone';
       String otp = _otpController.text.trim();
       if (otp.length != 6) {
         snackbarService.showSnackBar('Please enter a valid 6 digit OTP');
         return;
       }
-      final authApiService = ref.watch(authApiServiceProvider);
-      final token = await authApiService.verifyOtp(fullPhone, otp);
-      if (token != null && token.isNotEmpty) {
-        await SecureStorage.write('token', token);
-
-        log('savedToken: $token');
-
-        snackbarService.showSnackBar('Login successful');
-
-        NavigationService().pushNamedReplacement('RegistrationPage',arguments: fullPhone);
+      final authApiService = ref.read(authApiServiceProvider);
+      // You need to get the FCM token from your notification service or storage
+      String fcmToken = await SecureStorage.read('fcmToken') ?? '';
+      final responseMap = await authApiService.verifyOTP(
+        countryCode: countryCode??'',
+        verificationId: widget.verificationId,
+        fcmToken: fcmToken,
+        smsCode: otp,
+        context: context,
+      );
+      
+      if (!mounted) return;
+      
+      String savedToken = responseMap['token'] ?? '';
+      String savedId = responseMap['userId'] ?? '';
+      if (savedToken.isNotEmpty && savedId.isNotEmpty) {
+        await SecureStorage.write('token', savedToken);
+        await SecureStorage.write('id', savedId);
+        // Optionally set global token/id if needed
+        // token = savedToken;
+        // id = savedId;
+        log('savedToken: $savedToken');
+        log('savedId: $savedId');
+        // No name dialog, just navigate to next screen
+        NavigationService().pushNamedReplacement('RegistrationPage',
+            arguments: '+${countryCode ?? '91'}$phone');
       } else {
         snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
       }
@@ -421,7 +513,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       log(e.toString());
       snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
     } finally {
-      ref.read(loadingProvider.notifier).stopLoading();
+      if (mounted) {
+        ref.read(loadingProvider.notifier).stopLoading();
+      }
     }
   }
 }

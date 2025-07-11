@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:ipaconnect/src/data/models/store_model.dart';
-import 'package:ipaconnect/src/data/services/api_routes/store_api_service.dart';
+import 'package:ipaconnect/src/data/services/api_routes/store_api/store_api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'store_notifier.g.dart';

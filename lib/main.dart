@@ -1,10 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ipaconnect/src/data/constants/color_constants.dart';
-import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/firebase_options.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/notification_service/notification_service.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
@@ -13,10 +14,13 @@ import 'package:ipaconnect/src/data/router/router.dart' as router;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await loadSecureData();
   await dotenv.load(fileName: ".env");
-
+  Stripe.publishableKey =
+    dotenv.env['STRIPE_KEY'] ?? '';
   runApp(ProviderScope(child: MyApp()));
 }
 

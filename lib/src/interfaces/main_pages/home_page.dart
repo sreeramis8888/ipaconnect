@@ -120,7 +120,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.only(left: 20),
+                                    padding: EdgeInsets.only(left: 16),
                                     height: 45.0,
                                     child: Row(
                                       mainAxisAlignment:
@@ -168,15 +168,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   const SizedBox(height: 20),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 15, top: 10),
-                                    child: Text('Welcome, SREERAM ',
+                                        left: 16, top: 10, right: 16),
+                                    child: Text('Welcome, ${widget.user.name} ',
                                         style: kLargeTitleB.copyWith(
                                             color: kTextColor)),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 15,
-                                        right: 15,
+                                        left: 16,
+                                        right: 16,
                                         top: 10,
                                         bottom: 20),
                                     child: Row(
@@ -225,7 +225,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 20, top: 10),
+                                            left: 16, top: 10),
                                         child: Text('Quick Actions',
                                             style: kBodyTitleB.copyWith(
                                                 color: kTextColor)),
@@ -235,10 +235,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   const SizedBox(height: 16),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 15, right: 15, top: 10),
+                                        left: 16, right: 16, top: 10),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         CustomIconContainer(
                                             label: 'CSR',
@@ -272,50 +272,37 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   if (event != null)
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
+                                          horizontal: 16),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 15, top: 10),
-                                                child: Text('Event',
-                                                    style: kBodyTitleB),
-                                              ),
+                                              Text('Event', style: kBodyTitleB),
                                               const Spacer(),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 15, top: 10),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    navigationService.pushNamed(
-                                                        'EventsPage');
-                                                  },
-                                                  child: Text('View All',
-                                                      style:
-                                                          kSmallTitleR.copyWith(
-                                                              color:
-                                                                  kPrimaryColor)),
-                                                ),
+                                              InkWell(
+                                                onTap: () {
+                                                  navigationService
+                                                      .pushNamed('EventsPage');
+                                                },
+                                                child: Text('View All',
+                                                    style:
+                                                        kSmallTitleR.copyWith(
+                                                            color:
+                                                                kPrimaryColor)),
                                               ),
                                             ],
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0, vertical: 8.0),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                navigationService.pushNamed(
-                                                    'EventDetails',
-                                                    arguments: event);
-                                              },
-                                              child: eventWidget(
-                                                context: context,
-                                                event: event,
-                                              ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              navigationService.pushNamed(
+                                                  'EventDetails',
+                                                  arguments: event);
+                                            },
+                                            child: eventWidget(
+                                              context: context,
+                                              event: event,
                                             ),
                                           ),
                                         ],
@@ -521,13 +508,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   const SizedBox(
                                     height: 20,
                                   ),
-                                  Container(
-                                      width: double.infinity,
-                                      height: 400,
-                                      child: BoardOfDirectorsCarousel()),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
+                                  // Container(
+                                  //     width: double.infinity,
+                                  //     height: 400,
+                                  //     child: BoardOfDirectorsCarousel()),
+                                  // SizedBox(
+                                  //   height: 20,
+                                  // ),
                                   // Videos Carousel
                                   if (filteredVideos.isNotEmpty)
                                     Column(

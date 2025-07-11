@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/services/api_routes/store_api/store_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
-import 'package:ipaconnect/src/data/services/api_routes/store_api_service.dart';
 import 'package:ipaconnect/src/data/models/order_model.dart';
 import 'package:ipaconnect/src/data/notifiers/cart_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/saved_shipping_address_notifier.dart';
@@ -20,7 +22,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     with SingleTickerProviderStateMixin {
   int _currentStep = 1; // Start at Address step
   int? _selectedAddressIndex;
-  bool _showAddAddressForm = false; // Only show address form when Add New is clicked
+  bool _showAddAddressForm =
+      false; // Only show address form when Add New is clicked
 
   // Address form controllers
   final _formKey = GlobalKey<FormState>();
@@ -263,14 +266,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     if (_currentStep == 0)
       enabled = _selectedAddressIndex != null || _showAddAddressForm;
     if (_currentStep == 2) enabled = !_isPlacingOrder && _orderSuccess == null;
+    // Only show the button for steps before payment
+    if (_currentStep == 2) return SizedBox.shrink();
     return customButton(
       label: label,
       onPressed: enabled
           ? () {
               if (_currentStep < 2) {
                 _goToNextStep();
-              } else {
-                _placeOrder();
               }
             }
           : null,
@@ -325,14 +328,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
 
   void _goToNextStep() {
     if (_currentStep == 1 && _showAddAddressForm) {
-      // Validate and store new address
       if (_formKey.currentState?.validate() ?? false) {
         _selectedShippingAddress = ShippingAddress(
           name: _nameController.text,
           phone: _phoneController.text,
           address: _addressController.text,
           city: _cityController.text,
-          state: _stateController.text, // Save state
+          state: _stateController.text,
           country: _countryController.text,
           pincode: _zipController.text,
           isSaved: _saveShippingAddress,
@@ -380,46 +382,103 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
       _orderSuccess = null;
     });
     final service = ref.read(storeApiServiceProvider);
-    // Expecting createOrder to return payment_intent with client_secret
-    final response = await service.createOrder(
+    final shippingAddressMap = _selectedShippingAddress!.toJson();
+    if (shippingAddressMap['is_saved'] == null) {
+      shippingAddressMap.remove('is_saved');
+    }
+    final data = await service.createOrder(
       cartId: cartId,
       amount: amount,
       currency: _currency,
-      shippingAddress: _selectedShippingAddress!,
+      shippingAddress: ShippingAddress.fromJson(shippingAddressMap),
     );
-    String? clientSecret;
-    if (response is Map && response['payment_intent'] != null) {
-      // If service returns the whole payment_intent object
-      clientSecret = response['payment_intent']['client_secret'];
-    } else if (response is String) {
-      // If service returns just the client_secret
-      clientSecret = response;
-    }
-    if (clientSecret != null) {
-      try {
-        await Stripe.instance.initPaymentSheet(
-          paymentSheetParameters: SetupPaymentSheetParameters(
-            paymentIntentClientSecret: clientSecret,
-            merchantDisplayName: 'IPA Connect',
-          ),
-        );
-        await Stripe.instance.presentPaymentSheet();
-        setState(() {
-          _orderSuccess = 'Order placed successfully!';
-        });
-      } catch (e) {
-        setState(() {
-          _orderError = 'Payment failed or cancelled.';
-        });
-      }
-    } else {
+    final paymentIntentClientSecret = data['data'];
+
+    if (paymentIntentClientSecret == null ||
+        paymentIntentClientSecret is! String ||
+        paymentIntentClientSecret.isEmpty) {
       setState(() {
-        _orderError = 'Failed to initiate payment.';
+        _isPlacingOrder = false;
+        _orderError = 'Failed to initiate payment. Please try again.';
       });
+      return;
     }
-    setState(() {
-      _isPlacingOrder = false;
-    });
+
+    try {
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentClientSecret,
+          merchantDisplayName: 'IPA CONNECT',
+          appearance: PaymentSheetAppearance(
+              colors: PaymentSheetAppearanceColors(
+            primaryText: kWhite,
+            componentBorder: kStrokeColor,
+            componentDivider: kStrokeColor,
+            placeholderText: kSecondaryTextColor,
+            error: kRed,
+            icon: kWhite,
+            primary: kPrimaryColor,
+            secondaryText: kSecondaryTextColor,
+            componentText: kWhite,
+            background: kBackgroundColor,
+            componentBackground: kCardBackgroundColor,
+          )),
+        ),
+      );
+      await Stripe.instance.presentPaymentSheet();
+
+      setState(() {
+        _isPlacingOrder = false;
+        _orderSuccess = 'Order placed successfully!';
+      });
+      // Show success animation and navigate
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          barrierDismissible: false,
+          builder: (context) => PaymentResultPage(
+            isSuccess: true,
+            onCompleted: () async {
+              // Go back to cart page, then to My Orders
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              await Future.delayed(const Duration(milliseconds: 300));
+              Navigator.of(context).pushNamed('MyOrdersPage');
+            },
+          ),
+        ),
+      );
+    } on StripeException catch (error) {
+      log(name: 'post order error:', error.toString());
+      setState(() {
+        _isPlacingOrder = false;
+        _orderError = 'Payment cancelled or failed. Please try again.';
+      });
+      // Show cancelled animation
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          barrierDismissible: false,
+          builder: (context) => PaymentResultPage(
+            isSuccess: false,
+            onCompleted: () => Navigator.of(context).pop(),
+          ),
+        ),
+      );
+    } catch (error) {
+      log(error.toString(), name: 'STRIPE INIT ERROR');
+      setState(() {
+        _isPlacingOrder = false;
+        _orderError = 'An error occurred. Please try again.';
+      });
+      // Show cancelled animation
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          barrierDismissible: false,
+          builder: (context) => PaymentResultPage(
+            isSuccess: false,
+            onCompleted: () => Navigator.of(context).pop(),
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildStepper() {
@@ -495,4 +554,191 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     _countryController.dispose();
     super.dispose();
   }
+}
+
+class PaymentResultPage extends StatefulWidget {
+  final bool isSuccess;
+  final VoidCallback onCompleted;
+  const PaymentResultPage({required this.isSuccess, required this.onCompleted, Key? key}) : super(key: key);
+
+  @override
+  State<PaymentResultPage> createState() => _PaymentResultPageState();
+}
+
+class _PaymentResultPageState extends State<PaymentResultPage> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fillAnimation;
+  late Animation<Offset> _positionAnimation;
+  late Animation<double> _iconScaleAnimation;
+  late Animation<double> _contentFadeAnimation;
+  late Animation<double> _contentScaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    );
+    _fillAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _positionAnimation = Tween<Offset>(
+      begin: Offset(0, 0),
+      end: Offset(0, -2.5),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut),
+      ),
+    );
+    _iconScaleAnimation = Tween<double>(begin: 1, end: 0.5).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut),
+      ),
+    );
+    _contentFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.8, 1.0, curve: Curves.easeIn),
+      ),
+    );
+    _contentScaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.8, 1.0, curve: Curves.elasticOut),
+      ),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Stack(
+            children: [
+              // Background fill animation
+              Container(
+                color: (widget.isSuccess ? kPrimaryColor : kRed).withOpacity(_fillAnimation.value * 0.7),
+                child: CustomPaint(
+                  painter: _FillPainter(
+                    progress: _fillAnimation.value,
+                    color: widget.isSuccess ? kPrimaryColor : kRed,
+                  ),
+                  size: MediaQuery.of(context).size,
+                ),
+              ),
+              // Icon animation
+              Center(
+                child: SlideTransition(
+                  position: _positionAnimation,
+                  child: ScaleTransition(
+                    scale: _iconScaleAnimation,
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        widget.isSuccess ? Icons.check : Icons.close,
+                        size: 80,
+                        color: widget.isSuccess ? kPrimaryColor : kRed,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Center container with text and button
+              FadeTransition(
+                opacity: _contentFadeAnimation,
+                child: ScaleTransition(
+                  scale: _contentScaleAnimation,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              widget.isSuccess ? Icons.check_circle : Icons.cancel,
+                              color: widget.isSuccess ? kPrimaryColor : kRed,
+                              size: 60,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              widget.isSuccess ? 'Payment Successful!' : 'Payment Cancelled',
+                              style: kLargeTitleSB.copyWith(color: widget.isSuccess ? kPrimaryColor : kRed),
+                            ),
+                            const SizedBox(height: 24),
+                            customButton(
+                              label: 'Done',
+                              onPressed: widget.onCompleted,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _FillPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  _FillPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()..color = color;
+    final double radius = size.shortestSide * progress * 2;
+    canvas.drawCircle(
+      size.center(Offset.zero),
+      radius,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
