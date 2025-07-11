@@ -10,8 +10,6 @@ class StoreNotifier extends _$StoreNotifier {
   List<StoreModel> products = [];
   bool isLoading = false;
   bool isFirstLoad = true;
-  int pageNo = 1;
-  final int limit = 14;
   bool hasMore = true;
 
   @override
@@ -19,19 +17,13 @@ class StoreNotifier extends _$StoreNotifier {
     return [];
   }
 
-  Future<void> fetchMoreProducts() async {
-    if (isLoading || !hasMore) return;
+  Future<void> fetchProducts() async {
+    if (isLoading) return;
     isLoading = true;
     try {
-      final refreshedProducts = await ref.read(getStoreProductsProvider(
-        pageNo: pageNo, limit: limit).future);
-      if (refreshedProducts.isEmpty) {
-        hasMore = false;
-      } else {
-        products = [...products, ...refreshedProducts];
-        pageNo++;
-        hasMore = refreshedProducts.length >= limit;
-      }
+      final refreshedProducts = await ref.read(getStoreProductsProvider().future);
+      products = refreshedProducts;
+      hasMore = refreshedProducts.isNotEmpty;
       isFirstLoad = false;
       state = products;
     } catch (e, stackTrace) {
@@ -46,11 +38,9 @@ class StoreNotifier extends _$StoreNotifier {
     if (isLoading) return;
     isLoading = true;
     try {
-      pageNo = 1;
-      final refreshedProducts = await ref.read(getStoreProductsProvider(
-        pageNo: pageNo, limit: limit).future);
+      final refreshedProducts = await ref.read(getStoreProductsProvider().future);
       products = refreshedProducts;
-      hasMore = refreshedProducts.length >= limit;
+      hasMore = refreshedProducts.isNotEmpty;
       isFirstLoad = false;
       state = products;
       log('refreshed');

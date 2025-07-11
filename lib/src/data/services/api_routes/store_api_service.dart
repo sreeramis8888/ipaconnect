@@ -17,93 +17,155 @@ StoreApiService storeApiService(Ref ref) {
 
 class StoreApiService {
   final ApiService _apiService;
+  final String _tag = '[StoreApiService]';
 
   StoreApiService(this._apiService);
 
+  void _log(String message) {
+    log('$_tag $message');
+  }
+
   // Store Products
-  Future<List<StoreModel>> getStoreProducts(
-      {int pageNo = 1, int limit = 14, String? search}) async {
+  Future<List<StoreModel>> getStoreProducts({
+    int pageNo = 1,
+    int limit = 14,
+    String? search,
+  }) async {
     String endpoint = '/store?page_no=$pageNo&limit=$limit';
     if (search != null && search.isNotEmpty) {
       endpoint += '&search=$search';
     }
 
-    final response = await _apiService.get(endpoint);
-    if (response.success && response.data != null) {
-      final List<dynamic> data = response.data!['data'];
-      return data.map((json) => StoreModel.fromJson(json)).toList();
-    } else {
-      return [];
+    _log('GET $endpoint');
+    try {
+      final response = await _apiService.get(endpoint);
+      _log('Response: ${response.success}, message: ${response.message}');
+
+      if (response.success && response.data != null) {
+        final List<dynamic> data = response.data!['data'];
+        return data.map((json) => StoreModel.fromJson(json)).toList();
+      }
+    } catch (e, st) {
+      _log('Error: $e\n$st');
     }
+    return [];
   }
 
   Future<StoreModel?> getStoreById(String id) async {
-    final response = await _apiService.get('/store/$id');
-    if (response.success && response.data != null) {
-      return StoreModel.fromJson(response.data!['data']);
-    } else {
-      return null;
+    _log('GET /store/$id');
+    try {
+      final response = await _apiService.get('/store/$id');
+      _log('Response: ${response.success}, message: ${response.message}');
+      if (response.success && response.data != null) {
+        return StoreModel.fromJson(response.data!['data']);
+      }
+    } catch (e, st) {
+      _log('Error: $e\n$st');
     }
+    return null;
   }
 
   Future<List<String>> getStoreCategories() async {
-    final response = await _apiService.get('/store/categories');
-    if (response.success && response.data != null) {
-      final List<dynamic> data = response.data!['data'];
-      return data.map((category) => category.toString()).toList();
-    } else {
-      return [];
+    _log('GET /store/categories');
+    try {
+      final response = await _apiService.get('/store/categories');
+      _log('Response: ${response.success}, message: ${response.message}');
+      if (response.success && response.data != null) {
+        final List<dynamic> data = response.data!['data'];
+        return data.map((e) => e.toString()).toList();
+      }
+    } catch (e, st) {
+      _log('Error: $e\n$st');
     }
+    return [];
   }
 
   // Cart Operations
   Future<CartModel?> getCart() async {
-    final response = await _apiService.get('/store/cart');
-    if (response.success && response.data != null) {
-      return CartModel.fromJson(response.data!['data']);
-    } else {
-      return null;
+    _log('GET /store/cart');
+    try {
+      final response = await _apiService.get('/store/cart');
+      _log('Response: ${response.success}, message: ${response.message}');
+      if (response.success && response.data != null) {
+        return CartModel.fromJson(response.data!['data']);
+      }
+    } catch (e, st) {
+      _log('Error: $e\n$st');
     }
+    return null;
   }
 
   Future<bool> addToCart(String storeId, int quantity) async {
-    final response = await _apiService.post('/store/add-to-cart/$storeId', {});
-    log(response.message.toString());
-    return response.success;
+    _log('POST /store/add-to-cart/$storeId');
+    try {
+      final response =
+          await _apiService.post('/store/add-to-cart/$storeId', {});
+      _log('Response: ${response.success}, message: ${response.message}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return false;
   }
 
   Future<bool> removeFromCart(String storeId) async {
-    final response =
-        await _apiService.post('/store/remove-from-cart/$storeId', {});
-    return response.success;
+    _log('POST /store/remove-from-cart/$storeId');
+    try {
+      final response =
+          await _apiService.post('/store/remove-from-cart/$storeId', {});
+      _log('Response: ${response.success}, message: ${response.message}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return false;
   }
 
   Future<bool> incrementQuantity(String cartId, String storeId) async {
-    final response =
-        await _apiService.post('/store/increment-quantity/$cartId', {
-      'store': storeId,
-    });
-    return response.success;
+    _log('POST /store/increment-quantity/$cartId');
+    try {
+      final response =
+          await _apiService.post('/store/increment-quantity/$cartId', {
+        'store': storeId,
+      });
+      _log('Response: ${response.success}, message: ${response.message}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return false;
   }
 
   Future<bool> decrementQuantity(String cartId, String storeId) async {
-    final response =
-        await _apiService.post('/store/decrement-quantity/$cartId', {
-      'store': storeId,
-    });
-    return response.success;
+    _log('POST /store/decrement-quantity/$cartId');
+    try {
+      final response =
+          await _apiService.post('/store/decrement-quantity/$cartId', {
+        'store': storeId,
+      });
+      _log('Response: ${response.success}, message: ${response.message}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return false;
   }
 
   // Order Operations
   Future<List<OrderModel>> getOrders({int pageNo = 1, int limit = 10}) async {
-    final response =
-        await _apiService.get('/store/orders?page_no=$pageNo&limit=$limit');
-    if (response.success && response.data != null) {
-      final List<dynamic> data = response.data!['data'];
-      return data.map((order) => OrderModel.fromJson(order)).toList();
-    } else {
-      return [];
+    _log('GET /store/orders?page_no=$pageNo&limit=$limit');
+    try {
+      final response =
+          await _apiService.get('/store/orders?page_no=$pageNo&limit=$limit');
+      _log('Response: ${response.success}, message: ${response.message}');
+      if (response.success && response.data != null) {
+        final List<dynamic> data = response.data!['data'];
+        return data.map((e) => OrderModel.fromJson(e)).toList();
+      }
+    } catch (e, st) {
+      _log('Error: $e\n$st');
     }
+    return [];
   }
 
   Future<bool> createOrder({
@@ -112,55 +174,63 @@ class StoreApiService {
     required String currency,
     required ShippingAddress shippingAddress,
   }) async {
-    final response = await _apiService.post('/store/order', {
-      'cart': cartId,
-      'amount': amount,
-      'currency': currency,
-      'shipping_address': shippingAddress.toJson(),
-    });
-    return response.success;
-  }
-
-  // Address Operations
-  Future<List<OrderModel>> getSavedShippingAddress() async {
-    final response =
-        await _apiService.get('/store/order/saved-shipping-address');
-    if (response.success && response.data != null) {
-      final List<dynamic> data = response.data!['data'];
-      return data.map((address) => OrderModel.fromJson(address)).toList();
-    } else {
-      return [];
+    _log('POST /store/order with cartId: $cartId, amount: $amount');
+    try {
+      final response = await _apiService.post('/store/order', {
+        'cart': cartId,
+        'amount': amount,
+        'currency': currency,
+        'shipping_address': shippingAddress.toJson(),
+      });
+      log('Address:${shippingAddress.toJson()}');
+      _log(
+          'Response: ${response.success}, message: ${response.message},data:  ${response.data}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
     }
+    return false;
   }
 
-  // Store Management (Admin)
-  Future<bool> createStore({
-    required String name,
-    required String category,
-    required double price,
-    required String description,
-    String? image,
-    String currency = 'USD',
-  }) async {
-    final response = await _apiService.post('/store', {
-      'name': name,
-      'category': category,
-      'price': price,
-      'description': description,
-      'image': image,
-      'currency': currency,
-    });
-    return response.success;
+  // Saved Addresses
+  Future<List<ShippingAddress>> getSavedShippingAddress() async {
+    _log('GET /store/order/saved-shipping-address');
+    try {
+      final response =
+          await _apiService.get('/store/order/saved-shipping-address');
+      _log('Response: ${response.success}, message: ${response.message}');
+      if (response.success && response.data != null) {
+        final List<dynamic> data = response.data!['data'];
+        return data.map((e) => ShippingAddress.fromJson(e)).toList();
+      }
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return [];
   }
 
   Future<bool> updateStore(String id, Map<String, dynamic> data) async {
-    final response = await _apiService.put('/store/$id', data);
-    return response.success;
+    _log('PUT /store/$id with data: $data');
+    try {
+      final response = await _apiService.put('/store/$id', data);
+      _log('Response: ${response.success}, message: ${response.message}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return false;
   }
 
   Future<bool> deleteStore(String id) async {
-    final response = await _apiService.delete('/store/$id');
-    return response.success;
+    _log('DELETE /store/$id');
+    try {
+      final response = await _apiService.delete('/store/$id');
+      _log('Response: ${response.success}, message: ${response.message}');
+      return response.success;
+    } catch (e, st) {
+      _log('Error: $e\n$st');
+    }
+    return false;
   }
 }
 
@@ -192,7 +262,7 @@ Future<List<String>> getStoreCategories(Ref ref) async {
 }
 
 @riverpod
-Future<List<OrderModel>> getSavedShippingAddress(Ref ref) async {
+Future<List<ShippingAddress>> getSavedShippingAddress(Ref ref) async {
   final storeApiService = ref.watch(storeApiServiceProvider);
   return storeApiService.getSavedShippingAddress();
 }

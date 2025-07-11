@@ -23,15 +23,6 @@ class _StorePageState extends ConsumerState<StorePage> {
     super.initState();
     ref.read(storeNotifierProvider.notifier).refreshProducts();
     ref.read(cartNotifierProvider.notifier).fetchCart();
-    _scrollController.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    final notifier = ref.read(storeNotifierProvider.notifier);
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      notifier.fetchMoreProducts();
-    }
   }
 
   @override
@@ -131,58 +122,43 @@ class _StorePageState extends ConsumerState<StorePage> {
             Expanded(
               child: products.isEmpty && isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : NotificationListener<ScrollNotification>(
-                      onNotification: (scrollInfo) {
-                        if (!isLoading &&
-                            hasMore &&
-                            scrollInfo.metrics.pixels >=
-                                scrollInfo.metrics.maxScrollExtent - 200) {
-                          notifier.fetchMoreProducts();
-                        }
-                        return false;
-                      },
-                      child: GridView.builder(
-                        controller: _scrollController,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 0.7,
-                        ),
-                        itemCount: products.length + (hasMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index >= products.length) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          final product = products[index];
-                          return _ProductCard(
-                            product: product,
-                            onAddToCart: () async {
-                              if (product.id != null) {
-                                final success = await cartNotifier.addToCart(
-                                    product.id!, 1);
-                                if (success) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Added to cart'),
-                                      backgroundColor: kGreen,
-                                    ),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Failed to add to cart'),
-                                      backgroundColor: kRed,
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                          );
-                        },
+                  : GridView.builder(
+                      controller: _scrollController,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.7,
                       ),
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return _ProductCard(
+                          product: product,
+                          onAddToCart: () async {
+                            if (product.id != null) {
+                              final success = await cartNotifier.addToCart(
+                                  product.id!, 1);
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Added to cart'),
+                                    backgroundColor: kGreen,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Item already in cart'),
+                                    backgroundColor: kRed,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        );
+                      },
                     ),
             ),
           ],

@@ -35,7 +35,7 @@ class CartNotifier extends _$CartNotifier {
       final storeApiService = ref.read(storeApiServiceProvider);
       final success = await storeApiService.addToCart(storeId, quantity);
       if (success) {
-        await fetchCart(); // Refresh cart after adding
+        await fetchCart(); 
       }
       return success;
     } catch (e, stackTrace) {
@@ -65,7 +65,7 @@ class CartNotifier extends _$CartNotifier {
       final storeApiService = ref.read(storeApiServiceProvider);
       final success = await storeApiService.incrementQuantity(cartId, storeId);
       if (success) {
-        await fetchCart(); // Refresh cart after incrementing
+        await fetchCart(); 
       }
       return success;
     } catch (e, stackTrace) {
@@ -99,9 +99,9 @@ class CartNotifier extends _$CartNotifier {
     if (cart?.products == null || cart!.products!.isEmpty) return 0.0;
     double total = 0.0;
     for (var product in cart!.products!) {
-      // Note: This would need to be updated if we have store details in the cart
-      // For now, we'll need to fetch store details or modify the cart structure
-      total += ((product.quantity ?? 0) * 0); // Placeholder - need store price
+      final price = product.store?.price ?? 0.0;
+      final quantity = product.quantity ?? 0;
+      total += price * quantity;
     }
     return total;
   }

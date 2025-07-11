@@ -392,12 +392,12 @@ final getStoreCategoriesProvider =
 // ignore: unused_element
 typedef GetStoreCategoriesRef = AutoDisposeFutureProviderRef<List<String>>;
 String _$getSavedShippingAddressHash() =>
-    r'2abf1e45c2c88cef648a727322a39848e5e69df4';
+    r'8c96e0e29b1570b041ea58a5848c0e87cc62ab2d';
 
 /// See also [getSavedShippingAddress].
 @ProviderFor(getSavedShippingAddress)
 final getSavedShippingAddressProvider =
-    AutoDisposeFutureProvider<List<OrderModel>>.internal(
+    AutoDisposeFutureProvider<List<ShippingAddress>>.internal(
   getSavedShippingAddress,
   name: r'getSavedShippingAddressProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -410,6 +410,6 @@ final getSavedShippingAddressProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetSavedShippingAddressRef
-    = AutoDisposeFutureProviderRef<List<OrderModel>>;
+    = AutoDisposeFutureProviderRef<List<ShippingAddress>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

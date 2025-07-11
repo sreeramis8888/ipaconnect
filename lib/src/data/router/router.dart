@@ -124,12 +124,12 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'CartPage':
       page = CartPage();
       break;
-    case 'AddressSelectionPage':
-      page = AddressSelectionPage();
-      break;
-    case 'AddAddressPage':
-      page = AddAddressPage();
-      break;
+    // case 'AddressSelectionPage':
+    //   page = AddressSelectionPage();
+    //   break;
+    // case 'AddAddressPage':
+    //   page = AddAddressPage();
+    //   break;
     case 'ProductDetails':
       final args = settings?.arguments as Map<String, dynamic>;
       page = ProductDetailsPage(
