@@ -73,14 +73,14 @@ class ProductCard extends StatelessWidget {
                       size: 14,
                       showNumber: true,
                       color: Colors.amber,
-                      numberStyle: kSmallTitleR.copyWith(color: Colors.white, fontSize: 10),
+                      numberStyle: kSmallTitleR.copyWith(
+                          color: Colors.white, fontSize: 10),
                     ),
-                    // Optionally, add review count if available
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Seller: ${product.user.name} – Skybiz Solutions', // Static seller company for now
+                  'Seller: ${product.user.name}',
                   style: kSmallerTitleR.copyWith(
                       color: kSecondaryTextColor, fontSize: 12),
                   maxLines: 1,

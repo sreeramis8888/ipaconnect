@@ -1,111 +1,140 @@
 class AnalyticsModel {
   final String? id;
-  final String? user_id;
-  final String? username;
-  final String? userImage;
-  final String? title;
   final String? type;
-  final String? status;
-  final String? time;
+  final SenderReceiver? sender;
+  final SenderReceiver? receiver;
+  final String? title;
   final String? description;
+  final int? amount;
+  final String? status;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final Referral? referral;
   final String? contact;
-  final int? amount;
-  final DateTime? date;
   final String? meetingLink;
   final String? location;
+  final String? time;
 
   AnalyticsModel({
     this.id,
-    this.user_id,
-    this.username,
     this.type,
-    this.userImage,
+    this.sender,
+    this.receiver,
     this.title,
-    this.status,
-    this.time,
     this.description,
+    this.amount,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
     this.referral,
     this.contact,
-    this.amount,
-    this.date,
     this.meetingLink,
     this.location,
+    this.time,
   });
 
   factory AnalyticsModel.fromJson(Map<String, dynamic> json) {
     return AnalyticsModel(
       id: json['_id'] as String?,
-      user_id: json['user_id'] as String?, // Added to fromJson
-      username: json['username'] as String?,
-      userImage: json['user_image'] as String?,
       type: json['type'] as String?,
+      sender: json['sender'] != null ? SenderReceiver.fromJson(json['sender']) : null,
+      receiver: json['receiver'] != null ? SenderReceiver.fromJson(json['receiver']) : null,
       title: json['title'] as String?,
-      status: json['status'] as String?,
-      time: json['time'] as String?,
       description: json['description'] as String?,
-      referral:
-          json['referral'] != null ? Referral.fromJson(json['referral']) : null,
-      contact: json['contact'] as String?,
       amount: json['amount'] as int?,
-      date: json['date'] != null ? DateTime.tryParse(json['date']) : null,
+      status: json['status'] as String?,
+      createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt']) : null,
+      updatedAt: json['updatedAt'] != null ? DateTime.tryParse(json['updatedAt']) : null,
+      referral: json['referral'] != null ? Referral.fromJson(json['referral']) : null,
+      contact: json['contact'] as String?,
       meetingLink: json['meetingLink'] as String?,
       location: json['location'] as String?,
+      time: json['time'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       '_id': id,
-      'user_id': user_id, // Added to toJson
-      'username': username,
-      'user_image': userImage,
-      'title': title,
       'type': type,
-      'status': status,
-      'time': time,
+      'sender': sender?.toJson(),
+      'receiver': receiver?.toJson(),
+      'title': title,
       'description': description,
+      'amount': amount,
+      'status': status,
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'referral': referral?.toJson(),
       'contact': contact,
-      'amount': amount,
-      'date': date?.toIso8601String(),
       'meetingLink': meetingLink,
       'location': location,
+      'time': time,
     };
   }
 
   AnalyticsModel copyWith({
     String? id,
-    String? user_id, // Added to copyWith
-    String? username,
-    String? userImage,
+    String? type,
+    SenderReceiver? sender,
+    SenderReceiver? receiver,
     String? title,
-    String? status,
-    String? time,
     String? description,
+    int? amount,
+    String? status,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     Referral? referral,
     String? contact,
-    int? amount,
-    DateTime? date,
     String? meetingLink,
     String? location,
+    String? time,
   }) {
     return AnalyticsModel(
       id: id ?? this.id,
-      user_id: user_id ?? this.user_id, // Added to copyWith return
-      username: username ?? this.username,
-      userImage: userImage ?? this.userImage,
+      type: type ?? this.type,
+      sender: sender ?? this.sender,
+      receiver: receiver ?? this.receiver,
       title: title ?? this.title,
-      status: status ?? this.status,
-      time: time ?? this.time,
       description: description ?? this.description,
+      amount: amount ?? this.amount,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       referral: referral ?? this.referral,
       contact: contact ?? this.contact,
-      amount: amount ?? this.amount,
-      date: date ?? this.date,
       meetingLink: meetingLink ?? this.meetingLink,
       location: location ?? this.location,
+      time: time ?? this.time,
     );
+  }
+}
+
+class SenderReceiver {
+  final String? id;
+  final String? name;
+  final String? image;
+
+  SenderReceiver({
+    this.id,
+    this.name,
+    this.image,
+  });
+
+  factory SenderReceiver.fromJson(Map<String, dynamic> json) {
+    return SenderReceiver(
+      id: json['_id'] as String?,
+      name: json['name'] as String?,
+      image: json['image'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'image': image,
+    };
   }
 }
 

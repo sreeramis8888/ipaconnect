@@ -40,6 +40,7 @@ class UserDataApiService {
       return [];
     }
   }
+  
   Future<UserModel?> fetchUserDetailsById(String userId) async {
     final response = await _apiService.get('/users/$userId');
     if (response.success && response.data != null) {

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
@@ -10,6 +11,7 @@ class SelectionDropDown extends StatefulWidget {
   final ValueChanged<String?> onChanged;
   final FormFieldValidator<String>? validator;
   final Color backgroundColor;
+
   const SelectionDropDown({
     this.label,
     required this.items,
@@ -77,54 +79,45 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(widget.label ?? "", style: kSmallTitleM),
                 ),
-              DropdownButtonFormField<String>(
-                hint: Text(
-                  widget.hintText ?? '',
-                  style: const TextStyle(
-                    color: Color(0xFF718096),
-                    fontSize: 14,
-                  ),
-                ),
+              DropdownButtonFormField2<String>(
+                iconStyleData: IconStyleData(
+                    icon: Icon(
+                  color: kWhite,
+                  Icons.keyboard_arrow_down_rounded,
+                )),
+                isExpanded: true,
                 value: widget.value,
                 items: widget.items,
                 onChanged: widget.onChanged,
                 validator: widget.validator,
-                icon: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: Color(0xFF718096),
+                dropdownStyleData: DropdownStyleData(
+                  maxHeight: 300,
+                  decoration: BoxDecoration(
+                    color: kInputFieldcolor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-                iconSize: 24,
-                isExpanded: true,
-                dropdownColor: kInputFieldcolor,
-                menuMaxHeight: 300,
                 decoration: InputDecoration(
+                  hintText: widget.hintText ?? '',
+                  hintStyle: const TextStyle(
+                    color: Color(0xFF718096),
+                    fontSize: 14,
+                  ),
                   fillColor: widget.backgroundColor,
                   filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  contentPadding:
+                      const EdgeInsets.only(top: 12, bottom: 12, right: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.transparent),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: Colors.transparent,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.transparent),
+                    borderSide: BorderSide.none,
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(color: Colors.red),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.transparent),
                   ),
                 ),
                 style: const TextStyle(

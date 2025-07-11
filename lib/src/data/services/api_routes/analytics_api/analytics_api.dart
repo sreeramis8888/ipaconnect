@@ -11,44 +11,51 @@ class AnalyticsApiService {
   final ApiService apiService;
   final SnackbarService snackbarService;
 
-  AnalyticsApiService({required this.apiService, SnackbarService? snackbarService})
+  AnalyticsApiService(
+      {required this.apiService, SnackbarService? snackbarService})
       : snackbarService = snackbarService ?? SnackbarService();
 
-Future<List<AnalyticsModel>> fetchAnalytics({
-  int? page,
-  int? limit,
-}) async {
-  final queryParams = <String, String>{};
-  if (page != null) queryParams['page'] = page.toString();
-  if (limit != null) queryParams['limit'] = limit.toString();
+  Future<List<AnalyticsModel>> fetchAnalytics({
+    int? page,
+    int? limit,
+  }) async {
+    final queryParams = <String, String>{};
+    if (page != null) queryParams['page'] = page.toString();
+    if (limit != null) queryParams['limit'] = limit.toString();
 
-  final queryString = queryParams.entries.isNotEmpty
-      ? '?' + queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')
-      : '';
+    final queryString = queryParams.entries.isNotEmpty
+        ? '?' +
+            queryParams.entries
+                .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+                .join('&')
+        : '';
 
-  final endpoint = '/activity/user/$id$queryString';
+    final endpoint = '/activity/user/$id$queryString';
 
-  try {
-    final response = await apiService.get(endpoint);
-    final decoded = response.data;
-    if (response.success && response.statusCode == 200) {
-      final List data = decoded?['data'] ?? [];
-      return data.map((item) => AnalyticsModel.fromJson(item)).toList();
-    } else {
-      throw Exception(decoded?['message'] ?? response.message ?? 'Failed to fetch analytics');
+    try {
+      final response = await apiService.get(endpoint);
+      final decoded = response.data;
+      if (response.success && response.statusCode == 200) {
+        final List data = decoded?['data'] ?? [];
+        return data.map((item) => AnalyticsModel.fromJson(item)).toList();
+      } else {
+        throw Exception(decoded?['message'] ??
+            response.message ??
+            'Failed to fetch analytics');
+      }
+    } catch (e) {
+      log('Exception in fetchAnalytics: $e');
+      return [];
     }
-  } catch (e) {
-    log('Exception in fetchAnalytics: $e');
-    return [];
   }
-}
 
   /// Post Analytics
   Future<String?> postAnalytic({required Map<String, dynamic> data}) async {
     try {
-      final response = await apiService.post('/analytic', data);
+      final response = await apiService.post('/activity', data);
       final decoded = response.data;
-      if (response.success && (response.statusCode == 200 || response.statusCode == 201)) {
+      if (response.success &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
         log('Analytics posted successfully: ${response.data}');
         return 'success';
       } else {
@@ -65,14 +72,12 @@ Future<List<AnalyticsModel>> fetchAnalytics({
     required String analyticId,
     required String? action,
   }) async {
-    final endpoint = '/analytic/status';
-    final body = {
-      'requestId': analyticId,
-      'action': action,
-    };
+    final endpoint = '/activity/$analyticId';
+    final body = {'status': action};
     try {
       final response = await apiService.post(endpoint, body);
-      if (response.success && (response.statusCode == 200 || response.statusCode == 201)) {
+      if (response.success &&
+          (response.statusCode == 200 || response.statusCode == 201)) {
         log('$action successfully applied');
       } else {
         log('Failed to update analytic status: ${response.statusCode}');
@@ -85,10 +90,13 @@ Future<List<AnalyticsModel>> fetchAnalytics({
 
   /// Delete Analytic
   Future<void> deleteAnalytic({required String analyticId}) async {
-    final endpoint = '/analytic/$analyticId';
+    final endpoint = '/activity/$analyticId';
     try {
       final response = await apiService.delete(endpoint);
-      if (response.success && (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204)) {
+      if (response.success &&
+          (response.statusCode == 200 ||
+              response.statusCode == 201 ||
+              response.statusCode == 204)) {
         log('Analytic deleted successfully');
       } else {
         log('Failed to delete analytic: ${response.statusCode}');

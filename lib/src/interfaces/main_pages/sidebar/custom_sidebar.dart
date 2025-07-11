@@ -73,6 +73,14 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               ),
             _menuItem(
               icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/levels.svg',
+                height: 24,
+              ),
+              label: 'Hierarchy',
+              onTap: () => navigationService.pushNamed('Hierarchies'),
+            ),
+            _menuItem(
+              icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/my_submissions.svg',
                 height: 24,
               ),

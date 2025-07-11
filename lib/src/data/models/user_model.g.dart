@@ -21,7 +21,9 @@ _UserModel _$UserModelFromJson(Map<String, dynamic> json) => _UserModel(
       status: json['status'] as String?,
       isIpaMember: json['is_ipa_member'] as bool?,
       isAdmin: json['is_admin'] as bool?,
-      hierarchy: json['hierarchy'] as String?,
+      hierarchy: json['hierarchy'] == null
+          ? null
+          : HierarchyModel.fromJson(json['hierarchy'] as Map<String, dynamic>),
       role: json['role'] as String?,
       lastSeen: json['last_seen'] == null
           ? null

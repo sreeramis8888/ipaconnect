@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:ipaconnect/src/data/models/heirarchy_model.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';
@@ -21,7 +22,7 @@ abstract class UserModel with _$UserModel {
     String? status,
     @JsonKey(name: 'is_ipa_member') bool? isIpaMember,
     @JsonKey(name: 'is_admin') bool? isAdmin,
-    String? hierarchy,
+    HierarchyModel? hierarchy,
     String? role, 
     @JsonKey(name: 'last_seen') DateTime? lastSeen,
     bool? online,

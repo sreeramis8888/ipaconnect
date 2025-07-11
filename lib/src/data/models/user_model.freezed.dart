@@ -33,7 +33,7 @@ mixin _$UserModel {
   bool? get isIpaMember;
   @JsonKey(name: 'is_admin')
   bool? get isAdmin;
-  String? get hierarchy;
+  HierarchyModel? get hierarchy;
   String? get role;
   @JsonKey(name: 'last_seen')
   DateTime? get lastSeen;
@@ -158,7 +158,7 @@ abstract mixin class $UserModelCopyWith<$Res> {
       String? status,
       @JsonKey(name: 'is_ipa_member') bool? isIpaMember,
       @JsonKey(name: 'is_admin') bool? isAdmin,
-      String? hierarchy,
+      HierarchyModel? hierarchy,
       String? role,
       @JsonKey(name: 'last_seen') DateTime? lastSeen,
       bool? online,
@@ -267,7 +267,7 @@ class _$UserModelCopyWithImpl<$Res> implements $UserModelCopyWith<$Res> {
       hierarchy: freezed == hierarchy
           ? _self.hierarchy
           : hierarchy // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as HierarchyModel?,
       role: freezed == role
           ? _self.role
           : role // ignore: cast_nullable_to_non_nullable
@@ -373,7 +373,7 @@ class _UserModel implements UserModel {
   @JsonKey(name: 'is_admin')
   final bool? isAdmin;
   @override
-  final String? hierarchy;
+  final HierarchyModel? hierarchy;
   @override
   final String? role;
   @override
@@ -523,7 +523,7 @@ abstract mixin class _$UserModelCopyWith<$Res>
       String? status,
       @JsonKey(name: 'is_ipa_member') bool? isIpaMember,
       @JsonKey(name: 'is_admin') bool? isAdmin,
-      String? hierarchy,
+      HierarchyModel? hierarchy,
       String? role,
       @JsonKey(name: 'last_seen') DateTime? lastSeen,
       bool? online,
@@ -632,7 +632,7 @@ class __$UserModelCopyWithImpl<$Res> implements _$UserModelCopyWith<$Res> {
       hierarchy: freezed == hierarchy
           ? _self.hierarchy
           : hierarchy // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as HierarchyModel?,
       role: freezed == role
           ? _self.role
           : role // ignore: cast_nullable_to_non_nullable

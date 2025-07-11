@@ -226,8 +226,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   Consumer(
                     builder: (context, ref, _) {
                       final ratings = ref.watch(ratingNotifierProvider);
+                      final ratingNotifier =
+                          ref.watch(ratingNotifierProvider.notifier);
                       double avgRating = 0;
-                      if (ratings.isNotEmpty) {
+                      if (ratings.isNotEmpty && ratingNotifier.isFirstLoad) {
                         avgRating = ratings
                                 .map((r) => r.rating)
                                 .fold(0, (a, b) => a + b) /

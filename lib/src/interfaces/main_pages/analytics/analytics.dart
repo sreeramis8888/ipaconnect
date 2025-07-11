@@ -9,9 +9,10 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/analytics_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/analytics_api/analytics_api.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
-import 'package:ipaconnect/src/interfaces/components/modals/add_analytics_modalSheet.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/analytics_modalSheet.dart';
 
 class AnalyticsPage extends ConsumerStatefulWidget {
   final String? initialTab;
@@ -238,6 +239,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
   void _showReusableModalSheet(
       AnalyticsModel analytic, String tabBarType, BuildContext context) {
     showModalBottomSheet(
+      backgroundColor: kCardBackgroundColor,
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -383,20 +385,32 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
         ref.invalidate(fetchAnalyticsProvider);
       },
       child: asyncAnalytics.when(
-          data: (analytics) => analytics.isEmpty
-              ? Center(
-                  child: Text(
-                  "No data available",
-                  style: kSmallTitleB,
-                ))
-              : ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: analytics.length,
-                  itemBuilder: (context, index) {
-                    return _buildCard(analytics[index], tabBarType);
-                  },
-                ),
+          data: (analytics) {
+            // Filter based on tabBarType and current user id
+            final filteredAnalytics = analytics.where((analytic) {
+              if (tabBarType == 'sent') {
+                return analytic.sender?.id == id;
+              } else if (tabBarType == 'received') {
+                return analytic.receiver?.id == id;
+              }
+              return true; // for history or all
+            }).toList();
+
+            return filteredAnalytics.isEmpty
+                ? Center(
+                    child: Text(
+                    "No data available",
+                    style: kSmallTitleB,
+                  ))
+                : ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: filteredAnalytics.length,
+                    itemBuilder: (context, index) {
+                      return _buildCard(filteredAnalytics[index], tabBarType);
+                    },
+                  );
+          },
           loading: () => const Center(child: LoadingAnimation()),
           error: (error, stackTrace) {
             log(error.toString());
@@ -406,14 +420,14 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
   }
 
   Widget _buildCard(AnalyticsModel analytic, String tabBarType) {
-    log(analytic.userImage ?? '', name: 'User image of analytic');
+    log(analytic.receiver?.image ?? '', name: 'User image of analytic');
     return InkWell(
       onTap: () => _showReusableModalSheet(analytic, tabBarType, context),
       child: Container(
         decoration: BoxDecoration(
             color: kCardBackgroundColor,
             border: Border.all(
-              color: kGrey,
+              color: kStrokeColor,
             ),
             borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -431,7 +445,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
                         CircleAvatar(
                           radius: 24.0,
                           backgroundImage: NetworkImage(
-                            analytic.userImage ?? '',
+                            analytic.receiver?.image ?? '',
                           ),
                         ),
                         const SizedBox(
@@ -440,28 +454,32 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
                         Expanded(
                           child: Text(
                             maxLines: 2,
-                            analytic.username ?? '',
-                            style: const TextStyle(color: kWhite,
-                                fontSize: 14.0, fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
+                            analytic.receiver?.name ?? '',
+                            style: kSmallTitleB.copyWith(
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                         const Spacer(),
-                        if (analytic.date != null)
+                        if (analytic.createdAt != null)
                           Row(
                             children: [
                               Text(
                                 maxLines: 2,
-                                '${DateFormat("MMM d yyyy ").format(analytic.date!.toLocal())}',
-                                style: const TextStyle(color: kWhite,
-                                    fontSize: 10.0,),
+                                '${DateFormat("MMM d yyyy ").format(analytic.createdAt!.toLocal())}',
+                                style: const TextStyle(
+                                  color: kWhite,
+                                  fontSize: 10.0,
+                                ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                               if (analytic.time != null)
                                 Text(
                                   '${analytic.time}',
                                   style: const TextStyle(
-                                      fontSize: 10.0, color: kWhite,),
+                                    fontSize: 10.0,
+                                    color: kWhite,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 )
                             ],

@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/analytics/analytics.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/analytics/create_analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_details.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_member_list.dart';
@@ -15,15 +16,21 @@ import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/store/store_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/store/cart_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/store/address_selection_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/store/add_address_page.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 
 import '../../interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/levels/hierarchies.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   Widget? page;
-  RouteTransitionsBuilder transitionsBuilder = (context, animation, secondaryAnimation, child) {
+  RouteTransitionsBuilder transitionsBuilder =
+      (context, animation, secondaryAnimation, child) {
     const begin = Offset(0.0, 1.0);
     const end = Offset.zero;
     const curve = Curves.easeOutCubic;
@@ -50,6 +57,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = MainPage();
     case 'EditUser':
       page = EditUser();
+    case 'SendAnalyticRequest':
+      page = SendAnalyticRequestPage();
     case 'Analytics':
       page = AnalyticsPage();
       break;
@@ -78,7 +87,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       transitionDuration = const Duration(milliseconds: 500);
       break;
     case 'CategoryPage':
-      BusinessCategoryModel category = settings?.arguments as BusinessCategoryModel;
+      BusinessCategoryModel category =
+          settings?.arguments as BusinessCategoryModel;
       page = Categorypage(category: category);
       break;
     case 'ProfilePreview':
@@ -92,7 +102,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
         const begin = Offset(1.0, 0.0); // Slide from right
         const end = Offset.zero;
         const curve = Curves.easeOutCubic;
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         return SlideTransition(
           position: animation.drive(tween),
           child: child,
@@ -107,14 +118,28 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'EventsPage':
       page = EventsPage();
       break;
+    case 'StorePage':
+      page = StorePage();
+      break;
+    case 'CartPage':
+      page = CartPage();
+      break;
+    case 'AddressSelectionPage':
+      page = AddressSelectionPage();
+      break;
+    case 'AddAddressPage':
+      page = AddAddressPage();
+      break;
     case 'ProductDetails':
       final args = settings?.arguments as Map<String, dynamic>;
-      page = ProductDetailsPage(product: args['product'], category: args['category']);
+      page = ProductDetailsPage(
+          product: args['product'], category: args['category']);
       transitionsBuilder = (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0); // Slide from right
         const end = Offset.zero;
         const curve = Curves.easeOutCubic;
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         return SlideTransition(
           position: animation.drive(tween),
           child: child,
@@ -122,11 +147,18 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       };
       transitionDuration = const Duration(milliseconds: 300);
       break;
+    case 'Hierarchies':
+      page = HierarchiesPage();
+      break;
     default:
       return MaterialPageRoute(
-        builder: (context) => Scaffold(backgroundColor: kCardBackgroundColor,
+        builder: (context) => Scaffold(
+          backgroundColor: kCardBackgroundColor,
           body: Center(
-            child: Text('No path for  ${settings?.name}',style: kSmallTitleB,),
+            child: Text(
+              'No path for  ${settings?.name}',
+              style: kSmallTitleB,
+            ),
           ),
         ),
       );

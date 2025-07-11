@@ -48,13 +48,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     double maxHeight = 0.0;
 
     for (var notice in notices) {
-      final double titleHeight =
-          _estimateTextHeight(notice.title!, 18.0); 
-      final double descriptionHeight = _estimateTextHeight(
-          notice.description!, 14.0); 
+      final double titleHeight = _estimateTextHeight(notice.title!, 18.0);
+      final double descriptionHeight =
+          _estimateTextHeight(notice.description!, 14.0);
 
-      final double itemHeight =
-          titleHeight + descriptionHeight; 
+      final double itemHeight = titleHeight + descriptionHeight;
       if (itemHeight > maxHeight) {
         maxHeight = itemHeight + MediaQuery.sizeOf(context).width * 0.05;
       }
@@ -253,7 +251,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 color: kWhite,
                                                 'assets/svg/icons/event_icon.svg')),
                                         CustomIconContainer(
-                                            label: 'Card',
+                                            label: 'Store',
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  context, 'StorePage');
+                                            },
                                             icon: SvgPicture.asset(
                                                 color: kWhite,
                                                 'assets/svg/icons/card_icon.svg')),
