@@ -254,7 +254,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             label: 'Store',
                                             onTap: () {
                                               Navigator.pushNamed(
-                                                  context, 'StorePage');
+                                                  arguments:
+                                                      widget.user.countryCode,
+                                                  context,
+                                                  'StorePage');
                                             },
                                             icon: SvgPicture.asset(
                                                 color: kWhite,

@@ -1,7 +1,8 @@
 import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
+import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import '../../../api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,6 +19,9 @@ class UserDataApiService {
       '/users/update',
       user.toJson(),
     );
+    log('requesting body:${user.toJson()}');
+
+    log(response.message.toString());
     return response;
   }
 
@@ -30,8 +34,11 @@ class UserDataApiService {
     }
     return null;
   }
-  Future<List<UserModel>> fetchAllUsers({int pageNo = 1, int limit = 10}) async {
-    final response = await _apiService.get('/users');
+
+  Future<List<UserModel>> fetchAllUsers(
+      {int pageNo = 1, int limit = 10 ,String? query,}) async {
+    final response =
+        await _apiService.get('/users?page_no=$pageNo&limit=$limit');
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
@@ -40,13 +47,66 @@ class UserDataApiService {
       return [];
     }
   }
-  
+
   Future<UserModel?> fetchUserDetailsById(String userId) async {
     final response = await _apiService.get('/users/$userId');
     if (response.success && response.data != null) {
       return UserModel.fromJson(response.data!['data']);
     }
     return null;
+  }
+
+  Future<void> createReport({
+    required String reportedItemId,
+    required String reportType,
+    required String reason,
+  }) async {
+    final body = {
+      'report_id': reportedItemId.isNotEmpty ? reportedItemId : ' ',
+      'report_type': reportType,
+      'reason': reason,
+    };
+
+    try {
+      final response = await _apiService.post('/report', body);
+      log(response.data.toString(), name: 'report respose data');
+      log(response.message.toString(), name: 'report respose message');
+      if (response.success &&
+          (response.statusCode == 201 || response.statusCode == 200)) {
+        SnackbarService().showSnackBar('Reported to admin');
+      } else {
+        SnackbarService().showSnackBar('Failed to Report');
+      }
+    } catch (e) {
+      log('Error occurred: $e');
+    }
+  }
+
+  Future<void> blockUser(String userId, String? reason, WidgetRef ref) async {
+    final response = await _apiService.put(
+      '/users/block-user/$userId',
+      {},
+    );
+    log(response.data.toString(), name: 'block User respose data');
+    log(response.message.toString(), name: 'block User respose message');
+    if (response.success && response.statusCode == 200) {
+      ref.read(userProvider.notifier).refreshUser();
+      SnackbarService().showSnackBar('Blocked');
+    } else {
+      SnackbarService().showSnackBar('Failed to Block');
+    }
+  }
+
+  Future<void> unBlockUser(String userId) async {
+    final response = await _apiService.put(
+      '/users/block-user/$userId',
+      {},
+    );
+    if (response.success && response.statusCode == 200) {
+      SnackbarService().showSnackBar('User unblocked successfully');
+    } else {
+      SnackbarService().showSnackBar('Failed to UnBlock');
+    }
   }
 }
 
@@ -68,9 +128,9 @@ Future<UserModel?> getUserDetailsById(Ref ref, {required String userId}) async {
   return userDataApi.fetchUserDetailsById(userId);
 }
 
-
 @riverpod
-Future<List<UserModel>> fetchAllUsers(Ref ref,{int pageNo = 1, int limit = 10}) async {
+Future<List<UserModel>> fetchAllUsers(Ref ref,
+    {int pageNo = 1, int limit = 10 ,String? query,}) async {
   final userApiService = ref.watch(userDataApiServiceProvider);
-  return userApiService.fetchAllUsers(limit: limit,pageNo: pageNo);
+  return userApiService.fetchAllUsers(limit: limit, pageNo: pageNo,query: query);
 }

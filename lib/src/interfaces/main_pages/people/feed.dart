@@ -16,6 +16,7 @@ import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_
 import 'package:ipaconnect/src/data/utils/get_time_ago.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.dart';
+import 'package:ipaconnect/src/interfaces/components/dropdown/block_report_dropdown.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_feed_modalSheet.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/feed_shimmer.dart';
@@ -239,7 +240,7 @@ class _FeedViewState extends ConsumerState<FeedView> {
         //     color: kWhite,
         //     size: 27,
         //   ),
-        //   backgroundColor: const Color(0xFFE30613),
+        //   backgroundColor: const kPrimaryColor,
         // ),
       ),
     );
@@ -490,6 +491,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                   ),
                                 ),
                                 title: Text(
+                                    style: kSmallTitleR,
                                     widget.business.comments![index].user !=
                                             null
                                         ? widget.business.comments![index].user!
@@ -497,6 +499,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                             'Unknown User'
                                         : 'Unknown User'),
                                 subtitle: Text(
+                                    style: kSmallTitleR,
                                     widget.business.comments?[index].comment ??
                                         ''),
                               );
@@ -523,12 +526,13 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
         children: [
           Expanded(
             child: TextField(
+              style: TextStyle(color: kWhite),
               focusNode: commentFocusNode,
               controller: commentController,
               decoration: InputDecoration(
-                hintStyle: kSmallTitleR,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 hintText: "Add a comment...",
+                hintStyle: TextStyle(color: kWhite),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
                 filled: true,
                 fillColor: kStrokeColor,
                 border: OutlineInputBorder(
@@ -726,18 +730,17 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
 
                 const Spacer(),
 
-                Icon(
-                  Icons.bookmark_border,
-                  color: kSecondaryTextColor,
-                  size: 29,
-                ),
+                if (widget.business.user?.id != id)
+                  BlockReportDropdown(
+                    isBlocked: false,
+                    feed: widget.business,
+                  )
               ],
             ),
           ),
 
           const SizedBox(height: 16),
 
-          // Add comment section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: GestureDetector(

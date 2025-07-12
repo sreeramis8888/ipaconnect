@@ -265,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  currency_converter:
+    dependency: "direct main"
+    description:
+      name: currency_converter
+      sha256: eb8f6367b15b9da0c3188ae9290c19e439b8c478e137c06cd956b113a4128cde
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   custom_image_crop:
     dependency: "direct main"
     description:
@@ -892,10 +900,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
+      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.20.2"
+    version: "0.18.1"
   intl_phone_field:
     dependency: "direct main"
     description:

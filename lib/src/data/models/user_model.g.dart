@@ -7,8 +7,12 @@ part of 'user_model.dart';
 // **************************************************************************
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
+      countryCode: json['country_code'] as String?,
       name: json['name'] as String?,
       uid: json['uid'] as String?,
+      blockedUsers: (json['blocked_users'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       memberId: json['member_id'] as String?,
       email: json['email'] as String?,
       image: json['image'] as String?,
@@ -44,30 +48,35 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
-      'name': instance.name,
-      'uid': instance.uid,
-      'member_id': instance.memberId,
-      'email': instance.email,
-      'image': instance.image,
-      'phone': instance.phone,
-      'fcm': instance.fcm,
-      'otp': instance.otp,
-      'proffession': instance.profession,
-      'location': instance.location,
-      'password': instance.password,
-      'status': instance.status,
-      'is_ipa_member': instance.isIpaMember,
-      'is_admin': instance.isAdmin,
-      'hierarchy': instance.hierarchy?.toJson(),
-      'role': instance.role,
-      'last_seen': instance.lastSeen?.toIso8601String(),
-      'online': instance.online,
-      'reject_reason': instance.rejectReason,
-      'bio': instance.bio,
-      'social_media': instance.socialMedia?.map((e) => e.toJson()).toList(),
-      'createdAt': instance.createdAt?.toIso8601String(),
-      'updatedAt': instance.updatedAt?.toIso8601String(),
-      '_id': instance.id,
+      if (instance.name case final value?) 'name': value,
+      if (instance.uid case final value?) 'uid': value,
+      if (instance.memberId case final value?) 'member_id': value,
+      if (instance.email case final value?) 'email': value,
+      if (instance.image case final value?) 'image': value,
+      if (instance.phone case final value?) 'phone': value,
+      if (instance.fcm case final value?) 'fcm': value,
+      if (instance.otp case final value?) 'otp': value,
+      if (instance.profession case final value?) 'proffession': value,
+      if (instance.blockedUsers case final value?) 'blocked_users': value,
+      if (instance.countryCode case final value?) 'country_code': value,
+      if (instance.location case final value?) 'location': value,
+      if (instance.password case final value?) 'password': value,
+      if (instance.status case final value?) 'status': value,
+      if (instance.isIpaMember case final value?) 'is_ipa_member': value,
+      if (instance.isAdmin case final value?) 'is_admin': value,
+      if (instance.hierarchy case final value?) 'hierarchy': value,
+      if (instance.role case final value?) 'role': value,
+      if (instance.lastSeen?.toIso8601String() case final value?)
+        'last_seen': value,
+      if (instance.online case final value?) 'online': value,
+      if (instance.rejectReason case final value?) 'reject_reason': value,
+      if (instance.bio case final value?) 'bio': value,
+      if (instance.socialMedia case final value?) 'social_media': value,
+      if (instance.createdAt?.toIso8601String() case final value?)
+        'createdAt': value,
+      if (instance.updatedAt?.toIso8601String() case final value?)
+        'updatedAt': value,
+      if (instance.id case final value?) '_id': value,
     };
 
 UserSocialMedia _$UserSocialMediaFromJson(Map<String, dynamic> json) =>

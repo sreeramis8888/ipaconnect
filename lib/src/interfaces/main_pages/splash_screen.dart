@@ -39,7 +39,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late Animation<double> _rotationAnimation;
   late Animation<double> _opacityAnimation;
 
-
   @override
   void initState() {
     super.initState();
@@ -65,7 +64,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
         .chain(CurveTween(curve: Curves.easeIn))
         .animate(_controller);
-
 
     _controller.forward();
 
@@ -301,11 +299,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               user = refreshed.value;
             }
           }
-          if (user != null &&
-              user.status == 'awaiting_payment') {
+          if (user != null && user.status == 'awaiting-payment') {
             navigationService.pushNamedReplacement('MySubscriptionPage');
             return;
           }
+         if (user != null && user.status == 'pending') {
+          NavigationService().pushNamedReplacement('ApprovalWaitingPage'); return;
+        } 
 
           final pendingDeepLink = _deepLinkService.pendingDeepLink;
           if (pendingDeepLink != null) {
@@ -316,9 +316,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           } else {
             navigationService.pushNamedReplacement('MainPage');
           }
-        }
-        else {
-      navigationService.pushNamedReplacement('PhoneNumber');
+        } else {
+          navigationService.pushNamedReplacement('PhoneNumber');
         }
       }
     });

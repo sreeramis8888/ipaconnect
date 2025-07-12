@@ -141,6 +141,8 @@ class CustomTextFormField extends StatelessWidget {
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 fillColor: backgroundColor,
                 filled: true,
+                contentPadding: const EdgeInsets.symmetric(
+                    vertical: 10, horizontal: 12), // << Add this line
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide(color: backgroundColor),

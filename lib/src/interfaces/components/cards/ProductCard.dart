@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
+import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialogue.dart';
+import 'package:ipaconnect/src/interfaces/components/dropdown/block_report_dropdown.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
   final String category;
-
+  final String companyUserId;
   const ProductCard({
     Key? key,
     required this.product,
     required this.category,
+    required this.companyUserId,
   }) : super(key: key);
 
   @override
@@ -28,30 +32,75 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            child: imageUrl != null
-                ? Image.network(
-                    imageUrl,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      height: 140,
-                      color: kCardBackgroundColor,
-                      child: Icon(Icons.broken_image,
-                          color: kSecondaryTextColor, size: 40),
-                    ),
-                  )
-                : Container(
-                    height: 140,
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+                child: imageUrl != null
+                    ? Image.network(
+                        imageUrl,
+                        height: 140,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          height: 140,
+                          color: kCardBackgroundColor,
+                          child: Icon(Icons.broken_image,
+                              color: kSecondaryTextColor, size: 40),
+                        ),
+                      )
+                    : Container(
+                        height: 140,
+                        color: kCardBackgroundColor,
+                        child: Icon(Icons.image,
+                            color: kSecondaryTextColor, size: 40),
+                      ),
+              ),
+              if (companyUserId != id)
+                Positioned(
+                  right: 0,
+                  child: PopupMenuButton<String>(
                     color: kCardBackgroundColor,
-                    child:
-                        Icon(Icons.image, color: kSecondaryTextColor, size: 40),
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: kStrokeColor,
+                    ),
+                    onSelected: (value) {
+                      showReportPersonDialog(
+                        context: context,
+                        onReportStatusChanged: () {},
+                        reportType: 'Product',
+                        reportedItemId: product.id,
+                      );
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'report',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.report,
+                              color: kPrimaryColor,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Report',
+                              style: kSmallTitleB,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    offset: const Offset(0, 40),
                   ),
+                ),
+            ],
           ),
           // Product Details
           Padding(

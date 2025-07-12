@@ -16,6 +16,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/store/my_orders_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/store_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/cart_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/address_selection_page.dart';
@@ -118,11 +119,18 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'EventsPage':
       page = EventsPage();
       break;
+    case 'MyOrdersPage':
+      page = MyOrdersPage();
+      break;
     case 'StorePage':
-      page = StorePage();
+      String userCurrency = settings?.arguments as String;
+      page = StorePage(userCurrency: userCurrency);
       break;
     case 'CartPage':
-      page = CartPage();
+      String userCurrency = settings?.arguments as String;
+      page = CartPage(
+        userCurrency: userCurrency,
+      );
       break;
     // case 'AddressSelectionPage':
     //   page = AddressSelectionPage();

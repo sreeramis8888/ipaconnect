@@ -6,10 +6,15 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart'
 import 'package:ipaconnect/src/data/notifiers/cart_notifier.dart';
 import 'package:ipaconnect/src/data/models/cart_model.dart';
 import 'package:ipaconnect/src/data/notifiers/store_notifier.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/painter/dot_line_painter.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/checkout_page.dart';
+import 'package:ipaconnect/src/data/utils/currency_converted.dart';
 
 class CartPage extends ConsumerStatefulWidget {
-  const CartPage({super.key});
+  final String userCurrency;
+  const CartPage({super.key, required this.userCurrency});
 
   @override
   ConsumerState<CartPage> createState() => _CartPageState();
@@ -29,23 +34,29 @@ class _CartPageState extends ConsumerState<CartPage> {
     final cartItems = cart?.products ?? [];
     final total = cartNotifier.getCartTotal();
     final storeNotifier = ref.watch(storeNotifierProvider.notifier);
-    final isLoading = storeNotifier.isLoading;
-    final isFirstLoad = storeNotifier.isFirstLoad;
+    final isLoading = cartNotifier.isLoading;
+    final isFirstLoad = cartNotifier.isFirstLoad;
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
+        ),
         backgroundColor: kBackgroundColor,
         elevation: 0,
-        title: Text('Cart', style: kHeadTitleSB),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: kWhite),
-          onPressed: () => Navigator.pop(context),
-        ),
+        title: Text('Cart',
+            style: kBodyTitleR.copyWith(color: kSecondaryTextColor)),
       ),
       body: isLoading && isFirstLoad
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingAnimation())
           : Column(
               children: [
                 Expanded(
@@ -87,83 +98,146 @@ class _CartPageState extends ConsumerState<CartPage> {
                                 padding: const EdgeInsets.all(12),
                                 child: Row(
                                   children: [
-                                    // Product image placeholder (since we don't have store details in cart)
-                                    Container(
-                                      width: 80,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        color: kGreyLight,
-                                        borderRadius: BorderRadius.circular(8),
+                                    // Product image
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Icon(
+                                            Icons.image,
+                                            color: Colors.white,
+                                            size: 32,
+                                          );
+                                        },
+                                        item.store?.image ?? '',
+                                        width: 60,
+                                        height: 60,
+                                        fit: BoxFit.cover,
                                       ),
-                                      child: const Icon(Icons.image,
-                                          size: 40, color: kGreyDark),
                                     ),
                                     const SizedBox(width: 12),
+                                    // Name and Price
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'Product: $storeName',
+                                            storeName,
                                             style: kBodyTitleSB,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           const SizedBox(height: 4),
-                                          Text('Quantity: $quantity',
-                                              style: kBodyTitleB),
-                                          const SizedBox(height: 8),
                                           Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              IconButton(
-                                                icon: const Icon(Icons.remove,
-                                                    color: kWhite, size: 20),
-                                                onPressed: cartId.isNotEmpty
-                                                    ? () async {
-                                                        await cartNotifier
-                                                            .decrementQuantity(
-                                                                cartId,
-                                                                storeId);
-                                                      }
-                                                    : null,
+                                              FutureBuilder<double?>(
+                                                future: convertCurrency(
+                                                  from: item.store?.currency ??
+                                                      '',
+                                                  to: widget.userCurrency,
+                                                  amount:
+                                                      item.store?.price ?? 0,
+                                                ),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return Text('Loading...',
+                                                        style: kBodyTitleB);
+                                                  } else if (snapshot
+                                                          .hasError ||
+                                                      snapshot.data == null) {
+                                                    return Text('Error',
+                                                        style: kBodyTitleB);
+                                                  } else {
+                                                    return Row(
+                                                      children: [
+                                                        Text(
+                                                            snapshot.data!
+                                                                .toStringAsFixed(
+                                                                    2),
+                                                            style: kBodyTitleB),
+                                                        const SizedBox(
+                                                            width: 4),
+                                                        Text(
+                                                            widget.userCurrency,
+                                                            style: kSmallerTitleR
+                                                                .copyWith(
+                                                                    color:
+                                                                        kGrey)),
+                                                      ],
+                                                    );
+                                                  }
+                                                },
                                               ),
                                               Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 4),
                                                 decoration: BoxDecoration(
-                                                  color: kPrimaryColor,
+                                                  color: kStrokeColor,
                                                   borderRadius:
-                                                      BorderRadius.circular(4),
+                                                      BorderRadius.circular(2),
                                                 ),
-                                                child: Text('$quantity',
-                                                    style: kBodyTitleSB),
-                                              ),
-                                              IconButton(
-                                                icon: const Icon(Icons.add,
-                                                    color: kWhite, size: 20),
-                                                onPressed: cartId.isNotEmpty
-                                                    ? () async {
-                                                        await cartNotifier
-                                                            .incrementQuantity(
-                                                                cartId,
-                                                                storeId);
-                                                      }
-                                                    : null,
+                                                child: Row(
+                                                  children: [
+                                                    InkWell(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 5,
+                                                                right: 5),
+                                                        child: Icon(
+                                                          size: 16,
+                                                          Icons.remove,
+                                                          color: kWhite,
+                                                        ),
+                                                      ),
+                                                      onTap: cartId.isNotEmpty
+                                                          ? () async {
+                                                              await cartNotifier
+                                                                  .decrementQuantity(
+                                                                      cartId,
+                                                                      storeId);
+                                                            }
+                                                          : null,
+                                                    ),
+                                                    Text('$quantity',
+                                                        style: kSmallTitleR),
+                                                    InkWell(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 5,
+                                                                right: 5),
+                                                        child: Icon(
+                                                          size: 16,
+                                                          Icons.add,
+                                                          color: kWhite,
+                                                        ),
+                                                      ),
+                                                      onTap: cartId.isNotEmpty
+                                                          ? () async {
+                                                              await cartNotifier
+                                                                  .incrementQuantity(
+                                                                      cartId,
+                                                                      storeId);
+                                                            }
+                                                          : null,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),
                                         ],
                                       ),
                                     ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline,
-                                          color: kRed),
-                                      onPressed: () async {
-                                        await cartNotifier
-                                            .removeFromCart(storeId);
-                                      },
-                                    ),
+                                    // Quantity control
                                   ],
                                 ),
                               ),
@@ -172,33 +246,184 @@ class _CartPageState extends ConsumerState<CartPage> {
                         ),
                 ),
                 if (cartItems.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: kCardBackgroundColor,
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
+                        Column(
+                          children: cartItems
+                              .map((item) => Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(item.store?.name ?? '',
+                                          style: kSmallTitleR),
+                                      FutureBuilder<double?>(
+                                        future: convertCurrency(
+                                          from: item.store?.currency != null
+                                              ? item.store?.currency
+                                                      .toString() ??
+                                                  ''
+                                              : '',
+                                          to: widget.userCurrency,
+                                          amount: item.store?.price ?? 0.0,
+                                        ),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text('Loading...',
+                                                    style: kSmallTitleR),
+                                              ],
+                                            );
+                                          } else if (snapshot.hasError ||
+                                              snapshot.data == null) {
+                                            return Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(''),
+                                                Text('Error',
+                                                    style: kLargeTitleSB),
+                                              ],
+                                            );
+                                          } else {
+                                            final convertedTotalAmount =
+                                                snapshot.data!;
+                                            return Row(
+                                              children: [
+                                                Text(
+                                                    convertedTotalAmount
+                                                        .toStringAsFixed(2),
+                                                    style: kSmallTitleR),
+                                                SizedBox(
+                                                  width: 4,
+                                                ),
+                                                Text(widget.userCurrency,
+                                                    style:
+                                                        kSmallerTitleR.copyWith(
+                                                            color: kGrey)),
+                                              ],
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ))
+                              .toList(),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Container(
+                          height: 1,
+                          child: CustomPaint(
+                            size: const Size(double.infinity, 1),
+                            painter: DottedLinePainter(),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Total', style: kLargeTitleSB),
-                            Text('₹${total.toStringAsFixed(2)}',
-                                style: kLargeTitleSB),
+                            Text('Total', style: kSmallTitleR),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        customButton(
-                          label: 'Proceed to Checkout',
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CheckoutPage(),
-                              ),
-                            );
+                        FutureBuilder<double?>(
+                          future: convertCurrency(
+                            from: cartItems.isNotEmpty
+                                ? cartItems.first.store?.currency ?? ''
+                                : '',
+                            to: widget.userCurrency,
+                            amount: total,
+                          ),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(''),
+                                      Text('Loading...', style: kSmallTitleR),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  customButton(
+                                    label: 'Proceed to Checkout',
+                                    onPressed: null, // Disabled while loading
+                                  ),
+                                ],
+                              );
+                            } else if (snapshot.hasError ||
+                                snapshot.data == null) {
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(''),
+                                      Text('Error', style: kLargeTitleSB),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  customButton(
+                                    label: 'Proceed to Checkout',
+                                    onPressed: null, // Disabled on error
+                                  ),
+                                ],
+                              );
+                            } else {
+                              final convertedTotalAmount = snapshot.data!;
+                              return Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(''),
+                                      Row(
+                                        children: [
+                                          Text(
+                                              convertedTotalAmount
+                                                  .toStringAsFixed(2),
+                                              style: kSmallTitleR),
+                                          const SizedBox(width: 4),
+                                          Text(widget.userCurrency,
+                                              style: kSmallerTitleR.copyWith(
+                                                  color: kGrey)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  customButton(
+                                    label: 'Proceed to Checkout',
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CheckoutPage(
+                                            userCurrency: widget.userCurrency,
+                                            totalAmount: convertedTotalAmount,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
                           },
                         ),
                       ],

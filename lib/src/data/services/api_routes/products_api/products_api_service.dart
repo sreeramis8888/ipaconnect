@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
 import '../../../models/promotions_model.dart';
@@ -28,39 +30,33 @@ class ProductsApiService {
     }
   }
 
-  Future<ProductModel?> postProduct({
-    required String userId,
-    required String userName,
+  Future<bool?> postProduct({
     required String companyId,
     required String name,
-    required String description,
+    required List<String> specifications,
     required double actualPrice,
     required double discountPrice,
     required List<String> imageUrls,
     required List<String> tags,
     required bool isPublic,
-    required String status,
   }) async {
     final body = {
-      'user': {
-        '_id': userId,
-        'name': userName,
-      },
       'company': companyId,
       'name': name,
-      'description': description,
+      'specifications': specifications,
       'actual_price': actualPrice,
       'discount_price': discountPrice,
       'images': imageUrls.map((url) => {'url': url}).toList(),
       'tags': tags,
       'is_public': isPublic,
-      'status': status,
     };
     final response = await _apiService.post('/product', body);
+    log(response.message.toString());
+    log(response.data.toString());
     if (response.success && response.data != null) {
-      return ProductModel.fromJson(response.data!['data']);
+      return response.success;
     } else {
-      return null;
+      return response.success;
     }
   }
 

@@ -9,7 +9,7 @@ part 'cart_notifier.g.dart';
 class CartNotifier extends _$CartNotifier {
   CartModel? cart;
   bool isLoading = false;
-
+  bool isFirstLoad = true;
   @override
   CartModel? build() {
     return null;
@@ -21,6 +21,7 @@ class CartNotifier extends _$CartNotifier {
     try {
       final cartData = await ref.read(getCartProvider.future);
       cart = cartData;
+      isFirstLoad = false;
       state = cart;
     } catch (e, stackTrace) {
       log(e.toString());
@@ -35,7 +36,7 @@ class CartNotifier extends _$CartNotifier {
       final storeApiService = ref.read(storeApiServiceProvider);
       final success = await storeApiService.addToCart(storeId, quantity);
       if (success) {
-        await fetchCart(); 
+        await fetchCart();
       }
       return success;
     } catch (e, stackTrace) {
@@ -65,7 +66,7 @@ class CartNotifier extends _$CartNotifier {
       final storeApiService = ref.read(storeApiServiceProvider);
       final success = await storeApiService.incrementQuantity(cartId, storeId);
       if (success) {
-        await fetchCart(); 
+        await fetchCart();
       }
       return success;
     } catch (e, stackTrace) {
@@ -105,4 +106,4 @@ class CartNotifier extends _$CartNotifier {
     }
     return total;
   }
-} 
+}

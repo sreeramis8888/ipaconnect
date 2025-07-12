@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -99,7 +100,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
       appBar: widget.enableNavigationControls
           ? AppBar(
               title: Text(widget.title ?? 'Web View'),
-              backgroundColor: widget.backgroundColor ?? Theme.of(context).primaryColor,
+              backgroundColor:
+                  widget.backgroundColor ?? Theme.of(context).primaryColor,
               foregroundColor: widget.foregroundColor ?? Colors.white,
               elevation: 0,
               actions: [
@@ -123,10 +125,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
           WebViewWidget(controller: controller),
           if (widget.showLoadingIndicator && isLoading)
             const Center(
-              child: CircularProgressIndicator(),
+              child: LoadingAnimation(),
             ),
         ],
       ),
     );
   }
-} 
+}

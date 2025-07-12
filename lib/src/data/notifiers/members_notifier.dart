@@ -35,7 +35,6 @@ class MembersNotifier extends _$MembersNotifier {
         fetchAllUsersProvider(
           pageNo: pageNo,
           limit: limit,
-         
         ).future,
       );
 
@@ -67,15 +66,13 @@ class MembersNotifier extends _$MembersNotifier {
     pageNo = 1;
     users = [];
     searchQuery = query;
-    district = districtFilter; // Apply district filter
-    tags = tagsFilter; // Apply tags filter
 
     try {
       final newUsers = await ref.read(
         fetchAllUsersProvider(
           pageNo: pageNo,
           limit: limit,
-        
+          query: query,
         ).future,
       );
 
@@ -103,7 +100,6 @@ class MembersNotifier extends _$MembersNotifier {
         fetchAllUsersProvider(
           pageNo: pageNo,
           limit: limit,
-       
         ).future,
       );
 

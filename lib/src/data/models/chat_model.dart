@@ -1,3 +1,4 @@
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'chat_model.g.dart';
@@ -75,7 +76,6 @@ extension MessageModelCopyWith on MessageModel {
     );
   }
 }
-
 @JsonSerializable()
 class ConversationModel {
   @JsonKey(name: '_id')
@@ -86,11 +86,11 @@ class ConversationModel {
   @JsonKey(name: 'is_group')
   final bool? isGroup;
 
-  final List<String>? members;
+  final List<UserModel>? members;
   final List<String>? admins;
 
   @JsonKey(name: 'last_message')
-  final String? lastMessage;
+  final MessageModel? lastMessage;
 
   final DateTime? createdAt;
   final DateTime? updatedAt;

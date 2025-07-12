@@ -148,7 +148,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                             // Static Rating Row
                             Consumer(
                               builder: (context, ref, _) {
-                                final ratings = ref.watch(ratingNotifierProvider);
+                                final ratings =
+                                    ref.watch(ratingNotifierProvider);
                                 double avgRating = 0;
                                 if (ratings.isNotEmpty) {
                                   avgRating = ratings
@@ -349,13 +350,15 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                       final ratings = ref.read(ratingNotifierProvider);
                       if (ratings.isNotEmpty) {
                         final avgRating = ratings
-                            .map((r) => r.rating)
-                            .fold(0, (a, b) => a + b) /
+                                .map((r) => r.rating)
+                                .fold(0, (a, b) => a + b) /
                             ratings.length;
-                        ref.read(companiesNotifierProvider.notifier).updateCompanyRating(
-                          companyId: company.id ?? '',
-                          newRating: avgRating,
-                        );
+                        ref
+                            .read(companiesNotifierProvider.notifier)
+                            .updateCompanyRating(
+                              companyId: company.id ?? '',
+                              newRating: avgRating,
+                            );
                       }
                     },
                   ),
@@ -520,6 +523,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                             itemBuilder: (context, index) {
                               final product = products[index];
                               return ProductCard(
+                                companyUserId: widget.company.user?.id ?? '',
                                 category: widget.company.category ?? '',
                                 product: product,
                               );

@@ -10,9 +10,16 @@ import 'package:ipaconnect/src/data/models/order_model.dart';
 import 'package:ipaconnect/src/data/notifiers/cart_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/saved_shipping_address_notifier.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/painter/dot_line_painter.dart';
+import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
-  const CheckoutPage({Key? key}) : super(key: key);
+  final String userCurrency;
+  final double totalAmount;
+  const CheckoutPage(
+      {super.key, required this.userCurrency, required this.totalAmount});
 
   @override
   ConsumerState<CheckoutPage> createState() => _CheckoutPageState();
@@ -20,12 +27,9 @@ class CheckoutPage extends ConsumerStatefulWidget {
 
 class _CheckoutPageState extends ConsumerState<CheckoutPage>
     with SingleTickerProviderStateMixin {
-  int _currentStep = 1; // Start at Address step
+  int _currentStep = 1;
   int? _selectedAddressIndex;
-  bool _showAddAddressForm =
-      false; // Only show address form when Add New is clicked
-
-  // Address form controllers
+  bool _showAddAddressForm = false;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -33,166 +37,237 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
   final _addressController = TextEditingController();
   final _zipController = TextEditingController();
   final _cityController = TextEditingController();
-  final _stateController = TextEditingController(); // Add state controller
+  final _stateController = TextEditingController();
   final _countryController = TextEditingController();
   bool _saveShippingAddress = true;
 
-  // Order state
   ShippingAddress? _selectedShippingAddress;
   bool _isPlacingOrder = false;
   String? _orderError;
   String? _orderSuccess;
 
   String _cartId = '';
-  double _amount = 0.0;
-  String _currency = 'USD';
 
   @override
   void initState() {
     super.initState();
-    // No need to fetch cart details here, will use Riverpod in build
   }
 
   Widget _buildDeliveryStep(List<ShippingAddress> savedAddresses) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Select Delivery Address', style: kLargeTitleSB),
-        const SizedBox(height: 16),
-        if (savedAddresses.isEmpty)
-          Center(child: Text('No saved addresses found.', style: kBodyTitleR)),
-        if (savedAddresses.isNotEmpty)
-          ...List.generate(savedAddresses.length, (index) {
-            final address = savedAddresses[index];
-            final isSelected = _selectedAddressIndex == index;
-            return GestureDetector(
-              onTap: () => setState(() => _selectedAddressIndex = index),
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: kCardBackgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected ? kPrimaryColor : Colors.transparent,
-                    width: 2,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Select Delivery Address', style: kBodyTitleB),
+              TextButton(
+                onPressed: () => setState(() => _showAddAddressForm = true),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size(0, 0),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  '+ Add New',
+                  style: kSmallTitleB.copyWith(
+                    color: kSecondaryTextColor,
+                    decoration: TextDecoration.underline,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Icon(Icons.location_on, color: kPrimaryColor),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            address.name ?? 'No Name',
-                            style: kBodyTitleSB,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            address.address ?? '',
-                            style: kBodyTitleR,
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (isSelected)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: kGreen,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text('Selected',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 12)),
-                      ),
-                  ],
-                ),
               ),
-            );
-          }),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            TextButton(
-              onPressed: () => setState(() => _showAddAddressForm = true),
-              child: Text('Add New',
-                  style: kBodyTitleSB.copyWith(color: kPrimaryColor)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (savedAddresses.isEmpty)
+            Text('No saved addresses found.', style: kSmallTitleR),
+          if (savedAddresses.isNotEmpty)
+            SizedBox(
+              height: 250,
+              child: ListView.builder(
+                itemCount: savedAddresses.length,
+                itemBuilder: (context, index) {
+                  final address = savedAddresses[index];
+                  final isSelected = _selectedAddressIndex == index;
+                  return Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () =>
+                            setState(() => _selectedAddressIndex = index),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: kCardBackgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? kPrimaryColor
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.location_on,
+                                  color: kPrimaryColor, size: 28),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${address.name ?? ''} - ${address.phone ?? ''}',
+                                      style: kSmallTitleB,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      address.address ?? '',
+                                      style: kSmallerTitleR,
+                                    ),
+                                    if (isSelected)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: kGreen,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: const Text(
+                                            'Selected',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (index != savedAddresses.length - 1)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Divider(
+                            color: kStrokeColor.withOpacity(0.2),
+                            thickness: 1,
+                            height: 1,
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ),
-          ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildAddressStep() {
-    return SingleChildScrollView(
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Full Name', style: kBodyTitleSB),
-            const SizedBox(height: 4),
-            _buildTextField(_nameController, 'Name',
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-            const SizedBox(height: 12),
-            Text('Email', style: kBodyTitleSB),
-            const SizedBox(height: 4),
-            _buildTextField(_emailController, 'Email',
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-            const SizedBox(height: 12),
-            Text('Phone Number', style: kBodyTitleSB),
-            const SizedBox(height: 4),
-            _buildTextField(_phoneController, 'Phone Number',
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-            const SizedBox(height: 12),
-            Text('Address', style: kBodyTitleSB),
-            const SizedBox(height: 4),
-            _buildTextField(_addressController, 'Enter your address',
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                    child: _buildTextField(_zipController, 'Code',
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextFormField(
+                  backgroundColor: kCardBackgroundColor,
+                  textController: _nameController,
+                  title: 'FullName',
+                  labelText: 'Name',
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              const SizedBox(height: 12),
+              CustomTextFormField(
+                  backgroundColor: kCardBackgroundColor,
+                  textController: _emailController,
+                  title: 'Email ',
+                  labelText: 'Email',
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              const SizedBox(height: 12),
+              CustomTextFormField(
+                  textInputType: TextInputType.number,
+                  backgroundColor: kCardBackgroundColor,
+                  textController: _phoneController,
+                  title: 'Phone ',
+                  labelText: 'Phone number',
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              const SizedBox(height: 12),
+              CustomTextFormField(
+                  backgroundColor: kCardBackgroundColor,
+                  textController: _addressController,
+                  title: 'Address',
+                  labelText: 'Enter your address',
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextFormField(
+                        textInputType: TextInputType.number,
+                        backgroundColor: kCardBackgroundColor,
+                        textController: _zipController,
+                        labelText: 'Code',
                         validator: (v) =>
-                            v == null || v.isEmpty ? 'Required' : null)),
-                const SizedBox(width: 12),
-                Expanded(
-                    child: _buildTextField(_cityController, 'City',
+                            v == null || v.isEmpty ? 'Required' : null),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: CustomTextFormField(
+                        backgroundColor: kCardBackgroundColor,
+                        textController: _cityController,
+                        labelText: 'City',
                         validator: (v) =>
-                            v == null || v.isEmpty ? 'Required' : null)),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text('State', style: kBodyTitleSB),
-            const SizedBox(height: 4),
-            _buildTextField(_stateController, 'State',
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-            const SizedBox(height: 12),
-            Text('Country', style: kBodyTitleSB),
-            const SizedBox(height: 4),
-            _buildTextField(_countryController, 'Select',
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Checkbox(
-                  value: _saveShippingAddress,
-                  onChanged: (val) =>
-                      setState(() => _saveShippingAddress = val ?? true),
-                  activeColor: kPrimaryColor,
-                ),
-                const SizedBox(width: 8),
-                const Text('Save shipping address'),
-              ],
-            ),
-          ],
+                            v == null || v.isEmpty ? 'Required' : null),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              CustomTextFormField(
+                  backgroundColor: kCardBackgroundColor,
+                  textController: _stateController,
+                  labelText: 'State',
+                  title: 'State',
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              const SizedBox(height: 12),
+              CustomTextFormField(
+                  title: 'Country',
+                  backgroundColor: kCardBackgroundColor,
+                  textController: _countryController,
+                  labelText: 'Country',
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _saveShippingAddress,
+                    onChanged: (val) =>
+                        setState(() => _saveShippingAddress = val ?? true),
+                    activeColor: kPrimaryColor,
+                  ),
+                  Text(
+                    'Save shipping address',
+                    style: kSmallerTitleR.copyWith(color: kSecondaryTextColor),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -222,17 +297,27 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
   Widget _buildPaymentStep() {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (_isPlacingOrder) const CircularProgressIndicator(),
+          if (_isPlacingOrder) const LoadingAnimation(),
           if (_orderSuccess != null)
-            Text(_orderSuccess!, style: kLargeTitleSB.copyWith(color: kGreen)),
+            Center(
+                child: Text(_orderSuccess!,
+                    style: kLargeTitleSB.copyWith(color: kGreen))),
           if (_orderError != null)
-            Text(_orderError!, style: kLargeTitleSB.copyWith(color: kRed)),
+            Center(
+                child: Text(_orderError!,
+                    style: kLargeTitleSB.copyWith(color: kRed))),
+          SizedBox(
+            height: 10,
+          ),
           if (!_isPlacingOrder && _orderSuccess == null)
-            customButton(
-              label: 'Make Payment',
-              onPressed: _placeOrder,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: customButton(
+                label: 'Make Payment',
+                onPressed: _placeOrder,
+              ),
             ),
         ],
       ),
@@ -248,7 +333,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
           return _buildAddressStep();
         } else {
           return asyncSavedAddresses.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: LoadingAnimation()),
             error: (err, stack) => Center(child: Text('Error: $err')),
             data: (addresses) => _buildDeliveryStep(addresses),
           );
@@ -285,20 +370,24 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     final cartNotifier = ref.read(cartNotifierProvider.notifier);
     final cart = ref.read(cartNotifierProvider);
     _cartId = cart?.id ?? '';
-    _amount = cartNotifier.getCartTotal();
-    _currency = 'USD'; // Or get from cart if available
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
+        ),
         backgroundColor: kBackgroundColor,
         elevation: 0,
-        title: Text('Check out', style: kHeadTitleSB),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: kWhite),
-          onPressed: _goToPreviousStep,
-        ),
+        title: Text('Check out',
+            style: kBodyTitleR.copyWith(color: kSecondaryTextColor)),
       ),
       body: SafeArea(
         child: Column(
@@ -371,10 +460,9 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
   }
 
   Future<void> _placeOrder() async {
-    final cartNotifier = ref.read(cartNotifierProvider.notifier);
     final cart = ref.read(cartNotifierProvider);
     final cartId = cart?.id ?? '';
-    final amount = cartNotifier.getCartTotal();
+
     if (_selectedShippingAddress == null || cartId.isEmpty) return;
     setState(() {
       _isPlacingOrder = true;
@@ -388,8 +476,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     }
     final data = await service.createOrder(
       cartId: cartId,
-      amount: amount,
-      currency: _currency,
+      amount: widget.totalAmount,
+      currency: widget.userCurrency,
       shippingAddress: ShippingAddress.fromJson(shippingAddressMap),
     );
     final paymentIntentClientSecret = data['data'];
@@ -452,13 +540,16 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
         _isPlacingOrder = false;
         _orderError = 'Payment cancelled or failed. Please try again.';
       });
-      // Show cancelled animation
+
       await Navigator.of(context).push(
         MaterialPageRoute(
           barrierDismissible: false,
           builder: (context) => PaymentResultPage(
             isSuccess: false,
-            onCompleted: () => Navigator.of(context).pop(),
+            onCompleted: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
           ),
         ),
       );
@@ -483,62 +574,123 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
 
   Widget _buildStepper() {
     List<String> steps = ['Delivery', 'Address', 'Payment'];
-    return Row(
-      children: List.generate(steps.length * 2 - 1, (i) {
-        if (i.isOdd) {
-          // Draw connecting line
-          int leftStep = (i - 1) ~/ 2;
-          bool isActive = _currentStep > leftStep;
-          return Expanded(
-            child: Container(
-              height: 2,
-              color: isActive ? kPrimaryColor : kGrey,
-            ),
-          );
-        } else {
-          int index = i ~/ 2;
-          bool isActive = _currentStep >= index;
-          bool isCompleted = index == 0; // Delivery always ticked
-          return Column(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 48,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isActive ? kPrimaryColor : kGrey,
-                    width: 2,
-                  ),
-                  color: isActive
-                      ? kPrimaryColor.withOpacity(0.2)
-                      : Colors.transparent,
-                ),
-                child: Center(
-                  child: (isCompleted || isActive)
-                      ? Icon(Icons.check, color: kPrimaryColor)
-                      : Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: kGrey,
-                          ),
+              // Dotted line across the whole stepper, centered
+              Positioned.fill(
+                top: 18, // Center the line with the circles (36/2 - 1)
+                child: Row(
+                  children: List.generate(steps.length * 2 - 1, (i) {
+                    if (i.isOdd) {
+                      return Expanded(
+                        child: CustomPaint(
+                          size: const Size(double.infinity, 2),
+                          painter: DottedLinePainter(),
                         ),
+                      );
+                    } else {
+                      return const SizedBox(width: 36);
+                    }
+                  }),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                steps[index],
-                style: TextStyle(
-                  color: isActive ? kPrimaryColor : kGrey,
-                  fontWeight: FontWeight.w600,
+              // Step circles only
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: List.generate(steps.length * 2 - 1, (i) {
+                    if (i.isOdd) {
+                      return const Expanded(child: SizedBox());
+                    } else {
+                      int index = i ~/ 2;
+                      bool isCompleted = _currentStep > index;
+                      bool isCurrent = _currentStep == index;
+                      Color borderColor = isCompleted
+                          ? Color(0xFF1E3A81)
+                          : (isCurrent ? Color(0xFF1E3A81) : Color(0xFF1E3A81));
+                      Color fillColor = isCompleted
+                          ? Color(0xFF1E3A81)
+                          : (isCurrent
+                              ? Color(0xFFF7F7F7).withOpacity(.7)
+                              : Colors.transparent);
+                      return Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: borderColor,
+                            width: 2,
+                          ),
+                          color: fillColor,
+                          boxShadow: isCompleted
+                              ? [
+                                  BoxShadow(
+                                    color: kPrimaryColor.withOpacity(0.4),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: Center(
+                            child: isCompleted
+                                ? Icon(Icons.check, color: kPrimaryColor)
+                                : isCurrent
+                                    ? Container(
+                                        width: 20,
+                                        height: 20,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFF1E3A81),
+                                        ),
+                                      )
+                                    : null),
+                      );
+                    }
+                  }),
                 ),
               ),
             ],
-          );
-        }
-      }),
+          ),
+        ),
+        const SizedBox(height: 8),
+        // Step labels below, centered under each circle
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Row(
+            children: List.generate(steps.length * 2 - 1, (i) {
+              if (i.isOdd) {
+                return const Expanded(child: SizedBox());
+              } else {
+                int index = i ~/ 2;
+                bool isCompleted = _currentStep > index;
+                bool isCurrent = _currentStep == index;
+                return Expanded(
+                  child: Center(
+                    child: Text(
+                      steps[index],
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: isCompleted || isCurrent ? kPrimaryColor : kGrey,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }),
+          ),
+        ),
+      ],
     );
   }
 
@@ -559,13 +711,16 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
 class PaymentResultPage extends StatefulWidget {
   final bool isSuccess;
   final VoidCallback onCompleted;
-  const PaymentResultPage({required this.isSuccess, required this.onCompleted, Key? key}) : super(key: key);
+  const PaymentResultPage(
+      {required this.isSuccess, required this.onCompleted, Key? key})
+      : super(key: key);
 
   @override
   State<PaymentResultPage> createState() => _PaymentResultPageState();
 }
 
-class _PaymentResultPageState extends State<PaymentResultPage> with SingleTickerProviderStateMixin {
+class _PaymentResultPageState extends State<PaymentResultPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fillAnimation;
   late Animation<Offset> _positionAnimation;
@@ -630,7 +785,8 @@ class _PaymentResultPageState extends State<PaymentResultPage> with SingleTicker
             children: [
               // Background fill animation
               Container(
-                color: (widget.isSuccess ? kPrimaryColor : kRed).withOpacity(_fillAnimation.value * 0.7),
+                color: (widget.isSuccess ? kPrimaryColor : kRed)
+                    .withOpacity(_fillAnimation.value * 0.7),
                 child: CustomPaint(
                   painter: _FillPainter(
                     progress: _fillAnimation.value,
@@ -694,14 +850,20 @@ class _PaymentResultPageState extends State<PaymentResultPage> with SingleTicker
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              widget.isSuccess ? Icons.check_circle : Icons.cancel,
+                              widget.isSuccess
+                                  ? Icons.check_circle
+                                  : Icons.cancel,
                               color: widget.isSuccess ? kPrimaryColor : kRed,
                               size: 60,
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              widget.isSuccess ? 'Payment Successful!' : 'Payment Cancelled',
-                              style: kLargeTitleSB.copyWith(color: widget.isSuccess ? kPrimaryColor : kRed),
+                              widget.isSuccess
+                                  ? 'Payment Successful!'
+                                  : 'Payment Cancelled',
+                              style: kLargeTitleSB.copyWith(
+                                  color:
+                                      widget.isSuccess ? kPrimaryColor : kRed),
                             ),
                             const SizedBox(height: 24),
                             customButton(

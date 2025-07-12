@@ -54,11 +54,14 @@ ConversationModel _$ConversationModelFromJson(Map<String, dynamic> json) =>
       id: json['_id'] as String?,
       name: json['name'] as String?,
       isGroup: json['is_group'] as bool?,
-      members:
-          (json['members'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      members: (json['members'] as List<dynamic>?)
+          ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       admins:
           (json['admins'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      lastMessage: json['last_message'] as String?,
+      lastMessage: json['last_message'] == null
+          ? null
+          : MessageModel.fromJson(json['last_message'] as Map<String, dynamic>),
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),

@@ -7,6 +7,7 @@ import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
 import 'package:ipaconnect/src/data/services/api_routes/products_api/products_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/custom_shimmer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
@@ -288,7 +289,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         if (notifier.isFirstLoad) {
           notifier.fetchMoreRatings(
               entityId: widget.product.id ?? '', entityType: 'Product');
-          return Center(child: CircularProgressIndicator());
+          return Center(child: LoadingAnimation());
         }
         if (ratings.isEmpty) {
           return Column(

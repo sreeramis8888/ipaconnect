@@ -195,7 +195,7 @@ class _GetUserDetailsByIdProviderElement
   String get userId => (origin as GetUserDetailsByIdProvider).userId;
 }
 
-String _$fetchAllUsersHash() => r'97e4e1e52b782f429aaa5af7cf5bf78da2f99e3e';
+String _$fetchAllUsersHash() => r'6ed8a63c9e199c64ee56b14f77b8842d3fb63ba8';
 
 /// See also [fetchAllUsers].
 @ProviderFor(fetchAllUsers)
@@ -210,10 +210,12 @@ class FetchAllUsersFamily extends Family<AsyncValue<List<UserModel>>> {
   FetchAllUsersProvider call({
     int pageNo = 1,
     int limit = 10,
+    String? query,
   }) {
     return FetchAllUsersProvider(
       pageNo: pageNo,
       limit: limit,
+      query: query,
     );
   }
 
@@ -224,6 +226,7 @@ class FetchAllUsersFamily extends Family<AsyncValue<List<UserModel>>> {
     return call(
       pageNo: provider.pageNo,
       limit: provider.limit,
+      query: provider.query,
     );
   }
 
@@ -248,11 +251,13 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
   FetchAllUsersProvider({
     int pageNo = 1,
     int limit = 10,
+    String? query,
   }) : this._internal(
           (ref) => fetchAllUsers(
             ref as FetchAllUsersRef,
             pageNo: pageNo,
             limit: limit,
+            query: query,
           ),
           from: fetchAllUsersProvider,
           name: r'fetchAllUsersProvider',
@@ -265,6 +270,7 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
               FetchAllUsersFamily._allTransitiveDependencies,
           pageNo: pageNo,
           limit: limit,
+          query: query,
         );
 
   FetchAllUsersProvider._internal(
@@ -276,10 +282,12 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
     required super.from,
     required this.pageNo,
     required this.limit,
+    required this.query,
   }) : super.internal();
 
   final int pageNo;
   final int limit;
+  final String? query;
 
   @override
   Override overrideWith(
@@ -296,6 +304,7 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
         debugGetCreateSourceHash: null,
         pageNo: pageNo,
         limit: limit,
+        query: query,
       ),
     );
   }
@@ -309,7 +318,8 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
   bool operator ==(Object other) {
     return other is FetchAllUsersProvider &&
         other.pageNo == pageNo &&
-        other.limit == limit;
+        other.limit == limit &&
+        other.query == query;
   }
 
   @override
@@ -317,6 +327,7 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, pageNo.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
+    hash = _SystemHash.combine(hash, query.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -330,6 +341,9 @@ mixin FetchAllUsersRef on AutoDisposeFutureProviderRef<List<UserModel>> {
 
   /// The parameter `limit` of this provider.
   int get limit;
+
+  /// The parameter `query` of this provider.
+  String? get query;
 }
 
 class _FetchAllUsersProviderElement
@@ -341,6 +355,8 @@ class _FetchAllUsersProviderElement
   int get pageNo => (origin as FetchAllUsersProvider).pageNo;
   @override
   int get limit => (origin as FetchAllUsersProvider).limit;
+  @override
+  String? get query => (origin as FetchAllUsersProvider).query;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

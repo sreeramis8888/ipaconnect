@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/people/chat_dash.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people/members.dart';
 import 'people/feed.dart';
 
@@ -52,13 +53,9 @@ class PeoplePage extends ConsumerWidget {
               ),
 
               // Tab content
-              const Expanded(
+              Expanded(
                 child: TabBarView(
-                  children: [
-                    FeedView(),
-                    MembersPage(),
-                    Center(child: Text('Chat')),
-                  ],
+                  children: [FeedView(), MembersPage(), ChatDash()],
                 ),
               ),
             ],

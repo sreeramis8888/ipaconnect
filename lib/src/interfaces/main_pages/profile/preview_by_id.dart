@@ -297,11 +297,25 @@ class _ProfileHeader extends StatelessWidget {
             children: [
               Icon(Icons.phone, color: kWhite, size: 18),
               const SizedBox(width: 6),
-              Text(user.phone ?? '', style: kSmallTitleR),
+              Flexible(
+                child: Text(
+                  user.phone ?? '',
+                  style: kSmallTitleR,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
               const SizedBox(width: 18),
               Icon(Icons.email, color: kWhite, size: 18),
               const SizedBox(width: 6),
-              Text(user.email ?? '', style: kSmallTitleR),
+              Flexible(
+                child: Text(
+                  user.email ?? '',
+                  style: kSmallTitleR,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),

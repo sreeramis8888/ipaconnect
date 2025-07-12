@@ -95,7 +95,7 @@ class _EditUserState extends ConsumerState<EditUser> {
             // 2. Save cropped image to file
             String croppedFilePath = await saveUint8ListToFile(
               croppedBytes,
-              'profile_cropped_ [0m${DateTime.now().millisecondsSinceEpoch}.jpg',
+              'profile_cropped_${DateTime.now().millisecondsSinceEpoch}.jpg',
             );
             File croppedFile = File(croppedFilePath);
 
@@ -139,13 +139,12 @@ class _EditUserState extends ConsumerState<EditUser> {
     super.dispose();
   }
 
-  Future<String> _submitData({required UserModel user}) async {
+  Future<bool> _submitData({required UserModel user}) async {
     final Map<String, dynamic> profileData = {
       'name': user.name,
       if (user.profession != null) 'proffession': user.profession,
       if (user.bio != null) 'bio': user.bio,
       if (user.email != null) 'email': user.email,
-      'phone': user.phone,
       if (user.location != null) 'location': user.location,
       if (user.image != null) 'image': user.image ?? '',
       if (user.socialMedia != null)
@@ -158,7 +157,7 @@ class _EditUserState extends ConsumerState<EditUser> {
         await userApiService.updateUser(id, UserModel.fromJson(profileData));
     log(profileData.toString());
 
-    return response.message ?? '';
+    return response.success ?? false;
   }
 
   // Future<void> _selectImageFile(ImageSource source, String imageType) async {
@@ -221,6 +220,9 @@ class _EditUserState extends ConsumerState<EditUser> {
               }
               if (emailController.text.isEmpty) {
                 emailController.text = user.email ?? '';
+              }
+              if (professionController.text.isEmpty) {
+                professionController.text = user.profession ?? '';
               }
               if (addressController.text.isEmpty) {
                 addressController.text = user.location ?? '';
@@ -539,7 +541,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     if (_formKey.currentState!.validate()) {
                                       SnackbarService snackbarService =
                                           SnackbarService();
-                                      String response =
+                                      bool success =
                                           await _submitData(user: user);
                                       // ref
                                       //     .read(userProvider.notifier)
@@ -551,13 +553,14 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       //         builder: (BuildContext context) =>
                                       //             MainPage()
                                       //             ));
-                                      if (response.contains('success')) {
-                                        snackbarService.showSnackBar(response);
+                                      if (success) {
+                                        snackbarService
+                                            .showSnackBar('Profile Updated');
                                         ref.invalidate(
                                             getUserDetailsByIdProvider);
                                         navigateBasedOnPreviousPage();
                                       } else {
-                                        snackbarService.showSnackBar(response,
+                                        snackbarService.showSnackBar('Failed',
                                             type: SnackbarType.warning);
                                       }
                                     }

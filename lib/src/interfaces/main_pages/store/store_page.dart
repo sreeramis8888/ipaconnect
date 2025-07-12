@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/utils/currency_converted.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/data/notifiers/store_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/cart_notifier.dart';
 import 'package:ipaconnect/src/data/models/store_model.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/my_orders_page.dart';
 
 class StorePage extends ConsumerStatefulWidget {
-  const StorePage({Key? key}) : super(key: key);
+  final String userCurrency;
+  const StorePage({super.key, required this.userCurrency});
 
   @override
   ConsumerState<StorePage> createState() => _StorePageState();
@@ -45,17 +49,28 @@ class _StorePageState extends ConsumerState<StorePage> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
+        ),
         backgroundColor: kBackgroundColor,
         elevation: 0,
-        title: Text('Store', style: kHeadTitleSB),
-        centerTitle: true,
+        title: Text('IPA Store',
+            style: kBodyTitleR.copyWith(color: kSecondaryTextColor)),
         actions: [
           Stack(
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart_outlined, color: kWhite),
                 onPressed: () {
-                  Navigator.pushNamed(context, 'CartPage');
+                  Navigator.pushNamed(context, 'CartPage',
+                      arguments: widget.userCurrency);
                 },
               ),
               if (cartItemCount > 0)
@@ -80,16 +95,6 @@ class _StorePageState extends ConsumerState<StorePage> {
                   ),
                 ),
             ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.receipt_long, color: kWhite),
-            tooltip: 'My Orders',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MyOrdersPage()),
-              );
-            },
           ),
         ],
       ),
@@ -128,11 +133,10 @@ class _StorePageState extends ConsumerState<StorePage> {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Featured Products', style: kLargeTitleSB),
-            const SizedBox(height: 16),
+
             Expanded(
               child: products.isEmpty && isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: LoadingAnimation())
                   : GridView.builder(
                       controller: _scrollController,
                       gridDelegate:
@@ -140,17 +144,18 @@ class _StorePageState extends ConsumerState<StorePage> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.7,
+                        childAspectRatio: 0.55,
                       ),
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         final product = products[index];
                         return _ProductCard(
+                          userCurrency: widget.userCurrency,
                           product: product,
                           onAddToCart: () async {
                             if (product.id != null) {
-                              final success = await cartNotifier.addToCart(
-                                  product.id!, 1);
+                              final success =
+                                  await cartNotifier.addToCart(product.id!, 1);
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -182,10 +187,11 @@ class _StorePageState extends ConsumerState<StorePage> {
 class _ProductCard extends StatelessWidget {
   final StoreModel product;
   final VoidCallback onAddToCart;
-
+  final String userCurrency;
   const _ProductCard({
     required this.product,
     required this.onAddToCart,
+    required this.userCurrency,
   });
 
   @override
@@ -200,7 +206,7 @@ class _ProductCard extends StatelessWidget {
         children: [
           // Product image
           Container(
-            height: 50,
+            height: 125,
             width: double.infinity,
             decoration: BoxDecoration(
               color: kGreyLight,
@@ -238,13 +244,27 @@ class _ProductCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Text(
-                      '₹${product.price?.toStringAsFixed(2) ?? '0.00'}',
-                      style: kBodyTitleB,
+                    FutureBuilder<double?>(
+                      future: convertCurrency(
+                        from: product.currency ?? '',
+                        to: userCurrency,
+                        amount: product.price ?? 0,
+                      ),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Text('Loading...', style: kBodyTitleB);
+                        } else if (snapshot.hasError || snapshot.data == null) {
+                          return Text('Error', style: kBodyTitleB);
+                        } else {
+                          return Text(snapshot.data!.toStringAsFixed(2),
+                              style: kBodyTitleB);
+                        }
+                      },
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      product.currency ?? 'USD',
+                      userCurrency,
                       style: kSmallerTitleR.copyWith(color: kGrey),
                     ),
                   ],

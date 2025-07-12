@@ -319,13 +319,13 @@ class AuthApiService {
     };
     String? currencyCode = callingCodeToPrimaryCurrency[int.parse(countryCode)];
     final Map<String, dynamic> body = {
-      "clientToken": idToken,
+      "client_token": idToken,
       "fcm": fcmToken,
       'country_code': currencyCode
     };
     log(body.toString(), name: 'requesting body');
     try {
-      final response = await _apiService.post('/users/login', body);
+      final response = await _apiService.post('/auth/login', body);
       if (response.success && response.data != null) {
         snackbarService
             .showSnackBar(response.data?['message'] ?? 'Login successful');

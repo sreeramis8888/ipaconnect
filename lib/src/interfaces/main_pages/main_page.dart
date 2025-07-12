@@ -24,6 +24,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_page.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/registration.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/user_status_sreens.dart';
 
 class IconResolver extends StatelessWidget {
@@ -74,10 +75,14 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   void initState() {
     super.initState();
+    // Connect socket only
+    SocketService().connect();
   }
 
   @override
   void dispose() {
+    // Disconnect socket when main page is disposed
+    SocketService().disconnect();
     super.dispose();
   }
 
@@ -253,7 +258,6 @@ class _MainPageState extends ConsumerState<MainPage> {
       case 'deleted':
         return const UserDeletedPage();
       case 'awaiting-payment':
-      case 'awaiting_payment':
         return const UserAwaitingPaymentPage();
       case 'rejected':
         return const UserRejectedPage();

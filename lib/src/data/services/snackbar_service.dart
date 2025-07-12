@@ -15,7 +15,7 @@ class SnackbarService {
   }) {
     final Map<SnackbarType, Color> typeColors = {
       SnackbarType.success: Color(0xFF00C851),
-      SnackbarType.error: Color(0xFFFF4444),
+      SnackbarType.error: Color(0xFFFF4D4F),
       SnackbarType.warning: Color(0xFFFF8800),
       SnackbarType.info: kPrimaryColor,
     };

@@ -46,10 +46,11 @@ class Author {
   final String? image;
   final String? proffession;
 
-  Author( {
+  Author({
     this.id,
-    this.name,this.proffession,
-  this.image,
+    this.name,
+    this.proffession,
+    this.image,
   });
 
   factory Author.fromJson(Map<String, dynamic> json) => _$AuthorFromJson(json);

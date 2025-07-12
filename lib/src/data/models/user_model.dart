@@ -3,7 +3,7 @@ import 'package:ipaconnect/src/data/models/heirarchy_model.dart';
 
 part 'user_model.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(includeIfNull: false) 
 class UserModel {
   final String? name;
   final String? uid;
@@ -14,6 +14,8 @@ class UserModel {
   final String? fcm;
   final String? otp;
   @JsonKey(name: 'proffession') final String? profession;
+  @JsonKey(name: 'blocked_users') final List<String>? blockedUsers;
+  @JsonKey(name: 'country_code') final String? countryCode;
   final String? location;
   final String? password;
   final String? status;
@@ -26,13 +28,14 @@ class UserModel {
   @JsonKey(name: 'reject_reason') final String? rejectReason;
   final String? bio;
   @JsonKey(name: 'social_media') final List<UserSocialMedia>? socialMedia;
-  @JsonKey(name: 'createdAt') final DateTime? createdAt;
-  @JsonKey(name: 'updatedAt') final DateTime? updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   @JsonKey(name: '_id') final String? id;
 
-  UserModel({
+  const UserModel({this.countryCode,
     this.name,
     this.uid,
+    this.blockedUsers,
     this.memberId,
     this.email,
     this.image,
@@ -57,7 +60,9 @@ class UserModel {
     this.id,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
+
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   UserModel copyWith({

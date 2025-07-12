@@ -7,6 +7,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class EventsPage extends ConsumerStatefulWidget {
   const EventsPage({Key? key}) : super(key: key);
@@ -69,7 +70,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
       ),
       backgroundColor: kBackgroundColor,
       body: isFirstLoad
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingAnimation())
           : RefreshIndicator(
               onRefresh: () =>
                   ref.read(eventsNotifierProvider.notifier).refreshEvents(),
@@ -82,7 +83,7 @@ class _EventsPageState extends ConsumerState<EventsPage> {
                     return isLoading
                         ? const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16.0),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(child: LoadingAnimation()),
                           )
                         : const SizedBox.shrink();
                   }

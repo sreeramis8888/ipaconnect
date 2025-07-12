@@ -19,8 +19,7 @@ Future<void> main() async {
   );
   await loadSecureData();
   await dotenv.load(fileName: ".env");
-  Stripe.publishableKey =
-    dotenv.env['STRIPE_KEY'] ?? '';
+  Stripe.publishableKey = dotenv.env['STRIPE_KEY'] ?? '';
   runApp(ProviderScope(child: MyApp()));
 }
 

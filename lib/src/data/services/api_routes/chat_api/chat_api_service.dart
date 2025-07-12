@@ -37,7 +37,7 @@ class ChatApiService {
     });
     log(name: 'Recipient_id', recipientId);
     log(response.data.toString());
-    log(response.data.toString());
+    log(response.message.toString());
     if (response.success && response.data != null) {
       return ConversationModel.fromJson(response.data!['data']);
     } else {
