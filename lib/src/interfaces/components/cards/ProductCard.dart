@@ -166,6 +166,7 @@ class ProductCard extends StatelessWidget {
                     Navigator.of(context).pushNamed(
                       'ProductDetails',
                       arguments: {
+                        'companyUserId': companyUserId,
                         'product': product,
                         'category': category,
                       },

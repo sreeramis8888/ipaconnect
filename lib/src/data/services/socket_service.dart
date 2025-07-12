@@ -43,7 +43,7 @@ class SocketService {
     _notifyStatus();
 
     _socket = IO.io(
-      'http://192.168.1.102:3000',
+      'https://api.ipaconnect.org',
       {
         'transports': ['websocket'],
         'autoConnect': false,

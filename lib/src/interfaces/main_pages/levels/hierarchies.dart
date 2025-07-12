@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/create_notification_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/levels/level_members.dart';
 
 class HierarchiesPage extends ConsumerWidget {
   @override
@@ -22,7 +23,8 @@ class HierarchiesPage extends ConsumerWidget {
           );
         },
         backgroundColor: kPrimaryColor,
-        child: const Icon(Icons.notifications_active_outlined, color: Colors.white),
+        child: const Icon(Icons.notifications_active_outlined,
+            color: Colors.white),
       ),
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -69,7 +71,7 @@ class HierarchiesPage extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: kStrokeColor,
                         spreadRadius: .1,
                         offset: const Offset(0, 1),
                       ),
@@ -92,12 +94,12 @@ class HierarchiesPage extends ConsumerWidget {
                     trailing: const Icon(Icons.arrow_forward_ios,
                         size: 16, color: Colors.grey),
                     onTap: () {
-                      // Navigate to create notification page with specific hierarchy
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CreateNotificationPage(
-                            hierarchyId: hierarchy.id,
+                          builder: (context) => HierarchyMembers(
+                            hierarchyName: hierarchy.name ?? '',
+                            hierarchyId: hierarchy.id ?? '',
                           ),
                         ),
                       );

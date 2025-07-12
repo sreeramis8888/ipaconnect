@@ -13,8 +13,7 @@ class JobProfilesNotifier extends _$JobProfilesNotifier {
   int pageNo = 1;
   final int limit = 10;
   bool hasMore = true;
-
-  // Filters
+  String? searchQuery;
   String? category;
   String? experience;
   String? noticePeriod;
@@ -63,6 +62,34 @@ class JobProfilesNotifier extends _$JobProfilesNotifier {
     }
   }
 
+
+  Future<void> searchJobProfiles(String query,
+     ) async {
+    isLoading = true;
+    pageNo = 1;
+    jobProfiles = [];
+    searchQuery = query;
+
+    try {
+      final newJobProfiles = await ref.read(
+        getJobProfilesProvider(
+          pageNo: pageNo,
+          limit: limit,
+          search: query,
+        ).future,
+      );
+
+      jobProfiles = [...newJobProfiles];
+      hasMore = newJobProfiles.length == limit;
+
+      state = [...newJobProfiles];
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
   Future<void> refreshJobProfiles({
     String? category,
     String? experience,

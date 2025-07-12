@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:ipaconnect/src/data/models/feed_model.dart';
+import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/feed_api/feed_api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -69,4 +70,32 @@ class FeedNotifier extends _$FeedNotifier {
       isLoading = false;
     }
   }
+    Future<void> fetchMoreMyFeed() async {
+    if (isLoading || !hasMore) return;
+
+    isLoading = true;
+
+    try {
+      final newBusinesses = await ref
+          .read(getMyFeedsProvider(pageNo: pageNo, limit: limit).future);
+
+      if (newBusinesses.isEmpty) {
+        hasMore = false;
+      } else {
+        businesses = [...businesses, ...newBusinesses];
+        pageNo++;
+        // Only set hasMore to false if we get fewer items than the limit
+        hasMore = newBusinesses.length >= limit;
+      }
+
+      isFirstLoad = false;
+      state = businesses;
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
+
 }

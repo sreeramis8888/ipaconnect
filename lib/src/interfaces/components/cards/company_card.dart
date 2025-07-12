@@ -72,7 +72,7 @@ class CompanyCard extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) {
                       return Shimmer.fromColors(
                         baseColor: kCardBackgroundColor,
-                        highlightColor: kInputFieldcolor,
+                        highlightColor: kStrokeColor,
                         child: Container(
                           height: 120,
                           color: kCardBackgroundColor,
@@ -83,7 +83,7 @@ class CompanyCard extends StatelessWidget {
                       if (loadingProgress == null) return child;
                       return Shimmer.fromColors(
                         baseColor: kCardBackgroundColor,
-                        highlightColor: kPrimaryLightColor,
+                        highlightColor: kStrokeColor,
                         child: Container(
                           height: 120,
                           color: kCardBackgroundColor,

@@ -4,7 +4,8 @@ import 'package:ipaconnect/src/data/models/product_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
-import 'package:ipaconnect/src/data/services/api_routes/products_api/products_api_service.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
+
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
@@ -12,25 +13,27 @@ import 'package:ipaconnect/src/interfaces/components/shimmers/custom_shimmer.dar
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
 import 'package:ipaconnect/src/data/models/rating_model.dart';
-import 'package:ipaconnect/src/data/services/api_routes/rating_api/rating_api_service.dart';
+
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dart';
+import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart';
 
-class ProductDetailsPage extends StatefulWidget {
+class ProductDetailsPage extends ConsumerStatefulWidget {
   final String category;
   final ProductModel product;
+  final String companyUserId;
   const ProductDetailsPage(
-      {super.key, required this.product, required this.category});
+      {super.key, required this.product, required this.category,required this.companyUserId, });
 
   @override
-  State<ProductDetailsPage> createState() => _ProductDetailsPageState();
+  ConsumerState<ProductDetailsPage> createState() => _ProductDetailsPageState();
 }
 
-class _ProductDetailsPageState extends State<ProductDetailsPage> {
+class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
   int _currentIndex = 0;
   late final PageController _pageController;
   bool _showReviews = false;
-  int _modalRating = 5;
   int _reviewsToShow = 3;
 
   @override
@@ -267,9 +270,56 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         )
                       : _buildReviewsSection(context),
                   SizedBox(height: 24),
+                  if(id!=widget.companyUserId)
                   customButton(
                     label: 'Enquire Now',
-                    onPressed: () {},
+                    onPressed: () async {
+                      // Show loading dialog
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(child: LoadingAnimation()),
+                      );
+
+                      try {
+                        final chatApi = ref.read(chatApiServiceProvider);
+                        final conversation = await chatApi.create1to1Conversation(product.user.id ?? '');
+                        
+                        Navigator.of(context).pop(); // Close loading dialog
+                        
+                        if (conversation != null) {
+                          // Navigate to chat screen
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                conversationId: conversation.id ?? '',
+                                chatTitle: product.user.name ?? '',
+                                userId: product.user.id ?? '',
+                                initialProductInquiry: {
+                                  'product': product,
+                                  'category': widget.category,
+                                },
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to start chat.'),
+                              backgroundColor: kRed,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        Navigator.of(context).pop(); // Close loading dialog
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error: $e'),
+                            backgroundColor: kRed,
+                          ),
+                        );
+                      }
+                    },
                   ),
                   SizedBox(height: 24),
                 ],

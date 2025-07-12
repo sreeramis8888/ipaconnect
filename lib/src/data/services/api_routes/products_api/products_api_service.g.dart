@@ -25,7 +25,7 @@ final productsApiServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ProductsApiServiceRef = AutoDisposeProviderRef<ProductsApiService>;
-String _$getProductsHash() => r'7981b3b8f091402da18e4d7e25f355cc4aef2dbb';
+String _$getProductsHash() => r'e1ff6600ca86adfd64b6bf02e9ff3d5de74f5426';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -62,11 +62,13 @@ class GetProductsFamily extends Family<AsyncValue<List<ProductModel>>> {
     int pageNo = 1,
     int limit = 10,
     required String companyId,
+    String? query,
   }) {
     return GetProductsProvider(
       pageNo: pageNo,
       limit: limit,
       companyId: companyId,
+      query: query,
     );
   }
 
@@ -78,6 +80,7 @@ class GetProductsFamily extends Family<AsyncValue<List<ProductModel>>> {
       pageNo: provider.pageNo,
       limit: provider.limit,
       companyId: provider.companyId,
+      query: provider.query,
     );
   }
 
@@ -104,12 +107,14 @@ class GetProductsProvider
     int pageNo = 1,
     int limit = 10,
     required String companyId,
+    String? query,
   }) : this._internal(
           (ref) => getProducts(
             ref as GetProductsRef,
             pageNo: pageNo,
             limit: limit,
             companyId: companyId,
+            query: query,
           ),
           from: getProductsProvider,
           name: r'getProductsProvider',
@@ -123,6 +128,7 @@ class GetProductsProvider
           pageNo: pageNo,
           limit: limit,
           companyId: companyId,
+          query: query,
         );
 
   GetProductsProvider._internal(
@@ -135,11 +141,13 @@ class GetProductsProvider
     required this.pageNo,
     required this.limit,
     required this.companyId,
+    required this.query,
   }) : super.internal();
 
   final int pageNo;
   final int limit;
   final String companyId;
+  final String? query;
 
   @override
   Override overrideWith(
@@ -157,6 +165,7 @@ class GetProductsProvider
         pageNo: pageNo,
         limit: limit,
         companyId: companyId,
+        query: query,
       ),
     );
   }
@@ -171,7 +180,8 @@ class GetProductsProvider
     return other is GetProductsProvider &&
         other.pageNo == pageNo &&
         other.limit == limit &&
-        other.companyId == companyId;
+        other.companyId == companyId &&
+        other.query == query;
   }
 
   @override
@@ -180,6 +190,7 @@ class GetProductsProvider
     hash = _SystemHash.combine(hash, pageNo.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
     hash = _SystemHash.combine(hash, companyId.hashCode);
+    hash = _SystemHash.combine(hash, query.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -196,6 +207,9 @@ mixin GetProductsRef on AutoDisposeFutureProviderRef<List<ProductModel>> {
 
   /// The parameter `companyId` of this provider.
   String get companyId;
+
+  /// The parameter `query` of this provider.
+  String? get query;
 }
 
 class _GetProductsProviderElement
@@ -209,6 +223,8 @@ class _GetProductsProviderElement
   int get limit => (origin as GetProductsProvider).limit;
   @override
   String get companyId => (origin as GetProductsProvider).companyId;
+  @override
+  String? get query => (origin as GetProductsProvider).query;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

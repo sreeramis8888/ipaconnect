@@ -31,6 +31,18 @@ class FeedApiService {
     }
   }
 
+  Future<List<FeedModel>> getMyFeeds({int pageNo = 1, int limit = 10}) async {
+    final response = await _apiService
+        .get('/requirements/self?page_no=$pageNo&limit=$limit&status=published');
+
+    if (response.success && response.data != null) {
+      final List<dynamic> data = response.data!['data'];
+      return data.map((json) => FeedModel.fromJson(json)).toList();
+    } else {
+      return [];
+    }
+  }
+
   Future<void> uploadFeed(
       {required String? media, required String content}) async {
     final response = await _apiService.post('/requirements', {
@@ -56,7 +68,8 @@ class FeedApiService {
     }
   }
 
-  Future<void> commentFeed({required String feedId, required String comment}) async {
+  Future<void> commentFeed(
+      {required String feedId, required String comment}) async {
     final response = await _apiService.post('/requirements/comment/$feedId', {
       'comment': comment,
     });
@@ -74,4 +87,10 @@ Future<List<FeedModel>> getFeeds(Ref ref,
     {int pageNo = 1, int limit = 10}) async {
   final feedApiService = ref.watch(feedApiServiceProvider);
   return feedApiService.getFeeds(pageNo: pageNo, limit: limit);
+}
+@riverpod
+Future<List<FeedModel>> getMyFeeds(Ref ref,
+    {int pageNo = 1, int limit = 10}) async {
+  final feedApiService = ref.watch(feedApiServiceProvider);
+  return feedApiService.getMyFeeds(pageNo: pageNo, limit: limit);
 }

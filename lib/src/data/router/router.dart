@@ -1,11 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/analytics/analytics.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/analytics/create_analytics.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/analytics.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/create_analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_details.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_member_list.dart';
@@ -15,6 +16,9 @@ import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_events.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/privacy.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/terms.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/my_orders_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/store_page.dart';
@@ -24,6 +28,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/store/add_address_page.dart
 import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 
+import '../../interfaces/main_pages/side_bar_pages/analytics/my_requirements.dart';
 import '../../interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/hierarchies.dart';
@@ -121,6 +126,15 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'MyOrdersPage':
       page = MyOrdersPage();
+    case 'MyEvents':
+      page = MyEventsPage();
+    case 'TermsAndConditionsPage':
+      page = TermsAndConditionsPage();
+    case 'PrivacyPolicyPage':
+      page = PrivacyPolicyPage();
+    case 'MyRequirements':
+
+      page = MyRequirements();
       break;
     case 'StorePage':
       String userCurrency = settings?.arguments as String;
@@ -140,7 +154,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //   break;
     case 'ProductDetails':
       final args = settings?.arguments as Map<String, dynamic>;
-      page = ProductDetailsPage(
+      page = ProductDetailsPage(companyUserId:args['companyUserId'] ,
           product: args['product'], category: args['category']);
       transitionsBuilder = (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0); // Slide from right

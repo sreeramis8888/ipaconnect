@@ -20,7 +20,7 @@ class CompaniesNotifier extends _$CompaniesNotifier {
   int pageNo = 1;
   final int limit = 14;
   bool hasMore = true;
-
+  String? searchQuery;
   @override
   List<CompanyModel> build() {
     return [];
@@ -46,6 +46,35 @@ class CompaniesNotifier extends _$CompaniesNotifier {
 
       isFirstLoad = false;
       state = companies;
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
+
+
+  Future<void> searchCompanies(String query,{required String categoryId}
+     ) async {
+    isLoading = true;
+    pageNo = 1;
+    companies = [];
+    searchQuery = query;
+
+    try {
+      final newCompanies = await ref.read(
+        getCompaniesProvider(categoryId:categoryId ,
+          pageNo: pageNo,
+          limit: limit,
+          query: query,
+        ).future,
+      );
+
+      companies = [...newCompanies];
+      hasMore = newCompanies.length == limit;
+
+      state = [...companies];
     } catch (e, stackTrace) {
       log(e.toString());
       log(stackTrace.toString());

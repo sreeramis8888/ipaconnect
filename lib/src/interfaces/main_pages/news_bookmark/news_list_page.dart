@@ -83,44 +83,44 @@ class NewsListPage extends ConsumerWidget {
             if (news.isNotEmpty) {
               return Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            cursorColor: kWhite,
-                            style: kBodyTitleR.copyWith(
-                              fontSize: 14,
-                              color: kSecondaryTextColor,
-                            ),
-                            decoration: InputDecoration(
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 16),
-                              filled: true,
-                              fillColor: kCardBackgroundColor,
-                              prefixIcon: const Icon(
-                                Icons.search,
-                                size: 20,
-                                color: kSecondaryTextColor,
-                              ),
-                              hintText: 'Search Products',
-                              hintStyle: kBodyTitleR.copyWith(
-                                fontSize: 14,
-                                color: kSecondaryTextColor,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       horizontal: 16.0, vertical: 8.0),
+                  //   child: Row(
+                  //     children: [
+                  //       Expanded(
+                  //         child: TextField(
+                  //           cursorColor: kWhite,
+                  //           style: kBodyTitleR.copyWith(
+                  //             fontSize: 14,
+                  //             color: kSecondaryTextColor,
+                  //           ),
+                  //           decoration: InputDecoration(
+                  //             isDense: true,
+                  //             contentPadding: const EdgeInsets.symmetric(
+                  //                 vertical: 10, horizontal: 16),
+                  //             filled: true,
+                  //             fillColor: kCardBackgroundColor,
+                  //             prefixIcon: const Icon(
+                  //               Icons.search,
+                  //               size: 20,
+                  //               color: kSecondaryTextColor,
+                  //             ),
+                  //             hintText: 'Search News',
+                  //             hintStyle: kBodyTitleR.copyWith(
+                  //               fontSize: 14,
+                  //               color: kSecondaryTextColor,
+                  //             ),
+                  //             border: OutlineInputBorder(
+                  //               borderRadius: BorderRadius.circular(30.0),
+                  //               borderSide: BorderSide.none,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: news.length,

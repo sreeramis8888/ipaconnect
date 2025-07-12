@@ -7,7 +7,7 @@ part of 'job_profiles_notifier.dart';
 // **************************************************************************
 
 String _$jobProfilesNotifierHash() =>
-    r'c273a93223f7096a196b4e9875e596d47c1e116a';
+    r'd120d5534b78b91fb714f0d62c953e035ceecbf1';
 
 /// See also [JobProfilesNotifier].
 @ProviderFor(JobProfilesNotifier)

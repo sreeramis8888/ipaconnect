@@ -22,7 +22,7 @@ class ProductsNotifier extends _$ProductsNotifier {
   int pageNo = 1;
   final int limit = 14;
   bool hasMore = true;
-
+  String? searchQuery;
   @override
   List<ProductModel> build() {
     return [];
@@ -48,6 +48,34 @@ class ProductsNotifier extends _$ProductsNotifier {
 
       isFirstLoad = false;
       state = products;
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future<void> searchProducts(String query,{required String companyId}
+     ) async {
+    isLoading = true;
+    pageNo = 1;
+    products = [];
+    searchQuery = query;
+
+    try {
+      final newProducts = await ref.read(
+        getProductsProvider(companyId:companyId ,
+          pageNo: pageNo,
+          limit: limit,
+          query: query,
+        ).future,
+      );
+
+      products = [...newProducts];
+      hasMore = newProducts.length == limit;
+
+      state = [...products];
     } catch (e, stackTrace) {
       log(e.toString());
       log(stackTrace.toString());

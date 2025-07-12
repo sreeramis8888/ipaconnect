@@ -8,6 +8,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
+import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/board_of_director_widget.dart';
@@ -77,6 +78,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       builder: (context, ref, child) {
         final asyncHomeData = ref.watch(homeDataProvider);
         return RefreshIndicator(
+          backgroundColor: kCardBackgroundColor,
           color: kPrimaryColor,
           onRefresh: () async {
             ref.invalidate(homeDataProvider);
@@ -128,19 +130,19 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       children: [
                                         InkWell(
                                             onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const WebViewScreen(
-                                                    backgroundColor:
-                                                        kPrimaryColor,
-                                                    url:
-                                                        'https://www.indotransworld.org/',
-                                                    title: 'familytree Connect',
-                                                  ),
-                                                ),
-                                              );
+                                              // Navigator.push(
+                                              //   context,
+                                              //   MaterialPageRoute(
+                                              //     builder: (context) =>
+                                              //         const WebViewScreen(
+                                              //       backgroundColor:
+                                              //           kPrimaryColor,
+                                              //       url:
+                                              //           'https://www.indotransworld.org/',
+                                              //       title: 'familytree Connect',
+                                              //     ),
+                                              //   ),
+                                              // );
                                             },
                                             child: SizedBox(
                                               width: 40,
@@ -241,11 +243,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         CustomIconContainer(
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  arguments:
+                                                      widget.user.countryCode,
+                                                  context,
+                                                  'CampaignsPage');
+                                            },
                                             label: 'CSR',
                                             icon: SvgPicture.asset(
                                                 color: kWhite,
                                                 'assets/svg/icons/csr_icon.svg')),
                                         CustomIconContainer(
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  arguments:
+                                                      widget.user.countryCode,
+                                                  context,
+                                                  'EventsPage');
+                                            },
                                             label: 'Events',
                                             icon: SvgPicture.asset(
                                                 color: kWhite,
@@ -263,7 +279,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 color: kWhite,
                                                 'assets/svg/icons/card_icon.svg')),
                                         CustomIconContainer(
-                                            label: 'Offers',
+                                            onTap: () {
+                                              ref
+                                                  .read(selectedIndexProvider
+                                                      .notifier)
+                                                  .updateIndex(1);
+                                            },
+                                            label: 'Bussiness',
                                             icon: SvgPicture.asset(
                                                 color: kWhite,
                                                 'assets/svg/icons/offer_icon.svg')),
@@ -524,8 +546,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       children: [
                                         CarouselSlider(
                                           items: filteredVideos.map((video) {
-                                            return customVideo(
-                                                context: context, video: video);
+                                            return YouTubePlayerWidget(
+                                                videoId: extractVideoId(
+                                                        video.link ?? '') ??
+                                                    '');
                                           }).toList(),
                                           options: CarouselOptions(
                                             height: 225,

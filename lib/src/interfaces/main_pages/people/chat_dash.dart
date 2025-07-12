@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
@@ -12,6 +13,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart';
 import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatDash extends ConsumerStatefulWidget {
   ChatDash({super.key});
@@ -87,9 +89,13 @@ class _ChatDashState extends ConsumerState<ChatDash> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Center(child: Image.asset('assets/pngs/nochat.png')),
+              child: Center(
+                  child: Image.asset(
+                'assets/pngs/nochat.png',
+                color: kWhite,
+              )),
             ),
-            const Text('No chat yet!'),
+            Text('No chat yet!', style: kBodyTitleB),
           ],
         ),
       );
@@ -141,18 +147,34 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                     ),
                     data: (user) => ListTile(
                       tileColor: kCardBackgroundColor,
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: (user != null &&
-                                user.image != null &&
-                                user.image!.isNotEmpty)
-                            ? NetworkImage(user.image!)
-                            : null,
-                        child: (user == null ||
-                                user.image == null ||
-                                user.image!.isEmpty)
-                            ? const Icon(Icons.person)
-                            : null,
+                      leading: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: ClipOval(
+                          child: Image.network(
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
+                              return Shimmer.fromColors(
+                                baseColor: kCardBackgroundColor,
+                                highlightColor: kStrokeColor,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: kCardBackgroundColor,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
+                              );
+                            },
+                            user?.image ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return SvgPicture.asset(
+                                  'assets/svg/icons/dummy_person_small.svg');
+                            },
+                          ),
+                        ),
                       ),
                       title: Text(
                         user?.name ?? conversation.name ?? 'Chat',
@@ -167,7 +189,7 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ChatScreen(
                             conversationId: conversation.id ?? '',
-                            chatTitle: conversation.name ?? '',
+                            chatTitle: user?.name ?? '',
                             userId: user?.id ?? '',
                           ),
                         ));

@@ -120,16 +120,16 @@ Widget eventWidget({
                       },
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: kStrokeColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
-                    child: const Icon(Icons.bookmark_border, color: kWhite),
-                  ),
+                  // const SizedBox(width: 10),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     color: kStrokeColor,
+                  //     borderRadius: BorderRadius.circular(8),
+                  //   ),
+                  //   padding:
+                  //       const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
+                  //   child: const Icon(Icons.bookmark_border, color: kWhite),
+                  // ),
                 ],
               ),
             ],

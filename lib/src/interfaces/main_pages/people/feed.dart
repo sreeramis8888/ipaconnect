@@ -689,27 +689,26 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                 ),
 
                 const SizedBox(width: 24),
-
-                // Comment button with count
-                GestureDetector(
-                  onTap: _openCommentModal,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/svg/icons/comment.svg',
-                        color: kSecondaryTextColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${widget.business.comments?.length ?? 0}',
-                        style: TextStyle(
+                if (widget.business.user?.id != id)
+                  GestureDetector(
+                    onTap: _openCommentModal,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/svg/icons/comment.svg',
                           color: kSecondaryTextColor,
-                          fontSize: 14,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 4),
+                        Text(
+                          '${widget.business.comments?.length ?? 0}',
+                          style: TextStyle(
+                            color: kSecondaryTextColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
 
                 const SizedBox(width: 24),
 

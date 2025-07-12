@@ -288,12 +288,12 @@ class _ProfileHeader extends StatelessWidget {
                   navigationService.pushNamed('EditUser');
                 },
               ),
-              const SizedBox(width: 16),
-              _HeaderButton(
-                icon: Icons.share,
-                label: 'Share',
-                onTap: () {},
-              ),
+              // const SizedBox(width: 16),
+              // _HeaderButton(
+              //   icon: Icons.share,
+              //   label: 'Share',
+              //   onTap: () {},
+              // ),
             ],
           ),
           const SizedBox(height: 8),
@@ -524,8 +524,7 @@ class _BusinessTab extends ConsumerWidget {
                           ),
                         );
                         if (result == true) {
-                          // Refresh companies after edit
-                          ref.refresh(
+                          ref.invalidate(
                               getCompaniesByUserIdProvider(userId: userId));
                         }
                       },
@@ -549,7 +548,7 @@ class _BusinessTab extends ConsumerWidget {
                           final deleted =
                               await companyApi.deleteCompany(company.id!);
                           if (deleted) {
-                            ref.refresh(
+                            ref.invalidate(
                                 getCompaniesByUserIdProvider(userId: userId));
                           }
                         }

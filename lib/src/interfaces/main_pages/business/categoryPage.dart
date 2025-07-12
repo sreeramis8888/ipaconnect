@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -26,7 +28,7 @@ class Categorypage extends ConsumerStatefulWidget {
 
 class _CategorypageState extends ConsumerState<Categorypage> {
   final ScrollController _scrollController = ScrollController();
-
+  Timer? _debounce;
   @override
   void initState() {
     super.initState();
@@ -47,6 +49,21 @@ class _CategorypageState extends ConsumerState<Categorypage> {
           .read(companiesNotifierProvider.notifier)
           .fetchMoreCompanies(widget.category.id);
     }
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref
+          .read(companiesNotifierProvider.notifier)
+          .searchCompanies(query, categoryId: widget.category.id);
+    });
+  }
+
+  void _onSearchSubmitted(String query) {
+    ref
+        .read(companiesNotifierProvider.notifier)
+        .searchCompanies(query, categoryId: widget.category.id);
   }
 
   @override
@@ -90,6 +107,8 @@ class _CategorypageState extends ConsumerState<Categorypage> {
               children: [
                 Expanded(
                   child: TextField(
+                    onChanged: _onSearchChanged,
+                    onSubmitted: _onSearchSubmitted,
                     cursorColor: kWhite,
                     style: kBodyTitleR.copyWith(
                       fontSize: 14,

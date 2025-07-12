@@ -329,12 +329,12 @@ class _ProfileHeader extends StatelessWidget {
                   navigationService.pushNamed('EditUser');
                 },
               ),
-              const SizedBox(width: 16),
-              _HeaderButton(
-                icon: Icons.share,
-                label: 'Share',
-                onTap: () {},
-              ),
+              // const SizedBox(width: 16),
+              // _HeaderButton(
+              //   icon: Icons.share,
+              //   label: 'Share',
+              //   onTap: () {},
+              // ),
             ],
           ),
           const SizedBox(height: 8),

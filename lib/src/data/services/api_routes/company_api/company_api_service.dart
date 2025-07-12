@@ -1,8 +1,5 @@
 import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ipaconnect/src/data/models/business_category_model.dart';
-import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/services/api_service.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
@@ -25,10 +22,15 @@ class CompanyApiService {
     int pageNo = 1,
     int limit = 10,
     String? categoryId,
+    String? query,
   }) async {
+     Map<String, String> queryParams = {};
+    if (query != null && query.isNotEmpty) {
+      queryParams['search'] = query;
+    }
     String endpoint = categoryId != null
-        ? '/company/category/$categoryId?page_no=$pageNo&limit=$limit'
-        : '/company?page_no=$pageNo&limit=$limit';
+        ? '/company/category/$categoryId?page_no=$pageNo&limit=$limit&${Uri(queryParameters: queryParams).query}'
+        : '/company?page_no=$pageNo&limit=$limit&${Uri(queryParameters: queryParams).query}';
 
     final response = await _apiService.get(endpoint);
 
@@ -99,10 +101,10 @@ class CompanyApiService {
 
 @riverpod
 Future<List<CompanyModel>> getCompanies(Ref ref,
-    {int pageNo = 1, int limit = 10, String? categoryId}) async {
+    {int pageNo = 1, int limit = 10, String? categoryId,String? query}) async {
   final companyApiService = ref.watch(companyApiServiceProvider);
   return companyApiService.getCompanies(
-      pageNo: pageNo, limit: limit, categoryId: categoryId);
+      pageNo: pageNo, limit: limit, categoryId: categoryId,query: query);
 }
 
 @riverpod

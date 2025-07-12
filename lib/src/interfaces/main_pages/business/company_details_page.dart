@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/company_model.dart';
@@ -31,7 +33,7 @@ class CompanyDetailsPage extends ConsumerStatefulWidget {
 class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
+  Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -61,6 +63,21 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
           .read(productsNotifierProvider.notifier)
           .fetchMoreProducts(widget.company.id);
     }
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref
+          .read(productsNotifierProvider.notifier)
+          .searchProducts(query, companyId: widget.company.id ?? '');
+    });
+  }
+
+  void _onSearchSubmitted(String query) {
+    ref
+        .read(productsNotifierProvider.notifier)
+        .searchProducts(query, companyId: widget.company.id ?? '');
   }
 
   @override
@@ -470,6 +487,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               const SizedBox(height: 8),
               // Search Bar
               TextField(
+                onChanged: _onSearchChanged,
+                onSubmitted: _onSearchSubmitted,
                 cursorColor: kWhite,
                 style: kBodyTitleR.copyWith(
                   fontSize: 14,

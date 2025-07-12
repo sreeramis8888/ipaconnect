@@ -24,7 +24,7 @@ final companyApiServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CompanyApiServiceRef = AutoDisposeProviderRef<CompanyApiService>;
-String _$getCompaniesHash() => r'04349595a39b3b210ca4dcfba3ccc6e8cdf45299';
+String _$getCompaniesHash() => r'3bfb0e27956c0ec7ce9d6095d1949e912e00b31e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -61,11 +61,13 @@ class GetCompaniesFamily extends Family<AsyncValue<List<CompanyModel>>> {
     int pageNo = 1,
     int limit = 10,
     String? categoryId,
+    String? query,
   }) {
     return GetCompaniesProvider(
       pageNo: pageNo,
       limit: limit,
       categoryId: categoryId,
+      query: query,
     );
   }
 
@@ -77,6 +79,7 @@ class GetCompaniesFamily extends Family<AsyncValue<List<CompanyModel>>> {
       pageNo: provider.pageNo,
       limit: provider.limit,
       categoryId: provider.categoryId,
+      query: provider.query,
     );
   }
 
@@ -103,12 +106,14 @@ class GetCompaniesProvider
     int pageNo = 1,
     int limit = 10,
     String? categoryId,
+    String? query,
   }) : this._internal(
           (ref) => getCompanies(
             ref as GetCompaniesRef,
             pageNo: pageNo,
             limit: limit,
             categoryId: categoryId,
+            query: query,
           ),
           from: getCompaniesProvider,
           name: r'getCompaniesProvider',
@@ -122,6 +127,7 @@ class GetCompaniesProvider
           pageNo: pageNo,
           limit: limit,
           categoryId: categoryId,
+          query: query,
         );
 
   GetCompaniesProvider._internal(
@@ -134,11 +140,13 @@ class GetCompaniesProvider
     required this.pageNo,
     required this.limit,
     required this.categoryId,
+    required this.query,
   }) : super.internal();
 
   final int pageNo;
   final int limit;
   final String? categoryId;
+  final String? query;
 
   @override
   Override overrideWith(
@@ -156,6 +164,7 @@ class GetCompaniesProvider
         pageNo: pageNo,
         limit: limit,
         categoryId: categoryId,
+        query: query,
       ),
     );
   }
@@ -170,7 +179,8 @@ class GetCompaniesProvider
     return other is GetCompaniesProvider &&
         other.pageNo == pageNo &&
         other.limit == limit &&
-        other.categoryId == categoryId;
+        other.categoryId == categoryId &&
+        other.query == query;
   }
 
   @override
@@ -179,6 +189,7 @@ class GetCompaniesProvider
     hash = _SystemHash.combine(hash, pageNo.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
     hash = _SystemHash.combine(hash, categoryId.hashCode);
+    hash = _SystemHash.combine(hash, query.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -195,6 +206,9 @@ mixin GetCompaniesRef on AutoDisposeFutureProviderRef<List<CompanyModel>> {
 
   /// The parameter `categoryId` of this provider.
   String? get categoryId;
+
+  /// The parameter `query` of this provider.
+  String? get query;
 }
 
 class _GetCompaniesProviderElement
@@ -208,6 +222,8 @@ class _GetCompaniesProviderElement
   int get limit => (origin as GetCompaniesProvider).limit;
   @override
   String? get categoryId => (origin as GetCompaniesProvider).categoryId;
+  @override
+  String? get query => (origin as GetCompaniesProvider).query;
 }
 
 String _$getCompaniesByUserIdHash() =>

@@ -189,5 +189,153 @@ class _GetFeedsProviderElement
   @override
   int get limit => (origin as GetFeedsProvider).limit;
 }
+
+String _$getMyFeedsHash() => r'72a7bff22e814ac9b2edec0d8574889f33f6d9d5';
+
+/// See also [getMyFeeds].
+@ProviderFor(getMyFeeds)
+const getMyFeedsProvider = GetMyFeedsFamily();
+
+/// See also [getMyFeeds].
+class GetMyFeedsFamily extends Family<AsyncValue<List<FeedModel>>> {
+  /// See also [getMyFeeds].
+  const GetMyFeedsFamily();
+
+  /// See also [getMyFeeds].
+  GetMyFeedsProvider call({
+    int pageNo = 1,
+    int limit = 10,
+  }) {
+    return GetMyFeedsProvider(
+      pageNo: pageNo,
+      limit: limit,
+    );
+  }
+
+  @override
+  GetMyFeedsProvider getProviderOverride(
+    covariant GetMyFeedsProvider provider,
+  ) {
+    return call(
+      pageNo: provider.pageNo,
+      limit: provider.limit,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getMyFeedsProvider';
+}
+
+/// See also [getMyFeeds].
+class GetMyFeedsProvider extends AutoDisposeFutureProvider<List<FeedModel>> {
+  /// See also [getMyFeeds].
+  GetMyFeedsProvider({
+    int pageNo = 1,
+    int limit = 10,
+  }) : this._internal(
+          (ref) => getMyFeeds(
+            ref as GetMyFeedsRef,
+            pageNo: pageNo,
+            limit: limit,
+          ),
+          from: getMyFeedsProvider,
+          name: r'getMyFeedsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getMyFeedsHash,
+          dependencies: GetMyFeedsFamily._dependencies,
+          allTransitiveDependencies:
+              GetMyFeedsFamily._allTransitiveDependencies,
+          pageNo: pageNo,
+          limit: limit,
+        );
+
+  GetMyFeedsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.pageNo,
+    required this.limit,
+  }) : super.internal();
+
+  final int pageNo;
+  final int limit;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<FeedModel>> Function(GetMyFeedsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetMyFeedsProvider._internal(
+        (ref) => create(ref as GetMyFeedsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        pageNo: pageNo,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<FeedModel>> createElement() {
+    return _GetMyFeedsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetMyFeedsProvider &&
+        other.pageNo == pageNo &&
+        other.limit == limit;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, pageNo.hashCode);
+    hash = _SystemHash.combine(hash, limit.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetMyFeedsRef on AutoDisposeFutureProviderRef<List<FeedModel>> {
+  /// The parameter `pageNo` of this provider.
+  int get pageNo;
+
+  /// The parameter `limit` of this provider.
+  int get limit;
+}
+
+class _GetMyFeedsProviderElement
+    extends AutoDisposeFutureProviderElement<List<FeedModel>>
+    with GetMyFeedsRef {
+  _GetMyFeedsProviderElement(super.provider);
+
+  @override
+  int get pageNo => (origin as GetMyFeedsProvider).pageNo;
+  @override
+  int get limit => (origin as GetMyFeedsProvider).limit;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

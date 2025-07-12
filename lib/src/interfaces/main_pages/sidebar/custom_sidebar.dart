@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 
 class CustomAdvancedDrawerMenu extends StatelessWidget {
   final UserModel user;
@@ -34,11 +36,19 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(user.name ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(user.phone ?? '',
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.grey)),
+                      Text(
+                        user.name ?? '',
+                        style: kSmallTitleB,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        user.phone ?? '',
+                        style: const TextStyle(
+                            fontSize: 12, color: kSecondaryTextColor),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
@@ -54,70 +64,71 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               label: 'Analytics',
               onTap: () => navigationService.pushNamed('Analytics'),
             ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/request_nfc.svg',
-                height: 24,
-              ),
-              label: 'Request NFC',
-              onTap: () => navigationService.pushNamed('RequestNFC'),
-            ),
-            if (user.isAdmin ?? false)
-              _menuItem(
-                icon: SvgPicture.asset(
-                  'assets/svg/icons/menu_icons/levels.svg',
-                  height: 24,
-                ),
-                label: 'Levels',
-                onTap: () {},
-              ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/levels.svg',
-                height: 24,
-              ),
-              label: 'Hierarchy',
-              onTap: () => navigationService.pushNamed('Hierarchies'),
-            ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_submissions.svg',
-                height: 24,
-              ),
-              label: 'My Submissions',
-              onTap: () => navigationService.pushNamed('MyProducts'),
-            ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_reviews.svg',
-                height: 24,
-              ),
-              label: 'My Reviews',
-              onTap: () => navigationService.pushNamed('MyReviews'),
-            ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_transactions.svg',
-                height: 24,
-              ),
-              label: 'My Transactions',
-              onTap: () => navigationService.pushNamed('MyReviews'),
-            ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_certificates.svg',
-                height: 24,
-              ),
-              label: 'My Certificates',
-              onTap: () => navigationService.pushNamed('MyReviews'),
-            ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/request_nfc.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'Request NFC',
+            //   onTap: () => navigationService.pushNamed('RequestNFC'),
+            // ),
+
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/levels.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'Hierarchy',
+            //   onTap: () => navigationService.pushNamed('Hierarchies'),
+            // ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/my_submissions.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'My Submissions',
+            //   onTap: () => navigationService.pushNamed('MyProducts'),
+            // ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/my_reviews.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'My Reviews',
+            //   onTap: () => navigationService.pushNamed('MyReviews'),
+            // ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/my_transactions.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'My Transactions',
+            //   onTap: () => navigationService.pushNamed('MyReviews'),
+            // ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/my_certificates.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'My Certificates',
+            //   onTap: () => navigationService.pushNamed('MyReviews'),
+            // ),
             _menuItem(
               icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/my_requirements.svg',
                 height: 24,
               ),
-              label: 'My Requirements',
-              onTap: () => navigationService.pushNamed('MyBusinesses'),
+              label: 'My Posts',
+              onTap: () => navigationService.pushNamed('MyRequirements',
+                  arguments: user),
+            ),
+            _menuItem(
+              icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/my_events.svg',
+                height: 24,
+              ),
+              label: 'My Events',
+              onTap: () => navigationService.pushNamed('MyEvents'),
             ),
             _menuItem(
               icon: SvgPicture.asset(
@@ -133,7 +144,8 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                 height: 24,
               ),
               label: 'Terms & Conditions',
-              onTap: () => navigationService.pushNamed('Terms'),
+              onTap: () =>
+                  navigationService.pushNamed('TermsAndConditionsPage'),
             ),
             _menuItem(
               icon: SvgPicture.asset(
@@ -141,7 +153,7 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                 height: 24,
               ),
               label: 'Privacy Policy',
-              onTap: () => navigationService.pushNamed('PrivacyPolicy'),
+              onTap: () => navigationService.pushNamed('PrivacyPolicyPage'),
             ),
             _menuItem(
               icon: SvgPicture.asset(
@@ -150,17 +162,19 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               ),
               label: 'Logout',
               onTap: () async {
-                // TODO: Add logout logic
+                await SecureStorage.deleteAll();
+
+                navigationService.pushNamedAndRemoveUntil('PhoneNumber');
               },
             ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/delete.svg',
-                height: 24,
-              ),
-              label: 'Delete Account',
-              onTap: () {},
-            ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/delete.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'Delete Account',
+            //   onTap: () {},
+            // ),
           ],
         ),
       ),

@@ -104,34 +104,34 @@ class _StorePageState extends ConsumerState<StorePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search bar
-            Container(
-              decoration: BoxDecoration(
-                color: kCardBackgroundColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                children: [
-                  const Icon(Icons.search, color: kGrey),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      style: kBodyTitleR,
-                      decoration: const InputDecoration(
-                        hintText: 'Search products',
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(color: kGrey),
-                      ),
-                      onChanged: (value) {
-                        // TODO: Implement search functionality
-                        // ref.read(storeNotifierProvider.notifier).searchProducts(value);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: kCardBackgroundColor,
+            //     borderRadius: BorderRadius.circular(8),
+            //   ),
+            //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            //   child: Row(
+            //     children: [
+            //       const Icon(Icons.search, color: kGrey),
+            //       const SizedBox(width: 8),
+            //       Expanded(
+            //         child: TextField(
+            //           controller: _searchController,
+            //           style: kBodyTitleR,
+            //           decoration: const InputDecoration(
+            //             hintText: 'Search products',
+            //             border: InputBorder.none,
+            //             hintStyle: TextStyle(color: kGrey),
+            //           ),
+            //           onChanged: (value) {
+            //             // TODO: Implement search functionality
+            //             // ref.read(storeNotifierProvider.notifier).searchProducts(value);
+            //           },
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const SizedBox(height: 24),
 
             Expanded(

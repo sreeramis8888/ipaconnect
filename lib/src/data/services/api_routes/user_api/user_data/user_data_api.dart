@@ -35,10 +35,18 @@ class UserDataApiService {
     return null;
   }
 
-  Future<List<UserModel>> fetchAllUsers(
-      {int pageNo = 1, int limit = 10 ,String? query,}) async {
-    final response =
-        await _apiService.get('/users?page_no=$pageNo&limit=$limit');
+  Future<List<UserModel>> fetchAllUsers({
+    int pageNo = 1,
+    int limit = 10,
+    String? query,
+  }) async {
+    Map<String, String> queryParams = {};
+    if (query != null && query.isNotEmpty) {
+      queryParams['search'] = query;
+    }
+
+    final response = await _apiService.get(
+        '/users?page_no=$pageNo&limit=$limit&${Uri(queryParameters: queryParams).query}');
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
@@ -129,8 +137,13 @@ Future<UserModel?> getUserDetailsById(Ref ref, {required String userId}) async {
 }
 
 @riverpod
-Future<List<UserModel>> fetchAllUsers(Ref ref,
-    {int pageNo = 1, int limit = 10 ,String? query,}) async {
+Future<List<UserModel>> fetchAllUsers(
+  Ref ref, {
+  int pageNo = 1,
+  int limit = 10,
+  String? query,
+}) async {
   final userApiService = ref.watch(userDataApiServiceProvider);
-  return userApiService.fetchAllUsers(limit: limit, pageNo: pageNo,query: query);
+  return userApiService.fetchAllUsers(
+      limit: limit, pageNo: pageNo, query: query);
 }

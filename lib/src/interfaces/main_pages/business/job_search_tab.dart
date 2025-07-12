@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -17,6 +19,7 @@ class JobSearchTab extends ConsumerStatefulWidget {
 
 class _JobSearchTabState extends ConsumerState<JobSearchTab> {
   final ScrollController _scrollController = ScrollController();
+  Timer? _debounce;
   @override
   void initState() {
     super.initState();
@@ -34,6 +37,17 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
         _scrollController.position.maxScrollExtent) {
       ref.read(jobProfilesNotifierProvider.notifier).fetchMoreJobProfiles();
     }
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref.read(jobProfilesNotifierProvider.notifier).searchJobProfiles(query);
+    });
+  }
+
+  void _onSearchSubmitted(String query) {
+    ref.read(jobProfilesNotifierProvider.notifier).searchJobProfiles(query);
   }
 
   @override
@@ -64,6 +78,8 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
                   ),
                   Expanded(
                     child: TextField(
+                      onChanged: _onSearchChanged,
+                      onSubmitted: _onSearchSubmitted,
                       style: kBodyTitleR.copyWith(color: kWhite),
                       decoration: InputDecoration(
                         hintText: 'Search Profile',
@@ -74,9 +90,9 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
                         contentPadding:
                             const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      onChanged: (value) {
-                        notifier.setFilters(search: value);
-                      },
+                      // onChanged: (value) {
+                      //   notifier.setFilters(search: value);
+                      // },
                     ),
                   ),
                 ],
@@ -95,24 +111,24 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 8.0),
                         itemCount: jobProfiles.length + (isLoading ? 1 : 0),
-                itemBuilder: (context, index) {
-  if (index == jobProfiles.length && isLoading) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: LoadingAnimation(),
-      ),
-    );
-  }
-  if (index < jobProfiles.length) {
-    final profile = jobProfiles[index];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: JobProfileCard(profile: profile),
-    );
-  }
-  return const SizedBox.shrink();
-},
+                        itemBuilder: (context, index) {
+                          if (index == jobProfiles.length && isLoading) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: LoadingAnimation(),
+                              ),
+                            );
+                          }
+                          if (index < jobProfiles.length) {
+                            final profile = jobProfiles[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 20.0),
+                              child: JobProfileCard(profile: profile),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
                       ),
           ),
         ],

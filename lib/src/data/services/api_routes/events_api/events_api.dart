@@ -18,19 +18,6 @@ class EventsApiService {
   final ApiService _apiService;
   EventsApiService(this._apiService);
 
-  // Future<List<EventsModel>> fetchEvents() async {
-  //   final response = await _apiService.get('/events/list');
-  //   if (response.success && response.data != null) {
-  //     final List<dynamic> data = response.data!['data'];
-  //     return data.map((json) => EventsModel.fromJson(json)).toList();
-  //   } else {
-  //     SnackbarService().showSnackBar(
-  //         response.message ?? 'Failed to fetch events',
-  //         type: SnackbarType.error);
-  //     throw Exception(response.message ?? 'Failed to fetch events');
-  //   }
-  // }
-
   Future<EventsModel> fetchEventById(String id) async {
     final response = await _apiService.get('/events/single/$id');
     if (response.success && response.data != null) {
@@ -58,7 +45,7 @@ class EventsApiService {
   }
 
   Future<List<EventsModel>> fetchMyEvents() async {
-    final response = await _apiService.get('/events/reg-events');
+    final response = await _apiService.get('/events/registered-events');
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
       return data.map((json) => EventsModel.fromJson(json)).toList();

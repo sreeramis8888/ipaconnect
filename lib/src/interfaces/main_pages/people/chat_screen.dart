@@ -13,12 +13,14 @@ class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
   final String chatTitle;
   final String userId;
+  final Map<String, dynamic>? initialProductInquiry;
 
   const ChatScreen({
     Key? key,
     required this.conversationId,
     required this.chatTitle,
     required this.userId,
+    this.initialProductInquiry,
   }) : super(key: key);
 
   @override
@@ -68,6 +70,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _scrollController.addListener(_onScroll);
 
     _fetchHistory();
+    
+    // Send initial product inquiry if provided
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.initialProductInquiry != null) {
+        _sendProductInquiry();
+      }
+    });
   }
 
   Future<void> _loadBlockStatus() async {
@@ -284,6 +293,60 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     });
   }
 
+  void _sendProductInquiry() {
+    final productInquiry = widget.initialProductInquiry!;
+    final product = productInquiry['product'];
+    final category = productInquiry['category'];
+    
+    // Create product inquiry message
+    final inquiryMessage = '''
+🔍 **Product Inquiry**
+
+**Product Details:**
+• **Name:** ${product.name}
+• **Category:** $category
+• **Price:** ₹${product.discountPrice.toStringAsFixed(0)} (Original: ₹${product.actualPrice.toStringAsFixed(0)})
+
+**Specifications:**
+${product.specifications.isNotEmpty ? product.specifications.map((spec) => '• $spec').join('\n') : '• No specifications available'}
+
+I'm interested in this product. Could you provide more information?
+''';
+
+    // Get the first product image for attachment
+    final productImageUrl = product.images.isNotEmpty ? product.images.first.url : null;
+    
+    final attachments = productImageUrl != null ? <Map<String, dynamic>>[
+      {
+        'url': productImageUrl,
+        'type': 'image',
+      }
+    ] : <Map<String, dynamic>>[];
+
+    _socketService.sendMessage(
+      widget.conversationId,
+      inquiryMessage,
+      attachments: attachments,
+      onAck: (error, message) {
+        if (error == null && message != null) {
+          setState(() => _messages.insert(0, MessageModel.fromJson(message)));
+          _scrollToBottom();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Failed to send product inquiry: $error"),
+              backgroundColor: kRed,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
   void _sendMessage() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
@@ -327,6 +390,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   Widget _buildMessageBubble(MessageModel msg, bool isMe) {
+    // Check if this is a product inquiry message
+    if (_isProductInquiryMessage(msg)) {
+      return _buildProductInquiryMessage(msg, isMe);
+    }
+    
     return Container(
       margin: EdgeInsets.only(
         left: isMe ? 50 : 16,
@@ -367,13 +435,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                 ),
               ],
             ),
-            child: Text(
-              msg.message ?? '',
-              style: TextStyle(
-                color: isMe ? kWhite : kTextColor,
-                fontSize: 16,
-                height: 1.4,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  msg.message ?? '',
+                  style: TextStyle(
+                    color: isMe ? kWhite : kTextColor,
+                    fontSize: 16,
+                    height: 1.4,
+                  ),
+                ),
+                // Show attachments if any
+                if (msg.attachments != null && msg.attachments!.isNotEmpty)
+                  ...msg.attachments!.map((attachment) => 
+                    _buildAttachment(attachment, isMe)
+                  ).toList(),
+              ],
             ),
           ),
           if (isMe) ...[
@@ -405,6 +483,210 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         ],
       ),
     );
+  }
+
+  bool _isProductInquiryMessage(MessageModel msg) {
+    return msg.message?.contains('🔍 **Product Inquiry**') == true;
+  }
+
+  Widget _buildProductInquiryMessage(MessageModel msg, bool isMe) {
+    return Container(
+      margin: EdgeInsets.only(
+        left: isMe ? 50 : 16,
+        right: isMe ? 16 : 50,
+        bottom: 4,
+        top: 4,
+      ),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.75,
+            decoration: BoxDecoration(
+              gradient: isMe
+                  ? LinearGradient(
+                      colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: isMe ? null : kCardBackgroundColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color:
+                    isMe ? Colors.transparent : kStrokeColor.withOpacity(0.3),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: kBlack.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product image
+                if (msg.attachments != null && msg.attachments!.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                      child: Image.network(
+                        msg.attachments!.first.url ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: kCardBackgroundColor,
+                          child: Icon(
+                            Icons.broken_image,
+                            color: kSecondaryTextColor,
+                            size: 40,
+                          ),
+                        ),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: kCardBackgroundColor,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                                color: kPrimaryColor,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                // Product inquiry content
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.shopping_bag,
+                            color: isMe ? kWhite : kPrimaryColor,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Product Inquiry',
+                            style: TextStyle(
+                              color: isMe ? kWhite : kTextColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        msg.message ?? '',
+                        style: TextStyle(
+                          color: isMe ? kWhite : kTextColor,
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isMe) ...[
+            const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _formatTime(msg.createdAt),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: kSecondaryTextColor.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                _buildStatus(msg),
+              ],
+            ),
+          ] else ...[
+            const SizedBox(height: 4),
+            Text(
+              _formatTime(msg.createdAt),
+              style: TextStyle(
+                fontSize: 11,
+                color: kSecondaryTextColor.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttachment(Attachment attachment, bool isMe) {
+    if (attachment.type == 'image') {
+      return Container(
+        margin: const EdgeInsets.only(top: 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            attachment.url ?? '',
+            width: 200,
+            height: 150,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              width: 200,
+              height: 150,
+              color: kCardBackgroundColor,
+              child: Icon(
+                Icons.broken_image,
+                color: kSecondaryTextColor,
+                size: 40,
+              ),
+            ),
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                width: 200,
+                height: 150,
+                color: kCardBackgroundColor,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                    color: kPrimaryColor,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    }
+    
+    return const SizedBox.shrink();
   }
 
   String _formatTime(DateTime? dateTime) {

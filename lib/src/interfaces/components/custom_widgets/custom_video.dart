@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/models/promotions_model.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';

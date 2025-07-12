@@ -24,9 +24,11 @@ import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_
 
 class CreateNotificationPage extends ConsumerStatefulWidget {
   final String? hierarchyId;
+  final String? hierarchyName;
   const CreateNotificationPage({
     super.key,
     this.hierarchyId,
+    this.hierarchyName,
   });
 
   @override
@@ -159,9 +161,12 @@ class _CreateNotificationPageState
   @override
   Widget build(BuildContext context) {
     final asyncHierarchies = ref.watch(getHierarchyProvider);
-    final asyncHierarchyUsers = _selectedHierarchyIds.isNotEmpty
+    // If hierarchyId is provided, always use it for user selection
+    final bool isFromHierarchy = widget.hierarchyId != null && widget.hierarchyId!.isNotEmpty;
+    final String? effectiveHierarchyId = isFromHierarchy ? widget.hierarchyId : (_selectedHierarchyIds.isNotEmpty ? _selectedHierarchyIds.first : null);
+    final asyncHierarchyUsers = effectiveHierarchyId != null
         ? ref.watch(getHierarchyUsersProvider(
-            hierarchyId: _selectedHierarchyIds.first, page: 1, limit: 100))
+            hierarchyId: effectiveHierarchyId, page: 1, limit: 100))
         : null;
 
     return Scaffold(
@@ -190,125 +195,127 @@ class _CreateNotificationPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Selection Type Toggle
-            const Text(
-              'Send to',
-              style: TextStyle(color: Colors.orange, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSelectingHierarchies = true;
-                        _selectedUsers.clear();
-                        _selectedUserIds.clear();
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _isSelectingHierarchies
-                            ? kPrimaryColor
-                            : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Hierarchies',
-                          style: TextStyle(
-                            color: _isSelectingHierarchies
-                                ? Colors.white
-                                : Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+            if (!isFromHierarchy) ...[
+              const Text(
+                'Send to',
+                style: TextStyle(color: Colors.orange, fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isSelectingHierarchies = true;
+                          _selectedUsers.clear();
+                          _selectedUserIds.clear();
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _isSelectingHierarchies
+                              ? kPrimaryColor
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Hierarchies',
+                            style: TextStyle(
+                              color: _isSelectingHierarchies
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSelectingHierarchies = false;
-                        _selectedHierarchies.clear();
-                        _selectedHierarchyIds.clear();
-                        _selectedUsers.clear();
-                        _selectedUserIds.clear();
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color:
-                            !_isSelectingHierarchies && _selectedUserIds.isEmpty
-                                ? kPrimaryColor
-                                : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Users',
-                          style: TextStyle(
-                            color: !_isSelectingHierarchies &&
-                                    _selectedUserIds.isEmpty
-                                ? Colors.white
-                                : Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isSelectingHierarchies = false;
+                          _selectedHierarchies.clear();
+                          _selectedHierarchyIds.clear();
+                          _selectedUsers.clear();
+                          _selectedUserIds.clear();
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color:
+                              !_isSelectingHierarchies && _selectedUserIds.isEmpty
+                                  ? kPrimaryColor
+                                  : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Users',
+                            style: TextStyle(
+                              color: !_isSelectingHierarchies &&
+                                      _selectedUserIds.isEmpty
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _isSelectingHierarchies = false;
-                        _selectedHierarchies.clear();
-                        _selectedHierarchyIds.clear();
-                        _selectedUsers.clear();
-                        _selectedUserIds.clear();
-                        // Set a special flag for all users
-                        _selectedUserIds = ['*'];
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _selectedUserIds.contains('*')
-                            ? kPrimaryColor
-                            : Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'All Users',
-                          style: TextStyle(
-                            color: _selectedUserIds.contains('*')
-                                ? Colors.white
-                                : Colors.black,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isSelectingHierarchies = false;
+                          _selectedHierarchies.clear();
+                          _selectedHierarchyIds.clear();
+                          _selectedUsers.clear();
+                          _selectedUserIds.clear();
+                          // Set a special flag for all users
+                          _selectedUserIds = ['*'];
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: _selectedUserIds.contains('*')
+                              ? kPrimaryColor
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'All Users',
+                            style: TextStyle(
+                              color: _selectedUserIds.contains('*')
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // Hierarchy Selection
-            if (_isSelectingHierarchies) ...[
+            if (!isFromHierarchy && _isSelectingHierarchies) ...[
               const Text(
                 'Select Hierarchies',
                 style: TextStyle(color: Colors.orange, fontSize: 16),
@@ -372,12 +379,13 @@ class _CreateNotificationPageState
             ],
 
             // User Selection (when hierarchies are selected)
-            if (_isSelectingHierarchies &&
-                _selectedHierarchyIds.isNotEmpty) ...[
+            if ((isFromHierarchy) || (_isSelectingHierarchies && _selectedHierarchyIds.isNotEmpty)) ...[
               const SizedBox(height: 16),
-              const Text(
-                'Or Select Specific Users from Hierarchy',
-                style: TextStyle(color: Colors.orange, fontSize: 16),
+              Text(
+                isFromHierarchy
+                    ? 'Select Members from  [38;5;214m${widget.hierarchyName ?? "Hierarchy"}'
+                    : 'Or Select Specific Users from Hierarchy',
+                style: const TextStyle(color: Colors.orange, fontSize: 16),
               ),
               const SizedBox(height: 8),
               if (asyncHierarchyUsers != null)
@@ -438,8 +446,7 @@ class _CreateNotificationPageState
             ],
 
             // Direct User Selection
-            if (!_isSelectingHierarchies &&
-                !_selectedUserIds.contains('*')) ...[
+            if (!isFromHierarchy && !_isSelectingHierarchies && !_selectedUserIds.contains('*')) ...[
               const Text(
                 'Select Users',
                 style: TextStyle(color: Colors.orange, fontSize: 16),
@@ -471,7 +478,7 @@ class _CreateNotificationPageState
             ],
 
             // Show when "All Users" is selected
-            if (_selectedUserIds.contains('*')) ...[
+            if (!isFromHierarchy && _selectedUserIds.contains('*')) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(16),
@@ -699,8 +706,8 @@ class _CreateNotificationPageState
                         link: linkController.text.isNotEmpty
                             ? linkController.text
                             : null,
-                        types: ['in-app'], // Default to in-app notification
-                        status: 'sended', // Default status
+                        types: ['in-app'], 
+                        status: 'sended',
                       );
                     } else {
                       if (_isSelectingHierarchies) {
