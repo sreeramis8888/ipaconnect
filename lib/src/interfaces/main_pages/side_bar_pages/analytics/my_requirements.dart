@@ -67,7 +67,7 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
           ),
         ),
         scrolledUnderElevation: 0,
-        title: Text('Reviews',
+        title: Text('My Posts',
             style: kBodyTitleB.copyWith(color: kSecondaryTextColor)),
       ),
       body: isFirstLoad

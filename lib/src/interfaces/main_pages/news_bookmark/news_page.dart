@@ -44,9 +44,12 @@ class NewsModelDetailView extends ConsumerWidget {
           scrolledUnderElevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8),
-            child: CustomRoundButton(
-              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
-              offset: Offset(4, 0),
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: CustomRoundButton(
+                offset: Offset(4, 0),
+                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              ),
             ),
           ),
           // actions: [
@@ -120,70 +123,71 @@ class _NewsModelDetailContentViewState
                         newsItem: widget.news[index],
                       );
                     })),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15, right: 15, bottom: 10, top: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: kCardBackgroundColor,
-                      side: const BorderSide(color: kStrokeColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+            if (widget.news.length > 1)
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15, right: 15, bottom: 10, top: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: kCardBackgroundColor,
+                        side: const BorderSide(color: kStrokeColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 25, vertical: 10),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25, vertical: 10),
-                    ),
-                    onPressed: () {
-                      int currentIndex = ref.read(currentNewsIndexProvider);
-                      if (currentIndex > 0) {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.arrow_back, color: kWhite),
-                        SizedBox(width: 8),
-                        Text('Previous', style: TextStyle(color: kWhite)),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: kCardBackgroundColor,
-                      side: const BorderSide(color: kStrokeColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                      onPressed: () {
+                        int currentIndex = ref.read(currentNewsIndexProvider);
+                        if (currentIndex > 0) {
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
+                      child: const Row(
+                        children: [
+                          Icon(Icons.arrow_back, color: kWhite),
+                          SizedBox(width: 8),
+                          Text('Previous', style: TextStyle(color: kWhite)),
+                        ],
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25, vertical: 10),
                     ),
-                    onPressed: () {
-                      int currentIndex = ref.read(currentNewsIndexProvider);
-                      if (currentIndex < widget.news.length - 1) {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
-                    child: const Row(
-                      children: [
-                        Text('Next', style: TextStyle(color: kWhite)),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward, color: kWhite),
-                      ],
+                    SizedBox(width: 10),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: kCardBackgroundColor,
+                        side: const BorderSide(color: kStrokeColor),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 25, vertical: 10),
+                      ),
+                      onPressed: () {
+                        int currentIndex = ref.read(currentNewsIndexProvider);
+                        if (currentIndex < widget.news.length - 1) {
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
+                      child: const Row(
+                        children: [
+                          Text('Next', style: TextStyle(color: kWhite)),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward, color: kWhite),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ],

@@ -10,6 +10,7 @@ import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_video.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_product_modal_sheet.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart' as globals;
@@ -21,6 +22,7 @@ import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dar
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/review_bar_chart.dart';
 import 'package:ipaconnect/src/data/notifiers/companies_notifier.dart';
 import 'company_reviews_page.dart';
+import 'package:ipaconnect/main.dart';
 
 class CompanyDetailsPage extends ConsumerStatefulWidget {
   final CompanyModel company;
@@ -31,7 +33,7 @@ class CompanyDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RouteAware {
   late TabController _tabController;
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
@@ -42,12 +44,30 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     _tabController = TabController(length: 2, vsync: this);
     _scrollController.addListener(_onScroll);
     _fetchInitialProducts();
+    // Refresh ratings for this company
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      routeObserver.subscribe(this, ModalRoute.of(context)!);
+      ref.read(ratingNotifierProvider.notifier).refreshRatings(
+        entityId: widget.company.id ?? '',
+        entityType: 'Company',
+      );
+    });
   }
 
   @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _tabController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when coming back to this page
+    ref.read(ratingNotifierProvider.notifier).refreshRatings(
+      entityId: widget.company.id ?? '',
+      entityType: 'Company',
+    );
   }
 
   Future<void> _fetchInitialProducts() async {
@@ -465,8 +485,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
       children: videos
           .map((v) => Padding(
               padding: EdgeInsets.only(bottom: 20),
-              child: YouTubePlayerWidget(
-                  videoId: extractVideoId(v.url ?? '') ?? '')))
+              child: customVideo(context: context,
+                  videoUrl: v.url ?? '')))
           .toList(),
     );
   }

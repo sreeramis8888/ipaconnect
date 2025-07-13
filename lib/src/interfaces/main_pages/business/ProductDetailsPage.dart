@@ -40,7 +40,13 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    // Optionally, you can prefetch reviews here if desired
+    // Refresh ratings for this product
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(ratingNotifierProvider.notifier).refreshRatings(
+        entityId: widget.product.id ?? '',
+        entityType: 'Product',
+      );
+    });
   }
 
   @override

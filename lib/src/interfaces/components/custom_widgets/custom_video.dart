@@ -1,12 +1,13 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:ipaconnect/src/data/models/promotions_model.dart';
+import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-Widget customVideo({required BuildContext context, required Promotion video}) {
-  final videoUrl = video.link;
+Widget customVideo({required BuildContext context, required String videoUrl}) {
+
 
   final ytController = YoutubePlayerController.fromVideoId(
-    videoId: YoutubePlayerController.convertUrlToId(videoUrl ?? '')!,
+    videoId: extractYouTubeVideoId('$videoUrl' ?? '') ?? '',
     autoPlay: false,
     params: const YoutubePlayerParams(
       enableJavaScript: true,
@@ -17,6 +18,10 @@ Widget customVideo({required BuildContext context, required Promotion video}) {
     ),
   );
 
+  log(
+    name: 'Video ID:',
+    extractYouTubeVideoId(videoUrl ?? '') ?? '',
+  );
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [

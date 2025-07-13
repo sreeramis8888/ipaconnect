@@ -13,6 +13,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/notifiers/feed_notifier.dart';
 import 'package:ipaconnect/src/data/services/api_routes/feed_api/feed_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/get_time_ago.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.dart';
@@ -575,6 +576,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
 
   @override
   Widget build(BuildContext context) {
+    NavigationService navigationService = NavigationService();
     return Container(
       decoration: BoxDecoration(
           color: kCardBackgroundColor, borderRadius: BorderRadius.circular(5)),
@@ -582,41 +584,45 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                ClipOval(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    color: Colors.grey[200],
-                    child: widget.author.image != null
-                        ? Image.network(
-                            widget.author.image!,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(Icons.person, color: Colors.grey),
+          GestureDetector(
+            onTap: () => navigationService.pushNamed('ProfilePreview',
+                arguments: widget.author),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      color: Colors.grey[200],
+                      child: widget.author.image != null
+                          ? Image.network(
+                              widget.author.image!,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(Icons.person, color: Colors.grey),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.author.name ?? 'Unknown User',
-                          style: kBodyTitleB),
-                      Text(
-                        timeAgo(widget.business.createdAt!),
-                        style: TextStyle(
-                          color: kSecondaryTextColor,
-                          fontSize: 12,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.author.name ?? 'Unknown User',
+                            style: kBodyTitleB),
+                        Text(
+                          timeAgo(widget.business.createdAt!),
+                          style: TextStyle(
+                            color: kSecondaryTextColor,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
@@ -689,26 +695,26 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                 ),
 
                 const SizedBox(width: 24),
-                if (widget.business.user?.id != id)
-                  GestureDetector(
-                    onTap: _openCommentModal,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/svg/icons/comment.svg',
+
+                GestureDetector(
+                  onTap: _openCommentModal,
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/svg/icons/comment.svg',
+                        color: kSecondaryTextColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${widget.business.comments?.length ?? 0}',
+                        style: TextStyle(
                           color: kSecondaryTextColor,
+                          fontSize: 14,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${widget.business.comments?.length ?? 0}',
-                          style: TextStyle(
-                            color: kSecondaryTextColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
                 const SizedBox(width: 24),
 

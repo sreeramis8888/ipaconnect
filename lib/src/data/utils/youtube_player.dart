@@ -3,17 +3,36 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'dart:io';
 
-String? extractVideoId(String url) {
+String? extractYouTubeVideoId(String url) {
   final uri = Uri.tryParse(url);
   if (uri == null || uri.host.isEmpty) return null;
 
   final host = uri.host.replaceFirst('www.', '');
 
-  if (host.contains('youtube.com')) {
+  // Handle: https://www.youtube.com/watch?v=VIDEO_ID
+  if (host.contains('youtube.com') && uri.path == '/watch') {
     return uri.queryParameters['v'];
-  } else if (host.contains('youtu.be')) {
+  }
+
+  // Handle: https://youtu.be/VIDEO_ID
+  if (host.contains('youtu.be')) {
     return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
   }
+
+  // Handle: https://www.youtube.com/embed/VIDEO_ID
+  if (host.contains('youtube.com') &&
+      uri.pathSegments.isNotEmpty &&
+      uri.pathSegments.first == 'embed') {
+    return uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+  }
+
+  // Handle: https://www.youtube.com/shorts/VIDEO_ID
+  if (host.contains('youtube.com') &&
+      uri.pathSegments.isNotEmpty &&
+      uri.pathSegments.first == 'shorts') {
+    return uri.pathSegments.length > 1 ? uri.pathSegments[1] : null;
+  }
+
   return null;
 }
 

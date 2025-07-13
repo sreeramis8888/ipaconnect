@@ -275,7 +275,7 @@ class MyEventsPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kPrimaryColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: kCardBackgroundColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

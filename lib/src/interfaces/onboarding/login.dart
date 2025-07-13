@@ -466,7 +466,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         return;
       }
       final authApiService = ref.read(authApiServiceProvider);
-      // You need to get the FCM token from your notification service or storage
+
       String fcmToken = await SecureStorage.read('fcmToken') ?? '';
       final responseMap = await authApiService.verifyOTP(
         countryCode: countryCode ?? '',

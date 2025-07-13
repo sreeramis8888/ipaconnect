@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
@@ -851,6 +853,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                                 galleryPhotoUrls.add(url);
                               }
 
+                              // Always resolve category to ID
                               final found = categories.firstWhere(
                                 (cat) =>
                                     cat.id.toString() == category ||
@@ -861,12 +864,20 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                               final categoryId = (found.id != null &&
                                       found.id.toString().isNotEmpty)
                                   ? found.id.toString()
-                                  : category;
+                                  : null;
+                              if (categoryId == null || categoryId.isEmpty) {
+                                setState(() {
+                                  isSubmitting = false;
+                                  submitError =
+                                      'Please select a valid category.';
+                                });
+                                return;
+                              }
 
                               final companyData = {
                                 'name': name,
                                 'overview': overview,
-                                'category': categoryId,
+                                'category': categoryId, // Always pass ID
                                 'image': image,
                                 'status': status,
                                 'established_date':

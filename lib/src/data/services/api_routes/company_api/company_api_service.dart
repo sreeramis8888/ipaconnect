@@ -24,7 +24,7 @@ class CompanyApiService {
     String? categoryId,
     String? query,
   }) async {
-     Map<String, String> queryParams = {};
+    Map<String, String> queryParams = {};
     if (query != null && query.isNotEmpty) {
       queryParams['search'] = query;
     }
@@ -74,6 +74,7 @@ class CompanyApiService {
     SnackbarService snackbarService = SnackbarService();
     final response = await _apiService.put('/company/$id', data);
     log(response.message.toString());
+    log(response.data.toString());
     if (response.success && response.data != null) {
       snackbarService.showSnackBar('Company Updated Successfully');
       return true;
@@ -101,10 +102,10 @@ class CompanyApiService {
 
 @riverpod
 Future<List<CompanyModel>> getCompanies(Ref ref,
-    {int pageNo = 1, int limit = 10, String? categoryId,String? query}) async {
+    {int pageNo = 1, int limit = 10, String? categoryId, String? query}) async {
   final companyApiService = ref.watch(companyApiServiceProvider);
   return companyApiService.getCompanies(
-      pageNo: pageNo, limit: limit, categoryId: categoryId,query: query);
+      pageNo: pageNo, limit: limit, categoryId: categoryId, query: query);
 }
 
 @riverpod

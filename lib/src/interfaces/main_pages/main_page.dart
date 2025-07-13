@@ -107,7 +107,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       BusinessCategoriesPage(),
       PeoplePage(),
       NewsListPage(),
-      ProfilePreviewById(userId: user.id??''),
+      ProfilePreviewById(userId: user.id ?? ''),
     ];
     _activeIcons = [
       'assets/svg/icons/nav_icons/active_home.svg',
@@ -252,9 +252,7 @@ class _MainPageState extends ConsumerState<MainPage> {
           ),
         );
       case 'inactive':
-        return RegistrationPage(
-          phone: user.phone ?? '',
-        );
+        return RegistrationPage();
       case 'deleted':
         return const UserDeletedPage();
       case 'awaiting-payment':

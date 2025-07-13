@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/glowing_animated_avatar.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
@@ -45,14 +46,18 @@ class ProfilePreview extends ConsumerStatefulWidget {
 class _ProfilePreviewState extends ConsumerState<ProfilePreview>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int _selectedTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // To update FAB visibility
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
     });
+    _selectedTabIndex = _tabController.index;
   }
 
   @override
@@ -180,22 +185,18 @@ class _ProfilePreviewState extends ConsumerState<ProfilePreview>
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height *
-                      0.8, // Adjust as needed
-                  child: TabBarView(
-                    controller: _tabController,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: [
-                      _OverviewTab(user: user),
-                      _BusinessTab(userId: user.id ?? ''),
-                    ],
-                  ),
-                ),
+                // Remove fixed height and TabBarView, use conditional widget
+                if (_selectedTabIndex == 0)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: _OverviewTab(user: user),
+                  )
+                else
+                  _BusinessTab(userId: user.id ?? ''),
               ],
             ),
           ),
-          floatingActionButton: _tabController.index == 1
+          floatingActionButton: _selectedTabIndex == 1 && widget.user.id == id
               ? FloatingActionButton(
                   onPressed: () => _onAddCompany(context),
                   backgroundColor: kPrimaryColor,
@@ -281,13 +282,14 @@ class _ProfileHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _HeaderButton(
-                icon: Icons.edit,
-                label: 'Edit Profile',
-                onTap: () {
-                  navigationService.pushNamed('EditUser');
-                },
-              ),
+              if (user.id == id)
+                _HeaderButton(
+                  icon: Icons.edit,
+                  label: 'Edit Profile',
+                  onTap: () {
+                    navigationService.pushNamed('EditUser');
+                  },
+                ),
               // const SizedBox(width: 16),
               // _HeaderButton(
               //   icon: Icons.share,
@@ -342,62 +344,59 @@ class _OverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (user.bio != null) const SizedBox(height: 8),
+        if (user.bio != null)
+          Text('About', style: kBodyTitleB.copyWith(color: kWhite)),
+        if (user.bio != null)
           if (user.bio != null) const SizedBox(height: 8),
-          if (user.bio != null)
-            Text('About', style: kBodyTitleB.copyWith(color: kWhite)),
-          if (user.bio != null)
-            if (user.bio != null) const SizedBox(height: 8),
-          Text(
-            user.bio ?? '',
-            style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+        Text(
+          user.bio ?? '',
+          style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+        ),
+        if (user.bio != null) const SizedBox(height: 24),
+        Text('Contact', style: kBodyTitleB.copyWith(color: kWhite)),
+        const SizedBox(height: 8),
+        if (user.phone != null && user.phone!.isNotEmpty)
+          Row(
+            children: [
+              Icon(Icons.phone, color: kSecondaryTextColor, size: 18),
+              const SizedBox(width: 8),
+              Text(user.phone!,
+                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+            ],
           ),
-          if (user.bio != null) const SizedBox(height: 24),
-          Text('Contact', style: kBodyTitleB.copyWith(color: kWhite)),
-          const SizedBox(height: 8),
-          if (user.phone != null && user.phone!.isNotEmpty)
-            Row(
-              children: [
-                Icon(Icons.phone, color: kSecondaryTextColor, size: 18),
-                const SizedBox(width: 8),
-                Text(user.phone!,
-                    style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
-              ],
-            ),
-          if (user.email != null && user.email!.isNotEmpty)
-            Row(
-              children: [
-                Icon(Icons.email, color: kSecondaryTextColor, size: 18),
-                const SizedBox(width: 8),
-                Text(user.email!,
-                    style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
-              ],
-            ),
-          if (user.location != null && user.location!.isNotEmpty)
-            Row(
-              children: [
-                Icon(Icons.location_on, color: kSecondaryTextColor, size: 18),
-                const SizedBox(width: 8),
-                Text(user.location!,
-                    style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
-              ],
-            ),
-          if (user.socialMedia != null)
-            if (user.socialMedia!.isNotEmpty) const SizedBox(height: 24),
-          if (user.socialMedia != null)
-            if (user.socialMedia!.isNotEmpty)
-              Text('Social Profile & Portfolio',
-                  style: kBodyTitleB.copyWith(color: kWhite)),
-          if (user.socialMedia != null)
-            if (user.socialMedia!.isNotEmpty) const SizedBox(height: 12),
-          if (user.socialMedia != null && user.socialMedia!.isNotEmpty)
-            ...user.socialMedia!.map((sm) => _SocialCard(sm: sm)),
-        ],
-      ),
+        if (user.email != null && user.email!.isNotEmpty)
+          Row(
+            children: [
+              Icon(Icons.email, color: kSecondaryTextColor, size: 18),
+              const SizedBox(width: 8),
+              Text(user.email!,
+                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+            ],
+          ),
+        if (user.location != null && user.location!.isNotEmpty)
+          Row(
+            children: [
+              Icon(Icons.location_on, color: kSecondaryTextColor, size: 18),
+              const SizedBox(width: 8),
+              Text(user.location!,
+                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+            ],
+          ),
+        if (user.socialMedia != null)
+          if (user.socialMedia!.isNotEmpty) const SizedBox(height: 24),
+        if (user.socialMedia != null)
+          if (user.socialMedia!.isNotEmpty)
+            Text('Social Profile & Portfolio',
+                style: kBodyTitleB.copyWith(color: kWhite)),
+        if (user.socialMedia != null)
+          if (user.socialMedia!.isNotEmpty) const SizedBox(height: 12),
+        if (user.socialMedia != null && user.socialMedia!.isNotEmpty)
+          ...user.socialMedia!.map((sm) => _SocialCard(sm: sm)),
+      ],
     );
   }
 }
@@ -481,89 +480,92 @@ class _BusinessTab extends ConsumerWidget {
             ],
           ),
         ),
-        Expanded(
-          child: asyncCompanies.when(
-            data: (companies) {
-              if (companies.isEmpty) {
-                return Center(
-                  child: Text('No companies found.',
-                      style: kBodyTitleR.copyWith(color: kWhite)),
-                );
-              }
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: companies.length,
-                itemBuilder: (context, index) {
-                  final company = companies[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: CompanyCard(
-                      userName: company.user?.name ?? '',
-                      companyUserId: company.user?.id ?? '',
-                      companyName: company.name ?? '',
-                      rating: company.rating ?? 0,
-                      industry: company.category ?? '',
-                      location: company.contactInfo?.address ?? '',
-                      isActive: company.status == 'active',
-                      imageUrl: company.image,
-                      onViewDetails: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CompanyDetailsPage(company: company),
-                          ),
-                        );
-                      },
-                      onEdit: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AddCompanyPage(companyToEdit: company),
-                          ),
-                        );
-                        if (result == true) {
+        SizedBox(
+          height: 8,
+        ),
+        asyncCompanies.when(
+          data: (companies) {
+            if (companies.isEmpty) {
+              return Center(
+                child: Text('No companies found.',
+                    style: kBodyTitleR.copyWith(color: kWhite)),
+              );
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              itemCount: companies.length,
+              itemBuilder: (context, index) {
+                final company = companies[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: CompanyCard(
+                    userName: company.user?.name ?? '',
+                    companyUserId: company.user?.id ?? '',
+                    companyName: company.name ?? '',
+                    rating: company.rating ?? 0,
+                    industry: company.category ?? '',
+                    location: company.contactInfo?.address ?? '',
+                    isActive: company.status == 'active',
+                    imageUrl: company.image,
+                    onViewDetails: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CompanyDetailsPage(company: company),
+                        ),
+                      );
+                    },
+                    onEdit: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddCompanyPage(companyToEdit: company),
+                        ),
+                      );
+                      if (result == true) {
+                        ref.invalidate(
+                            getCompaniesByUserIdProvider(userId: userId));
+                      }
+                    },
+                    onDelete: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => ConfirmationDialog(
+                          title: 'Delete Company',
+                          content:
+                              'Are you sure you want to delete this company?',
+                          confirmText: 'Delete',
+                          cancelText: 'Cancel',
+                          icon: const Icon(Icons.delete_outline,
+                              color: Colors.red, size: 24),
+                        ),
+                      );
+                      if (confirmed == true) {
+                        final container = ProviderScope.containerOf(context);
+                        final companyApi =
+                            container.read(companyApiServiceProvider);
+                        final deleted =
+                            await companyApi.deleteCompany(company.id!);
+                        if (deleted) {
                           ref.invalidate(
                               getCompaniesByUserIdProvider(userId: userId));
                         }
-                      },
-                      onDelete: () async {
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => ConfirmationDialog(
-                            title: 'Delete Company',
-                            content:
-                                'Are you sure you want to delete this company?',
-                            confirmText: 'Delete',
-                            cancelText: 'Cancel',
-                            icon: const Icon(Icons.delete_outline,
-                                color: Colors.red, size: 24),
-                          ),
-                        );
-                        if (confirmed == true) {
-                          final container = ProviderScope.containerOf(context);
-                          final companyApi =
-                              container.read(companyApiServiceProvider);
-                          final deleted =
-                              await companyApi.deleteCompany(company.id!);
-                          if (deleted) {
-                            ref.invalidate(
-                                getCompaniesByUserIdProvider(userId: userId));
-                          }
-                        }
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-            loading: () => const Center(child: LoadingAnimation()),
-            error: (e, st) {
-              log(e.toString());
-              return Center(child: Text('No companies', style: kBodyTitleR));
-            },
-          ),
+                      }
+                    },
+                  ),
+                );
+              },
+            );
+          },
+          loading: () => const Center(child: LoadingAnimation()),
+          error: (e, st) {
+            log(e.toString());
+            return Center(child: Text('No companies', style: kBodyTitleR));
+          },
         ),
       ],
     );

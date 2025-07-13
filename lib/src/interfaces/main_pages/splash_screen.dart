@@ -197,7 +197,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> setupFCM() async {
     try {
       await getFcmToken(context);
-      print("FCM Token: $token");
     } catch (e) {
       print('Error getting FCM token: $e');
       fcmToken = '';

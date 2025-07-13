@@ -8,7 +8,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
-import 'package:ipaconnect/src/data/utils/youtube_player.dart';
+
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/board_of_director_widget.dart';
@@ -203,7 +203,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 banner: banner);
                                           }).toList(),
                                           options: CarouselOptions(
-                                            height: 175,
+                                            height: 180,
                                             scrollPhysics: banners.length > 1
                                                 ? null
                                                 : const NeverScrollableScrollPhysics(),
@@ -212,7 +212,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 : false,
                                             viewportFraction: 1,
                                             autoPlayInterval:
-                                                const Duration(seconds: 3),
+                                                const Duration(seconds: 5),
                                             onPageChanged: (index, reason) {
                                               setState(() {
                                                 _currentBannerIndex = index;
@@ -248,7 +248,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                   arguments:
                                                       widget.user.countryCode,
                                                   context,
-                                                  'CampaignsPage');
+                                                  'CampaignsMainScreen');
                                             },
                                             label: 'CSR',
                                             icon: SvgPicture.asset(
@@ -502,7 +502,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                               child: InkWell(
                                                 onTap: () {
                                                   navigationService.pushNamed(
-                                                      'CampaignsPage');
+                                                      'CampaignsMainScreen');
                                                 },
                                                 child: Text('View All ',
                                                     style:
@@ -548,10 +548,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       children: [
                                         CarouselSlider(
                                           items: filteredVideos.map((video) {
-                                            return YouTubePlayerWidget(
-                                                videoId: extractVideoId(
-                                                        video.link ?? '') ??
-                                                    '');
+                                            return customVideo(
+                                                context: context,
+                                                videoUrl: video.link ?? '');
                                           }).toList(),
                                           options: CarouselOptions(
                                             height: 225,
@@ -719,7 +718,7 @@ Widget _buildBanners(
   return Container(
     width: MediaQuery.sizeOf(context).width / 1.15,
     child: AspectRatio(
-      aspectRatio: 2 / 1,
+      aspectRatio: 16 / 9,
       child: Stack(
         clipBehavior: Clip.none,
         children: [

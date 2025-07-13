@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/data/models/chat_model.dart';
@@ -34,7 +35,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
 
-  late final ChatApiService _chatApiService;
+  ChatApiService get _chatApiService => ref.watch(chatApiServiceProvider);
   late AnimationController _typingAnimationController;
   bool isBlocked = false;
   List<MessageModel> _messages = [];
@@ -51,8 +52,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   @override
   void initState() {
     super.initState();
-    _loadBlockStatus();
-    _chatApiService = ref.read(chatApiServiceProvider);
+    // _loadBlockStatus(); // Remove this call from initState
     _typingAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -70,8 +70,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _scrollController.addListener(_onScroll);
 
     _fetchHistory();
-    
-    // Send initial product inquiry if provided
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initialProductInquiry != null) {
         _sendProductInquiry();
@@ -79,10 +78,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     });
   }
 
-  Future<void> _loadBlockStatus() async {
-    final asyncUser = ref.watch(userProvider);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Block status logic moved here
+    final asyncUser = ref.read(userProvider);
     asyncUser.whenData(
       (user) {
+        if (!mounted) return;
         setState(() {
           if (user.blockedUsers != null) {
             isBlocked = user.blockedUsers!
@@ -95,11 +98,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   void _handleIncomingMessage(Map<String, dynamic> msg) {
     final newMsg = MessageModel.fromJson(msg);
-    if (newMsg.sender != id) setState(() => _messages.insert(0, newMsg));
+    if (newMsg.sender != id) {
+      if (!mounted) return;
+      setState(() => _messages.insert(0, newMsg));
+    }
     _scrollToBottom();
 
     if (newMsg.sender != widget.userId) {
       _socketService.markDelivered(newMsg.id!);
+    }
+
+    // Mark as seen if the message is from the chat partner and you are at the bottom
+    if (newMsg.sender == widget.userId && _isAtBottom()) {
+      _socketService.markSeen(newMsg.id!);
+      if (!mounted) return;
+      setState(() {
+        _messages[0] = newMsg.copyWith(status: 'seen');
+      });
     }
   }
 
@@ -107,13 +122,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final isOtherTyping =
         data['user_id'] == widget.userId && data['is_typing'] == true;
 
+    if (!mounted) return;
     setState(() {
       _otherTyping = isOtherTyping;
 
       _messages.removeWhere((m) => m.id == 'typing');
 
       if (isOtherTyping) {
-        _messages.add(
+        _messages.insert(
+          0,
           MessageModel(
             id: 'typing',
             sender: widget.userId,
@@ -128,7 +145,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   void _handleUserStatus(dynamic data) {
     if (data is Map && data['user_id'] == widget.userId) {
+      if (!mounted) return;
       setState(() => _status = data['online'] == true ? 'online' : 'offline');
+    } else if (data is List) {
+      for (final userStatus in data) {
+        if (userStatus is Map && userStatus['user_id'] == widget.userId) {
+          if (!mounted) return;
+          setState(() =>
+              _status = userStatus['online'] == true ? 'online' : 'offline');
+          break;
+        }
+      }
     }
   }
 
@@ -138,6 +165,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     if (messageId != null && senderId != widget.userId) {
       final idx = _messages.indexWhere((m) => m.id == messageId);
       if (idx != -1 && _messages[idx].status != 'delivered') {
+        if (!mounted) return;
         setState(() {
           _messages[idx] = _messages[idx].copyWith(status: 'delivered');
         });
@@ -153,6 +181,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     if (messageId != null && status == 'seen' && senderId == id) {
       final idx = _messages.indexWhere((m) => m.id == messageId);
       if (idx != -1) {
+        if (!mounted) return;
         setState(() {
           _messages[idx] = _messages[idx].copyWith(status: 'seen');
         });
@@ -186,16 +215,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   void _markLastAsSeen() {
     if (_messages.isEmpty) return;
-    final lastMsg = _messages.last;
+    final lastMsg = _messages.first; // Use first for newest message
     if (lastMsg.sender != id && lastMsg.status != 'seen') {
       _socketService.markSeen(lastMsg.id!);
+      if (!mounted) return;
       setState(() {
-        _messages[_messages.length - 1] = lastMsg.copyWith(status: 'seen');
+        _messages[0] = lastMsg.copyWith(status: 'seen');
       });
     }
   }
 
   void _fetchHistory() {
+    if (!mounted) return;
     setState(() {
       _isLoadingMore = true;
     });
@@ -205,25 +236,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       page: 1,
       limit: _pageSize,
       onHistory: (messages, totalCount, error) {
-        if (mounted) {
-          final newMessages = messages
-              .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
-              .toList();
+        if (!mounted) return;
+        final newMessages = messages
+            .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
+            .toList();
 
-          setState(() {
-            _messages = newMessages;
-            _allLoaded = newMessages.length < _pageSize;
-            _currentPage = 1;
-            _isLoadingMore = false;
-          });
+        setState(() {
+          _messages = newMessages;
+          _allLoaded = newMessages.length < _pageSize;
+          _currentPage = 1;
+          _isLoadingMore = false;
+        });
 
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _scrollToBottom();
-            if (_isAtBottom()) {
-              _markLastAsSeen();
-            }
-          });
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToBottom();
+          if (_isAtBottom()) {
+            _markLastAsSeen();
+          }
+        });
       },
     );
   }
@@ -234,6 +264,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     print(
         'Fetching more history - Page: $_currentPage, Loading: $_isLoadingMore');
 
+    if (!mounted) return;
     setState(() {
       _isLoadingMore = true;
     });
@@ -243,39 +274,38 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       page: _currentPage + 1,
       limit: _pageSize,
       onHistory: (messages, totalCount, error) {
-        if (mounted) {
-          final newMessages = messages
-              .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
-              .toList();
+        if (!mounted) return;
+        final newMessages = messages
+            .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
+            .toList();
 
-          print('Received  [newMessages.length] new messages');
+        print('Received  [newMessages.length] new messages');
 
-          setState(() {
-            _messages.addAll(newMessages);
-            _allLoaded = newMessages.length < _pageSize;
-            if (newMessages.isNotEmpty) {
-              _currentPage++;
-            }
-            _isLoadingMore = false;
-          });
-
+        setState(() {
+          _messages.addAll(newMessages);
+          _allLoaded = newMessages.length < _pageSize;
           if (newMessages.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (_scrollController.hasClients) {
-                _ignoreScroll = true;
-                final offsetFromBottom =
-                    _scrollController.position.maxScrollExtent -
-                        _scrollController.position.pixels;
-
-                final newMaxScroll = _scrollController.position.maxScrollExtent;
-                final newPixels = newMaxScroll - offsetFromBottom;
-                _scrollController.jumpTo(newPixels.clamp(0.0, newMaxScroll));
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  _ignoreScroll = false;
-                });
-              }
-            });
+            _currentPage++;
           }
+          _isLoadingMore = false;
+        });
+
+        if (newMessages.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              _ignoreScroll = true;
+              final offsetFromBottom =
+                  _scrollController.position.maxScrollExtent -
+                      _scrollController.position.pixels;
+
+              final newMaxScroll = _scrollController.position.maxScrollExtent;
+              final newPixels = newMaxScroll - offsetFromBottom;
+              _scrollController.jumpTo(newPixels.clamp(0.0, newMaxScroll));
+              Future.delayed(const Duration(milliseconds: 100), () {
+                _ignoreScroll = false;
+              });
+            }
+          });
         }
       },
     );
@@ -297,37 +327,41 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final productInquiry = widget.initialProductInquiry!;
     final product = productInquiry['product'];
     final category = productInquiry['category'];
-    
+
     // Create product inquiry message
     final inquiryMessage = '''
-🔍 **Product Inquiry**
+🔍 Product Inquiry
 
-**Product Details:**
-• **Name:** ${product.name}
-• **Category:** $category
-• **Price:** ₹${product.discountPrice.toStringAsFixed(0)} (Original: ₹${product.actualPrice.toStringAsFixed(0)})
+Product Details:
+ ${product.name}
+$category
+• Price: ₹${product.discountPrice.toStringAsFixed(0)} (Original: ₹${product.actualPrice.toStringAsFixed(0)})
 
-**Specifications:**
+Specifications:
 ${product.specifications.isNotEmpty ? product.specifications.map((spec) => '• $spec').join('\n') : '• No specifications available'}
 
 I'm interested in this product. Could you provide more information?
 ''';
 
     // Get the first product image for attachment
-    final productImageUrl = product.images.isNotEmpty ? product.images.first.url : null;
-    
-    final attachments = productImageUrl != null ? <Map<String, dynamic>>[
-      {
-        'url': productImageUrl,
-        'type': 'image',
-      }
-    ] : <Map<String, dynamic>>[];
+    final productImageUrl =
+        product.images.isNotEmpty ? product.images.first.url : null;
+
+    final attachments = productImageUrl != null
+        ? <Map<String, dynamic>>[
+            {
+              'url': productImageUrl,
+              'type': 'image',
+            }
+          ]
+        : <Map<String, dynamic>>[];
 
     _socketService.sendMessage(
       widget.conversationId,
       inquiryMessage,
       attachments: attachments,
       onAck: (error, message) {
+        if (!mounted) return;
         if (error == null && message != null) {
           setState(() => _messages.insert(0, MessageModel.fromJson(message)));
           _scrollToBottom();
@@ -355,6 +389,7 @@ I'm interested in this product. Could you provide more information?
       widget.conversationId,
       text,
       onAck: (error, message) {
+        if (!mounted) return;
         if (error == null && message != null) {
           setState(() => _messages.insert(0, MessageModel.fromJson(message)));
           _scrollToBottom();
@@ -374,6 +409,7 @@ I'm interested in this product. Could you provide more information?
     );
 
     _controller.clear();
+    if (!mounted) return;
     setState(() => _isTyping = false);
     _socketService.sendTyping(widget.conversationId, false);
   }
@@ -394,7 +430,7 @@ I'm interested in this product. Could you provide more information?
     if (_isProductInquiryMessage(msg)) {
       return _buildProductInquiryMessage(msg, isMe);
     }
-    
+
     return Container(
       margin: EdgeInsets.only(
         left: isMe ? 50 : 16,
@@ -448,9 +484,9 @@ I'm interested in this product. Could you provide more information?
                 ),
                 // Show attachments if any
                 if (msg.attachments != null && msg.attachments!.isNotEmpty)
-                  ...msg.attachments!.map((attachment) => 
-                    _buildAttachment(attachment, isMe)
-                  ).toList(),
+                  ...msg.attachments!
+                      .map((attachment) => _buildAttachment(attachment, isMe))
+                      .toList(),
               ],
             ),
           ),
@@ -561,7 +597,8 @@ I'm interested in this product. Could you provide more information?
                             color: kCardBackgroundColor,
                             child: Center(
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
                                     ? loadingProgress.cumulativeBytesLoaded /
                                         loadingProgress.expectedTotalBytes!
                                     : null,
@@ -685,7 +722,7 @@ I'm interested in this product. Could you provide more information?
         ),
       );
     }
-    
+
     return const SizedBox.shrink();
   }
 
@@ -801,6 +838,7 @@ I'm interested in this product. Could you provide more information?
                   userId: widget.userId ?? '',
                   onBlockStatusChanged: () {
                     Future.delayed(const Duration(seconds: 1), () {
+                      if (!mounted) return;
                       setState(() {
                         isBlocked = !isBlocked;
                       });
@@ -810,13 +848,16 @@ I'm interested in this product. Could you provide more information?
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'report',
                 child: Row(
                   children: [
                     Icon(Icons.report, color: kPrimaryColor),
                     SizedBox(width: 8),
-                    Text('Report'),
+                    Text(
+                      'Report',
+                      style: kSmallTitleR,
+                    ),
                   ],
                 ),
               ),
@@ -828,7 +869,15 @@ I'm interested in this product. Could you provide more information?
                   children: [
                     Icon(Icons.block),
                     SizedBox(width: 8),
-                    isBlocked ? Text('Unblock') : Text('Block'),
+                    isBlocked
+                        ? Text(
+                            'Unblock',
+                            style: kSmallTitleR,
+                          )
+                        : Text(
+                            'Block',
+                            style: kSmallTitleR,
+                          ),
                   ],
                 ),
               ),

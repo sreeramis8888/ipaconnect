@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/campaigns/campaigns_list_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/create_analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
@@ -72,15 +73,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = PhoneNumberScreen();
       break;
     case 'RegistrationPage':
-      String phone = settings?.arguments as String;
-      page = RegistrationPage(phone: phone);
-      transitionsBuilder = (context, animation, secondaryAnimation, child) {
-        return ScaleTransition(
-          scale: animation,
-          child: child,
-        );
-      };
-      transitionDuration = const Duration(milliseconds: 400);
+      page = RegistrationPage();
+      break;
+    case 'CampaignsMainScreen':
+      page = CampaignsMainScreen();
       break;
     case 'ApprovalWaitingPage':
       page = ApprovalWaitingPage();
