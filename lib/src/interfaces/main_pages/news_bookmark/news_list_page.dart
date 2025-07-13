@@ -31,52 +31,52 @@ class NewsListPage extends ConsumerWidget {
                 Icon(Icons.feed_outlined, color: kPrimaryColor, size: 22),
                 SizedBox(width: 8),
                 Text(
-                  "NewsModel",
+                  "News",
                   style: TextStyle(
                       fontSize: 20, fontWeight: FontWeight.bold, color: kWhite),
                 ),
               ],
             ),
           ),
-          actions: [
-            Stack(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.bookmark, color: kPrimaryColor, size: 22),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BookmarkPage()),
-                    );
-                  },
-                ),
-                Positioned(
-                  right: 5,
-                  top: 5,
-                  child: Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: BoxConstraints(
-                      minWidth: 14,
-                      minHeight: 14,
-                    ),
-                    child: Text(
-                      '3', // Placeholder for bookmark count
-                      style: TextStyle(
-                        color: kWhite,
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(width: 16),
-          ],
+          // actions: [
+          //   Stack(
+          //     children: [
+          //       IconButton(
+          //         icon: Icon(Icons.bookmark, color: kPrimaryColor, size: 22),
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => BookmarkPage()),
+          //           );
+          //         },
+          //       ),
+          //       Positioned(
+          //         right: 5,
+          //         top: 5,
+          //         child: Container(
+          //           padding: EdgeInsets.all(2),
+          //           decoration: BoxDecoration(
+          //             color: Colors.red,
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           constraints: BoxConstraints(
+          //             minWidth: 14,
+          //             minHeight: 14,
+          //           ),
+          //           child: Text(
+          //             '3', // Placeholder for bookmark count
+          //             style: TextStyle(
+          //               color: kWhite,
+          //               fontSize: 10,
+          //             ),
+          //             textAlign: TextAlign.center,
+          //           ),
+          //         ),
+          //       )
+          //     ],
+          //   ),
+          //   SizedBox(width: 16),
+          // ],
         ),
         body: asyncNewsModel.when(
           data: (news) {
@@ -226,15 +226,15 @@ class NewsCard extends ConsumerWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: IconButton(
-                icon: Icon(Icons.more_vert, color: Colors.grey),
-                onPressed: () {
-                  // More options action
-                },
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(right: 8.0),
+            //   child: IconButton(
+            //     icon: Icon(Icons.more_vert, color: Colors.grey),
+            //     onPressed: () {
+            //       // More options action
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

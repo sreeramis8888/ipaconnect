@@ -49,20 +49,20 @@ class NewsModelDetailView extends ConsumerWidget {
               offset: Offset(4, 0),
             ),
           ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.bookmark_border,
-                color: kWhite,
-              ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BookmarkPage()),
-                );
-              },
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: Icon(
+          //       Icons.bookmark_border,
+          //       color: kWhite,
+          //     ),
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => BookmarkPage()),
+          //       );
+          //     },
+          //   ),
+          // ],
         ),
         body: NewsModelDetailContentView(news: news));
   }

@@ -205,79 +205,80 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void proceedWithAppFlow() {
-    // checkAppVersion(context, ref).then((_) {
-    //   if (!isAppUpdateRequired && !hasVersionCheckError) {
-    //     initialize();
-    //   }
-    // });
-    initialize();
+    checkAppVersion(context, ref).then((_) {
+      if (!isAppUpdateRequired && !hasVersionCheckError) {
+        initialize();
+      }
+    });
+    // Remove the unconditional initialize() call below to prevent navigation on version check error
+    // initialize();
   }
 
-  // Future<void> checkAppVersion(BuildContext context, WidgetRef ref) async {
-  //   try {
-  //     log('Checking app version...');
-  //     final apiService = ref.read(apiServiceProvider);
-  //     final response = await apiService.get('/settings');
-  //     log(response.data.toString());
-  //     if (response.success && response.data != null) {
-  //       final appVersionResponse = AppVersionResponse.fromJson(response.data!);
-  //       await checkForUpdate(appVersionResponse, context);
-  //     } else {
-  //       log('Failed to fetch app version: ${response.statusCode}');
-  //       log('Failed to fetch app version: $errorMessage');
-  //       setState(() {
-  //         hasVersionCheckError = true;
-  //         errorMessage = 'Server is down. Please try again later.';
-  //       });
-  //     }
-  //   } catch (e) {
-  //     log('Error checking app version: $e');
-  //     setState(() {
-  //       hasVersionCheckError = true;
-  //       errorMessage =
-  //           'An error occurred while checking for updates. Please try again.';
-  //     });
-  //   }
-  // }
+  Future<void> checkAppVersion(BuildContext context, WidgetRef ref) async {
+    try {
+      log('Checking app version...');
+      final apiService = ref.read(apiServiceProvider);
+      final response = await apiService.get('/settings');
+      log(response.data.toString());
+      if (response.success && response.data != null) {
+        final appVersionResponse = AppVersionResponse.fromJson(response.data!);
+        await checkForUpdate(appVersionResponse, context);
+      } else {
+        log('Failed to fetch app version: ${response.statusCode}');
+        log('Failed to fetch app version: $errorMessage');
+        setState(() {
+          hasVersionCheckError = true;
+          errorMessage = 'Server is down. Please try again later.';
+        });
+      }
+    } catch (e) {
+      log('Error checking app version: $e');
+      setState(() {
+        hasVersionCheckError = true;
+        errorMessage =
+            'An error occurred while checking for updates. Please try again.';
+      });
+    }
+  }
 
-  // Future<void> checkForUpdate(AppVersionResponse response, context) async {
-  //   PackageInfo packageInfo = await PackageManager.getPackageInfo();
-  //   final currentVersion = int.parse(packageInfo.version.split('.').join());
-  //   log('Current version: $currentVersion');
-  //   log('New version: ${response.version}');
+  Future<void> checkForUpdate(AppVersionResponse response, context) async {
+    PackageInfo packageInfo = await PackageManager.getPackageInfo();
+    final currentVersion = int.parse(packageInfo.version.split('.').join());
+    log('Current version: $currentVersion');
+    log('New version: ${response.version}');
 
-  //   if (currentVersion < response.version && response.force) {
-  //     isAppUpdateRequired = true;
-  //     showUpdateDialog(response, context);
-  //   }
-  // }
+    if (currentVersion < response.version && response.force) {
+      isAppUpdateRequired = true;
+      showUpdateDialog(response, context);
+    }
+  }
 
-  // void showUpdateDialog(AppVersionResponse response, BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (context) => AlertDialog(
-  //       title: Text('Update Required'),
-  //       content: Text(response.updateMessage),
-  //       actions: [
-  //         TextButton(
-  //           onPressed: () {
-  //             launchURL(response.applink);
-  //           },
-  //           child: Text('Update Now'),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  void showUpdateDialog(AppVersionResponse response, BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text('Update Required'),
+        content: Text(response.updateMessage),
+        actions: [
+          TextButton(
+            onPressed: () {
+              launchURL(response.applink);
+            },
+            child: Text('Update Now'),
+          ),
+        ],
+      ),
+    );
+  }
 
-  // Future<void> retryVersionCheck() async {
-  //   setState(() {
-  //     hasVersionCheckError = false;
-  //     errorMessage = '';
-  //   });
-  //   proceedWithAppFlow();
-  // }
+  Future<void> retryVersionCheck() async {
+    setState(() {
+      hasVersionCheckError = false;
+      errorMessage = '';
+    });
+    proceedWithAppFlow();
+  }
 
   Future<void> initialize() async {
     final _deepLinkService = ref.watch(deepLinkServiceProvider);
@@ -303,9 +304,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             navigationService.pushNamedReplacement('MySubscriptionPage');
             return;
           }
-         if (user != null && user.status == 'pending') {
-          NavigationService().pushNamedReplacement('ApprovalWaitingPage'); return;
-        } 
+          if (user != null && user.status == 'pending') {
+            NavigationService().pushNamedReplacement('ApprovalWaitingPage');
+            return;
+          }
 
           final pendingDeepLink = _deepLinkService.pendingDeepLink;
           if (pendingDeepLink != null) {
@@ -382,8 +384,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ),
                     ),
                     SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: null, // retryVersionCheck,
+                    TextButton(
+                      onPressed: retryVersionCheck, // enable retry button
                       child: Text('Retry'),
                     ),
                   ],
