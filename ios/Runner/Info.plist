@@ -20,10 +20,87 @@
     <string>$(FLUTTER_BUILD_NAME)</string>
     <key>CFBundleSignature</key>
     <string>????</string>
+    <key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app-1-884977714478-ios-33d33f30e57c3f8beba6bf</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.skybertech.itcc</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>itcc</string>
+			</array>
+		</dict>
+	</array>
     <key>CFBundleVersion</key>
     <string>$(FLUTTER_BUILD_NUMBER)</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to scan QR codes to mark attendance of users</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app requires contacts access to function properly.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need permission to save photos to your library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library to select images for your profile picture, awards, certificates, posts and many more.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+ 	<key>NSExceptionDomains</key>
+  	<dict>
+    <key>youtube.com</key>
+    <dict>
+      <key>NSExceptionAllowsInsecureHTTPLoads</key>
+      <true/>
+      <key>NSExceptionMinimumTLSVersion</key>
+      <string>TLSv1.0</string>
+      <key>NSIncludesSubdomains</key>
+      <true/>
+    </dict>
+    <key>googlevideo.com</key>
+    <dict>
+      <key>NSExceptionAllowsInsecureHTTPLoads</key>
+      <true/>
+      <key>NSExceptionMinimumTLSVersion</key>
+      <string>TLSv1.0</string>
+      <key>NSIncludesSubdomains</key>
+      <true/>
+    </dict>
+    <key>ytimg.com</key>
+    <dict>
+      <key>NSExceptionAllowsInsecureHTTPLoads</key>
+      <true/>
+      <key>NSExceptionMinimumTLSVersion</key>
+      <string>TLSv1.0</string>
+      <key>NSIncludesSubdomains</key>
+      <true/>
+    </dict>
+  	</dict>
+	</dict>
+
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
     <key>UIMainStoryboardFile</key>

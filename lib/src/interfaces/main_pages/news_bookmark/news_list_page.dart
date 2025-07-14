@@ -20,7 +20,7 @@ class NewsListPage extends ConsumerWidget {
 
     return Scaffold(
         backgroundColor: kBackgroundColor,
-        appBar: AppBar(
+        appBar: AppBar(automaticallyImplyLeading: false,
           backgroundColor: kBackgroundColor,
           scrolledUnderElevation: 0,
           titleSpacing: 0,
