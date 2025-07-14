@@ -243,7 +243,7 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
               ),
             );
           } else {
-            snackbarService.showSnackBar('Failed verificationid null');
+            snackbarService.showSnackBar('Failed');
           }
         }
       }
