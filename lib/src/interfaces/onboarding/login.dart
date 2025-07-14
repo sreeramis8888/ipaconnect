@@ -243,13 +243,13 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
               ),
             );
           } else {
-            snackbarService.showSnackBar('Failed');
+            snackbarService.showSnackBar('Failed verificationid null');
           }
         }
       }
     } catch (e) {
       log(e.toString());
-      snackbarService.showSnackBar('Failed');
+      snackbarService.showSnackBar('Failed $e');
     } finally {
       ref.read(loadingProvider.notifier).stopLoading();
     }
@@ -336,7 +336,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider);
-
+    NavigationService navigationService = NavigationService();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: kBackgroundColor,
@@ -351,7 +351,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
             Padding(
               padding: const EdgeInsets.all(8),
               child: InkWell(
-                onTap: () => Navigator.pop(context),
+                onTap: () => navigationService.pushNamed('PhoneNumber'),
                 child: CustomRoundButton(
                   offset: Offset(4, 0),
                   iconPath: 'assets/svg/icons/arrow_back_ios.svg',

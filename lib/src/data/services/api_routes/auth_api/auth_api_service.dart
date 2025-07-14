@@ -29,6 +29,7 @@ class AuthApiService {
       verificationCompleted: (PhoneAuthCredential credential) async {},
       verificationFailed: (FirebaseAuthException e) {
         print(e.message.toString());
+
         verificationIdcompleter.complete('');
         resendTokencompleter.complete('');
       },
@@ -98,7 +99,7 @@ class AuthApiService {
         return {};
       }
     } catch (e) {
-      snackbarService.showSnackBar('Wrong OTP');
+      // snackbarService.showSnackBar('Wrong OTP');
       print("Failed to sign in:  e.toString()");
       return {};
     }

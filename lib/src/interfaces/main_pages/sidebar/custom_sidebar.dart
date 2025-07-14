@@ -7,6 +7,7 @@ import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 
 class CustomAdvancedDrawerMenu extends StatelessWidget {
   final UserModel user;
@@ -186,13 +187,28 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                   ),
                   label: 'Delete Account',
                   onTap: () async {
-                    final userDataApiService =
-                        ref.watch(userDataApiServiceProvider);
-                    final response =
-                        await userDataApiService.deleteUser(user.id ?? '');
-                    if (response.success) {
-                      await SecureStorage.deleteAll();
-                      navigationService.pushNamedAndRemoveUntil('PhoneNumber');
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => ConfirmationDialog(
+                        title: 'Delete Account',
+                        content:
+                            'Are you sure you want to delete this account and associated data?',
+                        confirmText: 'Delete',
+                        cancelText: 'Cancel',
+                        icon: const Icon(Icons.delete_outline,
+                            color: Colors.red, size: 24),
+                      ),
+                    );
+                    if (confirmed ?? false) {
+                      final userDataApiService =
+                          ref.watch(userDataApiServiceProvider);
+                      final response =
+                          await userDataApiService.deleteUser(user.id ?? '');
+                      if (response.success) {
+                        await SecureStorage.deleteAll();
+                        navigationService
+                            .pushNamedAndRemoveUntil('PhoneNumber');
+                      }
                     }
                   },
                 );
