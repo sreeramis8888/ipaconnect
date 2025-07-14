@@ -11,7 +11,9 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
       user: json['user'] == null
           ? null
           : UserModel.fromJson(json['user'] as Map<String, dynamic>),
-      store: json['store'] as String?,
+      store: json['store'] == null
+          ? null
+          : StoreModel.fromJson(json['store'] as Map<String, dynamic>),
       amount: (json['amount'] as num?)?.toDouble(),
       quantity: (json['quantity'] as num?)?.toInt(),
       currency: json['currency'] as String?,
@@ -34,7 +36,7 @@ Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
     <String, dynamic>{
       '_id': instance.id,
       'user': instance.user?.toJson(),
-      'store': instance.store,
+      'store': instance.store?.toJson(),
       'amount': instance.amount,
       'quantity': instance.quantity,
       'currency': instance.currency,

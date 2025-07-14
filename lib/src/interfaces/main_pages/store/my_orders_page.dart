@@ -45,9 +45,8 @@ class MyOrdersPage extends ConsumerWidget {
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
                   final order = orders[index];
-                  final productName =
-                      (order as dynamic).store_name ?? 'Product';
-                  final productImage = (order as dynamic).store_image;
+                  final product = order.store;
+                  final productImage = order.store?.image ?? '';
                   final price = order.amount ?? 0;
                   final quantity = order.quantity ?? 0;
                   return Container(
@@ -85,18 +84,18 @@ class MyOrdersPage extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(productName, style: kBodyTitleSB),
+                                Text(product?.name ?? '', style: kSmallTitleR),
                                 const SizedBox(height: 8),
                                 Text('₹${price.toStringAsFixed(0)}',
-                                    style: kLargeTitleSB),
+                                    style: kSmallTitleB),
                               ],
                             ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 16),
-                          child:
-                              Text('Quantity: $quantity', style: kBodyTitleR),
+                          child: Text('Quantity: $quantity',
+                              style: kSmallerTitleR),
                         ),
                       ],
                     ),

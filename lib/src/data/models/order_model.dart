@@ -1,3 +1,4 @@
+import 'package:ipaconnect/src/data/models/store_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -9,7 +10,7 @@ class OrderModel {
   final String? id;
 
   final UserModel? user;
-  final String? store;
+  final StoreModel? store;
   final double? amount;
   final int? quantity;
   final String? currency;
@@ -51,7 +52,7 @@ class OrderModel {
   OrderModel copyWith({
     String? id,
     UserModel? user,
-    String? store,
+    StoreModel? store,
     double? amount,
     int? quantity,
     String? currency,
