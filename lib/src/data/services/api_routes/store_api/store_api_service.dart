@@ -151,7 +151,6 @@ class StoreApiService {
     return false;
   }
 
-  // Order Operations
   Future<List<OrderModel>> getOrders({int pageNo = 1, int limit = 10}) async {
     _log('GET /store/orders?page_no=$pageNo&limit=$limit');
     try {
@@ -190,7 +189,8 @@ class StoreApiService {
       log('Address: [${shippingAddressMap}');
       _log(
           'Response:  [${response.success}, message:  [${response.message},data:   [${response.data}');
-      return response.data; // Return the data field (should contain payment_intent)
+      return response
+          .data; // Return the data field (should contain payment_intent)
     } catch (e, st) {
       _log('Error: $e\n$st');
     }

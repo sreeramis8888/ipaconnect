@@ -4,6 +4,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/order_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/store_api/store_api_service.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class MyOrdersPage extends ConsumerWidget {
@@ -17,25 +18,27 @@ class MyOrdersPage extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: kBackgroundColor,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: kWhite),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('My Orders', style: kHeadTitleSB),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline, color: kWhite),
-            onPressed: () {},
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
           ),
-        ],
+        ),
+        title: Text('My Orders',
+            style:
+                kBodyTitleR.copyWith(fontSize: 16, color: kSecondaryTextColor)),
+        centerTitle: false,
       ),
       body: ordersAsync.when(
         loading: () => const Center(child: LoadingAnimation()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (orders) => orders.isEmpty
             ? Center(
-                child: Text('No orders found.', style: kLargeTitleSB),
+                child: Text('No orders found.', style: kBodyTitleR),
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(16),

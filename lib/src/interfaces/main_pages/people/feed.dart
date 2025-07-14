@@ -20,11 +20,14 @@ import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.d
 import 'package:ipaconnect/src/interfaces/components/dropdown/block_report_dropdown.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_feed_modalSheet.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/feed_enquiry.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/feed_shimmer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:ipaconnect/src/data/services/image_upload.dart';
 import '../../components/custom_widgets/expandable_text.dart';
+import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart';
 
 class FeedView extends ConsumerStatefulWidget {
   const FeedView({super.key});
@@ -721,7 +724,43 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                 // Share button with count
                 if (widget.business.user?.id != id)
                   GestureDetector(
-                    onTap: () => widget.onShare(),
+                    onTap: () async {
+                      final author = widget.author;
+                      final feed = widget.business;
+
+                      await showFeedEnquiryModal(
+                        context: context,
+                        feed: feed,
+                        author: author,
+                        onSend: () async {
+                          final chatApiService =
+                              ref.read(chatApiServiceProvider);
+                          final conversation = await chatApiService
+                              .create1to1Conversation(author.id ?? '');
+                          if (conversation == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      'Failed to start chat with  ${author.name ?? 'user'}')),
+                            );
+                            return;
+                          }
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                conversationId: conversation.id ?? '',
+                                chatTitle: author.name ?? '',
+                                userId: author.id ?? '',
+                                initialFeedInquiry: {
+                                  'feed': feed,
+                                  'author': author,
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                     child: Row(
                       children: [
                         SvgPicture.asset(

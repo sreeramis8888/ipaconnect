@@ -266,20 +266,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             icon: SvgPicture.asset(
                                                 color: kWhite,
                                                 'assets/svg/icons/event_icon.svg')),
-                                        if (widget.user.phone !=
-                                            '+919645398555')
-                                          CustomIconContainer(
-                                              label: 'Store',
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'StorePage');
-                                              },
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/card_icon.svg')),
+                                        // if (widget.user.phone !=
+                                        //     '+919645398555')
+                                        CustomIconContainer(
+                                            label: 'Store',
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  arguments:
+                                                      widget.user.countryCode,
+                                                  context,
+                                                  'StorePage');
+                                            },
+                                            icon: SvgPicture.asset(
+                                                color: kWhite,
+                                                'assets/svg/icons/card_icon.svg')),
                                         CustomIconContainer(
                                             onTap: () {
                                               ref
@@ -718,7 +718,7 @@ Widget _buildBanners(
   return Container(
     width: MediaQuery.sizeOf(context).width / 1.15,
     child: AspectRatio(
-      aspectRatio: 16 / 9,
+      aspectRatio: 20 / 11,
       child: Stack(
         clipBehavior: Clip.none,
         children: [

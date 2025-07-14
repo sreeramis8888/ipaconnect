@@ -67,7 +67,6 @@ class AnalyticsApiService {
     }
   }
 
-  /// Update Analytics Status
   Future<void> updateAnalyticStatus({
     required String analyticId,
     required String? action,
@@ -75,7 +74,7 @@ class AnalyticsApiService {
     final endpoint = '/activity/$analyticId';
     final body = {'status': action};
     try {
-      final response = await apiService.post(endpoint, body);
+      final response = await apiService.patch(endpoint, body);
       if (response.success &&
           (response.statusCode == 200 || response.statusCode == 201)) {
         log('$action successfully applied');

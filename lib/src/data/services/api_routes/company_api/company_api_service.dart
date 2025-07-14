@@ -57,18 +57,22 @@ class CompanyApiService {
     }
   }
 
-  Future<bool> createCompany(Map<String, dynamic> data) async {
-    SnackbarService snackbarService = SnackbarService();
-    final response = await _apiService.post('/company', data);
-    log(response.message.toString());
-    if (response.success && response.data != null) {
-      snackbarService.showSnackBar('Company Created Successfully');
-      return true;
-    } else {
-      snackbarService.showSnackBar('Failed to Create Company');
-      return false;
-    }
+Future<bool> createCompany(Map<String, dynamic> data) async {
+  SnackbarService snackbarService = SnackbarService();
+  data.removeWhere((key, value) => value == null);
+
+  final response = await _apiService.post('/company', data);
+  log(response.message.toString());
+
+  if (response.success && response.data != null) {
+    snackbarService.showSnackBar('Company Created Successfully');
+    return true;
+  } else {
+    snackbarService.showSnackBar('Failed to Create Company');
+    return false;
   }
+}
+
 
   Future<bool> updateCompany(String id, Map<String, dynamic> data) async {
     SnackbarService snackbarService = SnackbarService();

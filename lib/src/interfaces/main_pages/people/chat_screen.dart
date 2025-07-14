@@ -15,6 +15,7 @@ class ChatScreen extends ConsumerStatefulWidget {
   final String chatTitle;
   final String userId;
   final Map<String, dynamic>? initialProductInquiry;
+  final Map<String, dynamic>? initialFeedInquiry;
 
   const ChatScreen({
     Key? key,
@@ -22,6 +23,7 @@ class ChatScreen extends ConsumerStatefulWidget {
     required this.chatTitle,
     required this.userId,
     this.initialProductInquiry,
+    this.initialFeedInquiry,
   }) : super(key: key);
 
   @override
@@ -34,6 +36,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
+
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   ChatApiService get _chatApiService => ref.watch(chatApiServiceProvider);
   late AnimationController _typingAnimationController;
@@ -48,6 +52,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   final int _pageSize = 40;
 
   bool _ignoreScroll = false;
+  bool _initialMessagesInserted = false;
 
   @override
   void initState() {
@@ -74,6 +79,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initialProductInquiry != null) {
         _sendProductInquiry();
+      } else if (widget.initialFeedInquiry != null) {
+        _sendFeedInquiry();
       }
     });
   }
@@ -100,7 +107,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     final newMsg = MessageModel.fromJson(msg);
     if (newMsg.sender != id) {
       if (!mounted) return;
-      setState(() => _messages.insert(0, newMsg));
+      setState(() {
+        _messages.insert(0, newMsg);
+        _listKey.currentState
+            ?.insertItem(0, duration: const Duration(milliseconds: 400));
+      });
     }
     _scrollToBottom();
 
@@ -235,19 +246,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       widget.conversationId,
       page: 1,
       limit: _pageSize,
-      onHistory: (messages, totalCount, error) {
+      onHistory: (messages, totalCount, error) async {
         if (!mounted) return;
         final newMessages = messages
             .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
             .toList();
 
         setState(() {
-          _messages = newMessages;
+          _messages.clear();
           _allLoaded = newMessages.length < _pageSize;
           _currentPage = 1;
           _isLoadingMore = false;
         });
-
+        // Insert initial messages with animation
+        if (_listKey.currentState != null) {
+          int insertIndex = 0;
+          for (final msg in newMessages) {
+            _messages.insert(insertIndex, msg);
+            _listKey.currentState!.insertItem(insertIndex,
+                duration: Duration(milliseconds: 200 + insertIndex * 30));
+            insertIndex++;
+            await Future.delayed(const Duration(milliseconds: 20));
+          }
+        } else {
+          setState(() {
+            _messages = newMessages;
+          });
+        }
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToBottom();
           if (_isAtBottom()) {
@@ -273,7 +298,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       widget.conversationId,
       page: _currentPage + 1,
       limit: _pageSize,
-      onHistory: (messages, totalCount, error) {
+      onHistory: (messages, totalCount, error) async {
         if (!mounted) return;
         final newMessages = messages
             .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
@@ -281,8 +306,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
         print('Received  [newMessages.length] new messages');
 
+        if (_listKey.currentState != null) {
+          int insertIndex = _messages.length;
+          for (final msg in newMessages) {
+            _messages.add(msg);
+            _listKey.currentState!.insertItem(insertIndex,
+                duration: Duration(milliseconds: 200 + (insertIndex) * 30));
+            insertIndex++;
+            await Future.delayed(const Duration(milliseconds: 20));
+          }
+        } else {
+          setState(() {
+            _messages.addAll(newMessages);
+          });
+        }
         setState(() {
-          _messages.addAll(newMessages);
           _allLoaded = newMessages.length < _pageSize;
           if (newMessages.isNotEmpty) {
             _currentPage++;
@@ -363,12 +401,73 @@ I'm interested in this product. Could you provide more information?
       onAck: (error, message) {
         if (!mounted) return;
         if (error == null && message != null) {
-          setState(() => _messages.insert(0, MessageModel.fromJson(message)));
+          setState(() {
+            _messages.insert(0, MessageModel.fromJson(message));
+            _listKey.currentState
+                ?.insertItem(0, duration: const Duration(milliseconds: 400));
+          });
           _scrollToBottom();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Failed to send product inquiry: $error"),
+              backgroundColor: kRed,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  void _sendFeedInquiry() {
+    final feedInquiry = widget.initialFeedInquiry!;
+    final feed = feedInquiry['feed'];
+    final author = feedInquiry['author'];
+
+    final inquiryMessage = '''
+📝 Feed Enquiry
+
+Feed Content:
+${feed.content}
+
+Author: ${author.name ?? ''}
+Posted: ${feed.createdAt != null ? feed.createdAt.toString() : ''}
+
+I'm interested in this feed. Could you provide more information?
+''';
+
+    final feedImageUrl =
+        feed.media != null && feed.media.isNotEmpty ? feed.media : null;
+    final attachments = feedImageUrl != null
+        ? <Map<String, dynamic>>[
+            {
+              'url': feedImageUrl,
+              'type': 'image',
+            }
+          ]
+        : <Map<String, dynamic>>[];
+
+    _socketService.sendMessage(
+      widget.conversationId,
+      inquiryMessage,
+      attachments: attachments,
+      onAck: (error, message) {
+        if (!mounted) return;
+        if (error == null && message != null) {
+          setState(() {
+            _messages.insert(0, MessageModel.fromJson(message));
+            _listKey.currentState
+                ?.insertItem(0, duration: const Duration(milliseconds: 400));
+          });
+          _scrollToBottom();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Failed to send feed enquiry: $error"),
               backgroundColor: kRed,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -391,7 +490,11 @@ I'm interested in this product. Could you provide more information?
       onAck: (error, message) {
         if (!mounted) return;
         if (error == null && message != null) {
-          setState(() => _messages.insert(0, MessageModel.fromJson(message)));
+          setState(() {
+            _messages.insert(0, MessageModel.fromJson(message));
+            _listKey.currentState
+                ?.insertItem(0, duration: const Duration(milliseconds: 400));
+          });
           _scrollToBottom();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -431,92 +534,95 @@ I'm interested in this product. Could you provide more information?
       return _buildProductInquiryMessage(msg, isMe);
     }
 
-    return Container(
-      margin: EdgeInsets.only(
-        left: isMe ? 50 : 16,
-        right: isMe ? 16 : 50,
-        bottom: 4,
-        top: 4,
-      ),
-      child: Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: isMe
-                  ? LinearGradient(
-                      colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.8)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                  : null,
-              color: isMe ? null : kCardBackgroundColor,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(20),
-                topRight: const Radius.circular(20),
-                bottomLeft: Radius.circular(isMe ? 20 : 4),
-                bottomRight: Radius.circular(isMe ? 4 : 20),
-              ),
-              border: Border.all(
-                color:
-                    isMe ? Colors.transparent : kStrokeColor.withOpacity(0.3),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: kBlack.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(
+          left: isMe ? 50 : 16,
+          right: isMe ? 16 : 50,
+          bottom: 4,
+          top: 4,
+        ),
+        child: Column(
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                gradient: isMe
+                    ? LinearGradient(
+                        colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.8)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : null,
+                color: isMe ? null : kCardBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: Radius.circular(isMe ? 20 : 4),
+                  bottomRight: Radius.circular(isMe ? 4 : 20),
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  msg.message ?? '',
-                  style: TextStyle(
-                    color: isMe ? kWhite : kTextColor,
-                    fontSize: 16,
-                    height: 1.4,
+                border: Border.all(
+                  color:
+                      isMe ? Colors.transparent : kStrokeColor.withOpacity(0.3),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: kBlack.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-                // Show attachments if any
-                if (msg.attachments != null && msg.attachments!.isNotEmpty)
-                  ...msg.attachments!
-                      .map((attachment) => _buildAttachment(attachment, isMe))
-                      .toList(),
-              ],
-            ),
-          ),
-          if (isMe) ...[
-            const SizedBox(height: 4),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _formatTime(msg.createdAt),
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: kSecondaryTextColor.withOpacity(0.7),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    msg.message ?? '',
+                    style: TextStyle(
+                      color: isMe ? kWhite : kTextColor,
+                      fontSize: 16,
+                      height: 1.4,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
-                _buildStatus(msg),
-              ],
-            ),
-          ] else ...[
-            const SizedBox(height: 4),
-            Text(
-              _formatTime(msg.createdAt),
-              style: TextStyle(
-                fontSize: 11,
-                color: kSecondaryTextColor.withOpacity(0.7),
+                  // Show attachments if any
+                  if (msg.attachments != null && msg.attachments!.isNotEmpty)
+                    ...msg.attachments!
+                        .map((attachment) => _buildAttachment(attachment, isMe))
+                        .toList(),
+                ],
               ),
             ),
+            if (isMe) ...[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _formatTime(msg.createdAt),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: kSecondaryTextColor.withOpacity(0.7),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  _buildStatus(msg),
+                ],
+              ),
+            ] else ...[
+              const SizedBox(height: 4),
+              Text(
+                _formatTime(msg.createdAt),
+                style: TextStyle(
+                  fontSize: 11,
+                  color: kSecondaryTextColor.withOpacity(0.7),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -790,6 +896,17 @@ I'm interested in this product. Could you provide more information?
     );
   }
 
+  // Helper to determine if a date header should be shown before a message
+  bool _shouldShowDateHeader(int index) {
+    if (index == _messages.length - 1) return true; // Last (oldest) message
+    final current = _messages[index].createdAt?.toLocal();
+    final next = _messages[index + 1].createdAt?.toLocal();
+    if (current == null || next == null) return false;
+    final currentDay = DateTime(current.year, current.month, current.day);
+    final nextDay = DateTime(next.year, next.month, next.day);
+    return currentDay != nextDay;
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -810,7 +927,7 @@ I'm interested in this product. Could you provide more information?
 
   @override
   Widget build(BuildContext context) {
-    final chatItems = _buildChatItems(_messages);
+    // final chatItems = _buildChatItems(_messages);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -960,22 +1077,26 @@ I'm interested in this product. Could you provide more information?
                 : null,
           ),
           Expanded(
-            child: ListView.builder(
+            child: AnimatedList(
+              key: _listKey,
               reverse: true,
               controller: _scrollController,
               padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: chatItems.length,
-              itemBuilder: (context, index) {
-                final item = chatItems[index];
-                if (item['type'] == 'header') {
-                  return _buildDateHeader(item['date']);
-                } else if (item['type'] == 'message') {
-                  final msg = item['msg'] as MessageModel;
-                  final isMe = msg.sender == id;
-                  return _buildMessageBubble(msg, isMe);
-                } else {
-                  return const SizedBox.shrink();
+              initialItemCount: _messages.length,
+              itemBuilder: (context, index, animation) {
+                final msg = _messages[index];
+                final isMe = msg.sender == id;
+                final List<Widget> children = [];
+                if (_shouldShowDateHeader(index)) {
+                  children
+                      .add(_buildDateHeader(msg.createdAt ?? DateTime.now()));
                 }
+                children.add(_buildAnimatedMessage(msg, isMe, animation));
+                return Column(
+                  crossAxisAlignment:
+                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  children: children,
+                );
               },
             ),
           ),
@@ -1051,6 +1172,19 @@ I'm interested in this product. Could you provide more information?
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAnimatedMessage(
+      MessageModel msg, bool isMe, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor:
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+      axisAlignment: 0.0,
+      child: FadeTransition(
+        opacity: animation,
+        child: _buildMessageBubble(msg, isMe),
       ),
     );
   }

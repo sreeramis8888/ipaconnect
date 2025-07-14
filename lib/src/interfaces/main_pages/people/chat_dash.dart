@@ -185,14 +185,23 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                         style: TextStyle(color: kSecondaryTextColor),
                       ),
                       trailing: const SizedBox.shrink(),
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
+                      onTap: () async {
+                        await Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ChatScreen(
                             conversationId: conversation.id ?? '',
                             chatTitle: user?.name ?? '',
                             userId: user?.id ?? '',
                           ),
                         ));
+                        // Re-fetch or re-subscribe to conversations after returning
+                        _socketService.subscribeConversations(onAck: (err) {
+                          if (err != null) {
+                            setState(() {
+                              _socketError = err;
+                              _socketLoading = false;
+                            });
+                          }
+                        });
                       },
                     ),
                   );

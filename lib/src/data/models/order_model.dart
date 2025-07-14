@@ -1,3 +1,4 @@
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'order_model.g.dart';
@@ -7,23 +8,23 @@ class OrderModel {
   @JsonKey(name: '_id')
   final String? id;
 
-  final String? user;
+  final UserModel? user;
   final String? store;
   final double? amount;
   final int? quantity;
   final String? currency;
-  
+
   @JsonKey(name: 'shipping_address')
   final ShippingAddress? shippingAddress;
-  
+
   @JsonKey(name: 'payment_id')
   final String? paymentId;
   final String? receipt;
   final String? status;
-  
+
   @JsonKey(name: 'createdAt')
   final DateTime? createdAt;
-  
+
   @JsonKey(name: 'updatedAt')
   final DateTime? updatedAt;
 
@@ -49,7 +50,7 @@ class OrderModel {
 
   OrderModel copyWith({
     String? id,
-    String? user,
+    UserModel? user,
     String? store,
     double? amount,
     int? quantity,
@@ -87,7 +88,7 @@ class ShippingAddress {
   final String? state;
   final String? country;
   final String? pincode;
-  
+
   @JsonKey(name: 'is_saved')
   final bool? isSaved;
 
@@ -128,4 +129,4 @@ class ShippingAddress {
       isSaved: isSaved ?? this.isSaved,
     );
   }
-} 
+}

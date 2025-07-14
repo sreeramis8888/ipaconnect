@@ -356,9 +356,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     child: Transform.scale(
                       scale: _scaleAnimation.value,
                       child: Container(
-                        child: SvgPicture.asset(
-                          'assets/svg/splash_logo.svg',
-                        ),
+                        width: 140,
+                        height: 140,
+                        child:
+                            SvgPicture.asset('assets/svg/icons/ipa_logo.svg'),
                       ),
                     ),
                   ),

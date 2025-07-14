@@ -1,4 +1,5 @@
-import 'dart:developer';
+import 'dart:developer' as dev;
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +15,247 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/painter/dot_line_painter.dart';
 import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
+
+// Add PaymentResultOverlay widget
+class PaymentResultOverlay extends StatefulWidget {
+  final bool isSuccess;
+  final VoidCallback onClose;
+  final String message;
+  const PaymentResultOverlay({
+    required this.isSuccess,
+    required this.onClose,
+    required this.message,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<PaymentResultOverlay> createState() => _PaymentResultOverlayState();
+}
+
+class _PaymentResultOverlayState extends State<PaymentResultOverlay>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _iconAnimation;
+  late Animation<double> _textAnimation;
+  late Animation<double> _confettiAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    );
+    _iconAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOutBack),
+    );
+    _textAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.5, 0.8, curve: Curves.easeIn),
+    );
+    _confettiAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withOpacity(0.3),
+      child: Stack(
+        children: [
+          // Gradient background
+          AnimatedOpacity(
+            opacity: 1,
+            duration: const Duration(milliseconds: 400),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: widget.isSuccess
+                      ? [
+                          kPrimaryColor.withOpacity(0.9),
+                          kGreen.withOpacity(0.7)
+                        ]
+                      : [
+                          kRed.withOpacity(0.9),
+                          Colors.redAccent.withOpacity(0.7)
+                        ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
+          ),
+          // Confetti for success
+          if (widget.isSuccess)
+            AnimatedBuilder(
+              animation: _confettiAnimation,
+              builder: (context, child) => CustomPaint(
+                painter: _ConfettiPainter(_confettiAnimation.value),
+                child: Container(),
+              ),
+            ),
+          // Centered content
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Animated check/cross
+                AnimatedBuilder(
+                  animation: _iconAnimation,
+                  builder: (context, child) => CustomPaint(
+                    size: const Size(100, 100),
+                    painter: widget.isSuccess
+                        ? _AnimatedCheckPainter(_iconAnimation.value)
+                        : _AnimatedCrossPainter(_iconAnimation.value),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                FadeTransition(
+                  opacity: _textAnimation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 0.3),
+                      end: Offset.zero,
+                    ).animate(_textAnimation),
+                    child: Text(
+                      widget.message,
+                      style: kLargeTitleSB.copyWith(
+                        color: Colors.white,
+                        shadows: [
+                          const Shadow(color: Colors.black26, blurRadius: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                FadeTransition(
+                  opacity: _textAnimation,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: widget.isSuccess ? kPrimaryColor : kRed,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 14,
+                      ),
+                      elevation: 6,
+                    ),
+                    onPressed: widget.onClose,
+                    child: Text(widget.isSuccess ? 'Continue' : 'Close',
+                        style: kBodyTitleB.copyWith(
+                          color: widget.isSuccess ? kPrimaryColor : kRed,
+                        )),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Animated checkmark painter
+class _AnimatedCheckPainter extends CustomPainter {
+  final double progress; // 0.0 to 1.0
+  _AnimatedCheckPainter(this.progress);
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = kGreen
+      ..strokeWidth = 8
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final path = Path();
+    path.moveTo(size.width * 0.2, size.height * 0.55);
+    path.lineTo(size.width * 0.45, size.height * 0.8);
+    path.lineTo(size.width * 0.8, size.height * 0.3);
+    final totalLength = 0.6 * size.width + 0.5 * size.width;
+    final drawLength = totalLength * progress;
+    final metrics = path.computeMetrics().first;
+    final extractPath = metrics.extractPath(0, drawLength);
+    canvas.drawPath(extractPath, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _AnimatedCheckPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
+
+// Animated cross painter
+class _AnimatedCrossPainter extends CustomPainter {
+  final double progress;
+  _AnimatedCrossPainter(this.progress);
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = kRed
+      ..strokeWidth = 8
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final p1 = Offset(size.width * 0.25, size.height * 0.25);
+    final p2 = Offset(size.width * 0.75, size.height * 0.75);
+    final p3 = Offset(size.width * 0.75, size.height * 0.25);
+    final p4 = Offset(size.width * 0.25, size.height * 0.75);
+    if (progress < 0.5) {
+      final partial = progress / 0.5;
+      canvas.drawLine(p1, Offset.lerp(p1, p2, partial)!, paint);
+    } else {
+      canvas.drawLine(p1, p2, paint);
+      final partial = (progress - 0.5) / 0.5;
+      canvas.drawLine(p3, Offset.lerp(p3, p4, partial)!, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _AnimatedCrossPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
+
+// Simple confetti painter for success
+class _ConfettiPainter extends CustomPainter {
+  final double progress;
+  _ConfettiPainter(this.progress);
+  final List<Color> colors = [
+    Colors.yellow,
+    Colors.pink,
+    Colors.blueAccent,
+    Colors.greenAccent,
+    Colors.orange,
+    Colors.purple,
+  ];
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rand = Random(42);
+    for (int i = 0; i < 30; i++) {
+      final color = colors[i % colors.length];
+      final x = rand.nextDouble() * size.width;
+      final y = rand.nextDouble() * size.height * progress;
+      final radius = 4.0 + rand.nextDouble() * 3.0;
+      final paint = Paint()..color = color.withOpacity(1 - (progress * 0.3));
+      canvas.drawCircle(Offset(x, y), radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ConfettiPainter oldDelegate) =>
+      oldDelegate.progress != progress;
+}
 
 class CheckoutPage extends ConsumerStatefulWidget {
   final String userCurrency;
@@ -47,10 +289,66 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
   String? _orderSuccess;
 
   String _cartId = '';
+  bool _showResultOverlay = false;
+  bool _paymentSuccess = false;
+  late AnimationController _resultAnimController;
+  late Animation<double> _fillAnimation;
+  late Animation<Offset> _positionAnimation;
+  late Animation<double> _iconScaleAnimation;
+  late Animation<double> _contentFadeAnimation;
+  late Animation<double> _contentScaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    _resultAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
+    _fillAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _resultAnimController, curve: Curves.easeOut),
+    );
+    _positionAnimation = Tween<Offset>(
+      begin: Offset(0, 0),
+      end: Offset(0, -2.5),
+    ).animate(
+      CurvedAnimation(
+        parent: _resultAnimController,
+        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut),
+      ),
+    );
+    _iconScaleAnimation = Tween<double>(begin: 1, end: 0.5).animate(
+      CurvedAnimation(
+        parent: _resultAnimController,
+        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut),
+      ),
+    );
+    _contentFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _resultAnimController,
+        curve: const Interval(0.8, 1.0, curve: Curves.easeIn),
+      ),
+    );
+    _contentScaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
+      CurvedAnimation(
+        parent: _resultAnimController,
+        curve: const Interval(0.8, 1.0, curve: Curves.elasticOut),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    _zipController.dispose();
+    _cityController.dispose();
+    _stateController.dispose(); // Dispose new controller
+    _countryController.dispose();
+    _resultAnimController.dispose();
+    super.dispose();
   }
 
   Widget _buildDeliveryStep(List<ShippingAddress> savedAddresses) {
@@ -307,6 +605,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
           if (_orderError != null)
             Center(
                 child: Text(_orderError!,
+                    textAlign: TextAlign.center,
                     style: kLargeTitleSB.copyWith(color: kRed))),
           SizedBox(
             height: 10,
@@ -390,25 +689,47 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
             style: kBodyTitleR.copyWith(color: kSecondaryTextColor)),
       ),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            const SizedBox(height: 16),
-            _buildStepper(),
-            const SizedBox(height: 24),
-            Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 400),
-                child: _buildStepContent(),
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: child,
+            Column(
+              children: [
+                const SizedBox(height: 16),
+                _buildStepper(),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    child: _buildStepContent(),
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildBottomButton(),
+                ),
+              ],
+            ),
+            if (_showResultOverlay)
+              Positioned.fill(
+                child: PaymentResultOverlay(
+                  isSuccess: _paymentSuccess,
+                  message: _paymentSuccess
+                      ? 'Payment Successful!'
+                      : 'Payment Failed',
+                  onClose: () {
+                    setState(() => _showResultOverlay = false);
+                    if (_paymentSuccess) {
+                      Navigator.of(context).pop();
+                      Future.delayed(const Duration(milliseconds: 300), () {
+                        Navigator.of(context).pushNamed('MyOrdersPage');
+                      });
+                    }
+                  },
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: _buildBottomButton(),
-            ),
           ],
         ),
       ),
@@ -468,6 +789,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
       _isPlacingOrder = true;
       _orderError = null;
       _orderSuccess = null;
+      _paymentSuccess = false;
+      _showResultOverlay = false;
     });
     final service = ref.read(storeApiServiceProvider);
     final shippingAddressMap = _selectedShippingAddress!.toJson();
@@ -518,57 +841,28 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
       setState(() {
         _isPlacingOrder = false;
         _orderSuccess = 'Order placed successfully!';
+        _paymentSuccess = true;
+        _showResultOverlay = true;
       });
-      // Show success animation and navigate
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          barrierDismissible: false,
-          builder: (context) => PaymentResultPage(
-            isSuccess: true,
-            onCompleted: () async {
-              // Go back to cart page, then to My Orders
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              await Future.delayed(const Duration(milliseconds: 300));
-              Navigator.of(context).pushNamed('MyOrdersPage');
-            },
-          ),
-        ),
-      );
+      _resultAnimController.forward(from: 0);
     } on StripeException catch (error) {
-      log(name: 'post order error:', error.toString());
+      dev.log(name: 'post order error:', error.toString());
       setState(() {
         _isPlacingOrder = false;
         _orderError = 'Payment cancelled or failed. Please try again.';
+        _paymentSuccess = false;
+        _showResultOverlay = true;
       });
-
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          barrierDismissible: false,
-          builder: (context) => PaymentResultPage(
-            isSuccess: false,
-            onCompleted: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-      );
+      _resultAnimController.forward(from: 0);
     } catch (error) {
-      log(error.toString(), name: 'STRIPE INIT ERROR');
+      dev.log(error.toString(), name: 'STRIPE INIT ERROR');
       setState(() {
         _isPlacingOrder = false;
         _orderError = 'An error occurred. Please try again.';
+        _paymentSuccess = false;
+        _showResultOverlay = true;
       });
-      // Show cancelled animation
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          barrierDismissible: false,
-          builder: (context) => PaymentResultPage(
-            isSuccess: false,
-            onCompleted: () => Navigator.of(context).pop(),
-          ),
-        ),
-      );
+      _resultAnimController.forward(from: 0);
     }
   }
 
@@ -693,214 +987,4 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
       ],
     );
   }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    _zipController.dispose();
-    _cityController.dispose();
-    _stateController.dispose(); // Dispose new controller
-    _countryController.dispose();
-    super.dispose();
-  }
-}
-
-class PaymentResultPage extends StatefulWidget {
-  final bool isSuccess;
-  final VoidCallback onCompleted;
-  const PaymentResultPage(
-      {required this.isSuccess, required this.onCompleted, Key? key})
-      : super(key: key);
-
-  @override
-  State<PaymentResultPage> createState() => _PaymentResultPageState();
-}
-
-class _PaymentResultPageState extends State<PaymentResultPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fillAnimation;
-  late Animation<Offset> _positionAnimation;
-  late Animation<double> _iconScaleAnimation;
-  late Animation<double> _contentFadeAnimation;
-  late Animation<double> _contentScaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    );
-    _fillAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
-    _positionAnimation = Tween<Offset>(
-      begin: Offset(0, 0),
-      end: Offset(0, -2.5),
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut),
-      ),
-    );
-    _iconScaleAnimation = Tween<double>(begin: 1, end: 0.5).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.4, 0.8, curve: Curves.easeInOut),
-      ),
-    );
-    _contentFadeAnimation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.8, 1.0, curve: Curves.easeIn),
-      ),
-    );
-    _contentScaleAnimation = Tween<double>(begin: 0.8, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.8, 1.0, curve: Curves.elasticOut),
-      ),
-    );
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Stack(
-            children: [
-              // Background fill animation
-              Container(
-                color: (widget.isSuccess ? kPrimaryColor : kRed)
-                    .withOpacity(_fillAnimation.value * 0.7),
-                child: CustomPaint(
-                  painter: _FillPainter(
-                    progress: _fillAnimation.value,
-                    color: widget.isSuccess ? kPrimaryColor : kRed,
-                  ),
-                  size: MediaQuery.of(context).size,
-                ),
-              ),
-              // Icon animation
-              Center(
-                child: SlideTransition(
-                  position: _positionAnimation,
-                  child: ScaleTransition(
-                    scale: _iconScaleAnimation,
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        widget.isSuccess ? Icons.check : Icons.close,
-                        size: 80,
-                        color: widget.isSuccess ? kPrimaryColor : kRed,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // Center container with text and button
-              FadeTransition(
-                opacity: _contentFadeAnimation,
-                child: ScaleTransition(
-                  scale: _contentScaleAnimation,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              widget.isSuccess
-                                  ? Icons.check_circle
-                                  : Icons.cancel,
-                              color: widget.isSuccess ? kPrimaryColor : kRed,
-                              size: 60,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              widget.isSuccess
-                                  ? 'Payment Successful!'
-                                  : 'Payment Cancelled',
-                              style: kLargeTitleSB.copyWith(
-                                  color:
-                                      widget.isSuccess ? kPrimaryColor : kRed),
-                            ),
-                            const SizedBox(height: 24),
-                            customButton(
-                              label: 'Done',
-                              onPressed: widget.onCompleted,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _FillPainter extends CustomPainter {
-  final double progress;
-  final Color color;
-  _FillPainter({required this.progress, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..color = color;
-    final double radius = size.shortestSide * progress * 2;
-    canvas.drawCircle(
-      size.center(Offset.zero),
-      radius,
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

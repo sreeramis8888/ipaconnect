@@ -71,7 +71,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      'Last Updated: April 19, 2025',
+                      'Last Updated: July 20, 2025',
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: kSecondaryTextColor,

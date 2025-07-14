@@ -92,14 +92,14 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
             //   label: 'My Submissions',
             //   onTap: () => navigationService.pushNamed('MyProducts'),
             // ),
-            // _menuItem(
-            //   icon: SvgPicture.asset(
-            //     'assets/svg/icons/menu_icons/my_orders.svg',
-            //     height: 24,
-            //   ),
-            //   label: 'My Submissions',
-            //   onTap: () => navigationService.pushNamed('MyOrdersPage'),
-            // ),
+            _menuItem(
+              icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/my_orders.svg',
+                height: 24,
+              ),
+              label: 'My Orders',
+              onTap: () => navigationService.pushNamed('MyOrdersPage'),
+            ),
             // _menuItem(
             //   icon: SvgPicture.asset(
             //     'assets/svg/icons/menu_icons/my_reviews.svg',
