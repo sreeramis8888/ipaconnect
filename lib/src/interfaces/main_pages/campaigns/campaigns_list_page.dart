@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/campaign_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/campain_api/campaign_api.dart';
 import 'package:ipaconnect/src/data/notifiers/campaigns_notifier.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaigns/campaign_detail_page.dart';
@@ -54,14 +55,22 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
     final isLoading = notifier.isLoading;
     final isFirstLoad = notifier.isFirstLoad;
     return Scaffold(
-      backgroundColor: kWhite,
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        backgroundColor: kWhite,
+        backgroundColor: kBackgroundColor,
         centerTitle: true,
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back_ios)),
-        title:  Text('Campaigns', style: kBodyTitleM),
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
+        ),
+        title: Text('Campaigns',
+            style: kBodyTitleM.copyWith(color: kSecondaryTextColor)),
       ),
       body: RefreshIndicator(
         backgroundColor: kPrimaryColor,
@@ -87,15 +96,15 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                             final campaign = campaigns[index];
                             final isMyCampaign = false;
                             return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: CampaignCard(
                                 campaign: campaign,
                                 onLearnMore: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => CampaignDetailPage(
-                                        campaign: campaign),
+                                    builder: (_) =>
+                                        CampaignDetailPage(campaign: campaign),
                                   ),
                                 ),
                               ),

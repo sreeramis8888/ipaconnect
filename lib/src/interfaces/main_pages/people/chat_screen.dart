@@ -728,11 +728,66 @@ I'm interested in this product. Could you provide more information?
 
   String _formatTime(DateTime? dateTime) {
     if (dateTime == null) return '';
+    final localDateTime = dateTime.toLocal();
     // Format as 12-hour time with AM/PM
-    final hour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
-    final minute = dateTime.minute.toString().padLeft(2, '0');
-    final ampm = dateTime.hour >= 12 ? 'PM' : 'AM';
+    final hour = localDateTime.hour % 12 == 0 ? 12 : localDateTime.hour % 12;
+    final minute = localDateTime.minute.toString().padLeft(2, '0');
+    final ampm = localDateTime.hour >= 12 ? 'PM' : 'AM';
     return '$hour:$minute $ampm';
+  }
+
+  // Helper to format date headers
+  String _formatDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final localDate = date.toLocal();
+    final today = DateTime(now.year, now.month, now.day);
+    final messageDay = DateTime(localDate.year, localDate.month, localDate.day);
+    if (messageDay == today) {
+      return 'Today';
+    } else if (messageDay == today.subtract(const Duration(days: 1))) {
+      return 'Yesterday';
+    } else {
+      return '${localDate.day.toString().padLeft(2, '0')}-${localDate.month.toString().padLeft(2, '0')}-${localDate.year}';
+    }
+  }
+
+  // Build a list of items (date header or message)
+  List _buildChatItems(List<MessageModel> messages) {
+    final List items = [];
+    DateTime? lastDate;
+    // Iterate from oldest to newest
+    for (final msg in messages.reversed) {
+      final msgDate = msg.createdAt?.toLocal();
+      if (msgDate == null) continue;
+      final msgDay = DateTime(msgDate.year, msgDate.month, msgDate.day);
+      if (lastDate == null || msgDay != lastDate) {
+        items.add({'type': 'header', 'date': msgDate});
+        lastDate = msgDay;
+      }
+      items.add({'type': 'message', 'msg': msg});
+    }
+    // Reverse for ListView reverse: true
+    return items.reversed.toList();
+  }
+
+  Widget _buildDateHeader(DateTime date) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      decoration: BoxDecoration(
+        color: kCardBackgroundColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        _formatDateHeader(date),
+        style: const TextStyle(
+          color: kPrimaryColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+        ),
+      ),
+    );
   }
 
   @override
@@ -755,6 +810,7 @@ I'm interested in this product. Could you provide more information?
 
   @override
   Widget build(BuildContext context) {
+    final chatItems = _buildChatItems(_messages);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -908,11 +964,18 @@ I'm interested in this product. Could you provide more information?
               reverse: true,
               controller: _scrollController,
               padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: _messages.length,
+              itemCount: chatItems.length,
               itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isMe = msg.sender == id;
-                return _buildMessageBubble(msg, isMe);
+                final item = chatItems[index];
+                if (item['type'] == 'header') {
+                  return _buildDateHeader(item['date']);
+                } else if (item['type'] == 'message') {
+                  final msg = item['msg'] as MessageModel;
+                  final isMe = msg.sender == id;
+                  return _buildMessageBubble(msg, isMe);
+                } else {
+                  return const SizedBox.shrink();
+                }
               },
             ),
           ),

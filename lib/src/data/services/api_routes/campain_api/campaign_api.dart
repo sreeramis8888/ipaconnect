@@ -17,7 +17,7 @@ class CampaignApiService {
 
   Future<List<CampaignModel>> fetchCampaigns(   {required int page, required int limit}) async {
     try {
-      final response = await apiService.get('/campaigns');
+      final response = await apiService.get('/campaign');
       final decoded = response.data;
       if (response.success && response.statusCode == 200) {
         final List<dynamic> data = decoded?['data'] ?? [];

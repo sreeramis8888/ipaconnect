@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
@@ -175,14 +177,27 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                 navigationService.pushNamedAndRemoveUntil('PhoneNumber');
               },
             ),
-            // _menuItem(
-            //   icon: SvgPicture.asset(
-            //     'assets/svg/icons/menu_icons/delete.svg',
-            //     height: 24,
-            //   ),
-            //   label: 'Delete Account',
-            //   onTap: () {},
-            // ),
+            Consumer(
+              builder: (context, ref, child) {
+                return _menuItem(
+                  icon: SvgPicture.asset(
+                    'assets/svg/icons/menu_icons/delete.svg',
+                    height: 24,
+                  ),
+                  label: 'Delete Account',
+                  onTap: () async {
+                    final userDataApiService =
+                        ref.watch(userDataApiServiceProvider);
+                    final response =
+                        await userDataApiService.deleteUser(user.id ?? '');
+                    if (response.success) {
+                      await SecureStorage.deleteAll();
+                      navigationService.pushNamedAndRemoveUntil('PhoneNumber');
+                    }
+                  },
+                );
+              },
+            ),
           ],
         ),
       ),

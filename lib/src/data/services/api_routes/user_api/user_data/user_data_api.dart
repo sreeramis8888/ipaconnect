@@ -12,21 +12,31 @@ class UserDataApiService {
   final ApiService _apiService;
 
   UserDataApiService(this._apiService);
-Future<ApiResponse<Map<String, dynamic>>> updateUser(
-    String userId, UserModel user) async {
-  final filteredJson = user.toJson()
-    ..removeWhere((key, value) => value == null);
+  Future<ApiResponse<Map<String, dynamic>>> updateUser(
+      String userId, UserModel user) async {
+    final filteredJson = user.toJson()
+      ..removeWhere((key, value) => value == null);
 
-  final response = await _apiService.patch(
-    '/users/update',
-    filteredJson,
-  );
+    final response = await _apiService.patch(
+      '/users/update',
+      filteredJson,
+    );
 
-  log('Requesting body: $filteredJson');
-  log(response.message.toString());
+    log('Requesting body: $filteredJson');
+    log(response.message.toString());
 
-  return response;
-}
+    return response;
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> deleteUser(String userId) async {
+    final response = await _apiService.delete(
+      '/users/$userId',
+    );
+
+    log(response.message.toString());
+
+    return response;
+  }
 
   Future<UserModel?> fetchUserDetails() async {
     final response = await _apiService.get('/users/profile');
