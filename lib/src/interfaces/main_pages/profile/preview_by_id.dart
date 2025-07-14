@@ -320,7 +320,6 @@ class _ProfileHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -473,16 +472,16 @@ Widget _getSocialIcon(String? name) {
   final lower = name.toLowerCase();
   if (lower.contains('instagram')) {
     return SvgPicture.asset('assets/svg/icons/instagram.svg',
-        width: 28, height: 28);
+        color: kPrimaryColor, width: 28, height: 28);
   } else if (lower.contains('linkedin')) {
     return SvgPicture.asset('assets/svg/icons/linkedin.svg',
-        width: 28, height: 28);
+        color: kPrimaryColor, width: 28, height: 28);
   } else if (lower.contains('twitter')) {
     return SvgPicture.asset('assets/svg/icons/twitter.svg',
-        width: 28, height: 28);
+        color: kPrimaryColor, width: 28, height: 28);
   } else if (lower.contains('facebook')) {
     return SvgPicture.asset('assets/svg/icons/icons8-facebook.svg',
-        width: 28, height: 28);
+        color: kPrimaryColor, width: 28, height: 28);
   } else if (lower.contains('portfolio')) {
     return Icon(Icons.work, color: kGreen, size: 28);
   }
