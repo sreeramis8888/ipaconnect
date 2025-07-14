@@ -83,7 +83,7 @@ dependencies:
   currency_converter: ^2.0.0
   youtube_player_flutter: ^9.1.1
   flutter_launcher_icons: ^0.14.4
-  connectivity_plus: ^5.0.2
+
 
 dev_dependencies:
   flutter_test:
