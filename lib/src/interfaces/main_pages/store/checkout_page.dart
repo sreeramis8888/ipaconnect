@@ -650,7 +650,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     if (_currentStep == 0)
       enabled = _selectedAddressIndex != null || _showAddAddressForm;
     if (_currentStep == 2) enabled = !_isPlacingOrder && _orderSuccess == null;
-    // Only show the button for steps before payment
     if (_currentStep == 2) return SizedBox.shrink();
     return customButton(
       label: label,
@@ -722,6 +721,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
                   onClose: () {
                     setState(() => _showResultOverlay = false);
                     if (_paymentSuccess) {
+                      Navigator.of(context).pop();
                       Navigator.of(context).pop();
                       Future.delayed(const Duration(milliseconds: 300), () {
                         Navigator.of(context).pushNamed('MyOrdersPage');

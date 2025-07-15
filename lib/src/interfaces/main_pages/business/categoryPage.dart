@@ -150,7 +150,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                   ? Expanded(
                       child: Center(
                         child: Text(
-                          'No Categories yet',
+                          'No Companies yet',
                           style: kSmallTitleR,
                         ),
                       ),

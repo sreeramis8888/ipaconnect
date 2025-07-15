@@ -17,7 +17,7 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
   int pageNo = 1;
   final int limit = 14;
   bool hasMore = true;
-
+  String? searchQuery;
   @override
   List<BusinessCategoryModel> build() {
     return [];
@@ -29,8 +29,8 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
     isLoading = true;
 
     try {
-      final newCategories = await ref
-          .read(getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
+      final newCategories = await ref.read(
+          getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
 
       if (newCategories.isEmpty) {
         hasMore = false;
@@ -57,14 +57,43 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
 
     try {
       pageNo = 1;
-      final refreshedCategories = await ref
-          .read(getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
+      final refreshedCategories = await ref.read(
+          getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
 
       categories = refreshedCategories;
       hasMore = refreshedCategories.length >= limit;
       isFirstLoad = false;
       state = categories;
       log('refreshed');
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  
+  Future<void> searchCategories(String query,
+     ) async {
+    isLoading = true;
+    pageNo = 1;
+    categories = [];
+    searchQuery = query;
+
+    try {
+      final newCategories = await ref.read(
+        getBusinessCategoriesProvider(
+          pageNo: pageNo,
+          limit: limit,
+          query: query,
+        ).future,
+      );
+
+      categories = [...newCategories];
+      hasMore = newCategories.length == limit;
+
+      state = [...categories];
     } catch (e, stackTrace) {
       log(e.toString());
       log(stackTrace.toString());

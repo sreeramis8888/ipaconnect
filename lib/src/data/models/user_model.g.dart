@@ -7,12 +7,8 @@ part of 'user_model.dart';
 // **************************************************************************
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
-      countryCode: json['country_code'] as String?,
       name: json['name'] as String?,
       uid: json['uid'] as String?,
-      blockedUsers: (json['blocked_users'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
       memberId: json['member_id'] as String?,
       email: json['email'] as String?,
       image: json['image'] as String?,
@@ -20,6 +16,10 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       fcm: json['fcm'] as String?,
       otp: json['otp'] as String?,
       profession: json['proffession'] as String?,
+      blockedUsers: (json['blocked_users'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      countryCode: json['country_code'] as String?,
       location: json['location'] as String?,
       password: json['password'] as String?,
       status: json['status'] as String?,
@@ -45,6 +45,27 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
           ? null
           : DateTime.parse(json['updatedAt'] as String),
       id: json['_id'] as String?,
+      dob: json['dob'] == null ? null : DateTime.parse(json['dob'] as String),
+      emirates: json['emirates'] as String?,
+      ipaJoinDate: json['ipa_join_date'] == null
+          ? null
+          : DateTime.parse(json['ipa_join_date'] as String),
+      isInstalled: json['is_installed'] as bool?,
+      videos: (json['videos'] as List<dynamic>?)
+          ?.map((e) => SubData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      certificates: (json['certificates'] as List<dynamic>?)
+          ?.map((e) => SubData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      websites: (json['websites'] as List<dynamic>?)
+          ?.map((e) => SubData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      documents: (json['documents'] as List<dynamic>?)
+          ?.map((e) => SubData.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      awards: (json['awards'] as List<dynamic>?)
+          ?.map((e) => Award.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -77,6 +98,16 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       if (instance.updatedAt?.toIso8601String() case final value?)
         'updatedAt': value,
       if (instance.id case final value?) '_id': value,
+      if (instance.dob?.toIso8601String() case final value?) 'dob': value,
+      if (instance.emirates case final value?) 'emirates': value,
+      if (instance.ipaJoinDate?.toIso8601String() case final value?)
+        'ipa_join_date': value,
+      if (instance.isInstalled case final value?) 'is_installed': value,
+      if (instance.videos case final value?) 'videos': value,
+      if (instance.certificates case final value?) 'certificates': value,
+      if (instance.websites case final value?) 'websites': value,
+      if (instance.documents case final value?) 'documents': value,
+      if (instance.awards case final value?) 'awards': value,
     };
 
 UserSocialMedia _$UserSocialMediaFromJson(Map<String, dynamic> json) =>
@@ -89,4 +120,26 @@ Map<String, dynamic> _$UserSocialMediaToJson(UserSocialMedia instance) =>
     <String, dynamic>{
       'name': instance.name,
       'url': instance.url,
+    };
+
+SubData _$SubDataFromJson(Map<String, dynamic> json) => SubData(
+      name: json['name'] as String?,
+      link: json['link'] as String?,
+    );
+
+Map<String, dynamic> _$SubDataToJson(SubData instance) => <String, dynamic>{
+      'name': instance.name,
+      'link': instance.link,
+    };
+
+Award _$AwardFromJson(Map<String, dynamic> json) => Award(
+      image: json['image'] as String?,
+      name: json['name'] as String?,
+      authority: json['authority'] as String?,
+    );
+
+Map<String, dynamic> _$AwardToJson(Award instance) => <String, dynamic>{
+      'image': instance.image,
+      'name': instance.name,
+      'authority': instance.authority,
     };

@@ -1,83 +1,143 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/models/rating_model.dart';
 import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
-import 'package:ipaconnect/src/data/services/navigation_service.dart'
-    show NavigationService;
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/get_time_ago.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
-import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
-import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
-class CompanyReviewsPage extends ConsumerWidget {
-  final CompanyModel company;
-  const CompanyReviewsPage({super.key, required this.company});
+class MyReviewsPage extends ConsumerStatefulWidget {
+  const MyReviewsPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyReviewsPage> createState() => _MyReviewsPageState();
+}
+
+class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
+  String _selectedType = 'All';
+  final List<String> _types = ['All', 'Company', 'Product'];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchRatings();
+    });
+  }
+
+  void _fetchRatings({bool reset = true}) {
+    final notifier = ref.read(ratingNotifierProvider.notifier);
+    if (reset) {
+      notifier.pageNo = 1;
+      notifier.ratings = [];
+      notifier.hasMore = true;
+      notifier.isFirstLoad = true;
+    }
+    String type = _selectedType.toLowerCase();
+    notifier.fetchMoreMyRatings(
+        entityType: type == 'all' ? 'all' : type.capitalize());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final notifier = ref.read(ratingNotifierProvider.notifier);
     final ratings = ref.watch(ratingNotifierProvider);
-    if (notifier.isFirstLoad) {
-      notifier.fetchMoreRatings(
-          entityId: company.id ?? '', entityType: 'Company');
-      return const Center(child: LoadingAnimation());
-    }
+    final isLoading = notifier.isLoading && notifier.isFirstLoad;
     return Scaffold(
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8),
           child: InkWell(
             onTap: () => Navigator.pop(context),
             child: CustomRoundButton(
-              offset: Offset(4, 0),
+              offset: const Offset(4, 0),
               iconPath: 'assets/svg/icons/arrow_back_ios.svg',
             ),
           ),
         ),
         scrolledUnderElevation: 0,
-        title: Text('Reviews',
+        title: Text('My Reviews',
             style: kBodyTitleB.copyWith(color: kSecondaryTextColor)),
         backgroundColor: kBackgroundColor,
-        iconTheme: IconThemeData(color: kSecondaryTextColor),
+        iconTheme: const IconThemeData(color: kSecondaryTextColor),
       ),
-      backgroundColor: kBackgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ratings.isEmpty
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('No reviews yet', style: kBodyTitleR),
-                  SizedBox(height: 8),
-                  _addReviewButton(context, notifier),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        ...ratings
-                            .map((rating) => _reviewTile(rating))
-                            .toList(),
-                        if (notifier.hasMore)
-                          TextButton(
-                            onPressed: () => notifier.fetchMoreRatings(
-                                entityId: company.id ?? '',
-                                entityType: 'Company'),
-                            child: Text('Load more'),
-                          ),
-                      ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: _types.map((type) {
+                final bool isSelected = _selectedType == type;
+                return GestureDetector(
+                  onTap: () {
+                    if (!isSelected) {
+                      setState(() {
+                        _selectedType = type;
+                      });
+                      _fetchRatings();
+                    }
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? kPrimaryColor : Colors.transparent,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected ? kPrimaryColor : kStrokeColor,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Text(
+                      type,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : kSecondaryTextColor,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.w600,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                  _addReviewButton(context, notifier),
-                ],
-              ),
+                );
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: isLoading
+                ? const Center(child: LoadingAnimation())
+                : ratings.isEmpty
+                    ? Center(
+                        child: Text('No reviews found', style: kBodyTitleR))
+                    : Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: ratings.length,
+                              itemBuilder: (context, index) {
+                                return _reviewTile(ratings[index]);
+                              },
+                            ),
+                          ),
+                          if (notifier.hasMore && !notifier.isLoading)
+                            TextButton(
+                              onPressed: () => _fetchRatings(reset: false),
+                              child: const Text('Load more'),
+                            ),
+                          if (notifier.isLoading && !notifier.isFirstLoad)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: LoadingAnimation(),
+                            ),
+                        ],
+                      ),
+          ),
+        ],
       ),
     );
   }
@@ -86,10 +146,11 @@ class CompanyReviewsPage extends ConsumerWidget {
     return GestureDetector(
       onTap: () {
         NavigationService navigationService = NavigationService();
-        navigationService.pushNamed('ProfilePreviewById', arguments: rating.user.id);
+        navigationService.pushNamed('ProfilePreviewById',
+            arguments: rating.user.id);
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: kCardBackgroundColor,
@@ -134,7 +195,6 @@ class CompanyReviewsPage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Name and Stars in a row
                             Row(
                               children: [
                                 Text(
@@ -188,23 +248,11 @@ class CompanyReviewsPage extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _addReviewButton(BuildContext context, RatingNotifier notifier) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: customButton(
-          buttonColor: kStrokeColor,
-          label: 'Write a Review',
-          onPressed: () => showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: kCardBackgroundColor,
-            builder: (context) => AddReviewModal(
-              entityId: company.id ?? '',
-              entityType: 'Company',
-              notifier: notifier,
-            ),
-          ),
-        ));
+extension StringCasingExtension on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    return this[0].toUpperCase() + substring(1).toLowerCase();
   }
 }

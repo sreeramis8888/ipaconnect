@@ -2,8 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:ipaconnect/src/data/models/heirarchy_model.dart';
 
 part 'user_model.g.dart';
-
-@JsonSerializable(includeIfNull: false) 
+@JsonSerializable(includeIfNull: false)
 class UserModel {
   final String? name;
   final String? uid;
@@ -32,10 +31,20 @@ class UserModel {
   final DateTime? updatedAt;
   @JsonKey(name: '_id') final String? id;
 
-  const UserModel({this.countryCode,
+  // 🆕 Newly added fields
+  final DateTime? dob;
+  final String? emirates;
+  @JsonKey(name: 'ipa_join_date') final DateTime? ipaJoinDate;
+  @JsonKey(name: 'is_installed') final bool? isInstalled;
+  final List<SubData>? videos;
+  final List<SubData>? certificates;
+  final List<SubData>? websites;
+  final List<SubData>? documents;
+  final List<Award>? awards;
+
+  const UserModel({
     this.name,
     this.uid,
-    this.blockedUsers,
     this.memberId,
     this.email,
     this.image,
@@ -43,6 +52,8 @@ class UserModel {
     this.fcm,
     this.otp,
     this.profession,
+    this.blockedUsers,
+    this.countryCode,
     this.location,
     this.password,
     this.status,
@@ -58,11 +69,18 @@ class UserModel {
     this.createdAt,
     this.updatedAt,
     this.id,
+    this.dob,
+    this.emirates,
+    this.ipaJoinDate,
+    this.isInstalled,
+    this.videos,
+    this.certificates,
+    this.websites,
+    this.documents,
+    this.awards,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
-
+  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   UserModel copyWith({
@@ -90,6 +108,15 @@ class UserModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? id,
+    DateTime? dob,
+    String? emirates,
+    DateTime? ipaJoinDate,
+    bool? isInstalled,
+    List<SubData>? videos,
+    List<SubData>? certificates,
+    List<SubData>? websites,
+    List<SubData>? documents,
+    List<Award>? awards,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -116,6 +143,15 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
+      dob: dob ?? this.dob,
+      emirates: emirates ?? this.emirates,
+      ipaJoinDate: ipaJoinDate ?? this.ipaJoinDate,
+      isInstalled: isInstalled ?? this.isInstalled,
+      videos: videos ?? this.videos,
+      certificates: certificates ?? this.certificates,
+      websites: websites ?? this.websites,
+      documents: documents ?? this.documents,
+      awards: awards ?? this.awards,
     );
   }
 }
@@ -125,21 +161,38 @@ class UserSocialMedia {
   final String? name;
   final String? url;
 
-  UserSocialMedia({
-    this.name,
-    this.url,
-  });
+  UserSocialMedia({this.name, this.url});
 
   factory UserSocialMedia.fromJson(Map<String, dynamic> json) => _$UserSocialMediaFromJson(json);
   Map<String, dynamic> toJson() => _$UserSocialMediaToJson(this);
 
-  UserSocialMedia copyWith({
-    String? name,
-    String? url,
-  }) {
+  UserSocialMedia copyWith({String? name, String? url}) {
     return UserSocialMedia(
       name: name ?? this.name,
       url: url ?? this.url,
     );
   }
+}
+
+@JsonSerializable()
+class SubData {
+  final String? name;
+  final String? link;
+
+  SubData({this.name, this.link});
+
+  factory SubData.fromJson(Map<String, dynamic> json) => _$SubDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SubDataToJson(this);
+}
+
+@JsonSerializable()
+class Award {
+  final String? image;
+  final String? name;
+  final String? authority;
+
+  Award({this.image, this.name, this.authority});
+
+  factory Award.fromJson(Map<String, dynamic> json) => _$AwardFromJson(json);
+  Map<String, dynamic> toJson() => _$AwardToJson(this);
 }

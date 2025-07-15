@@ -251,15 +251,18 @@ class _ProfileHeader extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: kCardBackgroundColor,
-                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(colors: [
+                    Color(0xFF1E62B3).withOpacity(.5),
+                    kStrokeColor.withOpacity(.5)
+                  ]),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   children: [
                     // SvgPicture.asset('assets/svg/icons/levels.svg', width: 18, color: kPrimaryColor),
                     const SizedBox(width: 6),
-                    Text('Premium Member',
-                        style: kSmallTitleB.copyWith(color: kPrimaryColor)),
+                    Text(user.memberId ?? '',
+                        style: kSmallTitleB.copyWith(color: kWhite)),
                   ],
                 ),
               ),
@@ -271,11 +274,25 @@ class _ProfileHeader extends StatelessWidget {
             children: [
               Icon(Icons.phone, color: kWhite, size: 18),
               const SizedBox(width: 6),
-              Text(user.phone ?? '', style: kSmallTitleR),
+              Flexible(
+                child: Text(
+                  user.phone ?? '',
+                  style: kSmallTitleR,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
               const SizedBox(width: 18),
               Icon(Icons.email, color: kWhite, size: 18),
               const SizedBox(width: 6),
-              Text(user.email ?? '', style: kSmallTitleR),
+              Flexible(
+                child: Text(
+                  user.email ?? '',
+                  style: kSmallTitleR,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),

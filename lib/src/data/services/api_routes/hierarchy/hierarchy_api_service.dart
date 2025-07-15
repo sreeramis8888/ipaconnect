@@ -30,8 +30,12 @@ class HierarchyApiService {
     }
   }
 
-  Future<List<UserModel>> getHierarchyUsers({required String hierarchyId, required int page, required int limit}) async {
-    final response = await _apiService.get('/users/hierarchy/$hierarchyId');
+  Future<List<UserModel>> getHierarchyUsers(
+      {required String hierarchyId,
+      required int page,
+      required int limit}) async {
+    final response = await _apiService
+        .get('/users/hierarchy/$hierarchyId?page_no=$page&limit=$limit');
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
@@ -40,20 +44,22 @@ class HierarchyApiService {
       return [];
     }
   }
-
-
 }
 
 @riverpod
-Future<List<HierarchyModel>> getHierarchy(Ref ref,
-    ) async {
+Future<List<HierarchyModel>> getHierarchy(
+  Ref ref,
+) async {
   final hierarchyApiService = ref.watch(hierarchyApiServiceProvider);
   return hierarchyApiService.getHierarchy();
 }
+
 @riverpod
 Future<List<UserModel>> getHierarchyUsers(Ref ref,
-   {required String hierarchyId ,required int page, required int limit} ) async {
+    {required String hierarchyId,
+    required int page,
+    required int limit}) async {
   final hierarchyApiService = ref.watch(hierarchyApiServiceProvider);
-  return hierarchyApiService.getHierarchyUsers(hierarchyId: hierarchyId,limit: limit,page: page);
+  return hierarchyApiService.getHierarchyUsers(
+      hierarchyId: hierarchyId, limit: limit, page: page);
 }
-

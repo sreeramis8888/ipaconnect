@@ -98,6 +98,7 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                   ),
                 ),
                 decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(left: 12, right: 12),
                   hintText: widget.hintText ?? '',
                   hintStyle: const TextStyle(
                     color: Color(0xFF718096),
@@ -105,8 +106,6 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                   ),
                   fillColor: widget.backgroundColor,
                   filled: true,
-                  contentPadding:
-                      const EdgeInsets.only(top: 12, bottom: 12, right: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,

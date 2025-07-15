@@ -105,6 +105,41 @@ class AnalyticsApiService {
       log('Error deleting analytic: $e');
     }
   }
+
+  Future<List<AnalyticsModel>> fetchAnalyticsByHierarchy({
+    required String hierarchyId,
+    int? page,
+    int? limit,
+  }) async {
+    final queryParams = <String, String>{};
+    if (page != null) queryParams['page'] = page.toString();
+    if (limit != null) queryParams['limit'] = limit.toString();
+
+    final queryString = queryParams.entries.isNotEmpty
+        ? '?' +
+            queryParams.entries
+                .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+                .join('&')
+        : '';
+
+    final endpoint = '/activity/hierarchy/$hierarchyId$queryString';
+
+    try {
+      final response = await apiService.get(endpoint);
+      final decoded = response.data;
+      if (response.success && response.statusCode == 200) {
+        final List data = decoded?['data'] ?? [];
+        return data.map((item) => AnalyticsModel.fromJson(item)).toList();
+      } else {
+        throw Exception(decoded?['message'] ??
+            response.message ??
+            'Failed to fetch analytics by hierarchy');
+      }
+    } catch (e) {
+      log('Exception in fetchAnalyticsByHierarchy: $e');
+      return [];
+    }
+  }
 }
 
 @riverpod
@@ -128,3 +163,8 @@ Future<List<AnalyticsModel>> fetchAnalytics(
     limit: limit,
   );
 }
+
+final fetchAnalyticsByHierarchyProvider = FutureProvider.family<List<AnalyticsModel>, String>((ref, hierarchyId) async {
+  final analyticsApi = ref.watch(analyticsApiServiceProvider);
+  return analyticsApi.fetchAnalyticsByHierarchy(hierarchyId: hierarchyId);
+});

@@ -21,7 +21,8 @@ class RatingNotifier extends _$RatingNotifier {
     return [];
   }
 
-  Future<void> fetchMoreRatings({required String entityId, required String entityType}) async {
+  Future<void> fetchMoreRatings(
+      {required String entityId, required String entityType}) async {
     if (isLoading || !hasMore) return;
     isLoading = true;
     try {
@@ -48,7 +49,34 @@ class RatingNotifier extends _$RatingNotifier {
     }
   }
 
-  Future<void> refreshRatings({required String entityId, required String entityType}) async {
+  Future<void> fetchMoreMyRatings({required String entityType}) async {
+    if (isLoading || !hasMore) return;
+    isLoading = true;
+    try {
+      final newRatings = await ref.read(getMyRatingsProvider(
+        entityType: entityType,
+        pageNo: pageNo,
+        limit: limit,
+      ).future);
+      if (newRatings.isEmpty) {
+        hasMore = false;
+      } else {
+        ratings = [...ratings, ...newRatings];
+        pageNo++;
+        hasMore = newRatings.length >= limit;
+      }
+      isFirstLoad = false;
+      state = ratings;
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future<void> refreshRatings(
+      {required String entityId, required String entityType}) async {
     if (isLoading) return;
     isLoading = true;
     try {
@@ -102,7 +130,8 @@ class RatingNotifier extends _$RatingNotifier {
     required String review,
   }) async {
     final service = ref.read(ratingApiServiceProvider);
-    final updated = await service.updateRating(id: id, rating: rating, review: review);
+    final updated =
+        await service.updateRating(id: id, rating: rating, review: review);
     if (updated != null) {
       ratings = ratings.map((r) => r.id == id ? updated : r).toList();
       state = ratings;
@@ -120,5 +149,3 @@ class RatingNotifier extends _$RatingNotifier {
     return success;
   }
 }
-
-

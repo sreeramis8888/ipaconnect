@@ -1,287 +1,279 @@
-// import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/models/analytics_model.dart';
+import 'package:ipaconnect/src/data/services/api_routes/analytics_api/analytics_api.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:intl/intl.dart';
+class ActivityPage extends ConsumerWidget {
+  final String hierarchyId;
+  const ActivityPage({Key? key, required this.hierarchyId}) : super(key: key);
 
-// class ActivityPage extends StatelessWidget {
-//   final String chapterId;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncActivities =
+        ref.watch(fetchAnalyticsByHierarchyProvider(hierarchyId));
 
-//   ActivityPage({super.key, required this.chapterId});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     ActivityApiService activityApiService = ActivityApiService();
-//     return Consumer(
-//       builder: (context, ref, child) {
-//         final asyncActivities =
-//             ref.watch(fetchActivityProvider(chapterId: chapterId));
-//         return Scaffold(
-//             appBar: AppBar(
-//               scrolledUnderElevation: 0,
-//               leading: IconButton(
-//                 icon: Icon(Icons.arrow_back),
-//                 onPressed: () {
-//                   Navigator.pop(context);
-//                 },
-//               ),
-//               actions: [
-//                 Row(
-//                   children: [
-//                     IconButton(
-//                         color: kPrimaryColor,
-//                         icon: Icon(Icons.download),
-//                         onPressed: () async {
-//                           showDialog(
-//                             context: context,
-//                             barrierDismissible: false,
-//                             builder: (context) {
-//                               return LoadingAnimation();
-//                             },
-//                           );
-//                           try {
-//                             await activityApiService
-//                                 .downloadAndSaveExcel(chapterId);
-//                           } finally {
-//                             Navigator.of(context).pop();
-//                           }
-//                         }),
-//                   ],
-//                 )
-//               ],
-//               title: Text("Activity"),
-//               centerTitle: false,
-//               backgroundColor: Colors.white,
-//               elevation: 0,
-//               titleTextStyle: TextStyle(
-//                 color: Colors.black,
-//                 fontSize: 16,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//               iconTheme: IconThemeData(color: Colors.black),
-//             ),
-//             body: asyncActivities.when(
-//                 data: (activities) {
-//                   return ListView.builder(
-//                     padding: EdgeInsets.all(16),
-//                     itemCount: activities.length,
-//                     itemBuilder: (context, index) {
-//                       final activity = activities[index];
-//                       String formattedDate =
-//                           DateFormat('dd.MM.yyyy').format(activity.createdAt!);
-
-//                       return Container(
-//                         decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.circular(10),
-//                           color: Colors.white,
-//                           boxShadow: [
-//                             BoxShadow(
-//                               color: Colors.grey.withOpacity(0.1),
-//                               spreadRadius: .5,
-//                               offset: Offset(3, 3),
-//                             ),
-//                           ],
-//                         ),
-//                         margin: EdgeInsets.only(bottom: 16),
-//                         child: Padding(
-//                           padding: EdgeInsets.all(16),
-//                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
-//                             children: [
-//                               Row(
-//                                 mainAxisAlignment:
-//                                     MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   Expanded(
-//                                     child: Column(
-//                                       crossAxisAlignment:
-//                                           CrossAxisAlignment.start,
-//                                       children: [
-//                                         Text(
-//                                           activity.type == 'Business'
-//                                               ? 'Business Seller'
-//                                               : "Host",
-//                                           style: TextStyle(
-//                                             color: Colors.green,
-//                                             fontWeight: FontWeight.bold,
-//                                           ),
-//                                           overflow: TextOverflow.ellipsis,
-//                                         ),
-//                                         SizedBox(height: 8),
-//                                         Row(
-//                                           children: [
-//                                             CircleAvatar(
-//                                               backgroundColor: Colors.grey[300],
-//                                               child: Icon(Icons.person,
-//                                                   color: Colors.grey),
-//                                             ),
-//                                             SizedBox(width: 8),
-//                                             Expanded(
-//                                               child: Text(
-//                                                 activity.sender?.name ?? '',
-//                                                 overflow: TextOverflow.ellipsis,
-//                                                 maxLines: 5,
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                   SizedBox(width: 8),
-//                                   Expanded(
-//                                     child: Column(
-//                                       crossAxisAlignment:
-//                                           CrossAxisAlignment.end,
-//                                       children: [
-//                                         Text(
-//                                           activity.type == 'Business'
-//                                               ? 'Business Buyer'
-//                                               : "Guest",
-//                                           style: TextStyle(
-//                                             color: kBlue,
-//                                             fontWeight: FontWeight.bold,
-//                                           ),
-//                                           overflow: TextOverflow.ellipsis,
-//                                         ),
-//                                         SizedBox(height: 8),
-//                                         Row(
-//                                           children: [
-//                                             Expanded(
-//                                               child: Text(
-//                                                 activity.member?.name ?? '',
-//                                                 overflow: TextOverflow.ellipsis,
-//                                                 maxLines: 5,
-//                                                 textAlign: TextAlign.end,
-//                                               ),
-//                                             ),
-//                                             SizedBox(width: 8),
-//                                             CircleAvatar(
-//                                               backgroundColor: Colors.grey[300],
-//                                               child: Icon(Icons.person,
-//                                                   color: Colors.grey),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                               if (activity.type == 'Referral')
-//                                 Column(
-//                                   crossAxisAlignment: CrossAxisAlignment.start,
-//                                   children: [
-//                                     SizedBox(height: 20),
-//                                     Text(
-//                                       'Referral',
-//                                       style: TextStyle(
-//                                         color: kBlack54,
-//                                         fontWeight: FontWeight.bold,
-//                                       ),
-//                                     ),
-//                                     SizedBox(height: 8),
-//                                     Column(
-//                                       crossAxisAlignment:
-//                                           CrossAxisAlignment.start,
-//                                       children: [
-//                                         Row(
-//                                           children: [
-//                                             Text('Name: '),
-//                                             Expanded(
-//                                               child: Text(
-//                                                 activity.referral?.name ?? '',
-//                                                 overflow: TextOverflow.ellipsis,
-//                                                 maxLines: 5,
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                         SizedBox(height: 4),
-//                                         Row(
-//                                           children: [
-//                                             Text('Email: '),
-//                                             Expanded(
-//                                               child: Text(
-//                                                 activity.referral?.email ?? '',
-//                                                 overflow: TextOverflow.ellipsis,
-//                                                 maxLines: 5,
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                         SizedBox(height: 4),
-//                                         Row(
-//                                           children: [
-//                                             Text('Phone: '),
-//                                             Expanded(
-//                                               child: Text(
-//                                                 activity.referral?.phone ?? '',
-//                                                 overflow: TextOverflow.ellipsis,
-//                                                 maxLines: 5,
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ],
-//                                     ),
-//                                   ],
-//                                 ),
-//                               Divider(
-//                                 height: 24,
-//                                 thickness: 1,
-//                                 color: const Color.fromARGB(255, 229, 226, 226),
-//                               ),
-//                               Row(
-//                                 children: [
-//                                   Expanded(
-//                                     child: Text(
-//                                       activity.title ?? '',
-//                                       style: TextStyle(
-//                                         fontWeight: FontWeight.bold,
-//                                       ),
-//                                       overflow: TextOverflow.ellipsis,
-//                                       maxLines: 5,
-//                                     ),
-//                                   ),
-//                                   SizedBox(width: 8),
-//                                   if (activity.type == 'Business')
-//                                     Text.rich(
-//                                       TextSpan(
-//                                         text: 'Amount Paid: ',
-//                                         style: kSmallTitleB.copyWith(
-//                                             color: kGreyLight),
-//                                         children: [
-//                                           TextSpan(
-//                                               text: activity.amount.toString(),
-//                                               style: kSmallTitleB.copyWith(
-//                                                   color: kBlue)),
-//                                         ],
-//                                       ),
-//                                       overflow: TextOverflow.ellipsis,
-//                                     ),
-//                                   if (activity.type == 'One v One Meeting')
-//                                     Text(
-//                                       formattedDate,
-//                                       style:
-//                                           kSmallTitleB.copyWith(color: kBlue),
-//                                     )
-//                                 ],
-//                               ),
-//                               SizedBox(height: 8),
-//                             ],
-//                           ),
-//                         ),
-//                       );
-//                     },
-//                   );
-//                 },
-//                 loading: () => const Center(child: LoadingAnimation()),
-//                 error: (error, stackTrace) {
-//                   log(name: 'Activity', error.toString());
-//                   return const Center(child: Text('No Activity Found'));
-//                 }));
-//       },
-//     );
-//   }
-// }
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: kBackgroundColor,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
+        ),
+        title: Text('Activities',
+            style:
+                kBodyTitleR.copyWith(fontSize: 16, color: kSecondaryTextColor)),
+        centerTitle: false,
+      ),
+      body: asyncActivities.when(
+        data: (activities) {
+          if (activities.isEmpty) {
+            return Center(
+                child: Text(
+              'No Activity Found',
+              style: kSmallTitleR,
+            ));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: activities.length,
+            itemBuilder: (context, index) {
+              final activity = activities[index];
+              final formattedDate = activity.createdAt != null
+                  ? DateFormat('dd.MM.yyyy').format(activity.createdAt!)
+                  : '';
+              return Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: kCardBackgroundColor,
+                    border: Border.all(
+                      color: kStrokeColor,
+                    )),
+                margin: const EdgeInsets.only(bottom: 16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  activity.type == 'Business'
+                                      ? 'Business Seller'
+                                      : "Host",
+                                  style: const TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          activity.sender?.image ?? ''),
+                                      backgroundColor: kStrokeColor,
+                                      child: activity.sender?.image != null
+                                          ? null
+                                          : Icon(Icons.person,
+                                              color: Colors.white),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        style: kSmallTitleR,
+                                        activity.sender?.name ??
+                                            activity.sender?.toString() ??
+                                            '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  activity.type == 'Business'
+                                      ? 'Business Buyer'
+                                      : "Guest",
+                                  style: const TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        style: kSmallTitleR,
+                                        activity.receiver?.name ??
+                                            activity.receiver?.toString() ??
+                                            '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 5,
+                                        textAlign: TextAlign.end,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          activity.receiver?.image ?? ''),
+                                      backgroundColor: kStrokeColor,
+                                      child: activity.receiver?.image != null
+                                          ? null
+                                          : Icon(Icons.person,
+                                              color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (activity.type == 'Referral' &&
+                          activity.referral != null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 20),
+                            Text('Referral', style: kSmallTitleB),
+                            const SizedBox(height: 8),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Name: ',
+                                      style: kSmallerTitleR,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        style: kSmallerTitleR,
+                                        activity.referral?.name ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Email: ',
+                                      style: kSmallerTitleR,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        style: kSmallerTitleR,
+                                        activity.referral?.email ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Phone: ',
+                                      style: kSmallerTitleR,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        activity.referral?.phone ?? '',
+                                        style: kSmallerTitleR,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      const Divider(
+                        height: 24,
+                        thickness: 1,
+                        color: kStrokeColor,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              activity.title ?? '',
+                              style: const TextStyle(
+                                color: kWhite,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 5,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (activity.type == 'Business')
+                            Text.rich(
+                              TextSpan(
+                                text: 'Amount Paid: ',
+                                style:
+                                    const TextStyle(color: kSecondaryTextColor),
+                                children: [
+                                  TextSpan(
+                                    text: activity.amount?.toString() ?? '',
+                                    style: const TextStyle(color: Colors.blue),
+                                  ),
+                                ],
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          Text(
+                            formattedDate,
+                            style: const TextStyle(color: Colors.blue),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: LoadingAnimation()),
+        error: (e, st) => const Center(child: Text('No Activities')),
+      ),
+    );
+  }
+}

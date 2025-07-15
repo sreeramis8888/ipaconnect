@@ -31,9 +31,9 @@ class BookmarkedNewsModelNotifier extends StateNotifier<Set<String>> {
   }
 }
 
-class NewsModelDetailView extends ConsumerWidget {
+class NewsDetailView extends ConsumerWidget {
   final List<NewsModel> news;
-  const NewsModelDetailView({super.key, required this.news});
+  const NewsDetailView({super.key, required this.news});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

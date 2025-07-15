@@ -7,7 +7,7 @@ part of 'hierarchyUsers_notifier.dart';
 // **************************************************************************
 
 String _$hierarchyusersNotifierHash() =>
-    r'e50ce1e20fb48f2a2ccc269bf33fc459f08f9c96';
+    r'7d4a85c63fc4930889f4e3752c81dc96209f59de';
 
 /// See also [HierarchyusersNotifier].
 @ProviderFor(HierarchyusersNotifier)

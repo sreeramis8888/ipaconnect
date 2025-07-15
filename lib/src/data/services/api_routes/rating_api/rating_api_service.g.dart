@@ -225,5 +225,170 @@ class _GetRatingsByEntityProviderElement
   @override
   int get limit => (origin as GetRatingsByEntityProvider).limit;
 }
+
+String _$getMyRatingsHash() => r'9c278eaecd038651231adfafb16f6d13659eb962';
+
+/// See also [getMyRatings].
+@ProviderFor(getMyRatings)
+const getMyRatingsProvider = GetMyRatingsFamily();
+
+/// See also [getMyRatings].
+class GetMyRatingsFamily extends Family<AsyncValue<List<RatingModel>>> {
+  /// See also [getMyRatings].
+  const GetMyRatingsFamily();
+
+  /// See also [getMyRatings].
+  GetMyRatingsProvider call({
+    required String entityType,
+    int pageNo = 1,
+    int limit = 10,
+  }) {
+    return GetMyRatingsProvider(
+      entityType: entityType,
+      pageNo: pageNo,
+      limit: limit,
+    );
+  }
+
+  @override
+  GetMyRatingsProvider getProviderOverride(
+    covariant GetMyRatingsProvider provider,
+  ) {
+    return call(
+      entityType: provider.entityType,
+      pageNo: provider.pageNo,
+      limit: provider.limit,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getMyRatingsProvider';
+}
+
+/// See also [getMyRatings].
+class GetMyRatingsProvider
+    extends AutoDisposeFutureProvider<List<RatingModel>> {
+  /// See also [getMyRatings].
+  GetMyRatingsProvider({
+    required String entityType,
+    int pageNo = 1,
+    int limit = 10,
+  }) : this._internal(
+          (ref) => getMyRatings(
+            ref as GetMyRatingsRef,
+            entityType: entityType,
+            pageNo: pageNo,
+            limit: limit,
+          ),
+          from: getMyRatingsProvider,
+          name: r'getMyRatingsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getMyRatingsHash,
+          dependencies: GetMyRatingsFamily._dependencies,
+          allTransitiveDependencies:
+              GetMyRatingsFamily._allTransitiveDependencies,
+          entityType: entityType,
+          pageNo: pageNo,
+          limit: limit,
+        );
+
+  GetMyRatingsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.entityType,
+    required this.pageNo,
+    required this.limit,
+  }) : super.internal();
+
+  final String entityType;
+  final int pageNo;
+  final int limit;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<RatingModel>> Function(GetMyRatingsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetMyRatingsProvider._internal(
+        (ref) => create(ref as GetMyRatingsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        entityType: entityType,
+        pageNo: pageNo,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<RatingModel>> createElement() {
+    return _GetMyRatingsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetMyRatingsProvider &&
+        other.entityType == entityType &&
+        other.pageNo == pageNo &&
+        other.limit == limit;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, entityType.hashCode);
+    hash = _SystemHash.combine(hash, pageNo.hashCode);
+    hash = _SystemHash.combine(hash, limit.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetMyRatingsRef on AutoDisposeFutureProviderRef<List<RatingModel>> {
+  /// The parameter `entityType` of this provider.
+  String get entityType;
+
+  /// The parameter `pageNo` of this provider.
+  int get pageNo;
+
+  /// The parameter `limit` of this provider.
+  int get limit;
+}
+
+class _GetMyRatingsProviderElement
+    extends AutoDisposeFutureProviderElement<List<RatingModel>>
+    with GetMyRatingsRef {
+  _GetMyRatingsProviderElement(super.provider);
+
+  @override
+  String get entityType => (origin as GetMyRatingsProvider).entityType;
+  @override
+  int get pageNo => (origin as GetMyRatingsProvider).pageNo;
+  @override
+  int get limit => (origin as GetMyRatingsProvider).limit;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

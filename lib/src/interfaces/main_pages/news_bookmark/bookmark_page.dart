@@ -121,7 +121,7 @@ class BookmarkPage extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              NewsModelDetailView(news: mockNewsModel),
+                              NewsDetailView(news: mockNewsModel),
                         ),
                       );
                     }

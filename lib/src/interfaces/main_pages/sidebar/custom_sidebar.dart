@@ -76,14 +76,14 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
             //   onTap: () => navigationService.pushNamed('RequestNFC'),
             // ),
 
-            // _menuItem(
-            //   icon: SvgPicture.asset(
-            //     'assets/svg/icons/menu_icons/levels.svg',
-            //     height: 24,
-            //   ),
-            //   label: 'Hierarchy',
-            //   onTap: () => navigationService.pushNamed('Hierarchies'),
-            // ),
+            _menuItem(
+              icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/levels.svg',
+                height: 24,
+              ),
+              label: 'Hierarchy',
+              onTap: () => navigationService.pushNamed('Hierarchies',arguments: user),
+            ),
             // _menuItem(
             //   icon: SvgPicture.asset(
             //     'assets/svg/icons/menu_icons/my_submissions.svg',
@@ -100,14 +100,14 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               label: 'My Orders',
               onTap: () => navigationService.pushNamed('MyOrdersPage'),
             ),
-            // _menuItem(
-            //   icon: SvgPicture.asset(
-            //     'assets/svg/icons/menu_icons/my_reviews.svg',
-            //     height: 24,
-            //   ),
-            //   label: 'My Reviews',
-            //   onTap: () => navigationService.pushNamed('MyReviews'),
-            // ),
+            _menuItem(
+              icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/my_reviews.svg',
+                height: 24,
+              ),
+              label: 'My Reviews',
+              onTap: () => navigationService.pushNamed('MyReviews'),
+            ),
             // _menuItem(
             //   icon: SvgPicture.asset(
             //     'assets/svg/icons/menu_icons/my_transactions.svg',

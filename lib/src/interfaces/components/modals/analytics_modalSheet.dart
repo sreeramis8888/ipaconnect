@@ -182,7 +182,7 @@ class AnalyticsModalSheet extends ConsumerWidget {
                       label: 'Accept',
                       onPressed: () async {
                         await analyticsApiService.updateAnalyticStatus(
-                            analyticId: analytic.id ?? '', action: 'accepted');
+                            analyticId: analytic.id ?? '', action: 'approved');
 
                         ref.invalidate(fetchAnalyticsProvider);
                         navigationService.pop();

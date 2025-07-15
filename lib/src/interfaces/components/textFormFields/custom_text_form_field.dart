@@ -13,7 +13,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? textController;
   final int? companyIndex;
   final FormFieldValidator<String>? validator;
-  final VoidCallback? onChanged;
+  final ValueChanged<String>? onChanged;
   final bool? enabled;
   final bool? isAward;
   final String? title;
@@ -93,6 +93,7 @@ class CustomTextFormField extends StatelessWidget {
                           'instagram',
                           textController!.text,
                         );
+                    break;
 
                   case 'Enter Linkedin':
                     final currentSocials =
@@ -102,7 +103,6 @@ class CustomTextFormField extends StatelessWidget {
                           'linkedin',
                           textController!.text,
                         );
-
                     break;
                   case 'Enter Twitter':
                     final currentSocials =
@@ -112,7 +112,6 @@ class CustomTextFormField extends StatelessWidget {
                           'twitter',
                           textController!.text,
                         );
-
                     break;
 
                   case 'Enter Facebook':
@@ -123,11 +122,11 @@ class CustomTextFormField extends StatelessWidget {
                           'facebook',
                           textController!.text,
                         );
-
                     break;
 
                   default:
                 }
+                onChanged?.call(value);
               },
               readOnly: readOnly,
               controller: textController,

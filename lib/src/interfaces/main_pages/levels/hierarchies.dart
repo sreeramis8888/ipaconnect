@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/hierarchy/hierarchy_api_service.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
@@ -9,23 +10,13 @@ import 'package:ipaconnect/src/interfaces/main_pages/levels/create_notification_
 import 'package:ipaconnect/src/interfaces/main_pages/levels/level_members.dart';
 
 class HierarchiesPage extends ConsumerWidget {
+  final UserModel user;
+  const HierarchiesPage({super.key, required this.user});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncHierarchies = ref.watch(getHierarchyProvider);
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const CreateNotificationPage(),
-            ),
-          );
-        },
-        backgroundColor: kPrimaryColor,
-        child: const Icon(Icons.notifications_active_outlined,
-            color: Colors.white),
-      ),
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
         leading: Padding(
@@ -91,18 +82,22 @@ class HierarchiesPage extends ConsumerWidget {
                                 fontSize: 13, color: Colors.grey[700]),
                           )
                         : null,
-                    trailing: const Icon(Icons.arrow_forward_ios,
-                        size: 16, color: Colors.grey),
+                    trailing: user.hierarchy?.id == hierarchy.id
+                        ? const Icon(Icons.arrow_forward_ios,
+                            size: 16, color: kSecondaryTextColor)
+                        : null,
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HierarchyMembers(
-                            hierarchyName: hierarchy.name ?? '',
-                            hierarchyId: hierarchy.id ?? '',
+                      if (user.hierarchy?.id == hierarchy.id) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HierarchyMembers(
+                              hierarchyName: hierarchy.name ?? '',
+                              hierarchyId: hierarchy.id ?? '',
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                   ),
                 ),

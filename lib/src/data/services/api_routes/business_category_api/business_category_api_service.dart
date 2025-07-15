@@ -20,9 +20,11 @@ class BusinesscategoryApiService {
   BusinesscategoryApiService(this._apiService);
 
   Future<List<BusinessCategoryModel>> getBusinessCategories(
-      {int pageNo = 1, int limit = 10}) async {
-    final response = await _apiService
-        .get('/category?page_no=$pageNo&limit=$limit');
+      {int pageNo = 1, int limit = 10, String? query}) async {
+    String endpoint = query != null
+        ? '/category?page_no=$pageNo&limit=$limit&search=$query'
+        : '/category?page_no=$pageNo&limit=$limit';
+    final response = await _apiService.get(endpoint);
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
@@ -35,7 +37,9 @@ class BusinesscategoryApiService {
 
 @riverpod
 Future<List<BusinessCategoryModel>> getBusinessCategories(Ref ref,
-    {int pageNo = 1, int limit = 10}) async {
-  final businessCategoryApiService = ref.watch(businessCategoryApiServiceProvider);
-  return businessCategoryApiService.getBusinessCategories(pageNo: pageNo, limit: limit);
+    {int pageNo = 1, int limit = 10, String? query}) async {
+  final businessCategoryApiService =
+      ref.watch(businessCategoryApiServiceProvider);
+  return businessCategoryApiService.getBusinessCategories(
+      pageNo: pageNo, limit: limit, query: query);
 }

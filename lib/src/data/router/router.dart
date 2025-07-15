@@ -6,6 +6,10 @@ import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaigns/campaigns_list_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/levels/activity_page.dart'
+    show ActivityPage;
+import 'package:ipaconnect/src/interfaces/main_pages/profile/preview_by_id.dart'
+    show ProfilePreviewById;
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/create_analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
@@ -18,6 +22,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_events.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_reviews.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/privacy.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/terms.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
@@ -68,6 +73,11 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = SendAnalyticRequestPage();
     case 'Analytics':
       page = AnalyticsPage();
+    case 'ActivityPage':
+      String hierarchyId = settings?.arguments as String;
+      page = ActivityPage(
+        hierarchyId: hierarchyId,
+      );
       break;
     case 'PhoneNumber':
       page = PhoneNumberScreen();
@@ -96,6 +106,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'ProfilePreview':
       UserModel user = settings?.arguments as UserModel;
       page = ProfilePreview(user: user);
+      break;
+    case 'ProfilePreviewById':
+      String userId = settings?.arguments as String;
+      page = ProfilePreviewById(userId: userId);
       break;
     case 'EventDetails':
       EventsModel event = settings?.arguments as EventsModel;
@@ -129,8 +143,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'PrivacyPolicyPage':
       page = PrivacyPolicyPage();
     case 'MyRequirements':
-
       page = MyRequirements();
+      break;
+    case 'MyReviews':
+      page = MyReviewsPage();
       break;
     case 'StorePage':
       String userCurrency = settings?.arguments as String;
@@ -150,8 +166,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //   break;
     case 'ProductDetails':
       final args = settings?.arguments as Map<String, dynamic>;
-      page = ProductDetailsPage(companyUserId:args['companyUserId'] ,
-          product: args['product'], category: args['category']);
+      page = ProductDetailsPage(
+          companyUserId: args['companyUserId'],
+          product: args['product'],
+          category: args['category']);
       transitionsBuilder = (context, animation, secondaryAnimation, child) {
         const begin = Offset(1.0, 0.0); // Slide from right
         const end = Offset.zero;
@@ -166,7 +184,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       transitionDuration = const Duration(milliseconds: 300);
       break;
     case 'Hierarchies':
-      page = HierarchiesPage();
+      UserModel user = settings?.arguments as UserModel;
+      page = HierarchiesPage(
+        user: user,
+      );
       break;
     default:
       return MaterialPageRoute(

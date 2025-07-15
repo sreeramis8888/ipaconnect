@@ -59,6 +59,22 @@ class RatingApiService {
     }
   }
 
+  Future<List<RatingModel>> getMyRatings({
+    required String entityType,
+    int pageNo = 1,
+    int limit = 10,
+  }) async {
+    final response = await _apiService.get(
+        '/rating/my-reviews?page_no=$pageNo&limit=$limit&type=$entityType');
+    log(name: 'RATING GET RESPONSE', '${response.data}');
+    if (response.success && response.data != null) {
+      final List<dynamic> data = response.data!['data'];
+      return data.map((json) => RatingModel.fromJson(json)).toList();
+    } else {
+      return [];
+    }
+  }
+
   Future<RatingModel?> getRatingById(String id) async {
     final response = await _apiService.get('/rating/$id');
     if (response.success && response.data != null) {
@@ -102,6 +118,21 @@ Future<List<RatingModel>> getRatingsByEntity(
   final service = ref.watch(ratingApiServiceProvider);
   return service.getRatingsByEntity(
     entityId: entityId,
+    entityType: entityType,
+    pageNo: pageNo,
+    limit: limit,
+  );
+}
+
+@riverpod
+Future<List<RatingModel>> getMyRatings(
+  Ref ref, {
+  required String entityType,
+  int pageNo = 1,
+  int limit = 10,
+}) {
+  final service = ref.watch(ratingApiServiceProvider);
+  return service.getMyRatings(
     entityType: entityType,
     pageNo: pageNo,
     limit: limit,

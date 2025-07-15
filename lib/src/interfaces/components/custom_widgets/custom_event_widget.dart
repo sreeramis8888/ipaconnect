@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
 Widget eventWidget({
@@ -12,7 +13,7 @@ Widget eventWidget({
   required EventsModel event,
 }) {
   String formattedDate = 'TBA';
-
+  bool registered = event.rsvp?.contains(id) ?? false;
   if (event.eventStartDate != null && event.eventEndDate != null) {
     try {
       DateTime start = event.eventStartDate!.toLocal();
@@ -111,7 +112,7 @@ Widget eventWidget({
                 children: [
                   Expanded(
                     child: customButton(
-                      label: 'Register Now',
+                      label: registered ? 'REGISTERED' : 'Register Now',
                       onPressed: () {
                         NavigationService navigationService =
                             NavigationService();

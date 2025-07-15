@@ -27,7 +27,7 @@ final businessCategoryApiServiceProvider =
 typedef BusinessCategoryApiServiceRef
     = AutoDisposeProviderRef<BusinesscategoryApiService>;
 String _$getBusinessCategoriesHash() =>
-    r'f5e90c0eb47ac1bd2d0a6a6f2dbf842fe0ce8ed3';
+    r'12d8e2a2ba25be9612586f51115e8ce4eebd0ec7';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -64,10 +64,12 @@ class GetBusinessCategoriesFamily
   GetBusinessCategoriesProvider call({
     int pageNo = 1,
     int limit = 10,
+    String? query,
   }) {
     return GetBusinessCategoriesProvider(
       pageNo: pageNo,
       limit: limit,
+      query: query,
     );
   }
 
@@ -78,6 +80,7 @@ class GetBusinessCategoriesFamily
     return call(
       pageNo: provider.pageNo,
       limit: provider.limit,
+      query: provider.query,
     );
   }
 
@@ -103,11 +106,13 @@ class GetBusinessCategoriesProvider
   GetBusinessCategoriesProvider({
     int pageNo = 1,
     int limit = 10,
+    String? query,
   }) : this._internal(
           (ref) => getBusinessCategories(
             ref as GetBusinessCategoriesRef,
             pageNo: pageNo,
             limit: limit,
+            query: query,
           ),
           from: getBusinessCategoriesProvider,
           name: r'getBusinessCategoriesProvider',
@@ -120,6 +125,7 @@ class GetBusinessCategoriesProvider
               GetBusinessCategoriesFamily._allTransitiveDependencies,
           pageNo: pageNo,
           limit: limit,
+          query: query,
         );
 
   GetBusinessCategoriesProvider._internal(
@@ -131,10 +137,12 @@ class GetBusinessCategoriesProvider
     required super.from,
     required this.pageNo,
     required this.limit,
+    required this.query,
   }) : super.internal();
 
   final int pageNo;
   final int limit;
+  final String? query;
 
   @override
   Override overrideWith(
@@ -153,6 +161,7 @@ class GetBusinessCategoriesProvider
         debugGetCreateSourceHash: null,
         pageNo: pageNo,
         limit: limit,
+        query: query,
       ),
     );
   }
@@ -167,7 +176,8 @@ class GetBusinessCategoriesProvider
   bool operator ==(Object other) {
     return other is GetBusinessCategoriesProvider &&
         other.pageNo == pageNo &&
-        other.limit == limit;
+        other.limit == limit &&
+        other.query == query;
   }
 
   @override
@@ -175,6 +185,7 @@ class GetBusinessCategoriesProvider
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, pageNo.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
+    hash = _SystemHash.combine(hash, query.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -189,6 +200,9 @@ mixin GetBusinessCategoriesRef
 
   /// The parameter `limit` of this provider.
   int get limit;
+
+  /// The parameter `query` of this provider.
+  String? get query;
 }
 
 class _GetBusinessCategoriesProviderElement
@@ -200,6 +214,8 @@ class _GetBusinessCategoriesProviderElement
   int get pageNo => (origin as GetBusinessCategoriesProvider).pageNo;
   @override
   int get limit => (origin as GetBusinessCategoriesProvider).limit;
+  @override
+  String? get query => (origin as GetBusinessCategoriesProvider).query;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

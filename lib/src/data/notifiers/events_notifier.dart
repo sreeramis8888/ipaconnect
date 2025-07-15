@@ -71,4 +71,23 @@ class EventsNotifier extends _$EventsNotifier {
       isLoading = false;
     }
   }
+
+  Future<void> fetchMyCreatedEvents() async {
+    if (isLoading) return;
+    isLoading = true;
+    try {
+      pageNo = 1;
+      final myCreatedEvents = await ref.read(fetchMyCreatedEventsProvider.future);
+      events = myCreatedEvents;
+      hasMore = false; // No pagination for my created events for now
+      isFirstLoad = false;
+      state = events;
+      log('Fetched my created events');
+    } catch (e, stackTrace) {
+      log(e.toString());
+      log(stackTrace.toString());
+    } finally {
+      isLoading = false;
+    }
+  }
 }

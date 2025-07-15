@@ -4,6 +4,7 @@ import 'package:ipaconnect/src/data/models/product_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
@@ -23,8 +24,12 @@ class ProductDetailsPage extends ConsumerStatefulWidget {
   final String category;
   final ProductModel product;
   final String companyUserId;
-  const ProductDetailsPage(
-      {super.key, required this.product, required this.category,required this.companyUserId, });
+  const ProductDetailsPage({
+    super.key,
+    required this.product,
+    required this.category,
+    required this.companyUserId,
+  });
 
   @override
   ConsumerState<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -43,9 +48,9 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
     // Refresh ratings for this product
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(ratingNotifierProvider.notifier).refreshRatings(
-        entityId: widget.product.id ?? '',
-        entityType: 'Product',
-      );
+            entityId: widget.product.id ?? '',
+            entityType: 'Product',
+          );
     });
   }
 
@@ -276,57 +281,59 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                         )
                       : _buildReviewsSection(context),
                   SizedBox(height: 24),
-                  if(id!=widget.companyUserId)
-                  customButton(
-                    label: 'Enquire Now',
-                    onPressed: () async {
-                      // Show loading dialog
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) => const Center(child: LoadingAnimation()),
-                      );
+                  if (id != widget.companyUserId)
+                    customButton(
+                      label: 'Enquire Now',
+                      onPressed: () async {
+                        // Show loading dialog
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) =>
+                              const Center(child: LoadingAnimation()),
+                        );
 
-                      try {
-                        final chatApi = ref.read(chatApiServiceProvider);
-                        final conversation = await chatApi.create1to1Conversation(product.user.id ?? '');
-                        
-                        Navigator.of(context).pop(); // Close loading dialog
-                        
-                        if (conversation != null) {
-                          // Navigate to chat screen
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                                conversationId: conversation.id ?? '',
-                                chatTitle: product.user.name ?? '',
-                                userId: product.user.id ?? '',
-                                initialProductInquiry: {
-                                  'product': product,
-                                  'category': widget.category,
-                                },
+                        try {
+                          final chatApi = ref.read(chatApiServiceProvider);
+                          final conversation = await chatApi
+                              .create1to1Conversation(product.user.id ?? '');
+
+                          Navigator.of(context).pop(); // Close loading dialog
+
+                          if (conversation != null) {
+                            // Navigate to chat screen
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                  conversationId: conversation.id ?? '',
+                                  chatTitle: product.user.name ?? '',
+                                  userId: product.user.id ?? '',
+                                  initialProductInquiry: {
+                                    'product': product,
+                                    'category': widget.category,
+                                  },
+                                ),
                               ),
-                            ),
-                          );
-                        } else {
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Failed to start chat.'),
+                                backgroundColor: kRed,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          Navigator.of(context).pop(); // Close loading dialog
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Failed to start chat.'),
+                            SnackBar(
+                              content: Text('Error: $e'),
                               backgroundColor: kRed,
                             ),
                           );
                         }
-                      } catch (e) {
-                        Navigator.of(context).pop(); // Close loading dialog
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error: $e'),
-                            backgroundColor: kRed,
-                          ),
-                        );
-                      }
-                    },
-                  ),
+                      },
+                    ),
                   SizedBox(height: 24),
                 ],
               ),
@@ -386,66 +393,74 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
   }
 
   Widget _reviewTile(RatingModel rating) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: kCardBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: kPrimaryColor.withOpacity(0.15), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundColor: kPrimaryColor.withOpacity(0.15),
-            child: Icon(Icons.person, color: kPrimaryColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(rating.user.name ?? '',
-                        style: kBodyTitleSB.copyWith(color: kWhite)),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${rating.createdAt.toLocal()}'.split(' ')[0],
-                      style:
-                          kSmallerTitleR.copyWith(color: kSecondaryTextColor),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: List.generate(
-                      5,
-                      (i) => Icon(
-                            i < rating.rating
-                                ? Icons.star_rounded
-                                : Icons.star_border_rounded,
-                            color: Colors.amber,
-                            size: 18,
-                          )),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  rating.review,
-                  style: kBodyTitleR.copyWith(color: kSecondaryTextColor),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        NavigationService navigationService = NavigationService();
+        navigationService.pushNamed('ProfilePreviewById',
+            arguments: rating.user.id);
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: kCardBackgroundColor,
+          borderRadius: BorderRadius.circular(12),
+          border:
+              Border.all(color: kPrimaryColor.withOpacity(0.15), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: Offset(0, 2),
             ),
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundColor: kPrimaryColor.withOpacity(0.15),
+              child: Icon(Icons.person, color: kPrimaryColor),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(rating.user.name ?? '',
+                          style: kBodyTitleSB.copyWith(color: kWhite)),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${rating.createdAt.toLocal()}'.split(' ')[0],
+                        style:
+                            kSmallerTitleR.copyWith(color: kSecondaryTextColor),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: List.generate(
+                        5,
+                        (i) => Icon(
+                              i < rating.rating
+                                  ? Icons.star_rounded
+                                  : Icons.star_border_rounded,
+                              color: Colors.amber,
+                              size: 18,
+                            )),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    rating.review,
+                    style: kBodyTitleR.copyWith(color: kSecondaryTextColor),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

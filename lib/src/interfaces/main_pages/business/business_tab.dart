@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -17,12 +19,25 @@ class BusinessCategoryTab extends ConsumerStatefulWidget {
 
 class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
   final ScrollController _scrollController = ScrollController();
-
+  Timer? _debounce;
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
     _fetchInitialCategories();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref
+          .read(businessCategoryNotifierProvider.notifier)
+          .searchCategories(query);
+    });
+  }
+
+  void _onSearchSubmitted(String query) {
+    ref.read(businessCategoryNotifierProvider.notifier).searchCategories(query);
   }
 
   Future<void> _fetchInitialCategories() async {
@@ -55,6 +70,8 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
             children: [
               Expanded(
                 child: TextField(
+                  onChanged: _onSearchChanged,
+                  onSubmitted: _onSearchSubmitted,
                   cursorColor: kWhite,
                   style: kBodyTitleR.copyWith(
                     fontSize: 14,
@@ -87,7 +104,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
           ),
         ),
         isFirstLoad
-            ? const Center(child: LoadingAnimation())
+            ? Expanded(child: const Center(child: LoadingAnimation()))
             : categories.isEmpty
                 ? Expanded(
                     child: Center(
@@ -125,7 +142,8 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                               onTap: () {
                                 NavigationService navigationService =
                                     NavigationService();
-                                navigationService.pushNamed('CategoryPage',arguments: category);
+                                navigationService.pushNamed('CategoryPage',
+                                    arguments: category);
                               },
                               child: CategoryCard(
                                 title: category.name,

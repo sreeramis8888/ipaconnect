@@ -6,7 +6,7 @@ part of 'rating_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$ratingNotifierHash() => r'45fae194c4901c28621f8a5fee989a4acfec1151';
+String _$ratingNotifierHash() => r'b9ba938b4c3f9187f1dfb48ded02105f5de06df4';
 
 /// See also [RatingNotifier].
 @ProviderFor(RatingNotifier)

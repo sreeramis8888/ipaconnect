@@ -57,7 +57,7 @@ class NotificationApiService {
     }
   }
 
-  Future<bool> createNotificationForAllUsers({
+  Future<bool> sendNotifcationToHierarchy({
     required String subject,
     required String content,
     List<String>? types,
@@ -67,9 +67,8 @@ class NotificationApiService {
     DateTime? sendDate,
   }) async {
     try {
-      // Send to all users by passing "*" as the first user
       final Map<String, dynamic> requestBody = {
-        'users': ['*'], // Backend will handle this to send to all users
+        'users': ['*'],
         'subject': subject,
         'content': content,
         if (types != null && types.isNotEmpty) 'type': types,

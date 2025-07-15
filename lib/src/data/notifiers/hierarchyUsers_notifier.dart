@@ -17,7 +17,7 @@ class HierarchyusersNotifier extends _$HierarchyusersNotifier {
   bool isLoading = false;
   bool isFirstLoad = true;
   int pageNo = 1;
-  final int limit = 5;
+  final int limit = 15;
   bool hasMore = true;
 
   @override
@@ -31,8 +31,9 @@ class HierarchyusersNotifier extends _$HierarchyusersNotifier {
     isLoading = true;
 
     try {
-      final newHierarchyUsers = await ref
-          .read(getHierarchyUsersProvider(hierarchyId: hierarchyId, page: pageNo, limit: limit).future);
+      final newHierarchyUsers = await ref.read(getHierarchyUsersProvider(
+              hierarchyId: hierarchyId, page: pageNo, limit: limit)
+          .future);
 
       if (newHierarchyUsers.isEmpty) {
         hasMore = false;
@@ -59,8 +60,9 @@ class HierarchyusersNotifier extends _$HierarchyusersNotifier {
 
     try {
       pageNo = 1;
-      final refreshedHierarchies = await ref
-          .read(getHierarchyUsersProvider(hierarchyId: hierarchyId,page: pageNo, limit: limit).future);
+      final refreshedHierarchies = await ref.read(getHierarchyUsersProvider(
+              hierarchyId: hierarchyId, page: pageNo, limit: limit)
+          .future);
 
       hierarchyUsers = refreshedHierarchies;
       hasMore = refreshedHierarchies.length >= limit;

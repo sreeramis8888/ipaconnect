@@ -125,7 +125,7 @@ class NewsListPage extends ConsumerWidget {
                     child: ListView.builder(
                       itemCount: news.length,
                       itemBuilder: (context, index) {
-                        return NewsCard(news: news[index], allNewsModel: news);
+                        return NewsCard(news: news[index], allNews: news);
                       },
                     ),
                   ),
@@ -151,9 +151,9 @@ class NewsListPage extends ConsumerWidget {
 
 class NewsCard extends ConsumerWidget {
   final NewsModel news;
-  final List<NewsModel> allNewsModel;
+  final List<NewsModel> allNews;
 
-  const NewsCard({Key? key, required this.news, required this.allNewsModel})
+  const NewsCard({Key? key, required this.news, required this.allNews})
       : super(key: key);
 
   @override
@@ -162,13 +162,13 @@ class NewsCard extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        final initialIndex = allNewsModel.indexOf(news);
+        final initialIndex = allNews.indexOf(news);
         if (initialIndex != -1) {
           ref.read(currentNewsIndexProvider.notifier).state = initialIndex;
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NewsModelDetailView(news: allNewsModel),
+              builder: (context) => NewsDetailView(news: allNews),
             ),
           );
         }

@@ -88,23 +88,7 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
           fontWeight: FontWeight.bold,
         ),
         iconTheme: IconThemeData(color: Colors.black),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_active_outlined, color: kPrimaryColor),
-            tooltip: 'Send Notification',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateNotificationPage(
-                    hierarchyId: widget.hierarchyId,
-                    hierarchyName: widget.hierarchyName,
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
+       
       ),
       body: RefreshIndicator(
         backgroundColor: kCardBackgroundColor,
@@ -201,6 +185,22 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+         Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateNotificationPage(
+                    hierarchyId: widget.hierarchyId,
+                    hierarchyName: widget.hierarchyName,
+                  ),
+                ),
+              );
+        },
+        backgroundColor: kPrimaryColor,
+        child: const Icon(Icons.notifications_active_outlined,
+            color: Colors.white),
       ),
     );
   }
