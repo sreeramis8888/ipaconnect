@@ -166,3 +166,57 @@ class CustomTextFormField extends StatelessWidget {
     );
   }
 }
+
+class ModalSheetTextFormField extends StatelessWidget {
+  final TextEditingController textController;
+  final String? label;
+  final int maxLines;
+  final String? Function(String?)? validator;
+  final bool isAward;
+  final TextInputType textInputType;
+  const ModalSheetTextFormField({
+    required this.textController,
+    required this.label,
+    this.maxLines = 1,
+    this.validator,
+    super.key,
+    this.isAward = false,
+    this.textInputType = TextInputType.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      style: kSmallTitleR,
+      keyboardType: textInputType,
+      maxLength: isAward ? 15 : null,
+      controller: textController,
+      maxLines: maxLines,
+      validator: validator,
+      decoration: InputDecoration(
+        hintStyle: kSmallTitleR,
+        fillColor: kStrokeColor,
+        filled: true,
+        hintText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: kStrokeColor,
+            width: 1.0, 
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: kStrokeColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: kStrokeColor,
+            width: 1.0,
+          ),
+        ),
+      ),
+    );
+  }
+}

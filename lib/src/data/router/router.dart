@@ -21,6 +21,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/enquiries.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_events.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_reviews.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/privacy.dart';
@@ -87,6 +88,9 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'CampaignsMainScreen':
       page = CampaignsMainScreen();
+      break;
+    case 'EnquiriesPage':
+      page = EnquiriesPage();
       break;
     case 'ApprovalWaitingPage':
       page = ApprovalWaitingPage();

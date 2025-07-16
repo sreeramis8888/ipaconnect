@@ -7,7 +7,7 @@ import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
-import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialogue.dart';
+import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialog.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {

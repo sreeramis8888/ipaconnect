@@ -24,14 +24,13 @@ class UserModel {
   final String? role;
   @JsonKey(name: 'last_seen') final DateTime? lastSeen;
   final bool? online;
+  @JsonKey(name: 'is_form_activated') final bool? isFormActivated;
   @JsonKey(name: 'reject_reason') final String? rejectReason;
   final String? bio;
   @JsonKey(name: 'social_media') final List<UserSocialMedia>? socialMedia;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   @JsonKey(name: '_id') final String? id;
-
-  // 🆕 Newly added fields
   final DateTime? dob;
   final String? emirates;
   @JsonKey(name: 'ipa_join_date') final DateTime? ipaJoinDate;
@@ -59,6 +58,7 @@ class UserModel {
     this.status,
     this.isIpaMember,
     this.isAdmin,
+    this.isFormActivated,
     this.hierarchy,
     this.role,
     this.lastSeen,
@@ -117,6 +117,7 @@ class UserModel {
     List<SubData>? websites,
     List<SubData>? documents,
     List<Award>? awards,
+    bool? isFormActivated,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -152,6 +153,7 @@ class UserModel {
       websites: websites ?? this.websites,
       documents: documents ?? this.documents,
       awards: awards ?? this.awards,
+      isFormActivated: isFormActivated ?? this.isFormActivated,
     );
   }
 }

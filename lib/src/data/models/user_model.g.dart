@@ -25,6 +25,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       status: json['status'] as String?,
       isIpaMember: json['is_ipa_member'] as bool?,
       isAdmin: json['is_admin'] as bool?,
+      isFormActivated: json['is_form_activated'] as bool?,
       hierarchy: json['hierarchy'] == null
           ? null
           : HierarchyModel.fromJson(json['hierarchy'] as Map<String, dynamic>),
@@ -90,6 +91,8 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       if (instance.lastSeen?.toIso8601String() case final value?)
         'last_seen': value,
       if (instance.online case final value?) 'online': value,
+      if (instance.isFormActivated case final value?)
+        'is_form_activated': value,
       if (instance.rejectReason case final value?) 'reject_reason': value,
       if (instance.bio case final value?) 'bio': value,
       if (instance.socialMedia case final value?) 'social_media': value,

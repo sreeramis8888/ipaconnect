@@ -1,4 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,8 +19,17 @@ import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/cards/award_card.dart';
+import 'package:ipaconnect/src/interfaces/components/cards/certificate_card.dart';
+import 'package:ipaconnect/src/interfaces/components/cards/custom_websiteVideo_card.dart';
+import 'package:ipaconnect/src/interfaces/components/cards/document_card.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/social_media_editor.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_award.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_certificate.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_document.dart';
+import 'package:ipaconnect/src/interfaces/components/modals/add_website_video.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/edit_user_shimmer.dart';
 import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
 import 'package:path/path.dart' as Path;
@@ -53,6 +63,9 @@ class _EditUserState extends ConsumerState<EditUser> {
       TextEditingController();
   final TextEditingController personalPhoneController = TextEditingController();
   final TextEditingController professionController = TextEditingController();
+  final TextEditingController designationController = TextEditingController();
+  final TextEditingController aboutController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
 
   final TextEditingController bioController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -60,15 +73,30 @@ class _EditUserState extends ConsumerState<EditUser> {
   final TextEditingController linkedinController = TextEditingController();
   final TextEditingController twtitterController = TextEditingController();
   final TextEditingController facebookController = TextEditingController();
+  final TextEditingController websiteNameController = TextEditingController();
+  final TextEditingController websiteLinkController = TextEditingController();
+  final TextEditingController videoNameController = TextEditingController();
+  final TextEditingController videoLinkController = TextEditingController();
+  final TextEditingController awardNameController = TextEditingController();
 
+  final TextEditingController awardAuthorityController =
+      TextEditingController();
+  final TextEditingController certificateNameController =
+      TextEditingController();
+  final TextEditingController documentNameController = TextEditingController();
   File? _profileImageFile;
   ImageSource? _profileImageSource;
   NavigationService navigationService = NavigationService();
   final _formKey = GlobalKey<FormState>();
   SnackbarService snackbarService = SnackbarService();
 
+  File? _awardImageFIle;
+  File? _certificateImageFIle;
+  File? _documentFile;
+  ImageSource? _awardImageSource;
+  ImageSource? _certificateSource;
   bool _isProfileImageLoading = false;
-
+  bool isFormActive = true;
   Future<File?> _pickFile({required String imageType}) async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -110,7 +138,7 @@ class _EditUserState extends ConsumerState<EditUser> {
             ref.read(userProvider.notifier).updateProfilePicture(profileUrl);
             print((profileUrl));
             return croppedFile;
-          } else {}
+          }
         } catch (e) {
           print('Error uploading profile image: $e');
           snackbarService.showSnackBar('Failed to upload profile image');
@@ -119,9 +147,273 @@ class _EditUserState extends ConsumerState<EditUser> {
             _isProfileImageLoading = false;
           });
         }
+      } else if (imageType == 'award') {
+        _awardImageFIle = File(image.path);
+        _awardImageSource = ImageSource.gallery;
+        return _awardImageFIle;
+      } else if (imageType == 'certificate') {
+        _certificateImageFIle = File(image.path);
+        _certificateSource = ImageSource.gallery;
+        return _certificateImageFIle;
+      } else {
+        _documentFile = File(image.path);
+        return _documentFile;
       }
     }
     return null;
+  }
+
+  Future<void> _addNewAward() async {
+    await imageUpload(_awardImageFIle!.path).then((url) {
+      final String awardUrl = url;
+      final newAward = Award(
+        name: awardNameController.text,
+        image: awardUrl,
+        authority: awardAuthorityController.text,
+      );
+
+      ref
+          .read(userProvider.notifier)
+          .updateAwards([...?ref.read(userProvider).value?.awards, newAward]);
+    });
+
+    _awardImageFIle = null;
+  }
+
+  void _removeAward(int index) async {
+    ref
+        .read(userProvider.notifier)
+        .removeAward(ref.read(userProvider).value!.awards![index]);
+  }
+
+  void _addNewWebsite() async {
+    SubData newWebsite = SubData(
+        link: websiteLinkController.text.toString(),
+        name: websiteNameController.text.toString());
+    log('Hello im in website bug:${ref.read(userProvider).value?.websites}');
+    ref.read(userProvider.notifier).updateWebsite(
+        [...?ref.read(userProvider).value?.websites, newWebsite]);
+    websiteLinkController.clear();
+    websiteNameController.clear();
+  }
+
+  void _removeWebsite(int index) async {
+    ref
+        .read(userProvider.notifier)
+        .removeWebsite(ref.read(userProvider).value!.websites![index]);
+  }
+
+  void _addNewVideo() async {
+    SubData newVideo = SubData(
+        link: videoLinkController.text.toString(),
+        name: videoNameController.text.toString());
+    log('Hello im in website bug:${ref.read(userProvider).value?.videos}');
+    ref
+        .read(userProvider.notifier)
+        .updateVideos([...?ref.read(userProvider).value?.videos, newVideo]);
+    videoLinkController.clear();
+    videoNameController.clear();
+  }
+
+  void _removeVideo(int index) async {
+    ref
+        .read(userProvider.notifier)
+        .removeVideo(ref.read(userProvider).value!.videos![index]);
+  }
+
+  Future<void> _addNewCertificate() async {
+    await imageUpload(_certificateImageFIle!.path).then((url) {
+      final String certificateUrl = url;
+      final newCertificate =
+          SubData(name: certificateNameController.text, link: certificateUrl);
+
+      ref.read(userProvider.notifier).updateCertificate(
+          [...?ref.read(userProvider).value?.certificates, newCertificate]);
+    });
+
+    _certificateImageFIle = null;
+  }
+
+  void _removeCertificate(int index) async {
+    ref
+        .read(userProvider.notifier)
+        .removeCertificate(ref.read(userProvider).value!.certificates![index]);
+  }
+
+  void _onAwardEdit(int index) async {
+    // First check if awards exist and index is valid
+    final awards = ref.read(userProvider).value?.awards;
+    if (awards == null || awards.isEmpty || index >= awards.length) {
+      snackbarService.showSnackBar('Award not found');
+      return;
+    }
+
+    // Get the award to edit
+    final Award oldAward = awards[index];
+
+    // Pre-fill the controllers with existing data
+    awardNameController.text = oldAward.name ?? '';
+    awardAuthorityController.text = oldAward.authority ?? '';
+
+    showModalBottomSheet(
+      backgroundColor: kBackgroundColor,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return ShowEnterAwardSheet(
+          imageUrl: oldAward.image,
+          pickImage: _pickFile,
+          editAwardCard: () => _editAward(oldAward: oldAward),
+          imageType: 'award',
+          textController1: awardNameController,
+          textController2: awardAuthorityController,
+        );
+      },
+    );
+  }
+
+  Future<void> _editAward({required Award oldAward}) async {
+    if (_awardImageFIle != null) {
+      try {
+        final String awardUrl = await imageUpload(_awardImageFIle!.path);
+        final newAward = Award(
+          name: awardNameController.text,
+          image: awardUrl,
+          authority: awardAuthorityController.text,
+        );
+
+        ref.read(userProvider.notifier).editAward(oldAward, newAward);
+      } catch (e) {
+        print('Error uploading award image: $e');
+        snackbarService.showSnackBar('Failed to upload award image');
+      }
+    } else {
+      final newAward = Award(
+        name: awardNameController.text,
+        image: oldAward.image,
+        authority: awardAuthorityController.text,
+      );
+
+      ref.read(userProvider.notifier).editAward(oldAward, newAward);
+    }
+  }
+
+  void _editWebsite(int index) {
+    websiteNameController.text =
+        ref.read(userProvider).value?.websites?[index].name ?? '';
+    websiteLinkController.text =
+        ref.read(userProvider).value?.websites?[index].link ?? '';
+
+    showWebsiteSheet(
+        addWebsite: () {
+          final SubData oldWebsite =
+              ref.read(userProvider).value!.websites![index];
+          final SubData newWebsite = SubData(
+              name: websiteNameController.text,
+              link: websiteLinkController.text);
+          ref.read(userProvider.notifier).editWebsite(oldWebsite, newWebsite);
+        },
+        textController1: websiteNameController,
+        textController2: websiteLinkController,
+        fieldName: 'Edit Website Link',
+        title: 'Edit Website',
+        context: context);
+  }
+
+  void _editVideo(int index) {
+    videoNameController.text =
+        ref.read(userProvider).value?.videos?[index].name ?? '';
+    videoLinkController.text =
+        ref.read(userProvider).value?.videos?[index].link ?? '';
+
+    showVideoLinkSheet(
+        addVideo: () {
+          final SubData oldVideo = ref.read(userProvider).value!.videos![index];
+          final SubData newVideo = SubData(
+              name: videoNameController.text, link: videoLinkController.text);
+          ref.read(userProvider.notifier).editVideo(oldVideo, newVideo);
+        },
+        textController1: videoNameController,
+        textController2: videoLinkController,
+        fieldName: 'Edit Video Link',
+        title: 'Edit Video Link',
+        context: context);
+  }
+
+  void _editCertificate(int index) async {
+    final SubData oldCertificate =
+        ref.read(userProvider).value!.certificates![index];
+    certificateNameController.text = oldCertificate.name ?? '';
+
+    showModalBottomSheet(
+      backgroundColor: kCardBackgroundColor,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => ShowAddCertificateSheet(
+        imageUrl: oldCertificate.link,
+        textController: certificateNameController,
+        pickImage: _pickFile,
+        imageType: 'certificate',
+        addCertificateCard: () async {
+          if (_certificateImageFIle != null) {
+            try {
+              final String certificateUrl =
+                  await imageUpload(_certificateImageFIle!.path);
+              final newCertificate = SubData(
+                  name: certificateNameController.text, link: certificateUrl);
+              ref
+                  .read(userProvider.notifier)
+                  .editCertificate(oldCertificate, newCertificate);
+            } catch (e) {
+              print('Error uploading certificate image: $e');
+              snackbarService
+                  .showSnackBar('Failed to upload certificate image');
+            }
+          } else {
+            final newCertificate = SubData(
+              name: certificateNameController.text,
+              link: oldCertificate.link,
+            );
+            ref
+                .read(userProvider.notifier)
+                .editCertificate(oldCertificate, newCertificate);
+          }
+        },
+      ),
+    );
+  }
+
+  Future<File?> _pickDocument() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['png', 'jpg', 'jpeg', 'pdf'],
+    );
+
+    if (result != null) {
+      _documentFile = File(result.files.single.path!);
+      log('picked pdf :$_documentFile');
+      return _documentFile;
+    }
+    return null;
+  }
+
+  Future<void> _addNewDocument() async {
+    log("picked pdf while add:$_documentFile");
+    final String brochureUrl = await imageUpload(
+      _documentFile!.path,
+    );
+
+    final newBrochure =
+        SubData(name: documentNameController.text, link: brochureUrl);
+
+    ref.read(userProvider.notifier).updateDocuments(
+        [...?ref.read(userProvider).value?.documents, newBrochure]);
+  }
+
+  void _removeDocument(int index) async {
+    ref
+        .read(userProvider.notifier)
+        .removeDocument(ref.read(userProvider).value!.documents![index]);
   }
 
   @override
@@ -147,8 +439,20 @@ class _EditUserState extends ConsumerState<EditUser> {
       if (user.email != null) 'email': user.email,
       if (user.location != null) 'location': user.location,
       if (user.image != null) 'image': user.image ?? '',
+      if (user.isFormActivated != null)
+        'is_form_activated': user.isFormActivated ?? true,
       if (user.socialMedia != null)
         'social_media': user.socialMedia?.map((e) => e.toJson()).toList(),
+      if (user.websites != null)
+        'websites': user.websites?.map((e) => e.toJson()).toList(),
+      if (user.awards != null)
+        'awards': user.awards?.map((e) => e.toJson()).toList(),
+      if (user.videos != null)
+        'videos': user.videos?.map((e) => e.toJson()).toList(),
+      if (user.certificates != null)
+        'certificates': user.certificates?.map((e) => e.toJson()).toList(),
+      if (user.documents != null)
+        'documents': user.documents?.map((e) => e.toJson()).toList(),
     };
 
     log("Submitting profile data: ${profileData.toString()}");
@@ -159,20 +463,6 @@ class _EditUserState extends ConsumerState<EditUser> {
 
     return response.success ?? false;
   }
-
-  // Future<void> _selectImageFile(ImageSource source, String imageType) async {
-  //   final XFile? image = await _picker.pickImage(source: source);
-  //   print('$image');
-  //   if (image != null && imageType == 'profile') {
-  //     setState(() {
-  //       _profileImageFile = _pickFile()
-  //     });
-  //   } else if (image != null && imageType == 'company') {
-  //     setState(() {
-  //       _companyImageFile = File(image.path);
-  //     });
-  //   }
-  // }
 
   void navigateBasedOnPreviousPage() {
     final previousPage = ModalRoute.of(context)?.settings.name;
@@ -205,8 +495,6 @@ class _EditUserState extends ConsumerState<EditUser> {
               );
             },
             data: (user) {
-              // _initializeCompanyDetails(user.company);
-              // log(user.company.toString());
               if (nameController.text.isEmpty) {
                 nameController.text = user.name ?? '';
               }
@@ -226,6 +514,15 @@ class _EditUserState extends ConsumerState<EditUser> {
               }
               if (addressController.text.isEmpty) {
                 addressController.text = user.location ?? '';
+              }
+              if (designationController.text.isEmpty) {
+                designationController.text = user.profession ?? '';
+              }
+              if (aboutController.text.isEmpty) {
+                aboutController.text = user.bio ?? '';
+              }
+              if (mobileController.text.isEmpty) {
+                mobileController.text = user.phone ?? '';
               }
               for (UserSocialMedia social in user.socialMedia ?? []) {
                 if (social.name == 'instagram' && igController.text.isEmpty) {
@@ -255,33 +552,28 @@ class _EditUserState extends ConsumerState<EditUser> {
                         child: Form(
                           key: _formKey,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
                                 child: AppBar(
-                                  scrolledUnderElevation: 0,
-                                  backgroundColor: kBackgroundColor,
-                                  elevation: 0,
-                                  leadingWidth: 50,
+                                  centerTitle: true,
                                   leading: Padding(
-                                      padding: const EdgeInsets.only(left: 10),
-                                      child: SizedBox(
-                                        width: 40,
-                                        height: 40,
-                                        child: SvgPicture.asset(
-                                            'assets/svg/icons/ipa_logo.svg'),
-                                      )),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          ref.invalidate(
-                                              getUserDetailsByIdProvider);
-                                          navigateBasedOnPreviousPage();
-                                        },
-                                        child: Icon(
-                                          Icons.close,
-                                          color: kPrimaryColor,
-                                        )),
-                                  ],
+                                    padding: const EdgeInsets.all(8),
+                                    child: InkWell(
+                                      onTap: () => Navigator.pop(context),
+                                      child: CustomRoundButton(
+                                        offset: Offset(4, 0),
+                                        iconPath:
+                                            'assets/svg/icons/arrow_back_ios.svg',
+                                      ),
+                                    ),
+                                  ),
+                                  scrolledUnderElevation: 0,
+                                  title: Text('Edit Profile',
+                                      style: kBodyTitleB.copyWith()),
+                                  backgroundColor: kBackgroundColor,
+                                  iconTheme:
+                                      IconThemeData(color: kSecondaryTextColor),
                                 ),
                               ),
                               const SizedBox(height: 35),
@@ -370,110 +662,69 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   );
                                 },
                               ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 60, left: 16, bottom: 10),
-                                    child: Text('Personal Details',
-                                        style: kSubHeadingB),
-                                  ),
-                                ],
-                              ),
+
+                              const SizedBox(height: 24),
                               Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 20, top: 10, bottom: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     CustomTextFormField(
                                       backgroundColor: kCardBackgroundColor,
-                                      title: 'Full Name',
+                                      title: 'Name',
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'Please Enter Your Name';
                                         }
-
-                                        // Regex to allow only basic English letters and spaces (no emojis or fancy unicode)
                                         final regex =
                                             RegExp(r'^[a-zA-Z0-9\s.,-]*$');
-
                                         if (!regex.hasMatch(value)) {
                                           return 'Only standard letters, numbers, and basic punctuation allowed';
                                         }
-
                                         return null;
                                       },
                                       textController: nameController,
-                                      labelText: 'Enter your Name',
+                                      labelText: 'Enter Name',
                                     ),
-                                    const SizedBox(height: 20.0),
-                                    CustomTextFormField(
-                                        backgroundColor: kCardBackgroundColor,
-                                        title: 'Bio',
-                                        // validator: (value) {
-                                        //   if (value == null || value.isEmpty) {
-                                        //     return 'Please Enter Your Bio';
-                                        //   }
-                                        //   return null;
-                                        // },
-                                        textController: bioController,
-                                        labelText: 'Bio',
-                                        maxLines: 5),
-                                    const SizedBox(height: 20.0),
+                                    const SizedBox(height: 16),
                                     CustomTextFormField(
                                       backgroundColor: kCardBackgroundColor,
-                                      title: 'Profession',
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please Enter Your Profession';
-                                        }
-
-                                        return null;
-                                      },
-                                      textController: professionController,
-                                      labelText: 'Enter your Profession',
+                                      title: 'Designation',
+                                      textController: designationController,
+                                      labelText: 'Enter Designation',
+                                    ),
+                                    const SizedBox(height: 16),
+                                    CustomTextFormField(
+                                      backgroundColor: kCardBackgroundColor,
+                                      title: 'About',
+                                      textController: aboutController,
+                                      labelText: 'Description',
+                                      maxLines: 5,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    CustomTextFormField(
+                                      backgroundColor: kCardBackgroundColor,
+                                      title: 'Email ID',
+                                      textController: emailController,
+                                      labelText: 'Enter Email ID',
                                     ),
                                   ],
                                 ),
                               ),
+
                               Padding(
                                 padding: const EdgeInsets.only(
-                                  top: 20,
-                                  left: 20,
-                                ),
+                                    top: 15, left: 16, bottom: 15),
                                 child: Row(
                                   children: [
-                                    Text('Contact', style: kSubHeadingB),
+                                    Text('Social Media', style: kSmallTitleR),
                                   ],
                                 ),
                               ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
-                                children: [],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                child: CustomTextFormField(
-                                  backgroundColor: kCardBackgroundColor,
-                                  title: 'Address',
-                                  textController: addressController,
-                                  labelText: 'Enter Personal Address',
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20, left: 20, bottom: 15),
-                                child: Row(
-                                  children: [
-                                    Text('Social Media', style: kSubHeadingB),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   SocialMediaEditor(
                                     icon: FontAwesomeIcons.instagram,
@@ -521,50 +772,373 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                height: 100,
-                              )
+                              const SizedBox(height: 15),
+                              if (user.websites != null &&
+                                  user.websites!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Website',
+                                        style: kSmallTitleR,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              if (user.websites != null &&
+                                  user.websites!.isNotEmpty)
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: user.websites?.length,
+                                itemBuilder: (context, index) {
+                                  log('Websites count: ${user.websites?.length}');
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0),
+                                    child: customWebsiteCard(
+                                        onEdit: () => _editWebsite(index),
+                                        onRemove: () => _removeWebsite(index),
+                                        website: user.websites?[index]),
+                                  );
+                                },
+                              ),
+                              InkWell(
+                                onTap: () => showWebsiteSheet(
+                                  addWebsite: _addNewWebsite,
+                                  textController1: websiteNameController,
+                                  textController2: websiteLinkController,
+                                  fieldName: 'Website Link',
+                                  title: 'Add Website',
+                                  context: context,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, bottom: 15),
+                                  child: Text('+ Add Website',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                              if (user.videos != null &&
+                                  user.videos!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Videos',
+                                        style: kSmallTitleR,
+                                      ),
+                                      // CustomSwitch(
+                                      //   value:
+                                      //       ref.watch(isVideoDetailsVisibleProvider),
+                                      //   onChanged: (bool value) {
+                                      //     setState(() {
+                                      //       ref
+                                      //           .read(isVideoDetailsVisibleProvider
+                                      //               .notifier)
+                                      //           .state = value;
+                                      //     });
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                              if (user.videos != null &&
+                                  user.videos!.isNotEmpty)
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: user.videos?.length,
+                                itemBuilder: (context, index) {
+                                  log('video count: ${user.videos?.length}');
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0), // Space between items
+                                    child: customVideoCard(
+                                        onEdit: () => _editVideo(index),
+                                        onRemove: () => _removeVideo(index),
+                                        video: user.videos?[index]),
+                                  );
+                                },
+                              ),
+                              // + Add Video
+                              InkWell(
+                                onTap: () => showVideoLinkSheet(
+                                  addVideo: _addNewVideo,
+                                  textController1: videoNameController,
+                                  textController2: videoLinkController,
+                                  fieldName: 'Video Link',
+                                  title: 'Add Video',
+                                  context: context,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, bottom: 15),
+                                  child: Text('+ Add Video',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                              if (user.awards != null &&
+                                  user.awards!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 16,
+                                    right: 16,
+                                    bottom: 5,
+                                    top: 10,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Awards',
+                                        style: kSmallTitleR,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              if (user.awards != null &&
+                                  user.awards!.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: 8.0,
+                                      mainAxisSpacing: 8.0,
+                                    ),
+                                    itemCount: user.awards!.length + 1,
+                                    itemBuilder: (context, index) {
+                                      if (index < user.awards!.length) {
+                                        return AwardCard(
+                                          onEdit: () => _onAwardEdit(index),
+                                          award: user.awards![index],
+                                          onRemove: () => _removeAward(index),
+                                        );
+                                      } else {
+                                        SizedBox.shrink();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              InkWell(
+                                onTap: () => showModalBottomSheet(
+                                  backgroundColor: kCardBackgroundColor,
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) => ShowEnterAwardSheet(
+                                    addAwardCard: _addNewAward,
+                                    pickImage: _pickFile,
+                                    imageType: 'award',
+                                    textController1: awardNameController,
+                                    textController2: awardAuthorityController,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, bottom: 15),
+                                  child: Text('+ Add Award',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                              if (user.documents != null &&
+                                  user.documents!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 16, right: 16, top: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Documents',
+                                        style: kSmallTitleR,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              if (user.documents != null &&
+                                  user.documents!.isNotEmpty)
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: user.documents!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: DocumentCard(
+                                        brochure: user.documents![index],
+                                        onRemove: () => _removeDocument(index),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              InkWell(
+                                onTap: () => showModalBottomSheet(
+                                    backgroundColor: kCardBackgroundColor,
+                                    isScrollControlled: true,
+                                    context: context,
+                                    builder: (context) => ShowAddDocumentSheet(
+                                        brochureName: '',
+                                        textController: documentNameController,
+                                        pickPdf: _pickDocument,
+                                        addBrochureCard: _addNewDocument)),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, bottom: 15),
+                                  child: Text('+ Add Document',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                              if (user.certificates != null &&
+                                  user.certificates!.isNotEmpty)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 16, right: 16, top: 10, bottom: 5),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Certificates',
+                                        style: kSmallTitleR,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              if (user.certificates != null &&
+                                  user.certificates!.isNotEmpty)
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: user.certificates!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0),
+                                      child: CertificateCard(
+                                        onEdit: () => _editCertificate(index),
+                                        certificate: user.certificates![index],
+                                        onRemove: () =>
+                                            _removeCertificate(index),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              InkWell(
+                                onTap: () => showModalBottomSheet(
+                                  backgroundColor: kCardBackgroundColor,
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) => ShowAddCertificateSheet(
+                                    pickImage: _pickFile,
+                                    imageType: 'award',
+                                    addCertificateCard: _addNewCertificate,
+                                    textController: certificateNameController,
+                                    onImagePicked: (file) {
+                                      setState(() {
+                                        _certificateImageFIle = file;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, bottom: 15),
+                                  child: Text('+ Add Certificate',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 16, right: 16, bottom: 15),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Activate Form',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 16)),
+                                    Switch(
+                                      value: user.isFormActivated ?? true,
+                                      onChanged: (val) {
+                                        ref
+                                            .read(userProvider.notifier)
+                                            .updateIsFormActivated(val);
+                                      },
+                                      activeColor: Colors.blue,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 70),
                             ],
                           ),
                         ),
                       ),
                       Positioned(
-                          bottom: 20,
-                          left: 20,
-                          right: 20,
-                          child: SizedBox(
-                              height: 50,
-                              child: customButton(
-                                  fontSize: 16,
-                                  label: 'Save & Proceed',
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      SnackbarService snackbarService =
-                                          SnackbarService();
-                                      bool success =
-                                          await _submitData(user: user);
-                                      // ref
-                                      //     .read(userProvider.notifier)
-                                      //     .refreshUser();
-
-                                      // Navigator.pushReplacement(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (BuildContext context) =>
-                                      //             MainPage()
-                                      //             ));
-                                      if (success) {
-                                        snackbarService
-                                            .showSnackBar('Profile Updated');
-                                        ref.invalidate(
-                                            getUserDetailsByIdProvider);
-                                        navigateBasedOnPreviousPage();
-                                      } else {
-                                        snackbarService.showSnackBar('Failed',
-                                            type: SnackbarType.warning);
-                                      }
-                                    }
-                                  }))),
+                        bottom: 20,
+                        left: 20,
+                        right: 20,
+                        child: SizedBox(
+                          height: 50,
+                          child: customButton(
+                            fontSize: 16,
+                            label: 'Save & Proceed',
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                SnackbarService snackbarService =
+                                    SnackbarService();
+                                bool success = await _submitData(user: user);
+                                if (success) {
+                                  snackbarService
+                                      .showSnackBar('Profile Updated');
+                                  ref.invalidate(getUserDetailsByIdProvider);
+                                  navigateBasedOnPreviousPage();
+                                } else {
+                                  snackbarService.showSnackBar('Failed',
+                                      type: SnackbarType.warning);
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

@@ -119,6 +119,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: GridView.builder(
                         controller: _scrollController,
+                        padding: const EdgeInsets.only(bottom: 32,top: 20),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
@@ -128,7 +129,8 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                         ),
                         itemCount: categories.length + (isLoading ? 2 : 0),
                         itemBuilder: (context, index) {
-                          if (index == categories.length && isLoading) {
+                          // Show loading indicators if loading
+                          if (isLoading && index >= categories.length && index < categories.length + 2) {
                             return const Center(
                               child: Padding(
                                 padding: EdgeInsets.all(16.0),
@@ -136,14 +138,13 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                               ),
                             );
                           }
+                          // Show category cards
                           if (index < categories.length) {
                             final category = categories[index];
                             return GestureDetector(
                               onTap: () {
-                                NavigationService navigationService =
-                                    NavigationService();
-                                navigationService.pushNamed('CategoryPage',
-                                    arguments: category);
+                                NavigationService navigationService = NavigationService();
+                                navigationService.pushNamed('CategoryPage', arguments: category);
                               },
                               child: CategoryCard(
                                 title: category.name,
@@ -152,7 +153,6 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                               ),
                             );
                           }
-
                           // Fallback (shouldn't reach here)
                           return const SizedBox.shrink();
                         },

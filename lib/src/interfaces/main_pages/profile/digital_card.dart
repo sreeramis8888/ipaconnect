@@ -3,6 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/utils/launch_url.dart';
+import 'package:ipaconnect/src/data/utils/share_qr.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -95,38 +97,51 @@ class DigitalCardPage extends StatelessWidget {
                                         'assets/svg/ipa_login_logo.svg',
                                         height: 22,
                                       ),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.send,
-                                              color: kWhite, size: 20),
-                                          SizedBox(width: 4),
-                                          Text('Send Card',
-                                              style: TextStyle(
-                                                  color: kWhite, fontSize: 12)),
-                                        ],
+                                      GestureDetector(
+                                        onTap: () =>
+                                            captureAndShareOrDownloadWidgetScreenshot(
+                                                context,
+                                                user: user),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.send,
+                                                color: kWhite, size: 20),
+                                            SizedBox(width: 4),
+                                            Text('Send Card',
+                                                style: TextStyle(
+                                                    color: kWhite,
+                                                    fontSize: 12)),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 16),
-                                  Center(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: const EdgeInsets.all(16),
-                                      child: QrImageView(
-                                        data:
-                                            user.id ?? user.email ?? 'No Data',
-                                        version: QrVersions.auto,
-                                        size: 170,
-                                        gapless: false,
-                                        foregroundColor: Colors.black,
-                                        backgroundColor: Colors.white,
-                                        errorStateBuilder: (cxt, err) => Center(
-                                          child: Text('QR Error',
-                                              style:
-                                                  TextStyle(color: Colors.red)),
+                                  InkWell(
+                                    onTap: () => launchURL(
+                                        'https://admin.ipaconnect.org/user/${user.id}'),
+                                    child: Center(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        padding: const EdgeInsets.all(16),
+                                        child: QrImageView(
+                                          data:
+                                              'https://admin.ipaconnect.org/user/${user.id}',
+                                          version: QrVersions.auto,
+                                          size: 170,
+                                          gapless: false,
+                                          foregroundColor: Colors.black,
+                                          backgroundColor: Colors.white,
+                                          errorStateBuilder: (cxt, err) =>
+                                              Center(
+                                            child: Text('QR Error',
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ),
                                         ),
                                       ),
                                     ),

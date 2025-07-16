@@ -60,13 +60,22 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
             const SizedBox(height: 32),
             _menuItem(
               icon: SvgPicture.asset(
-                color: kWhite,
                 'assets/svg/icons/menu_icons/analytics.svg',
+                color: kWhite,
                 height: 24,
               ),
               label: 'Analytics',
               onTap: () => navigationService.pushNamed('Analytics'),
             ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/comment.svg',
+            //     color: kWhite,
+            //     height: 24,
+            //   ),
+            //   label: 'Enquiries',
+            //   onTap: () => navigationService.pushNamed('EnquiriesPage'),
+            // ),
             // _menuItem(
             //   icon: SvgPicture.asset(
             //     'assets/svg/icons/menu_icons/request_nfc.svg',
@@ -84,14 +93,14 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               label: 'Hierarchy',
               onTap: () => navigationService.pushNamed('Hierarchies',arguments: user),
             ),
-            // _menuItem(
-            //   icon: SvgPicture.asset(
-            //     'assets/svg/icons/menu_icons/my_submissions.svg',
-            //     height: 24,
-            //   ),
-            //   label: 'My Submissions',
-            //   onTap: () => navigationService.pushNamed('MyProducts'),
-            // ),
+            _menuItem(
+              icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/my_submissions.svg',
+                height: 24,
+              ),
+              label: 'My Submissions',
+              onTap: () => navigationService.pushNamed('EnquiriesPage'),
+            ),
             _menuItem(
               icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/my_orders.svg',

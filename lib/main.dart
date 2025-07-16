@@ -12,7 +12,7 @@ import 'package:ipaconnect/src/data/services/notification_service/notification_s
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/router/router.dart' as router;
-import 'package:ipaconnect/src/utils/connectivity_wrapper.dart';
+import 'package:ipaconnect/src/data/utils/connectivity_wrapper.dart';
 
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
@@ -36,11 +36,9 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle.dark.copyWith(
-        // Status bar color
         statusBarColor: Colors.transparent,
-        // Status bar brightness (optional)
-        statusBarIconBrightness: Brightness.light, // For Android (dark icons)
-        statusBarBrightness: Brightness.light, // For iOS (dark icons)
+        statusBarIconBrightness: Brightness.light, 
+        statusBarBrightness: Brightness.light, 
       ),
     );
     final notificationService = ref.watch(notificationServiceProvider);

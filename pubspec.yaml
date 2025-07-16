@@ -84,6 +84,7 @@ dependencies:
   youtube_player_flutter: ^9.1.1
   flutter_launcher_icons: ^0.14.4
   connectivity_plus: ^6.1.4
+  share_plus: ^11.0.0
 
 
 dev_dependencies:

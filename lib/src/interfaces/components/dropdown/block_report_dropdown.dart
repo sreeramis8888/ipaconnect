@@ -8,7 +8,7 @@ import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/models/feed_model.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
 import 'package:ipaconnect/src/data/notifiers/feed_notifier.dart';
-import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialogue.dart';
+import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialog.dart';
 
 class BlockReportDropdown extends ConsumerWidget {
   final FeedModel? feed;

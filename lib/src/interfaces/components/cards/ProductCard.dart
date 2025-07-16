@@ -4,7 +4,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
-import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialogue.dart';
+import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialog.dart';
 import 'package:ipaconnect/src/interfaces/components/dropdown/block_report_dropdown.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';

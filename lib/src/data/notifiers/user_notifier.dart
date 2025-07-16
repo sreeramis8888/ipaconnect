@@ -97,81 +97,114 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
 
     state = state.whenData((user) => user.copyWith(socialMedia: updatedList));
   }
-  // void updateCompanyLogo(String? companyLogo) {
-  //   state = state.whenData((user) => user.copyWith(company: Company(logo: companyLogo)));
-  // }
-  //   void updateCompanyDesignation(String? designation) {
-  //   state = state.whenData((user) => user.copyWith(company: Company(designation: designation)));
-  // }
-  //   void updateCompanyLogo(String? companyLogo) {
-  //   state = state.whenData((user) => user.copyWith(company: Company(logo: companyLogo)));
-  // }
-  //   void updateCompanyLogo(String? companyLogo) {
-  //   state = state.whenData((user) => user.copyWith(company: Company(logo: companyLogo)));
-  // }
 
-  // void updateSocialMedia(
-  //     List<Link> socialmedias, String platform, String newUrl) {
-  //   log(newUrl);
-  //   if (platform.isNotEmpty) {
-  //     final index = socialmedias.indexWhere((item) => item.name == platform);
-  //     log('platform:$platform');
-  //     if (index != -1) {
-  //       if (newUrl.isNotEmpty) {
-  //         // Update the existing social media link
-  //         final updatedSocialMedia = socialmedias[index].copyWith(link: newUrl);
-  //         socialmedias[index] = updatedSocialMedia;
-  //       } else {
-  //         // Remove the social media link if newUrl is empty
-  //         socialmedias.removeAt(index);
-  //       }
-  //     } else if (newUrl.isNotEmpty) {
-  //       // Add new social media link if platform doesn't exist and newUrl is not empty
-  //       final newSocialMedia = Link(name: platform, link: newUrl);
-  //       socialmedias.add(newSocialMedia);
-  //     }
 
-  //     // Update the state with the modified socialmedias list
-  //     state = state.whenData((user) => user.copyWith(social: socialmedias));
-  //   } else {
-  //     // If platform is empty, clear the social media list
-  //     state = state.whenData((user) => user.copyWith(social: []));
-  //   }
+  void removeAward(Award awardToRemove) {
+    state = state.whenData((user) {
+      final updatedAwards =
+          user.awards!.where((award) => award != awardToRemove).toList();
+      return user.copyWith(awards: updatedAwards);
+    });
+  }
 
-  //   log('Updated Social Media $socialmedias');
-  // }
+  void removeCertificate(SubData certificateToRemove) {
+    state = state.whenData((user) {
+      final updatedCertificate = user.certificates!
+          .where((certificate) => certificate != certificateToRemove)
+          .toList();
+      return user.copyWith(certificates: updatedCertificate);
+    });
+  }
 
-  // void updateVideos(List<Link> videos) {
-  //   state = state.whenData((user) => user.copyWith(videos: videos));
-  // }
+  void editAward(Award oldAward, Award updatedAward) {
+    state = state.whenData((user) {
+      final updatedAwards = user.awards!.map((award) {
+        final isReplacing = award == oldAward;
+        print("Checking Award: ${award.name} -> Replacing? $isReplacing");
 
-  // void removeVideo(Link videoToRemove) {
-  //   state = state.whenData((user) {
-  //     final updatedVideo =
-  //         user.videos!.where((video) => video != videoToRemove).toList();
-  //     return user.copyWith(videos: updatedVideo);
-  //   });
-  // }
+        return isReplacing ? updatedAward : award;
+      }).toList();
 
-  // void updateWebsite(List<Link> websites) {
-  //   state = state.whenData((user) => user.copyWith(websites: websites));
-  //   log('website count in updation ${websites.length}');
-  // }
+      print(
+          "Updated Awards List: ${updatedAwards.map((e) => e.image).toList()}");
 
-  // void removeWebsite(Link websiteToRemove) {
-  //   state = state.whenData((user) {
-  //     final updatedWebsites = user.websites!
-  //         .where((website) => website != websiteToRemove)
-  //         .toList();
-  //     return user.copyWith(websites: updatedWebsites);
-  //   });
-  // }
+      return user.copyWith(awards: updatedAwards);
+    });
+  }
+
+  void editWebsite(SubData oldWebsite, SubData newWebsite) {
+    state = AsyncValue.data(state.value!.copyWith(
+        websites: state.value!.websites!
+            .map((w) => w == oldWebsite ? newWebsite : w)
+            .toList()));
+  }
+
+  void editVideo(SubData oldVideo, SubData newVideo) {
+    state = AsyncValue.data(state.value!.copyWith(
+        videos: state.value!.videos!
+            .map((v) => v == oldVideo ? newVideo : v)
+            .toList()));
+  }
+
+  void editCertificate(SubData oldCertificate, SubData newCertificate) {
+    state = AsyncValue.data(state.value!.copyWith(
+        certificates: state.value!.certificates!
+            .map((c) => c == oldCertificate ? newCertificate : c)
+            .toList()));
+  }
+  
+  void updateVideos(List<SubData> videos) {
+    state = state.whenData((user) => user.copyWith(videos: videos));
+  }
+
+  void removeVideo(SubData videoToRemove) {
+    state = state.whenData((user) {
+      final updatedVideo =
+          user.videos!.where((video) => video != videoToRemove).toList();
+      return user.copyWith(videos: updatedVideo);
+    });
+  }
+  void removeDocument(SubData documentToRemove) {
+    state = state.whenData((user) {
+      final updatedDocuments = user.documents!
+          .where((brochure) => brochure != documentToRemove)
+          .toList();
+      return user.copyWith(documents: updatedDocuments);
+    });
+  }
+
+  void updateWebsite(List<SubData> websites) {
+    state = state.whenData((user) => user.copyWith(websites: websites));
+    log('website count in updation ${websites.length}');
+  }
+
+  void removeWebsite(SubData websiteToRemove) {
+    state = state.whenData((user) {
+      final updatedWebsites = user.websites!
+          .where((website) => website != websiteToRemove)
+          .toList();
+      return user.copyWith(websites: updatedWebsites);
+    });
+  }
 
   void updatePhone(String phone) {
     state = state.whenData(
       (user) => user.copyWith(phone: phone),
     );
+  }  void updateCertificate(List<SubData> certificates) {
+    state = state.whenData((user) => user.copyWith(certificates: certificates));
   }
+   void updateDocuments(List<SubData> documents) {
+    state = state.whenData((user) => user.copyWith(documents: documents));
+  }
+  void updateAwards(List<Award> awards) {
+    state = state.whenData((user) => user.copyWith(awards: awards));
+  }
+
+  void updateIsFormActivated(bool isFormActivated) {
+    state = state.whenData((user) => user.copyWith(isFormActivated: isFormActivated));
+  }
+
 }
 
 final userProvider =

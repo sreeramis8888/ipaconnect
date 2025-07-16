@@ -18,7 +18,7 @@ class JobProfileCard extends StatelessWidget {
   Future<void> _downloadResume(BuildContext context) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      final savePath = "${dir.path}/${profile.name}_resume.pdf";
+      final savePath = "${dir.path}/${profile.name}.pdf";
 
       final dio = Dio();
       await dio.download(profile.resume!, savePath);

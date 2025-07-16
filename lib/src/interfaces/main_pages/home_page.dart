@@ -104,7 +104,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   final videos = homeData.videos;
                   final event = homeData.event;
                   final news = homeData.news;
-                  final campaign = homeData.campaign; // Store for later use
+                  final campaign = homeData.campaign; 
                   final filteredVideos = videos
                       .where((video) =>
                           video.link != null && video.link!.startsWith('http'))

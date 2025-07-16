@@ -281,7 +281,7 @@ class AnalyticsModalSheet extends ConsumerWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case "accepted":
+      case "a":
         return kGreen;
       case "rejected":
         return kRed;

@@ -12,8 +12,8 @@ Future<String> imageUpload(String imagePath) async {
   Uint8List imageBytes = await imageFile.readAsBytes();
   print("Original image size: ${imageBytes.lengthInBytes / 1024} KB");
 
-  // Check if the image is larger than 1 MB
-  if (imageBytes.lengthInBytes > 1024 * 1024) {
+  // Check if the image is larger than 2 MB
+  if (imageBytes.lengthInBytes > 2 * 1024 * 1024) {
     img.Image? image = img.decodeImage(imageBytes);
     if (image != null) {
       img.Image resizedImage =
@@ -25,6 +25,7 @@ Future<String> imageUpload(String imagePath) async {
       imageFile = await File(imagePath).writeAsBytes(imageBytes);
     }
   }
+
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
   var request = http.MultipartRequest(
     'POST',
@@ -43,6 +44,7 @@ Future<String> imageUpload(String imagePath) async {
     throw Exception('Failed to upload image');
   }
 }
+
 
 String extractImageUrl(String responseBody) {
   final responseJson = jsonDecode(responseBody);
