@@ -13,7 +13,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Add your URI scheme -->
-                <data android:scheme="kssia" android:host="app" />
+                <data android:scheme="ipaconnect" android:host="app" />
             </intent-filter>
             <!-- Add new intent filter for FLUTTER_NOTIFICATION_CLICK -->
             <intent-filter>
