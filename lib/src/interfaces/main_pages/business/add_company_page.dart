@@ -334,7 +334,12 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Company Name', style: kSmallTitleM),
+                Row(
+                  children: [
+                    Text('Company Name', style: kSmallTitleM),
+                    Text(' *', style: kSmallTitleM.copyWith(color: Colors.red)),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 TextFormField(
                   style: kSmallTitleR,
@@ -351,8 +356,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                     ),
                   ),
                   onChanged: (val) => setState(() => name = val),
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Required' : null,
+                  validator: (val) => val == null || val.isEmpty ? '' : null,
                 ),
                 const SizedBox(height: 16),
                 Text('Company Image', style: kSmallTitleM),
@@ -389,7 +393,12 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                         style: TextStyle(color: Colors.red)),
                   ),
                 const SizedBox(height: 16),
-                Text('Overview', style: kSmallTitleM),
+                Row(
+                  children: [
+                    Text('Overview', style: kSmallTitleM),
+                    Text(' *', style: kSmallTitleM.copyWith(color: Colors.red)),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 TextFormField(
                   style: kSmallTitleR,
@@ -407,9 +416,15 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                     ),
                   ),
                   onChanged: (val) => setState(() => overview = val),
+                  validator: (val) => val == null || val.isEmpty ? '' : null,
                 ),
                 const SizedBox(height: 16),
-                Text('Category', style: kSmallTitleM),
+                Row(
+                  children: [
+                    Text('Category', style: kSmallTitleM),
+                    Text(' *', style: kSmallTitleM.copyWith(color: Colors.red)),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () => _showCategoryPicker(context),
@@ -443,13 +458,6 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                     ),
                   ),
                 ),
-                if ((_formKey.currentState?.validate() ?? false) &&
-                    (category == null || category!.isEmpty))
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child:
-                        Text('Required', style: TextStyle(color: Colors.red)),
-                  ),
                 const SizedBox(height: 16),
                 Text('Company Size', style: kSmallTitleM),
                 const SizedBox(height: 8),
@@ -472,7 +480,12 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 const SizedBox(height: 16),
 
                 const SizedBox(height: 16),
-                Text('Services (comma separated)', style: kSmallTitleM),
+                Row(
+                  children: [
+                    Text('Services (comma separated)', style: kSmallTitleM),
+                    Text(' *', style: kSmallTitleM.copyWith(color: Colors.red)),
+                  ],
+                ),
                 const SizedBox(height: 8),
                 TextFormField(
                   style: kSmallTitleR,
@@ -489,6 +502,16 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                   ),
                   onChanged: (val) => setState(() =>
                       services = val.split(',').map((e) => e.trim()).toList()),
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return '';
+                    final serviceList =
+                        val.split(',').map((e) => e.trim()).toList();
+                    if (serviceList.isEmpty ||
+                        (serviceList.length == 1 && serviceList[0].isEmpty)) {
+                      return '';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
                 Text('Established Date', style: kSmallTitleM),
@@ -841,19 +864,46 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                   onPressed: isSubmitting
                       ? null
                       : () async {
+                          // Validate mandatory fields
+                          bool isValid = true;
+                          String? validationError;
+
+                          if (name == null || name!.isEmpty) {
+                            validationError = 'Company name is required';
+                            isValid = false;
+                          } else if (overview == null || overview!.isEmpty) {
+                            validationError = 'Overview is required';
+                            isValid = false;
+                          } else if (category == null || category!.isEmpty) {
+                            validationError = 'Category is required';
+                            isValid = false;
+                          } else if (services.isEmpty) {
+                            validationError = 'Services are required';
+                            isValid = false;
+                          }
+
+                          if (!isValid) {
+                            setState(() {
+                              submitError = validationError;
+                            });
+                            return;
+                          }
+
                           if (_formKey.currentState?.validate() ?? false) {
                             setState(() {
                               isSubmitting = true;
                               submitError = null;
                             });
                             try {
-                              final newGalleryPhotoUrls = List<String>.from(galleryPhotoUrls);
+                              final newGalleryPhotoUrls =
+                                  List<String>.from(galleryPhotoUrls);
                               for (final file in localPhotoFiles) {
                                 final url = await imageUpload(file.path);
                                 newGalleryPhotoUrls.add(url);
                               }
                               galleryPhotoUrls = newGalleryPhotoUrls;
-                              localPhotoFiles.clear(); // Clear after successful upload
+                              localPhotoFiles
+                                  .clear(); // Clear after successful upload
 
                               // Always resolve category to ID
                               final found = categories.firstWhere(
