@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:shimmer/shimmer.dart';
 
 class GlowingAnimatedAvatar extends StatefulWidget {
   final String? imageUrl;
@@ -137,7 +138,23 @@ class _GlowingAnimatedAvatarState extends State<GlowingAnimatedAvatar>
           widget.imageUrl!,
           width: widget.size - 10,
           height: widget.size - 10,
-          fit: BoxFit.contain,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) {
+              return child;
+            } else {
+              return Shimmer.fromColors(
+                baseColor: kCardBackgroundColor,
+                highlightColor: kStrokeColor,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: kCardBackgroundColor,
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              );
+            }
+          },
           errorBuilder: (context, error, stackTrace) {
             return _buildFallbackAvatar();
           },

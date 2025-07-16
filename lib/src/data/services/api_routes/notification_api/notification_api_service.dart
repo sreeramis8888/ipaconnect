@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ipaconnect/src/data/models/notification_model.dart';
 import '../../api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,10 +12,30 @@ NotificationApiService notificationApiService(Ref ref) {
   return NotificationApiService(apiService);
 }
 
+@riverpod
+Future<List<NotificationModel>> fetchNotifications(Ref ref) async {
+  final service = ref.watch(notificationApiServiceProvider);
+  return service.fetchNotifications();
+}
+
 class NotificationApiService {
   final ApiService _apiService;
 
   NotificationApiService(this._apiService);
+Future<List<NotificationModel>> fetchNotifications() async {
+  final response = await _apiService.get('/notifications/user');
+  if (response.success && response.data != null) {
+    final List<dynamic> data = response.data!['data'];
+    List<NotificationModel> unReadNotifications = [];
+    for (var item in data) {
+      unReadNotifications.add(NotificationModel.fromJson(item));
+    }
+    return unReadNotifications;
+  } else {
+    final message = response.message ?? 'Failed to fetch notifications';
+    throw Exception(message);
+  }
+}
 
   Future<bool> createNotification({
     required List<String> userIds,
@@ -96,10 +117,5 @@ class NotificationApiService {
     }
   }
 
-  // Helper method to get all users from hierarchies
-  Future<List<String>> getUsersFromHierarchies(List<String> hierarchyIds) async {
-    // This would need to be implemented based on your hierarchy structure
-    // For now, returning empty list - you'll need to implement this based on your backend
-    return [];
-  }
+
 } 

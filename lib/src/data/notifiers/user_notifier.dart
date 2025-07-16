@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_
 
 class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
   final Ref<AsyncValue<UserModel>> ref;
+  UserModel? _initialUser; // Cache for the initial user value
 
   UserNotifier(this.ref) : super(const AsyncValue.loading()) {
     _initializeUser();
@@ -28,11 +29,24 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
     try {
       log('Fetching user details');
       final user = await ref.read(getUserDetailsProvider.future);
+      if (_initialUser == null && user != null) {
+        _initialUser = user;
+      }
       state = AsyncValue.data(user ?? UserModel());
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
-      log('Error fetching user details: $e');
+      log('Error fetching user details: '
+          ' $e ');
       log(stackTrace.toString());
+    }
+  }
+
+  /// Revert all values to the first loaded state
+  void revertToInitialState() {
+    if (_initialUser != null) {
+      state = AsyncValue.data(_initialUser!);
+    } else {
+      state = const AsyncValue.data(UserModel());
     }
   }
 
@@ -98,7 +112,6 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
     state = state.whenData((user) => user.copyWith(socialMedia: updatedList));
   }
 
-
   void removeAward(Award awardToRemove) {
     state = state.whenData((user) {
       final updatedAwards =
@@ -152,7 +165,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
             .map((c) => c == oldCertificate ? newCertificate : c)
             .toList()));
   }
-  
+
   void updateVideos(List<SubData> videos) {
     state = state.whenData((user) => user.copyWith(videos: videos));
   }
@@ -164,6 +177,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
       return user.copyWith(videos: updatedVideo);
     });
   }
+
   void removeDocument(SubData documentToRemove) {
     state = state.whenData((user) {
       final updatedDocuments = user.documents!
@@ -191,20 +205,24 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
     state = state.whenData(
       (user) => user.copyWith(phone: phone),
     );
-  }  void updateCertificate(List<SubData> certificates) {
+  }
+
+  void updateCertificate(List<SubData> certificates) {
     state = state.whenData((user) => user.copyWith(certificates: certificates));
   }
-   void updateDocuments(List<SubData> documents) {
+
+  void updateDocuments(List<SubData> documents) {
     state = state.whenData((user) => user.copyWith(documents: documents));
   }
+
   void updateAwards(List<Award> awards) {
     state = state.whenData((user) => user.copyWith(awards: awards));
   }
 
   void updateIsFormActivated(bool isFormActivated) {
-    state = state.whenData((user) => user.copyWith(isFormActivated: isFormActivated));
+    state = state
+        .whenData((user) => user.copyWith(isFormActivated: isFormActivated));
   }
-
 }
 
 final userProvider =

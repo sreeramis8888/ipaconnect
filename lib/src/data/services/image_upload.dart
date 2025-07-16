@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
+import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<String> imageUpload(String imagePath) async {
@@ -27,10 +28,17 @@ Future<String> imageUpload(String imagePath) async {
   }
 
   final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final String apiKey = dotenv.env['API_KEY'] ?? '';
+
   var request = http.MultipartRequest(
     'POST',
     Uri.parse('$baseUrl/upload'),
   );
+
+  request.headers['x-api-key'] = apiKey;
+
+  request.headers['Authorization'] = 'Bearer $token';
+
   request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
 
   var response = await request.send();
@@ -44,7 +52,6 @@ Future<String> imageUpload(String imagePath) async {
     throw Exception('Failed to upload image');
   }
 }
-
 
 String extractImageUrl(String responseBody) {
   final responseJson = jsonDecode(responseBody);

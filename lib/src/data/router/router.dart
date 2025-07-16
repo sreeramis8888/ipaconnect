@@ -4,23 +4,22 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
+import 'package:ipaconnect/src/data/models/notification_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaigns/campaigns_list_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/activity_page.dart'
     show ActivityPage;
-import 'package:ipaconnect/src/interfaces/main_pages/profile/preview_by_id.dart'
-    show ProfilePreviewById;
+import 'package:ipaconnect/src/interfaces/main_pages/notification_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_preview.dart'
+    show ProfilePreviewById, ProfilePreviewFromModel;
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/analytics/create_analytics.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/categoryPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_details.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/event_member_list.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/events_page.dart';
-
-import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/profile/preview.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/enquiries.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_events.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_reviews.dart';
@@ -74,6 +73,24 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = SendAnalyticRequestPage();
     case 'Analytics':
       page = AnalyticsPage();
+    case 'NotificationPage':
+      List<NotificationModel> notifications =
+          settings?.arguments as List<NotificationModel>;
+      page = NotificationPage(
+        notifications: notifications,
+      );
+      transitionsBuilder = (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0); // Slide from right
+        const end = Offset.zero;
+        const curve = Curves.easeOutCubic;
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      };
+      transitionDuration = const Duration(milliseconds: 300);
     case 'ActivityPage':
       String hierarchyId = settings?.arguments as String;
       page = ActivityPage(
@@ -109,7 +126,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'ProfilePreview':
       UserModel user = settings?.arguments as UserModel;
-      page = ProfilePreview(user: user);
+      page = ProfilePreviewFromModel(user: user);
       break;
     case 'ProfilePreviewById':
       String userId = settings?.arguments as String;

@@ -163,6 +163,102 @@ class _ProfilePreviewByIdState extends ConsumerState<ProfilePreviewById>
   }
 }
 
+class ProfilePreviewFromModel extends ConsumerStatefulWidget {
+  final UserModel user;
+  const ProfilePreviewFromModel({Key? key, required this.user})
+      : super(key: key);
+
+  @override
+  ConsumerState<ProfilePreviewFromModel> createState() =>
+      _ProfilePreviewFromModelState();
+}
+
+class _ProfilePreviewFromModelState
+    extends ConsumerState<ProfilePreviewFromModel>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _selectedTabIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+    });
+    _selectedTabIndex = _tabController.index;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _onAddCompany(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => AddCompanyPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = widget.user;
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _ProfileHeader(user: user),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Container(
+                color: Colors.transparent,
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorColor: kPrimaryColor,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: 3,
+                  labelColor: kPrimaryColor,
+                  dividerColor: Colors.transparent,
+                  unselectedLabelColor: kSecondaryTextColor,
+                  labelStyle: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  tabs: const [
+                    Tab(text: 'Overview'),
+                    Tab(text: 'Business'),
+                  ],
+                ),
+              ),
+            ),
+            if (_selectedTabIndex == 0)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _OverviewTab(user: user),
+              )
+            else
+              _BusinessTab(userId: user.id ?? ''),
+            if (user.id != id) _ContactFormSection(),
+          ],
+        ),
+      ),
+      floatingActionButton: _selectedTabIndex == 1 && user.id == id
+          ? FloatingActionButton(
+              onPressed: () => _onAddCompany(context),
+              backgroundColor: kPrimaryColor,
+              child: Icon(Icons.add, color: Colors.white),
+              tooltip: 'Add Company',
+            )
+          : null,
+    );
+  }
+}
+
 class _ProfileHeader extends StatelessWidget {
   final UserModel user;
   const _ProfileHeader({required this.user});
@@ -251,36 +347,40 @@ class _ProfileHeader extends StatelessWidget {
             Positioned(
               top: 30,
               right: 0,
-              child: PopupMenuButton<String>(
-                color: kCardBackgroundColor,
-                icon: Icon(Icons.more_vert, color: kWhite),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    NavigationService().pushNamed('EditUser');
-                  } else if (value == 'share') {
-                    captureAndShareOrDownloadWidgetScreenshot(context,
-                        user: user);
-                  }
+              child: Consumer(
+                builder: (context, ref, child) {
+                  return PopupMenuButton<String>(
+                    color: kCardBackgroundColor,
+                    icon: Icon(Icons.more_vert, color: kWhite),
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        NavigationService().pushNamed('EditUser');
+                      } else if (value == 'share') {
+                        captureAndShareOrDownloadWidgetScreenshot(context,
+                            user: user);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Text(
+                              'Edit',
+                              style: kSmallTitleR,
+                            )
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Row(
+                          children: [Text('Share', style: kSmallTitleR)],
+                        ),
+                      ),
+                    ],
+                  );
                 },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Text(
-                          'Edit',
-                          style: kSmallTitleR,
-                        )
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'share',
-                    child: Row(
-                      children: [Text('Share', style: kSmallTitleR)],
-                    ),
-                  ),
-                ],
               ),
             ),
           if (user.id != id)
@@ -579,6 +679,10 @@ class _OverviewTabState extends State<_OverviewTab> {
               ),
             ],
           ),
+        if (widget.user.videos?.isNotEmpty == true)
+          SizedBox(
+            height: 15,
+          ),
         if (widget.user.awards?.isNotEmpty == true)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -599,7 +703,7 @@ class _OverviewTabState extends State<_OverviewTab> {
                 padding: EdgeInsets.zero,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 8.0,
+                  crossAxisSpacing: 20.0,
                   mainAxisSpacing: 16.0,
                   childAspectRatio: 0.9,
                 ),

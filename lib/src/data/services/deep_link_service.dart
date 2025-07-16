@@ -1,13 +1,18 @@
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ipaconnect/src/data/models/notification_model.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
+import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/events_api/events_api.dart';
+import 'package:ipaconnect/src/data/services/api_routes/notification_api/notification_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart'
+    show ChatScreen;
 
 // Create a provider for DeepLinkService
 final deepLinkServiceProvider = Provider<DeepLinkService>((ref) {
@@ -71,40 +76,37 @@ class DeepLinkService {
 
       if (!isAppForeground) {
         debugPrint('App is not in foreground, navigating to mainpage first');
-        // App is in the background or terminated, go through splash & mainpage
         NavigationService.navigatorKey.currentState?.pushNamedAndRemoveUntil(
           'MainPage',
           (route) => false,
         );
 
-        await Future.delayed(Duration(milliseconds: 500)); // Ensure stability
+        await Future.delayed(Duration(milliseconds: 500));
       }
 
-      // Now navigate to the deep link destination
       switch (pathSegments[0]) {
         case 'chat':
           if (pathSegments.length > 1) {
             final userId = pathSegments[1];
-            debugPrint('Navigating to chat with user: $userId');
             try {
-              final userDataApiService = _ref.watch(userDataApiServiceProvider);
-              final user = await userDataApiService.fetchUserDetails();
-              if (NavigationService.navigatorKey.currentState != null) {
-                NavigationService.navigatorKey.currentState
-                    ?.pushNamed('ChatScreen', arguments: {
-                  'sender': Participant(id: id),
-                  'receiver': Participant(
-                    id: user.id,
-                    name: user.name,
-                    profilePicture: user.profilePicture,
+              final chatApi = _ref.read(chatApiServiceProvider);
+              final conversation = await chatApi.create1to1Conversation(userId);
+              if (conversation != null) {
+                NavigationService.navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      conversationId: conversation.id ?? '',
+                      chatTitle: conversation.name ?? '',
+                      userId: userId,
+                    ),
                   ),
-                });
+                );
               } else {
-                debugPrint('Navigator state is null, cannot navigate to chat');
+                _showError('Failed to start chat.');
               }
             } catch (e) {
-              debugPrint('Error fetching user: $e');
-              _showError('Unable to load profile: $e');
+              debugPrint('Error starting chat: $e');
+              _showError('Failed to start chat.');
             }
           }
           break;
@@ -115,7 +117,7 @@ class DeepLinkService {
               final eventApiService = _ref.watch(eventsApiServiceProvider);
               final event = await eventApiService.fetchEventById(eventId);
               NavigationService.navigatorKey.currentState
-                  ?.pushNamed('/event_details', arguments: event);
+                  ?.pushNamed('EventDetails', arguments: event);
             } catch (e) {
               debugPrint('Error fetching event: $e');
               _showError('Unable to load event');
@@ -125,7 +127,6 @@ class DeepLinkService {
 
         case 'my_requirements':
           try {
-            // First navigate to mainpage if not already there
             if (NavigationService.navigatorKey.currentState != null) {
               NavigationService.navigatorKey.currentState
                   ?.pushNamedAndRemoveUntil(
@@ -142,44 +143,43 @@ class DeepLinkService {
           }
           break;
 
-        case 'my_products':
-          try {
-            // First navigate to mainpage if not already there
-            if (NavigationService.navigatorKey.currentState != null) {
-              NavigationService.navigatorKey.currentState
-                  ?.pushNamedAndRemoveUntil(
-                'MainPage',
-                (route) => false,
-              );
-              await Future.delayed(Duration(milliseconds: 500));
+        // case 'my_products':
+        //   try {
+        //     if (NavigationService.navigatorKey.currentState != null) {
+        //       NavigationService.navigatorKey.currentState
+        //           ?.pushNamedAndRemoveUntil(
+        //         'MainPage',
+        //         (route) => false,
+        //       );
+        //       await Future.delayed(Duration(milliseconds: 500));
 
-              NavigationService.navigatorKey.currentState
-                  ?.pushNamed('/my_products');
-            }
-          } catch (e) {
-            debugPrint('Error navigating to products: $e');
-            _showError('Unable to navigate to products');
-          }
-          break;
+        //       NavigationService.navigatorKey.currentState
+        //           ?.pushNamed('/my_products');
+        //     }
+        //   } catch (e) {
+        //     debugPrint('Error navigating to products: $e');
+        //     _showError('Unable to navigate to products');
+        //   }
+        //   break;
 
-        case 'my_subscription':
-          try {
-            // First navigate to mainpage if not already there
-            if (NavigationService.navigatorKey.currentState != null) {
-              NavigationService.navigatorKey.currentState
-                  ?.pushNamedAndRemoveUntil(
-                'MainPage',
-                (route) => false,
-              );
-              await Future.delayed(Duration(milliseconds: 500));
-              NavigationService.navigatorKey.currentState
-                  ?.pushNamed('/my_subscription');
-            }
-          } catch (e) {
-            debugPrint('Error navigating to subscription: $e');
-            _showError('Unable to navigate to subscription');
-          }
-          break;
+        // case 'my_subscription':
+        //   try {
+        //     // First navigate to mainpage if not already there
+        //     if (NavigationService.navigatorKey.currentState != null) {
+        //       NavigationService.navigatorKey.currentState
+        //           ?.pushNamedAndRemoveUntil(
+        //         'MainPage',
+        //         (route) => false,
+        //       );
+        //       await Future.delayed(Duration(milliseconds: 500));
+        //       NavigationService.navigatorKey.currentState
+        //           ?.pushNamed('/my_subscription');
+        //     }
+        //   } catch (e) {
+        //     debugPrint('Error navigating to subscription: $e');
+        //     _showError('Unable to navigate to subscription');
+        //   }
+        //   break;
 
         case 'requirements':
           try {
@@ -198,66 +198,12 @@ class DeepLinkService {
           }
           break;
 
-        case 'products':
-          if (pathSegments.length > 1) {
-            final productId = pathSegments[1];
-            try {
-              final product = await fetchProductById(productId);
-              final user =
-                  await ApiRoutes().fetchUserDetails(product.sellerId ?? '');
-              final receiver = Participant(
-                id: user.id,
-                name: user.name,
-                profilePicture: user.profilePicture,
-              );
-              final sender = Participant(id: id);
-
-              // First navigate to mainpage if not already there
-              if (navigatorKey.currentState != null) {
-                navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                  'MainPage',
-                  (route) => false,
-                );
-                await Future.delayed(Duration(milliseconds: 500));
-                _ref.read(selectedIndexProvider.notifier).updateIndex(1);
-                if (navigatorKey.currentContext != null) {
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: navigatorKey.currentContext!,
-                    builder: (context) => ProductDetailsModal(
-                      receiver: receiver,
-                      sender: sender,
-                      product: product,
-                    ),
-                  );
-                }
-              }
-            } catch (e) {
-              debugPrint('Error fetching product: $e');
-              _showError('The Product no longer exists');
-            }
-          } else {
-            try {
-              // First navigate to mainpage if not already there
-              if (navigatorKey.currentState != null) {
-                navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                  'MainPage',
-                  (route) => false,
-                );
-                await Future.delayed(Duration(milliseconds: 500));
-                _ref.read(selectedIndexProvider.notifier).updateIndex(1);
-              }
-            } catch (e) {
-              debugPrint('Error updating tab: $e');
-              _showError('Unable to navigate to products');
-            }
-          }
-          break;
         case 'news':
           try {
             // First navigate to mainpage if not already there
-            if (navigatorKey.currentState != null) {
-              navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            if (NavigationService.navigatorKey.currentState != null) {
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamedAndRemoveUntil(
                 'MainPage',
                 (route) => false,
               );
@@ -271,19 +217,20 @@ class DeepLinkService {
           break;
 
         case 'mainpage':
-          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          NavigationService.navigatorKey.currentState?.pushNamedAndRemoveUntil(
             'MainPage',
             (route) => false,
           );
           break;
 
         default:
+          final notificationApiService =
+              _ref.watch(notificationApiServiceProvider);
           List<NotificationModel> notifications =
-              await NotificationApiService(token: token)
-                  .fetchUnreadNotifications(id);
+              await notificationApiService.fetchNotifications();
 
-          navigatorKey.currentState
-              ?.pushNamed('/notification', arguments: notifications);
+          NavigationService.navigatorKey.currentState
+              ?.pushNamed('NotificationPage', arguments: notifications);
 
           break;
       }
@@ -294,8 +241,9 @@ class DeepLinkService {
   }
 
   void _showError(String message) {
-    if (navigatorKey.currentContext != null) {
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+    if (NavigationService.navigatorKey.currentContext != null) {
+      ScaffoldMessenger.of(NavigationService.navigatorKey.currentContext!)
+          .showSnackBar(
         SnackBar(content: Text(message)),
       );
     }

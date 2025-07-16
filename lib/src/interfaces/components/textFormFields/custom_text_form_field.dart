@@ -61,7 +61,7 @@ class CustomTextFormField extends StatelessWidget {
               onChanged: (value) {
                 log(companyIndex.toString());
                 switch (labelText) {
-                  case 'Enter your Name':
+                  case 'Enter Name':
                     ref.read(userProvider.notifier).updateName(
                           name: textController!.text,
                         );
@@ -73,10 +73,15 @@ class CustomTextFormField extends StatelessWidget {
                         .updateAddress(textController!.text);
                     break;
 
-                  case 'Enter your Profession':
+                  case 'Enter Designation':
                     ref
                         .read(userProvider.notifier)
                         .updateProfession(profession: textController!.text);
+                    break;
+                  case 'Email ID':
+                    ref
+                        .read(userProvider.notifier)
+                        .updateEmail(textController!.text);
                     break;
 
                   case 'Bio':
@@ -202,7 +207,7 @@ class ModalSheetTextFormField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(
             color: kStrokeColor,
-            width: 1.0, 
+            width: 1.0,
           ),
         ),
         enabledBorder: OutlineInputBorder(

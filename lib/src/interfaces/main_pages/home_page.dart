@@ -24,6 +24,9 @@ import 'package:ipaconnect/src/interfaces/main_pages/sidebar/custom_sidebar.dart
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../components/custom_widgets/custom_video.dart';
 import 'package:ipaconnect/src/data/services/api_routes/home_api/home_api_service.dart';
+import 'package:ipaconnect/src/data/services/api_routes/notification_api/notification_api_service.dart';
+import 'notification_page.dart';
+import 'package:ipaconnect/src/data/models/notification_model.dart';
 import 'campaigns/campaign_detail_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -44,6 +47,21 @@ class _HomePageState extends ConsumerState<HomePage> {
   int _currentPosterIndex = 0;
   int _currentEventIndex = 0;
   int _currentVideoIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // _notificationsFuture will be initialized in build with ref
+  }
+
+  // Future<List<NotificationModel>> _fetchNotifications(WidgetRef ref) async {
+  //   final notificationApiService = ref.read(notificationApiServiceProvider);
+  //   final notifications = await notificationApiService.fetchNotifications();
+  //   setState(() {
+  //     _notifications = notifications;
+  //   });
+  //   return notifications;
+  // }
 
   double _calculateDynamicHeight(List<Promotion> notices) {
     double maxHeight = 0.0;
@@ -104,7 +122,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   final videos = homeData.videos;
                   final event = homeData.event;
                   final news = homeData.news;
-                  final campaign = homeData.campaign; 
+                  final campaign = homeData.campaign;
                   final filteredVideos = videos
                       .where((video) =>
                           video.link != null && video.link!.startsWith('http'))
@@ -129,21 +147,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         InkWell(
-                                            onTap: () {
-                                              // Navigator.push(
-                                              //   context,
-                                              //   MaterialPageRoute(
-                                              //     builder: (context) =>
-                                              //         const WebViewScreen(
-                                              //       backgroundColor:
-                                              //           kPrimaryColor,
-                                              //       url:
-                                              //           'https://www.indotransworld.org/',
-                                              //       title: 'familytree Connect',
-                                              //     ),
-                                              //   ),
-                                              // );
-                                            },
+                                            onTap: () {},
                                             child: SizedBox(
                                               width: 40,
                                               height: 40,
@@ -152,6 +156,97 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             )),
                                         Row(
                                           children: [
+                                            Consumer(
+                                              builder: (context, ref, _) {
+                                                final asyncNotification = ref.watch(
+                                                    fetchNotificationsProvider);
+                                                return asyncNotification.when(
+                                                  data: (notifications) {
+                                                    final notificationCount =
+                                                        notifications.length;
+                                                    return Stack(
+                                                      children: [
+                                                        CustomRoundButton(
+                                                          onTap: () async {
+                                                            navigationService.pushNamed(
+                                                                'NotificationPage',
+                                                                arguments:
+                                                                    notifications);
+                                                            ref.invalidate(
+                                                                fetchNotificationsProvider);
+                                                          },
+                                                          iconPath:
+                                                              'assets/svg/icons/notification_icon.svg',
+                                                        ),
+                                                        if (notificationCount >
+                                                            0)
+                                                          Positioned(
+                                                            right: 0,
+                                                            top: 0,
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(4),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: kRed,
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                              ),
+                                                              constraints:
+                                                                  const BoxConstraints(
+                                                                minWidth: 10,
+                                                                minHeight: 10,
+                                                              ),
+                                                              child: Center(
+                                                                child: Text(
+                                                                  notificationCount
+                                                                      .toString(),
+                                                                  style: kSmallTitleB
+                                                                      .copyWith(
+                                                                    color:
+                                                                        kWhite,
+                                                                    fontSize:
+                                                                        10,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    );
+                                                  },
+                                                  loading: () => Stack(
+                                                    children: [
+                                                      CustomRoundButton(
+                                                        onTap: () async {
+                                                          navigationService
+                                                              .pushNamed(
+                                                                  'NotificationPage',
+                                                                  arguments: []);
+                                                        },
+                                                        iconPath:
+                                                            'assets/svg/icons/notification_icon.svg',
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  error: (error, stackTrace) =>
+                                                      CustomRoundButton(
+                                                    onTap: () async {
+                                                      navigationService
+                                                          .pushNamed(
+                                                              'NotificationPage',
+                                                              arguments: []);
+                                                    },
+                                                    iconPath:
+                                                        'assets/svg/icons/notification_icon.svg',
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
                                             CustomRoundButton(
                                                 onTap: () {
                                                   _advancedDrawerController

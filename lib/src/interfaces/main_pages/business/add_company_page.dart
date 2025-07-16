@@ -847,11 +847,13 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                               submitError = null;
                             });
                             try {
-                              galleryPhotoUrls = [];
+                              final newGalleryPhotoUrls = List<String>.from(galleryPhotoUrls);
                               for (final file in localPhotoFiles) {
                                 final url = await imageUpload(file.path);
-                                galleryPhotoUrls.add(url);
+                                newGalleryPhotoUrls.add(url);
                               }
+                              galleryPhotoUrls = newGalleryPhotoUrls;
+                              localPhotoFiles.clear(); // Clear after successful upload
 
                               // Always resolve category to ID
                               final found = categories.firstWhere(
