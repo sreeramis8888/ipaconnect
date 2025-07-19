@@ -858,7 +858,7 @@ class _CoordinatorSelectDialogState
             ),
             Expanded(
               child: users.isEmpty && isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: LoadingAnimation())
                   : ListView.builder(
                       controller: _scrollController,
                       itemCount: users.length + (isLoading ? 1 : 0),
@@ -895,7 +895,7 @@ class _CoordinatorSelectDialogState
                         } else {
                           return const Padding(
                             padding: EdgeInsets.symmetric(vertical: 16),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(child: LoadingAnimation()),
                           );
                         }
                       },

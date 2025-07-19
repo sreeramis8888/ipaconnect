@@ -330,7 +330,10 @@ class AuthApiService {
       if (response.success && response.data != null) {
         snackbarService
             .showSnackBar(response.data?['message'] ?? 'Login successful');
-        return response.data?['data'] ?? {};
+        return {
+          ...(response.data?['data'] ?? {}),
+          'currency': currencyCode,
+        };
       } else if (response.statusCode == 400) {
         snackbarService.showSnackBar(response.message ?? 'Invalid request');
         return {};

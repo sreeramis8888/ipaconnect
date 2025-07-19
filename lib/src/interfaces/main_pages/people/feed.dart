@@ -747,7 +747,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                           }
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => ChatScreen(
+                              builder: (context) => ChatScreen(userImage: author.image??'',
                                 conversationId: conversation.id ?? '',
                                 chatTitle: author.name ?? '',
                                 userId: author.id ?? '',

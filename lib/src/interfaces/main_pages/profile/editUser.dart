@@ -1005,22 +1005,26 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   ),
                                 if (user.documents != null &&
                                     user.documents!.isNotEmpty)
-                                  ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: user.documents!.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 4.0),
-                                        child: DocumentCard(
-                                          brochure: user.documents![index],
-                                          onRemove: () =>
-                                              _removeDocument(index),
-                                        ),
-                                      );
-                                    },
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 16, right: 16, top: 10),
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount: user.documents!.length,
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 4.0),
+                                          child: DocumentCard(
+                                            brochure: user.documents![index],
+                                            onRemove: () =>
+                                                _removeDocument(index),
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
                                 InkWell(
                                   onTap: () => showModalBottomSheet(

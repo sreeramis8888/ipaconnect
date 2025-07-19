@@ -8,7 +8,7 @@ part of 'product_model.dart';
 
 ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       id: json['_id'] as String,
-      user: UserRef.fromJson(json['user'] as Map<String, dynamic>),
+      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
       company: json['company'] as String,
       name: json['name'] as String,
       specifications: (json['specifications'] as List<dynamic>)
@@ -43,16 +43,6 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'status': instance.status,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
-    };
-
-UserRef _$UserRefFromJson(Map<String, dynamic> json) => UserRef(
-      id: json['_id'] as String,
-      name: json['name'] as String,
-    );
-
-Map<String, dynamic> _$UserRefToJson(UserRef instance) => <String, dynamic>{
-      '_id': instance.id,
-      'name': instance.name,
     };
 
 ProductImage _$ProductImageFromJson(Map<String, dynamic> json) => ProductImage(

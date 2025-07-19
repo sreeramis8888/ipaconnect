@@ -8,9 +8,12 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
+import 'package:ipaconnect/src/data/services/api_routes/subscription_api/subscription_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
+import 'package:ipaconnect/src/data/utils/currency_converted.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/shimmers/promotion_shimmers.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
@@ -22,6 +25,9 @@ import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/user_status_sreens.dart';
+import 'package:ipaconnect/src/interfaces/additional_screens/subscription_page.dart';
+import 'package:ipaconnect/src/interfaces/additional_screens/payment_success_page.dart';
+import 'package:ipaconnect/src/data/notifiers/payment_navigation_provider.dart';
 
 class IconResolver extends StatelessWidget {
   final String iconPath;
@@ -125,7 +131,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     log('main page user id:$id');
   }
 
-  Widget _buildStatusPage(String status, UserModel user) {
+  Widget _buildStatusPage(String status, UserModel user, WidgetRef ref) {
     final List<String> labels = ['Home', 'Business', 'Chat', 'News', 'Profile'];
 
     final selectedIndex = ref.watch(selectedIndexProvider);
@@ -251,8 +257,6 @@ class _MainPageState extends ConsumerState<MainPage> {
         return RegistrationPage();
       case 'deleted':
         return const UserDeletedPage();
-      case 'awaiting-payment':
-        return const UserAwaitingPaymentPage();
       case 'rejected':
         return const UserRejectedPage();
       case 'suspended':
@@ -281,6 +285,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     return Consumer(builder: (context, ref, child) {
       final selectedIndex = ref.watch(selectedIndexProvider);
       final asyncUser = ref.watch(userProvider);
+      // Removed paymentNav, paymentResult, and payment navigation logic
 
       return asyncUser.when(
         loading: () {
@@ -303,7 +308,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                 ref.read(selectedIndexProvider.notifier).updateIndex(0);
               }
             },
-            child: _buildStatusPage(user.status ?? '', user),
+            child: _buildStatusPage(user.status ?? '', user, ref),
           );
         },
       );

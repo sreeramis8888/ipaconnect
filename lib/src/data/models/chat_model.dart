@@ -76,12 +76,15 @@ extension MessageModelCopyWith on MessageModel {
     );
   }
 }
+
 @JsonSerializable()
 class ConversationModel {
   @JsonKey(name: '_id')
   final String? id;
 
   final String? name;
+ 
+  @JsonKey(name: 'unread_count')  final int? unreadCount;
 
   @JsonKey(name: 'is_group')
   final bool? isGroup;
@@ -100,6 +103,7 @@ class ConversationModel {
     this.name,
     this.isGroup,
     this.members,
+    this.unreadCount,
     this.admins,
     this.lastMessage,
     this.createdAt,

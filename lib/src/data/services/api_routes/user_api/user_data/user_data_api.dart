@@ -59,7 +59,7 @@ class UserDataApiService {
     }
 
     final response = await _apiService.get(
-        '/users?page_no=$pageNo&limit=$limit&${Uri(queryParameters: queryParams).query}');
+        '/users?status=active&page_no=$pageNo&limit=$limit&${Uri(queryParameters: queryParams).query}');
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];

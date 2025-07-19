@@ -3,23 +3,104 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialog.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:characters/characters.dart';
+import 'dart:async';
+
+// WhatsApp-like typing indicator widget
+class TypingIndicator extends StatefulWidget {
+  final Color dotColor;
+  final double dotSize;
+  final double dotSpacing;
+  const TypingIndicator({
+    Key? key,
+    this.dotColor = Colors.grey,
+    this.dotSize = 10,
+    this.dotSpacing = 6,
+  }) : super(key: key);
+
+  @override
+  State<TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<Animation<double>> _dotAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+    _dotAnimations = List.generate(3, (i) {
+      return Tween<double>(begin: 0, end: -8).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(i * 0.2, 0.6 + i * 0.2, curve: Curves.easeInOut),
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.dotSize * 2.2,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(3, (i) {
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0, _dotAnimations[i].value),
+                child: child,
+              );
+            },
+            child: Container(
+              width: widget.dotSize,
+              height: widget.dotSize,
+              margin: EdgeInsets.symmetric(horizontal: widget.dotSpacing / 2),
+              decoration: BoxDecoration(
+                color: widget.dotColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
   final String chatTitle;
   final String userId;
+  final String userImage;
   final Map<String, dynamic>? initialProductInquiry;
   final Map<String, dynamic>? initialFeedInquiry;
 
   const ChatScreen({
     Key? key,
     required this.conversationId,
+    required this.userImage,
     required this.chatTitle,
     required this.userId,
     this.initialProductInquiry,
@@ -36,6 +117,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
+  bool _showEmojiPicker = false;
 
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
@@ -44,6 +126,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   bool isBlocked = false;
   List<MessageModel> _messages = [];
   bool _isTyping = false;
+  Timer? _typingTimer;
   bool _otherTyping = false;
   String _status = 'offline';
   int _currentPage = 1;
@@ -53,6 +136,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   bool _ignoreScroll = false;
   bool _initialMessagesInserted = false;
+
+  // Group chat state
+  bool _isGroup = false;
+  List<dynamic> _members = [];
+  Map<String, String> _memberNames = {};
 
   @override
   void initState() {
@@ -75,6 +163,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _scrollController.addListener(_onScroll);
 
     _fetchHistory();
+    _fetchGroupInfo();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initialProductInquiry != null) {
@@ -88,7 +177,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Block status logic moved here
     final asyncUser = ref.read(userProvider);
     asyncUser.whenData(
       (user) {
@@ -140,15 +228,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       _messages.removeWhere((m) => m.id == 'typing');
 
       if (isOtherTyping) {
-        _messages.insert(
-          0,
-          MessageModel(
-            id: 'typing',
-            sender: widget.userId,
-            message: 'Typing...',
-            createdAt: DateTime.now(),
-          ),
-        );
+        // _messages.insert(
+        //   0,
+        //   MessageModel(
+        //     id: 'typing',
+        //     sender: widget.userId,
+        //     message: 'Typing...',
+        //     createdAt: DateTime.now(),
+        //   ),
+        // );
         _scrollToBottom();
       }
     });
@@ -226,13 +314,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
   void _markLastAsSeen() {
     if (_messages.isEmpty) return;
-    final lastMsg = _messages.first; // Use first for newest message
-    if (lastMsg.sender != id && lastMsg.status != 'seen') {
-      _socketService.markSeen(lastMsg.id!);
-      if (!mounted) return;
-      setState(() {
-        _messages[0] = lastMsg.copyWith(status: 'seen');
-      });
+    bool updated = false;
+    for (int i = 0; i < _messages.length; i++) {
+      final msg = _messages[i];
+      if (msg.sender != id && msg.status != 'seen') {
+        _socketService.markSeen(msg.id!);
+        _messages[i] = msg.copyWith(status: 'seen');
+        updated = true;
+      }
+    }
+    if (updated && mounted) {
+      setState(() {});
     }
   }
 
@@ -381,7 +473,6 @@ ${product.specifications.isNotEmpty ? product.specifications.map((spec) => '• 
 I'm interested in this product. Could you provide more information?
 ''';
 
-    // Get the first product image for attachment
     final productImageUrl =
         product.images.isNotEmpty ? product.images.first.url : null;
 
@@ -534,6 +625,71 @@ I'm interested in this feed. Could you provide more information?
       return _buildProductInquiryMessage(msg, isMe);
     }
 
+    // Single emoji detection
+    final isSingleEmoji = _isSingleEmoji(msg.message ?? '');
+    if (isSingleEmoji) {
+      return Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          margin: EdgeInsets.only(
+            left: isMe ? 50 : 16,
+            right: isMe ? 16 : 50,
+            bottom: 8,
+            top: 8,
+          ),
+          child: Column(
+            crossAxisAlignment:
+                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              if (_isGroup && !isMe && _memberNames[msg.sender] != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2, left: 2, right: 2),
+                  child: Text(
+                    _memberNames[msg.sender] ?? '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryColor,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              Text(
+                msg.message ?? '',
+                style: const TextStyle(
+                  fontSize: 48,
+                  height: 1.1,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (isMe)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _formatTime(msg.createdAt),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: kSecondaryTextColor.withOpacity(0.7),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    _buildStatus(msg),
+                  ],
+                )
+              else
+                Text(
+                  _formatTime(msg.createdAt),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: kSecondaryTextColor.withOpacity(0.7),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -547,6 +703,18 @@ I'm interested in this feed. Could you provide more information?
           crossAxisAlignment:
               isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
+            if (_isGroup && !isMe && _memberNames[msg.sender] != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2, left: 2, right: 2),
+                child: Text(
+                  _memberNames[msg.sender] ?? '',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: kPrimaryColor,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
@@ -842,7 +1010,6 @@ I'm interested in this feed. Could you provide more information?
     return '$hour:$minute $ampm';
   }
 
-  // Helper to format date headers
   String _formatDateHeader(DateTime date) {
     final now = DateTime.now();
     final localDate = date.toLocal();
@@ -857,11 +1024,9 @@ I'm interested in this feed. Could you provide more information?
     }
   }
 
-  // Build a list of items (date header or message)
   List _buildChatItems(List<MessageModel> messages) {
     final List items = [];
     DateTime? lastDate;
-    // Iterate from oldest to newest
     for (final msg in messages.reversed) {
       final msgDate = msg.createdAt?.toLocal();
       if (msgDate == null) continue;
@@ -872,7 +1037,6 @@ I'm interested in this feed. Could you provide more information?
       }
       items.add({'type': 'message', 'msg': msg});
     }
-    // Reverse for ListView reverse: true
     return items.reversed.toList();
   }
 
@@ -896,15 +1060,34 @@ I'm interested in this feed. Could you provide more information?
     );
   }
 
-  // Helper to determine if a date header should be shown before a message
   bool _shouldShowDateHeader(int index) {
-    if (index == _messages.length - 1) return true; // Last (oldest) message
+    if (index == _messages.length - 1) return true;
     final current = _messages[index].createdAt?.toLocal();
     final next = _messages[index + 1].createdAt?.toLocal();
     if (current == null || next == null) return false;
     final currentDay = DateTime(current.year, current.month, current.day);
     final nextDay = DateTime(next.year, next.month, next.day);
     return currentDay != nextDay;
+  }
+
+  Future<void> _fetchGroupInfo() async {
+    final chatApi = ref.read(chatApiServiceProvider);
+    try {
+      final conversations =
+          await chatApi.getConversations(pageNo: 1, limit: 100);
+      final convo =
+          conversations.where((c) => c.id == widget.conversationId).toList();
+      if (convo.isNotEmpty && convo.first.isGroup == true) {
+        setState(() {
+          _isGroup = true;
+          _members = convo.first.members ?? [];
+          _memberNames = {
+            for (var m in _members)
+              if (m.id != null && m.name != null) m.id!: m.name!
+          };
+        });
+      }
+    } catch (e) {}
   }
 
   @override
@@ -915,6 +1098,8 @@ I'm interested in this feed. Could you provide more information?
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _socketService.sendTyping(widget.conversationId, false);
+
+    _typingTimer?.cancel();
 
     _socketService.onMessageReceived = null;
     _socketService.onTyping = null;
@@ -927,7 +1112,6 @@ I'm interested in this feed. Could you provide more information?
 
   @override
   Widget build(BuildContext context) {
-    // final chatItems = _buildChatItems(_messages);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -937,58 +1121,70 @@ I'm interested in this feed. Could you provide more information?
           icon: const Icon(Icons.arrow_back_ios, color: kTextColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.7)],
+        title: InkWell(
+          onTap: () {
+            NavigationService navigationService = NavigationService();
+            navigationService.pushNamed('ProfilePreviewById',
+                arguments: widget.userId);
+          },
+          child: Row(
+            children: [
+              Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.7)],
+                  ),
+                ),
+                child: widget.userImage != ''
+                    ? Image.network(
+                        widget.userImage,
+                        fit: BoxFit.contain,
+                      )
+                    : Icon(Icons.person, color: kWhite, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.chatTitle,
+                      style: const TextStyle(
+                        color: kTextColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 8,
+                          width: 8,
+                          decoration: BoxDecoration(
+                            color: _status == 'online' ? kGreen : kGreyDark,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          _status == 'online' ? 'Online' : 'Offline',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _status == 'online'
+                                ? kGreen
+                                : kSecondaryTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              child: const Icon(Icons.person, color: kWhite, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.chatTitle,
-                    style: const TextStyle(
-                      color: kTextColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        height: 8,
-                        width: 8,
-                        decoration: BoxDecoration(
-                          color: _status == 'online' ? kGreen : kGreyDark,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        _status == 'online' ? 'Online' : 'Offline',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _status == 'online'
-                              ? kGreen
-                              : kSecondaryTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           PopupMenuButton<String>(
@@ -1034,7 +1230,6 @@ I'm interested in this feed. Could you provide more information?
                   ],
                 ),
               ),
-              // Divider for visual separation
               const PopupMenuDivider(height: 1),
               PopupMenuItem(
                 value: 'block',
@@ -1100,6 +1295,21 @@ I'm interested in this feed. Could you provide more information?
               },
             ),
           ),
+          if (_otherTyping)
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  TypingIndicator(
+                    dotColor: kPrimaryColor,
+                    dotSize: 10,
+                    dotSpacing: 5,
+                  ),
+                ],
+              ),
+            ),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -1111,6 +1321,24 @@ I'm interested in this feed. Could you provide more information?
             child: SafeArea(
               child: Row(
                 children: [
+                  IconButton(
+                    icon: Icon(
+                      _showEmojiPicker
+                          ? Icons.keyboard
+                          : Icons.emoji_emotions_outlined,
+                      color: kPrimaryColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _showEmojiPicker = !_showEmojiPicker;
+                        if (_showEmojiPicker) {
+                          FocusScope.of(context).unfocus();
+                        } else {
+                          FocusScope.of(context).requestFocus(_focusNode);
+                        }
+                      });
+                    },
+                  ),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -1126,10 +1354,36 @@ I'm interested in this feed. Could you provide more information?
                         maxLines: null,
                         onChanged: (val) {
                           final typing = val.isNotEmpty;
-                          if (typing != _isTyping) {
-                            setState(() => _isTyping = typing);
+                          if (typing && !_isTyping) {
+                            setState(() => _isTyping = true);
                             _socketService.sendTyping(
-                                widget.conversationId, typing);
+                                widget.conversationId, true);
+                          }
+                          // Reset typing timer
+                          _typingTimer?.cancel();
+                          if (typing) {
+                            _typingTimer =
+                                Timer(const Duration(seconds: 2), () {
+                              if (mounted && _isTyping) {
+                                setState(() => _isTyping = false);
+                                _socketService.sendTyping(
+                                    widget.conversationId, false);
+                              }
+                            });
+                          } else {
+                            // If field is cleared, stop typing immediately
+                            if (_isTyping) {
+                              setState(() => _isTyping = false);
+                              _socketService.sendTyping(
+                                  widget.conversationId, false);
+                            }
+                          }
+                        },
+                        onTap: () {
+                          if (_showEmojiPicker) {
+                            setState(() {
+                              _showEmojiPicker = false;
+                            });
                           }
                         },
                         decoration: InputDecoration(
@@ -1171,6 +1425,62 @@ I'm interested in this feed. Could you provide more information?
               ),
             ),
           ),
+          Offstage(
+            offstage: !_showEmojiPicker,
+            child: SizedBox(
+              height: 300,
+              child: EmojiPicker(
+                onEmojiSelected: (category, emoji) {
+                  setState(() {
+                    _isTyping = _controller.text.isNotEmpty;
+                  });
+                  _socketService.sendTyping(widget.conversationId, _isTyping);
+                },
+                onBackspacePressed: () {
+                  final text = _controller.text;
+                  if (text.isNotEmpty) {
+                    _controller.text = text.characters.skipLast(1).toString();
+                    _controller.selection = TextSelection.fromPosition(
+                      TextPosition(offset: _controller.text.length),
+                    );
+                    setState(() {
+                      _isTyping = _controller.text.isNotEmpty;
+                    });
+                    _socketService.sendTyping(widget.conversationId, _isTyping);
+                  }
+                },
+                textEditingController: _controller,
+                config: Config(
+                  height: 300,
+                  emojiViewConfig: EmojiViewConfig(
+                    backgroundColor: kCardBackgroundColor,
+                    recentsLimit: 28,
+                    noRecents: const Text(
+                      'No Recents',
+                      style: TextStyle(fontSize: 20, color: Colors.black26),
+                      textAlign: TextAlign.center,
+                    ),
+                    loadingIndicator: const SizedBox.shrink(),
+                  ),
+                  categoryViewConfig: CategoryViewConfig(
+                    backgroundColor: kStrokeColor,
+                    dividerColor: kPrimaryColor,
+                    indicatorColor: kPrimaryColor,
+                    iconColor: kSecondaryTextColor,
+                    iconColorSelected: kPrimaryColor,
+                    backspaceColor: kPrimaryColor,
+                    categoryIcons: const CategoryIcons(),
+                    tabIndicatorAnimDuration: Duration(milliseconds: 300),
+                  ),
+                  skinToneConfig: SkinToneConfig(
+                    dialogBackgroundColor: kCardBackgroundColor,
+                    indicatorColor: kSecondaryTextColor,
+                  ),
+                  // Add other configs as needed
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1187,5 +1497,12 @@ I'm interested in this feed. Could you provide more information?
         child: _buildMessageBubble(msg, isMe),
       ),
     );
+  }
+
+  // Helper: single emoji detection
+  bool _isSingleEmoji(String text) {
+    final trimmed = text.trim();
+    return trimmed.characters.length == 1 &&
+        RegExp(r'^\p{Emoji} *$', unicode: true).hasMatch(trimmed);
   }
 }

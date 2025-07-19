@@ -206,55 +206,58 @@ class _ProfilePreviewFromModelState
   @override
   Widget build(BuildContext context) {
     final user = widget.user;
-    return Scaffold(
-      backgroundColor: kBackgroundColor,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _ProfileHeader(user: user),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Container(
-                color: Colors.transparent,
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorColor: kPrimaryColor,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorWeight: 3,
-                  labelColor: kPrimaryColor,
-                  dividerColor: Colors.transparent,
-                  unselectedLabelColor: kSecondaryTextColor,
-                  labelStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: kBackgroundColor,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ProfileHeader(user: user),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Container(
+                  color: Colors.transparent,
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorColor: kPrimaryColor,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorWeight: 3,
+                    labelColor: kPrimaryColor,
+                    dividerColor: Colors.transparent,
+                    unselectedLabelColor: kSecondaryTextColor,
+                    labelStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    tabs: const [
+                      Tab(text: 'Overview'),
+                      Tab(text: 'Business'),
+                    ],
                   ),
-                  tabs: const [
-                    Tab(text: 'Overview'),
-                    Tab(text: 'Business'),
-                  ],
                 ),
               ),
-            ),
-            if (_selectedTabIndex == 0)
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _OverviewTab(user: user),
-              )
-            else
-              _BusinessTab(userId: user.id ?? ''),
-            if (user.id != id) _ContactFormSection(),
-          ],
+              if (_selectedTabIndex == 0)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: _OverviewTab(user: user),
+                )
+              else
+                _BusinessTab(userId: user.id ?? ''),
+              if (user.id != id) _ContactFormSection(),
+            ],
+          ),
         ),
+        floatingActionButton: _selectedTabIndex == 1 && user.id == id
+            ? FloatingActionButton(
+                onPressed: () => _onAddCompany(context),
+                backgroundColor: kPrimaryColor,
+                child: Icon(Icons.add, color: Colors.white),
+                tooltip: 'Add Company',
+              )
+            : null,
       ),
-      floatingActionButton: _selectedTabIndex == 1 && user.id == id
-          ? FloatingActionButton(
-              onPressed: () => _onAddCompany(context),
-              backgroundColor: kPrimaryColor,
-              child: Icon(Icons.add, color: Colors.white),
-              tooltip: 'Add Company',
-            )
-          : null,
     );
   }
 }
@@ -1038,7 +1041,7 @@ class _ContactFormSectionState extends ConsumerState<_ContactFormSection> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Lets Talk', style: kSubHeadingB.copyWith(color: kWhite)),
+            Text('Let\'s Talk', style: kSubHeadingB.copyWith(color: kWhite)),
             const SizedBox(height: 18),
             Text('Name',
                 style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),

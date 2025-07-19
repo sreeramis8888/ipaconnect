@@ -184,12 +184,26 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                         lastMessageText,
                         style: TextStyle(color: kSecondaryTextColor),
                       ),
-                      trailing: const SizedBox.shrink(),
+                      trailing: conversation.unreadCount != 0
+                          ? Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                  color: kRed, shape: BoxShape.circle),
+                              child: Center(
+                                  child: Text(
+                                      style: kSmallerTitleR,
+                                      conversation.unreadCount.toString())),
+                            )
+                          : SizedBox.shrink(),
                       onTap: () async {
                         await Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ChatScreen(
+                            userImage: user?.image ?? '',
                             conversationId: conversation.id ?? '',
-                            chatTitle: user?.name ?? '',
+                            chatTitle: conversation.isGroup == true
+                                ? conversation.name ?? ''
+                                : user?.name ?? '',
                             userId: user?.id ?? '',
                           ),
                         ));

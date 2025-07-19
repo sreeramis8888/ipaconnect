@@ -2,6 +2,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/notification_model.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
@@ -91,12 +92,16 @@ class DeepLinkService {
             try {
               final chatApi = _ref.read(chatApiServiceProvider);
               final conversation = await chatApi.create1to1Conversation(userId);
+              UserModel? otherMember = conversation?.members
+                  ?.firstWhere((m) => m.id != id, orElse: () => UserModel());
+
               if (conversation != null) {
                 NavigationService.navigatorKey.currentState?.push(
                   MaterialPageRoute(
                     builder: (context) => ChatScreen(
+                      userImage: otherMember?.image ?? '',
                       conversationId: conversation.id ?? '',
-                      chatTitle: conversation.name ?? '',
+                      chatTitle: otherMember?.name ?? '',
                       userId: userId,
                     ),
                   ),

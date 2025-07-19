@@ -14,8 +14,8 @@ import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/router/router.dart' as router;
 import 'package:ipaconnect/src/data/utils/connectivity_wrapper.dart';
 
-
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +24,7 @@ Future<void> main() async {
   );
   await loadSecureData();
   await dotenv.load(fileName: ".env");
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+  FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
   Stripe.publishableKey = dotenv.env['STRIPE_KEY'] ?? '';
   runApp(ProviderScope(child: MyApp()));
 }
@@ -37,8 +37,8 @@ class MyApp extends ConsumerWidget {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light, 
-        statusBarBrightness: Brightness.light, 
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
     );
     final notificationService = ref.watch(notificationServiceProvider);

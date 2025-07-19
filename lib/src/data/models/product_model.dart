@@ -1,3 +1,4 @@
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'product_model.g.dart';
@@ -7,7 +8,7 @@ class ProductModel {
   @JsonKey(name: '_id')
   final String id;
 
-  final UserRef user;
+  final UserModel user;
   final String company;
   final String name;
   final List<String> specifications;
@@ -53,7 +54,7 @@ class ProductModel {
 
   ProductModel copyWith({
     String? id,
-    UserRef? user,
+    UserModel? user,
     String? company,
     String? name,
     List<String>? specifications,
@@ -86,19 +87,6 @@ class ProductModel {
   }
 }
 
-@JsonSerializable()
-class UserRef {
-  @JsonKey(name: '_id')
-  final String id;
-  final String name;
-
-  UserRef({required this.id, required this.name});
-
-  factory UserRef.fromJson(Map<String, dynamic> json) =>
-      _$UserRefFromJson(json);
-
-  Map<String, dynamic> toJson() => _$UserRefToJson(this);
-}
 
 @JsonSerializable()
 class ProductImage {

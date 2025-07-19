@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
+import 'package:ipaconnect/src/data/utils/image_viewer.dart';
 import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
@@ -48,9 +49,9 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       routeObserver.subscribe(this, ModalRoute.of(context)!);
       ref.read(ratingNotifierProvider.notifier).refreshRatings(
-        entityId: widget.company.id ?? '',
-        entityType: 'Company',
-      );
+            entityId: widget.company.id ?? '',
+            entityType: 'Company',
+          );
     });
   }
 
@@ -65,9 +66,9 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
   void didPopNext() {
     // Called when coming back to this page
     ref.read(ratingNotifierProvider.notifier).refreshRatings(
-      entityId: widget.company.id ?? '',
-      entityType: 'Company',
-    );
+          entityId: widget.company.id ?? '',
+          entityType: 'Company',
+        );
   }
 
   Future<void> _fetchInitialProducts() async {
@@ -454,18 +455,21 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
         separatorBuilder: (_, __) => SizedBox(width: 8),
         itemBuilder: (context, index) {
           final photo = photos[index];
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              photo.url ?? '',
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+          return InkWell(
+            onTap: () => showImageViewer(photo.url ?? '', context),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                photo.url ?? '',
                 width: 80,
                 height: 80,
-                color: kCardBackgroundColor,
-                child: Icon(Icons.broken_image, color: kSecondaryTextColor),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 80,
+                  height: 80,
+                  color: kCardBackgroundColor,
+                  child: Icon(Icons.broken_image, color: kSecondaryTextColor),
+                ),
               ),
             ),
           );
@@ -485,8 +489,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
       children: videos
           .map((v) => Padding(
               padding: EdgeInsets.only(bottom: 20),
-              child: customVideo(context: context,
-                  videoUrl: v.url ?? '')))
+              child: customVideo(context: context, videoUrl: v.url ?? '')))
           .toList(),
     );
   }

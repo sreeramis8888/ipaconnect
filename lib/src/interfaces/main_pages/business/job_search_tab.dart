@@ -93,24 +93,27 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
                       ),
                     ),
                   ),
-                  // Filter button
                   // IconButton(
-                  //   icon: const Icon(Icons.filter_alt_outlined, color: kSecondaryTextColor, size: 24),
+                  //   icon: const Icon(Icons.filter_alt_outlined,
+                  //       color: kSecondaryTextColor, size: 24),
                   //   onPressed: () async {
-                  //     final filters = await showModalBottomSheet<Map<String, dynamic>>(
+                  //     final filters =
+                  //         await showModalBottomSheet<Map<String, dynamic>>(
                   //       context: context,
                   //       backgroundColor: Colors.transparent,
                   //       isScrollControlled: true,
                   //       builder: (context) => const JobFilterModal(),
                   //     );
                   //     if (filters != null) {
-                  //       ref.read(jobProfilesNotifierProvider.notifier).refreshJobProfiles(
-                  //         category: filters['category'],
-                  //         experience: filters['experience'],
-                  //         noticePeriod: filters['noticePeriod'],
-                  //         location: filters['location'],
-                  //         search: filters['search'],
-                  //       );
+                  //       ref
+                  //           .read(jobProfilesNotifierProvider.notifier)
+                  //           .refreshJobProfiles(
+                  //             category: filters['category'],
+                  //             experience: filters['experience'],
+                  //             noticePeriod: filters['noticePeriod'],
+                  //             location: filters['location'],
+                  //             search: filters['search'],
+                  //           );
                   //     }
                   //   },
                   // ),

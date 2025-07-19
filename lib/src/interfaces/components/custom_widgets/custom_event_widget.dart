@@ -112,7 +112,11 @@ Widget eventWidget({
                 children: [
                   Expanded(
                     child: customButton(
-                      label: registered ? 'REGISTERED' : 'Register Now',
+                      label: event.status?.toLowerCase() == 'completed'
+                          ? 'COMPLETED'
+                          : registered
+                              ? 'REGISTERED'
+                              : 'Register Now',
                       onPressed: () {
                         NavigationService navigationService =
                             NavigationService();

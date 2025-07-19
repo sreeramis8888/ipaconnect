@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/folder_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/folder_api/folder_api.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
+import 'package:ipaconnect/src/data/utils/image_viewer.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
@@ -100,7 +101,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
 
   Widget _buildImageItem(EventFile file) {
     return GestureDetector(
-      onTap: () => _showImageViewer(file),
+      onTap: () => showImageViewer(file.url,context),
       child: Stack(
         children: [
           Container(
@@ -183,88 +184,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
     }
   }
 
-  Future<void> _downloadImage(String imageUrl) async {
-    try {
-      final response = await Dio().get(
-        imageUrl,
-        options: Options(responseType: ResponseType.bytes),
-      );
 
-      final result = await ImageGallerySaverPlus.saveImage(
-        Uint8List.fromList(response.data),
-        quality: 100,
-        name: 'image_${DateTime.now().millisecondsSinceEpoch}',
-      );
-
-      if (mounted) {
-        SnackbarService snackbarService = SnackbarService();
-        snackbarService.showSnackBar('Image saved to gallery');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to download image: $e'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
-
-  void _showImageViewer(EventFile file) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: EdgeInsets.zero,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              InteractiveViewer(
-                minScale: 0.5,
-                maxScale: 4.0,
-                child: Image.network(
-                  file.url,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              Positioned(
-                top: 40,
-                right: 16,
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.download, color: Colors.white),
-                        onPressed: () => _downloadImage(file.url),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

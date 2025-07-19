@@ -478,6 +478,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       String savedToken = responseMap['token'] ?? '';
       String savedId = responseMap['user_id'] ?? '';
       String savedStatus = responseMap['status'] ?? '';
+      String currency = responseMap['currency'] ?? '';
       token = savedToken;
       id = savedId;
 
@@ -490,9 +491,14 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         if ((savedStatus).toLowerCase() == 'inactive') {
           NavigationService().pushNamedReplacement('RegistrationPage',
               arguments: '+${countryCode ?? '91'}$phone');
-        } else if ((savedStatus).toLowerCase() == 'pending') {
+        } 
+        else if ((savedStatus).toLowerCase() == 'pending') {
           NavigationService().pushNamedReplacement('ApprovalWaitingPage');
-        } else {
+        } 
+        else if ((savedStatus).toLowerCase() == 'awaiting-payment') {
+          NavigationService().pushNamedReplacement('SubscriptionPage',arguments: currency);
+        } 
+        else {
           NavigationService().pushNamedReplacement('MainPage');
         }
       } else {

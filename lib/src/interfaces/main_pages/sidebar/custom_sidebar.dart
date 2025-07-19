@@ -150,14 +150,14 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               label: 'My Events',
               onTap: () => navigationService.pushNamed('MyEvents'),
             ),
-            // _menuItem(
-            //   icon: SvgPicture.asset(
-            //     'assets/svg/icons/menu_icons/about_us.svg',
-            //     height: 24,
-            //   ),
-            //   label: 'About Us',
-            //   onTap: () => navigationService.pushNamed('AboutPage'),
-            // ),
+            _menuItem(
+              icon: SvgPicture.asset(
+                'assets/svg/icons/menu_icons/about_us.svg',
+                height: 24,
+              ),
+              label: 'About Us',
+              onTap: () => navigationService.pushNamed('AboutPage'),
+            ),
             _menuItem(
               icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/terms.svg',

@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/enquiry_model.dart';
 import 'package:ipaconnect/src/data/notifiers/enquiry_notifier.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class EnquiriesPage extends ConsumerStatefulWidget {
   const EnquiriesPage({Key? key}) : super(key: key);
@@ -66,7 +67,7 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
           centerTitle: false,
         ),
         body: isFirstLoad
-            ? Center(child: CircularProgressIndicator(color: kPrimaryColor))
+            ? Center(child: LoadingAnimation())
             : enquiries.isEmpty
                 ? Center(child: Text('No Enquiries', style: kBodyTitleB))
                 : ListView.builder(
@@ -79,8 +80,8 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
                             ? Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Center(
-                                    child: CircularProgressIndicator(
-                                        color: kPrimaryColor)),
+                                    child:
+                                        LoadingAnimation()),
                               )
                             : const SizedBox.shrink();
                       }

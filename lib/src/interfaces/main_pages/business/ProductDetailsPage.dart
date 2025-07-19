@@ -195,7 +195,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                           color: kSecondaryTextColor, size: 14),
                       SizedBox(width: 6),
                       Text(
-                        product.user.name,
+                        product.user.name??'',
                         style: kBodyTitleR.copyWith(
                             color: kSecondaryTextColor, fontSize: 13),
                       ),
@@ -304,7 +304,8 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                             // Navigate to chat screen
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => ChatScreen(
+
+                                builder: (context) => ChatScreen(userImage: product.user.image??'',
                                   conversationId: conversation.id ?? '',
                                   chatTitle: product.user.name ?? '',
                                   userId: product.user.id ?? '',

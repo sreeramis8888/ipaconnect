@@ -226,7 +226,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                           if (conversation != null) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => ChatScreen(
+                                builder: (context) => ChatScreen(userImage: user.image??'',
                                   conversationId: conversation.id ?? '',
                                   chatTitle: user.name ?? '',
                                   userId: userId,

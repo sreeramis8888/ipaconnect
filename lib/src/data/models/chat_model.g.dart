@@ -57,6 +57,7 @@ ConversationModel _$ConversationModelFromJson(Map<String, dynamic> json) =>
       members: (json['members'] as List<dynamic>?)
           ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      unreadCount: (json['unread_count'] as num?)?.toInt(),
       admins:
           (json['admins'] as List<dynamic>?)?.map((e) => e as String).toList(),
       lastMessage: json['last_message'] == null
@@ -74,6 +75,7 @@ Map<String, dynamic> _$ConversationModelToJson(ConversationModel instance) =>
     <String, dynamic>{
       '_id': instance.id,
       'name': instance.name,
+      'unread_count': instance.unreadCount,
       'is_group': instance.isGroup,
       'members': instance.members,
       'admins': instance.admins,

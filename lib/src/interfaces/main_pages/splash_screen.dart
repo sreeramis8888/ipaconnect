@@ -300,7 +300,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             }
           }
           if (user != null && user.status == 'awaiting-payment') {
-            navigationService.pushNamedReplacement('MySubscriptionPage');
+            navigationService.pushNamedReplacement('SubscriptionPage',
+                arguments: user.countryCode);
             return;
           }
           if (user != null && user.status == 'pending') {

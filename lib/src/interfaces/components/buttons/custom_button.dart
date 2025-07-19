@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 const Color defaultGradientEnd = Color(0xFF00C0F3);
 const Color defaultGradientStart = Color(0xFF0D74BC);
@@ -46,9 +47,8 @@ Widget customButton({
                 ? SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(labelColor),
+                    child: LoadingAnimation(
+        
                     ),
                   )
                 : Row(

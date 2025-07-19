@@ -298,7 +298,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                     SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: LoadingAnimation( )),
                     SizedBox(width: 8),
                     Text('Loading...'),
                   ],

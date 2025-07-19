@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class PaginatedDropdown<T> extends StatefulWidget {
   final String? hintText;
@@ -132,7 +133,7 @@ class _PaginatedDropdownState<T> extends State<PaginatedDropdown<T>> {
                             child: SizedBox(
                               width: 24,
                               height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: LoadingAnimation(),
                             ),
                           ),
                         );

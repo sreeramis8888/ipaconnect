@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/notification_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/interfaces/additional_screens/subscription_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaigns/campaigns_list_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/activity_page.dart'
     show ActivityPage;
@@ -38,6 +39,7 @@ import '../../interfaces/main_pages/side_bar_pages/analytics/my_requirements.dar
 import '../../interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/hierarchies.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/about_us.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   Widget? page;
@@ -69,6 +71,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = MainPage();
     case 'EditUser':
       page = EditUser();
+
     case 'SendAnalyticRequest':
       page = SendAnalyticRequestPage();
     case 'Analytics':
@@ -209,6 +212,15 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = HierarchiesPage(
         user: user,
       );
+      break;
+    case 'SubscriptionPage':
+      String userCurrency = settings?.arguments as String;
+      page = SubscriptionPage(
+        userCurrency: userCurrency,
+      );
+      break;
+    case 'AboutPage':
+      page = AboutUsPage();
       break;
     default:
       return MaterialPageRoute(

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 import 'package:shimmer/shimmer.dart';
 import 'package:ipaconnect/src/data/notifiers/feed_notifier.dart';
@@ -71,7 +72,7 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
             style: kBodyTitleB.copyWith(color: kSecondaryTextColor)),
       ),
       body: isFirstLoad
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: LoadingAnimation())
           : myPosts.isNotEmpty
               ? Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -83,7 +84,7 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
                           itemCount: myPosts.length + (isLoading ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index == myPosts.length) {
-                              return Center(child: CircularProgressIndicator());
+                              return Center(child: LoadingAnimation());
                             }
                             return _buildPostCard(
                               context,

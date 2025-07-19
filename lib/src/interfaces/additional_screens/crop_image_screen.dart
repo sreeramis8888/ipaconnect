@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:custom_image_crop/custom_image_crop.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 import '../../data/constants/color_constants.dart';
 
@@ -76,9 +77,8 @@ class _CropImageScreenState extends State<CropImageScreen> {
                   child: SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: kWhite,
+                    child: LoadingAnimation(
+               
                     ),
                   ),
                 )
