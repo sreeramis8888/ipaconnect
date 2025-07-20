@@ -100,7 +100,8 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               ),
               label: 'My Submissions',
               onTap: () => navigationService.pushNamed('EnquiriesPage'),
-            ),
+            ),  if (user.phone !=
+                                            '+919645398555')
             _menuItem(
               icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/my_orders.svg',
