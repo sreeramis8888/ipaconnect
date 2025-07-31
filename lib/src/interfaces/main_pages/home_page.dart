@@ -363,18 +363,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 'assets/svg/icons/event_icon.svg')),
                                         if (widget.user.phone !=
                                             '+919645398555')
-                                          CustomIconContainer(
-                                              label: 'Store',
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'StorePage');
-                                              },
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/card_icon.svg')),
+                                        CustomIconContainer(
+                                            label: 'Store',
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  arguments:
+                                                      widget.user.countryCode,
+                                                  context,
+                                                  'StorePage');
+                                            },
+                                            icon: SvgPicture.asset(
+                                                color: kWhite,
+                                                'assets/svg/icons/card_icon.svg')),
                                         CustomIconContainer(
                                             onTap: () {
                                               ref
