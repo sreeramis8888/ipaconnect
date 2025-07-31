@@ -89,9 +89,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> checkFirstLaunch() async {
     isFirstLaunch = await SecureStorage.read('has_launched_before') ?? 'false';
-    if (isFirstLaunch == 'true') {
-      await SecureStorage.write('has_launched_before', 'true');
-    }
+    // Note: isFirstLaunch will be 'false' for first-time users
+    // We'll set it to 'true' after they complete the intro screens
   }
 
   Future<void> handlePermissions() async {
@@ -286,6 +285,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     Timer(Duration(seconds: 2), () async {
       if (!isAppUpdateRequired) {
         print('Logged in : $LoggedIn');
+        print('First launch : $isFirstLaunch');
+        
+        // Check if it's the first launch
+        // if (isFirstLaunch == 'false') {
+        //   // Show intro screens for first-time users
+        //   navigationService.pushNamedReplacement('OnboardingScreen');
+        //   return;
+        // }
+        
         if (LoggedIn) {
           final container = ProviderContainer();
           final asyncUser = container.read(userProvider);

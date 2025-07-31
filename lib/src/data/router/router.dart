@@ -27,6 +27,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_reviews.d
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/privacy.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/terms.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/splash_screen.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/splash_screens/intro_screens.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/my_orders_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/store_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/cart_page.dart';
@@ -221,6 +222,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'AboutPage':
       page = AboutUsPage();
+    case 'OnboardingScreen':
+      page = OnboardingScreen();
       break;
     default:
       return MaterialPageRoute(

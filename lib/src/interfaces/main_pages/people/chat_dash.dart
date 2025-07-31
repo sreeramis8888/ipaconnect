@@ -15,6 +15,82 @@ import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:shimmer/shimmer.dart';
 
+// Typing indicator widget for chat dashboard
+class TypingIndicator extends StatefulWidget {
+  final Color dotColor;
+  final double dotSize;
+  final double dotSpacing;
+
+  const TypingIndicator({
+    Key? key,
+    this.dotColor = Colors.grey,
+    this.dotSize = 8,
+    this.dotSpacing = 4,
+  }) : super(key: key);
+
+  @override
+  State<TypingIndicator> createState() => _TypingIndicatorState();
+}
+
+class _TypingIndicatorState extends State<TypingIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<Animation<double>> _dotAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+    _dotAnimations = List.generate(3, (i) {
+      return Tween<double>(begin: 0, end: -6).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(i * 0.2, 0.6 + i * 0.2, curve: Curves.easeInOut),
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: widget.dotSize * 2,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(3, (i) {
+          return AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0, _dotAnimations[i].value),
+                child: child,
+              );
+            },
+            child: Container(
+              width: widget.dotSize,
+              height: widget.dotSize,
+              margin: EdgeInsets.symmetric(horizontal: widget.dotSpacing / 2),
+              decoration: BoxDecoration(
+                color: widget.dotColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
 class ChatDash extends ConsumerStatefulWidget {
   ChatDash({super.key});
 
@@ -30,10 +106,16 @@ class _ChatDashState extends ConsumerState<ChatDash> {
   bool _socketLoading = true;
   String? _socketError;
 
+  // Typing state tracking
+  Map<String, Set<String>> _typingUsers =
+      {}; // conversationId -> Set of typing user IDs
+
   @override
   void initState() {
     super.initState();
     _socketService = SocketService();
+
+    // Listen for conversation list updates
     _socketService.onConversationsList = (data) {
       try {
         if (data is List) {
@@ -56,6 +138,17 @@ class _ChatDashState extends ConsumerState<ChatDash> {
         });
       }
     };
+
+    // Listen for new messages to update conversation list
+    _socketService.onMessageReceived = _handleNewMessage;
+
+    // Listen for typing events
+    _socketService.onTyping = _handleTyping;
+
+    // Enable socket event listening
+    _socketService.listenChatEvents();
+
+    // Subscribe to conversations
     _socketService.subscribeConversations(onAck: (err) {
       if (err != null) {
         setState(() {
@@ -64,6 +157,160 @@ class _ChatDashState extends ConsumerState<ChatDash> {
         });
       }
     });
+  }
+
+  void _handleNewMessage(Map<String, dynamic> messageData) {
+    try {
+      print('Received new message: $messageData');
+
+      // Create MessageModel from the received data
+      final newMessage = MessageModel.fromJson(messageData);
+
+      // Extract conversation ID and sender from the message
+      final conversationId = newMessage.conversation;
+      final senderId = newMessage.sender;
+
+      if (conversationId == null) {
+        print('No conversation ID found in message');
+        return;
+      }
+
+      // Don't update unread count for own messages
+      final isOwnMessage = senderId == id;
+      print('Message from: $senderId, isOwnMessage: $isOwnMessage');
+
+      // Find the conversation in the current list
+      if (_socketConversations != null) {
+        final conversationIndex = _socketConversations!.indexWhere(
+          (conv) => conv.id == conversationId,
+        );
+
+        print('Found conversation at index: $conversationIndex');
+
+        if (conversationIndex != -1) {
+          // Update the conversation with new message info
+          final currentConversation = _socketConversations![conversationIndex];
+          final updatedConversation = currentConversation.copyWith(
+            lastMessage: newMessage,
+            unreadCount: isOwnMessage
+                ? currentConversation.unreadCount
+                : (currentConversation.unreadCount ?? 0) + 1,
+          );
+
+          setState(() {
+            // Move the updated conversation to the top
+            _socketConversations!.removeAt(conversationIndex);
+            _socketConversations!.insert(0, updatedConversation);
+            
+            // Clear typing indicators for this conversation when a message is received
+            _typingUsers.remove(conversationId);
+          });
+
+          print(
+              'Updated conversation: ${updatedConversation.lastMessage?.message}');
+        } else {
+          print('Conversation not found in list');
+        }
+      }
+    } catch (e) {
+      print('Error handling new message: $e');
+    }
+  }
+
+  void _handleTyping(Map<String, dynamic> data) {
+    try {
+      final conversationId = data['conversation_id'] as String?;
+      final userId = data['user_id'] as String?;
+      final isTyping = data['is_typing'] as bool?;
+
+      if (conversationId == null || userId == null || isTyping == null) {
+        print('Invalid typing data: $data');
+        return;
+      }
+
+      // Don't show typing for own messages
+      if (userId == id) return;
+
+      setState(() {
+        if (isTyping) {
+          // Add user to typing set
+          _typingUsers.putIfAbsent(conversationId, () => <String>{});
+          _typingUsers[conversationId]!.add(userId);
+        } else {
+          // Remove user from typing set
+          _typingUsers[conversationId]?.remove(userId);
+          if (_typingUsers[conversationId]?.isEmpty == true) {
+            _typingUsers.remove(conversationId);
+          }
+        }
+      });
+
+      print(
+          'Typing update - Conversation: $conversationId, User: $userId, Typing: $isTyping');
+    } catch (e) {
+      print('Error handling typing event: $e');
+    }
+  }
+
+  Widget _buildSubtitle(
+      ConversationModel conversation, String lastMessageText) {
+    final conversationId = conversation.id;
+    final isTyping =
+        conversationId != null && _typingUsers.containsKey(conversationId);
+
+    if (isTyping) {
+      return Row(
+        children: [
+          TypingIndicator(
+            dotColor: kPrimaryColor,
+            dotSize: 6,
+            dotSpacing: 3,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'typing...',
+            style: TextStyle(
+              color: kPrimaryColor,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Text(
+        lastMessageText,
+        style: TextStyle(color: kSecondaryTextColor),
+      );
+    }
+  }
+
+  void _resetUnreadCount(String conversationId) {
+    if (_socketConversations != null) {
+      final conversationIndex = _socketConversations!.indexWhere(
+        (conv) => conv.id == conversationId,
+      );
+
+      if (conversationIndex != -1) {
+        final currentConversation = _socketConversations![conversationIndex];
+        final updatedConversation = currentConversation.copyWith(
+          unreadCount: 0, // Reset unread count
+        );
+
+        setState(() {
+          _socketConversations![conversationIndex] = updatedConversation;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    // Clean up socket listeners
+    _socketService.onMessageReceived = null;
+    _socketService.onConversationsList = null;
+    _socketService.onTyping = null;
+    super.dispose();
   }
 
   @override
@@ -180,10 +427,7 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                         user?.name ?? conversation.name ?? 'Chat',
                         style: kBodyTitleR,
                       ),
-                      subtitle: Text(
-                        lastMessageText,
-                        style: TextStyle(color: kSecondaryTextColor),
-                      ),
+                      subtitle: _buildSubtitle(conversation, lastMessageText),
                       trailing: conversation.unreadCount != 0
                           ? Container(
                               width: 20,
@@ -197,6 +441,9 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                             )
                           : SizedBox.shrink(),
                       onTap: () async {
+                        // Reset unread count for this conversation
+                        _resetUnreadCount(conversation.id ?? '');
+
                         await Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => ChatScreen(
                             userImage: user?.image ?? '',

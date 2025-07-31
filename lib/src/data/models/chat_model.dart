@@ -115,3 +115,29 @@ class ConversationModel {
 
   Map<String, dynamic> toJson() => _$ConversationModelToJson(this);
 }
+
+extension ConversationModelCopyWith on ConversationModel {
+  ConversationModel copyWith({
+    String? id,
+    String? name,
+    bool? isGroup,
+    List<UserModel>? members,
+    int? unreadCount,
+    List<String>? admins,
+    MessageModel? lastMessage,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return ConversationModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      isGroup: isGroup ?? this.isGroup,
+      members: members ?? this.members,
+      unreadCount: unreadCount ?? this.unreadCount,
+      admins: admins ?? this.admins,
+      lastMessage: lastMessage ?? this.lastMessage,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+}

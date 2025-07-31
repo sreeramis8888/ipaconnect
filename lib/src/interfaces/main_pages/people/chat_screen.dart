@@ -1624,7 +1624,6 @@ I'm interested in this feed. Could you provide more information?
                 onLock: _toggleRecordingLock,
                 onUnlock: _toggleRecordingLock,
               ),
-              // --- Chat Input Bar (only show when not recording) ---
               if (!_isRecording)
                 ChatInputBar(
                   onSendText: (text) {
