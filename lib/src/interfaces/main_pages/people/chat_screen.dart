@@ -13,6 +13,18 @@ import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.d
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:characters/characters.dart';
 import 'dart:async';
+import 'chat_input_bar.dart';
+import 'attachment_picker.dart';
+import 'voice_recorder_widget.dart';
+import 'camera_preview_widget.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:record/record.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:math';
+import 'package:ipaconnect/src/data/services/image_upload.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:video_player/video_player.dart';
 
 // WhatsApp-like typing indicator widget
 class TypingIndicator extends StatefulWidget {
@@ -142,10 +154,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   List<dynamic> _members = [];
   Map<String, String> _memberNames = {};
 
+  // New state for modular widgets
+  late AnimationController _attachmentModalAnimationController;
+
+  bool _showAttachmentPicker = false;
+
+  bool _isRecording = false;
+  bool _isRecordingLocked = false; // Add lock state
+  Duration _recordDuration = Duration.zero;
+  Timer? _recordTimer;
+
+  final ImagePicker _imagePicker = ImagePicker();
+  late final AudioRecorder _audioRecorder;
+  String? _audioFilePath;
+
   @override
   void initState() {
     super.initState();
-    // _loadBlockStatus(); // Remove this call from initState
+    _audioRecorder = AudioRecorder();
+    _attachmentModalAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
     _typingAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -620,6 +650,25 @@ I'm interested in this feed. Could you provide more information?
   }
 
   Widget _buildMessageBubble(MessageModel msg, bool isMe) {
+    // Audio message (support both 'audio' and 'voice' types)
+    if (msg.attachments != null &&
+        msg.attachments!.isNotEmpty &&
+        (msg.attachments!.first.type == 'audio' ||
+            msg.attachments!.first.type == 'voice')) {
+      return _buildAudioMessageBubble(msg, isMe);
+    }
+    // Video message
+    if (msg.attachments != null &&
+        msg.attachments!.isNotEmpty &&
+        msg.attachments!.first.type == 'video') {
+      return _buildVideoMessageBubble(msg, isMe);
+    }
+    // Image message
+    if (msg.attachments != null &&
+        msg.attachments!.isNotEmpty &&
+        msg.attachments!.first.type == 'image') {
+      return _buildImageMessageBubble(msg, isMe);
+    }
     // Check if this is a product inquiry message
     if (_isProductInquiryMessage(msg)) {
       return _buildProductInquiryMessage(msg, isMe);
@@ -1090,23 +1139,271 @@ I'm interested in this feed. Could you provide more information?
     } catch (e) {}
   }
 
+  String _generateRandomId() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    return List.generate(
+      10,
+      (index) => chars[random.nextInt(chars.length)],
+      growable: false,
+    ).join();
+  }
+
+  Future<String> _getAudioFilePath() async {
+    final dir = await getApplicationDocumentsDirectory();
+    return '${dir.path}/${_generateRandomId()}.m4a';
+  }
+
+  // --- Voice Recording Logic ---
+  void _startVoiceRecording() async {
+    print('_startVoiceRecording called, _isRecording: $_isRecording');
+    if (_isRecording) return; // Prevent multiple starts
+
+    setState(() {
+      _isRecording = true;
+      _isRecordingLocked = false;
+      _recordDuration = Duration.zero;
+      _audioFilePath = null;
+    });
+
+    // Recording started - no feedback needed since we have animations
+
+    _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          _recordDuration += const Duration(seconds: 1);
+        });
+      }
+    });
+
+    if (await _audioRecorder.hasPermission()) {
+      final filePath = await _getAudioFilePath();
+      await _audioRecorder.start(
+        const RecordConfig(
+            encoder: AudioEncoder.aacLc, bitRate: 128000, sampleRate: 44100),
+        path: filePath,
+      );
+      setState(() {
+        _audioFilePath = filePath;
+      });
+    } else {
+      // Handle permission denied
+      setState(() {
+        _isRecording = false;
+        _recordDuration = Duration.zero;
+      });
+      _recordTimer?.cancel();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              const Text('Microphone permission required for voice recording'),
+          backgroundColor: kRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _stopVoiceRecording() async {
+    print('_stopVoiceRecording called, _isRecording: $_isRecording');
+    if (!_isRecording) return;
+
+    final path = await _audioRecorder.stop();
+    setState(() {
+      _isRecording = false;
+      _isRecordingLocked = false;
+    });
+    _recordTimer?.cancel();
+
+    if (path != null && _recordDuration.inSeconds >= 1) {
+      // Only send if recording duration is at least 1 second
+      _sendMediaMessage(File(path), type: 'voice');
+    } else if (path != null && _recordDuration.inSeconds < 1) {
+      // Delete short recording
+      try {
+        await File(path).delete();
+      } catch (e) {
+        print('Error deleting short recording: $e');
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              const Text('Recording too short - minimum 1 second required'),
+          backgroundColor: kRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _cancelVoiceRecording() async {
+    print('_cancelVoiceRecording called, _isRecording: $_isRecording');
+    if (!_isRecording) return;
+
+    final path = await _audioRecorder.stop();
+    setState(() {
+      _isRecording = false;
+      _isRecordingLocked = false;
+      _recordDuration = Duration.zero;
+      _audioFilePath = null;
+    });
+    _recordTimer?.cancel();
+
+    // Delete the recording file
+    if (path != null) {
+      try {
+        await File(path).delete();
+      } catch (e) {
+        print('Error deleting cancelled recording: $e');
+      }
+    }
+  }
+
+  void _toggleRecordingLock() {
+    if (_isRecording) {
+      setState(() {
+        _isRecordingLocked = !_isRecordingLocked;
+      });
+    }
+  }
+
+  void _showAttachmentModal() {
+    setState(() {
+      _showAttachmentPicker = true;
+    });
+    _attachmentModalAnimationController.forward();
+  }
+
+  void _hideAttachmentModal() {
+    _attachmentModalAnimationController.reverse().then((_) {
+      if (mounted) {
+        setState(() {
+          _showAttachmentPicker = false;
+        });
+      }
+    });
+  }
+
+  Future<void> _pickGalleryImage() async {
+    _hideAttachmentModal();
+    final XFile? pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _sendMediaMessage(File(pickedFile.path), type: 'image');
+    }
+  }
+
+  Future<void> _pickGalleryVideo() async {
+    _hideAttachmentModal();
+    final XFile? pickedFile =
+        await _imagePicker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _sendMediaMessage(File(pickedFile.path), type: 'video');
+    }
+  }
+
+  Future<void> _pickCameraPhoto() async {
+    _hideAttachmentModal();
+    final XFile? pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      _sendMediaMessage(File(pickedFile.path), type: 'image');
+    }
+  }
+
+  Future<void> _pickCameraVideo() async {
+    _hideAttachmentModal();
+    final XFile? pickedFile =
+        await _imagePicker.pickVideo(source: ImageSource.camera);
+    if (pickedFile != null) {
+      _sendMediaMessage(File(pickedFile.path), type: 'video');
+    }
+  }
+
+  void _sendMediaMessage(File file, {required String type}) async {
+    try {
+      String url;
+      if (type == 'image' || type == 'video') {
+        url = await imageUpload(file.path);
+      } else if (type == 'voice') {
+        url = await imageUpload(file.path); // Use same upload for audio
+      } else {
+        throw Exception('Unsupported media type');
+      }
+      _socketService.sendMessage(
+        widget.conversationId,
+        '',
+        attachments: [
+          {'url': url, 'type': type},
+        ],
+        onAck: (error, message) {
+          if (!mounted) return;
+          if (error == null && message != null) {
+            setState(() {
+              _messages.insert(0, MessageModel.fromJson(message));
+              _listKey.currentState
+                  ?.insertItem(0, duration: const Duration(milliseconds: 400));
+            });
+            _scrollToBottom();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Failed to send $type: $error"),
+                backgroundColor: kRed,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to upload $type: $e"),
+          backgroundColor: kRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _capturePhoto() async {
+    final XFile? pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      _sendMediaMessage(File(pickedFile.path), type: 'image');
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    _attachmentModalAnimationController.dispose();
     _typingAnimationController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _socketService.sendTyping(widget.conversationId, false);
-
+    _recordTimer?.cancel();
+    _audioRecorder.dispose();
     _typingTimer?.cancel();
-
     _socketService.onMessageReceived = null;
     _socketService.onTyping = null;
     _socketService.onUserStatus = null;
     _socketService.onDelivered = null;
     _socketService.onSeen = null;
-
     super.dispose();
   }
 
@@ -1139,9 +1436,13 @@ I'm interested in this feed. Could you provide more information?
                   ),
                 ),
                 child: widget.userImage != ''
-                    ? Image.network(
-                        widget.userImage,
-                        fit: BoxFit.contain,
+                    ? ClipOval(
+                        child: Image.network(
+                          widget.userImage,
+                          fit: BoxFit.cover,
+                          height: 40,
+                          width: 40,
+                        ),
                       )
                     : Icon(Icons.person, color: kWhite, size: 20),
               ),
@@ -1257,230 +1558,180 @@ I'm interested in this feed. Could you provide more information?
           )
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: _isLoadingMore && !_allLoaded ? 60 : 0,
-            child: _isLoadingMore && !_allLoaded
-                ? Container(
-                    padding: const EdgeInsets.all(16),
-                    child: const Center(
-                      child: LoadingAnimation(),
-                    ),
-                  )
-                : null,
-          ),
-          Expanded(
-            child: AnimatedList(
-              key: _listKey,
-              reverse: true,
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              initialItemCount: _messages.length,
-              itemBuilder: (context, index, animation) {
-                final msg = _messages[index];
-                final isMe = msg.sender == id;
-                final List<Widget> children = [];
-                if (_shouldShowDateHeader(index)) {
-                  children
-                      .add(_buildDateHeader(msg.createdAt ?? DateTime.now()));
-                }
-                children.add(_buildAnimatedMessage(msg, isMe, animation));
-                return Column(
-                  crossAxisAlignment:
-                      isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: children,
-                );
-              },
-            ),
-          ),
-          if (_otherTyping)
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  TypingIndicator(
-                    dotColor: kPrimaryColor,
-                    dotSize: 10,
-                    dotSpacing: 5,
-                  ),
-                ],
+          Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: _isLoadingMore && !_allLoaded ? 60 : 0,
+                child: _isLoadingMore && !_allLoaded
+                    ? Container(
+                        padding: const EdgeInsets.all(16),
+                        child: const Center(
+                          child: LoadingAnimation(),
+                        ),
+                      )
+                    : null,
               ),
-            ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: kCardBackgroundColor,
-              border: Border(
-                top: BorderSide(color: kStrokeColor.withOpacity(0.3)),
+              Expanded(
+                child: AnimatedList(
+                  key: _listKey,
+                  reverse: true,
+                  controller: _scrollController,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  initialItemCount: _messages.length,
+                  itemBuilder: (context, index, animation) {
+                    final msg = _messages[index];
+                    final isMe = msg.sender == id;
+                    final List<Widget> children = [];
+                    if (_shouldShowDateHeader(index)) {
+                      children.add(
+                          _buildDateHeader(msg.createdAt ?? DateTime.now()));
+                    }
+                    children.add(_buildAnimatedMessage(msg, isMe, animation));
+                    return Column(
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: children,
+                    );
+                  },
+                ),
               ),
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      _showEmojiPicker
-                          ? Icons.keyboard
-                          : Icons.emoji_emotions_outlined,
-                      color: kPrimaryColor,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _showEmojiPicker = !_showEmojiPicker;
-                        if (_showEmojiPicker) {
-                          FocusScope.of(context).unfocus();
-                        } else {
-                          FocusScope.of(context).requestFocus(_focusNode);
-                        }
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: kInputFieldcolor,
-                        borderRadius: BorderRadius.circular(25),
-                        border:
-                            Border.all(color: kStrokeColor.withOpacity(0.3)),
+              if (_otherTyping)
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 24, right: 24, bottom: 8, top: 0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TypingIndicator(
+                        dotColor: kPrimaryColor,
+                        dotSize: 10,
+                        dotSpacing: 5,
                       ),
-                      child: TextField(
-                        controller: _controller,
-                        focusNode: _focusNode,
-                        style: const TextStyle(color: kTextColor),
-                        maxLines: null,
-                        onChanged: (val) {
-                          final typing = val.isNotEmpty;
-                          if (typing && !_isTyping) {
-                            setState(() => _isTyping = true);
-                            _socketService.sendTyping(
-                                widget.conversationId, true);
-                          }
-                          // Reset typing timer
-                          _typingTimer?.cancel();
-                          if (typing) {
-                            _typingTimer =
-                                Timer(const Duration(seconds: 2), () {
-                              if (mounted && _isTyping) {
-                                setState(() => _isTyping = false);
-                                _socketService.sendTyping(
-                                    widget.conversationId, false);
-                              }
-                            });
-                          } else {
-                            // If field is cleared, stop typing immediately
-                            if (_isTyping) {
-                              setState(() => _isTyping = false);
-                              _socketService.sendTyping(
-                                  widget.conversationId, false);
-                            }
-                          }
-                        },
-                        onTap: () {
-                          if (_showEmojiPicker) {
-                            setState(() {
-                              _showEmojiPicker = false;
-                            });
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Type a message...',
-                          hintStyle: TextStyle(
-                              color: kSecondaryTextColor.withOpacity(0.7)),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                    ],
+                  ),
+                ),
+              // --- Voice Recorder Widget ---
+              VoiceRecorderWidget(
+                isRecording: _isRecording,
+                isLocked: _isRecordingLocked,
+                duration: _recordDuration,
+                onCancel: _cancelVoiceRecording,
+                onSend: _stopVoiceRecording,
+                onLock: _toggleRecordingLock,
+                onUnlock: _toggleRecordingLock,
+              ),
+              // --- Chat Input Bar (only show when not recording) ---
+              if (!_isRecording)
+                ChatInputBar(
+                  onSendText: (text) {
+                    _controller.text = text;
+                    _sendMessage();
+                  },
+                  onAttachment: _showAttachmentModal,
+                  onCamera: _capturePhoto,
+                  onVoiceRecord: () {
+                    if (_isRecording) {
+                      _stopVoiceRecording();
+                    } else {
+                      _startVoiceRecording();
+                    }
+                  },
+                  isRecording: _isRecording,
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  showEmojiPicker: _showEmojiPicker,
+                  onToggleEmojiPicker: () {
+                    setState(() {
+                      _showEmojiPicker = !_showEmojiPicker;
+                      if (_showEmojiPicker) {
+                        FocusScope.of(context).unfocus();
+                      } else {
+                        FocusScope.of(context).requestFocus(_focusNode);
+                      }
+                    });
+                  },
+                ),
+            ],
+          ),
+          if (_showAttachmentPicker)
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: _hideAttachmentModal,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  color: _showAttachmentPicker
+                      ? Colors.black.withOpacity(0.3)
+                      : Colors.transparent,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 1),
+                        end: Offset.zero,
+                      ).animate(CurvedAnimation(
+                        parent: _attachmentModalAnimationController,
+                        curve: Curves.easeOutCubic,
+                      )),
+                      child: FadeTransition(
+                        opacity: CurvedAnimation(
+                          parent: _attachmentModalAnimationController,
+                          curve: Curves.easeInOut,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, -2),
+                              ),
+                            ],
+                          ),
+                          child: AttachmentPicker(
+                            onGallery: _pickGalleryImage,
+                            onDocument: () {
+                              _hideAttachmentModal();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Document selected (placeholder)')),
+                              );
+                            },
+                            onCamera: _pickCameraPhoto,
+                            onContact: () {
+                              _hideAttachmentModal();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text('Contact selected (placeholder)')),
+                              );
+                            },
+                            onLocation: () {
+                              _hideAttachmentModal();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Location selected (placeholder)')),
+                              );
+                            },
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.8)],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: kPrimaryColor.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.send_rounded, color: kWhite),
-                      onPressed: _sendMessage,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Offstage(
-            offstage: !_showEmojiPicker,
-            child: SizedBox(
-              height: 300,
-              child: EmojiPicker(
-                onEmojiSelected: (category, emoji) {
-                  setState(() {
-                    _isTyping = _controller.text.isNotEmpty;
-                  });
-                  _socketService.sendTyping(widget.conversationId, _isTyping);
-                },
-                onBackspacePressed: () {
-                  final text = _controller.text;
-                  if (text.isNotEmpty) {
-                    _controller.text = text.characters.skipLast(1).toString();
-                    _controller.selection = TextSelection.fromPosition(
-                      TextPosition(offset: _controller.text.length),
-                    );
-                    setState(() {
-                      _isTyping = _controller.text.isNotEmpty;
-                    });
-                    _socketService.sendTyping(widget.conversationId, _isTyping);
-                  }
-                },
-                textEditingController: _controller,
-                config: Config(
-                  height: 300,
-                  emojiViewConfig: EmojiViewConfig(
-                    backgroundColor: kCardBackgroundColor,
-                    recentsLimit: 28,
-                    noRecents: const Text(
-                      'No Recents',
-                      style: TextStyle(fontSize: 20, color: Colors.black26),
-                      textAlign: TextAlign.center,
-                    ),
-                    loadingIndicator: const SizedBox.shrink(),
-                  ),
-                  categoryViewConfig: CategoryViewConfig(
-                    backgroundColor: kStrokeColor,
-                    dividerColor: kPrimaryColor,
-                    indicatorColor: kPrimaryColor,
-                    iconColor: kSecondaryTextColor,
-                    iconColorSelected: kPrimaryColor,
-                    backspaceColor: kPrimaryColor,
-                    categoryIcons: const CategoryIcons(),
-                    tabIndicatorAnimDuration: Duration(milliseconds: 300),
-                  ),
-                  skinToneConfig: SkinToneConfig(
-                    dialogBackgroundColor: kCardBackgroundColor,
-                    indicatorColor: kSecondaryTextColor,
-                  ),
-                  // Add other configs as needed
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -1504,5 +1755,468 @@ I'm interested in this feed. Could you provide more information?
     final trimmed = text.trim();
     return trimmed.characters.length == 1 &&
         RegExp(r'^\p{Emoji} *$', unicode: true).hasMatch(trimmed);
+  }
+
+  Widget _buildAudioMessageBubble(MessageModel msg, bool isMe) {
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(
+          left: isMe ? 50 : 16,
+          right: isMe ? 16 : 50,
+          bottom: 8,
+          top: 8,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isMe ? kPrimaryColor.withOpacity(0.8) : kCardBackgroundColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isMe ? Colors.transparent : kStrokeColor.withOpacity(0.3),
+          ),
+        ),
+        child: _AudioPlayerWidget(url: msg.attachments!.first.url ?? ''),
+      ),
+    );
+  }
+
+  Widget _buildImageMessageBubble(MessageModel msg, bool isMe) {
+    final url = msg.attachments!.first.url ?? '';
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: () {
+          // TODO: Show fullscreen image (Hero animation placeholder)
+          showDialog(
+            context: context,
+            builder: (_) => Dialog(
+              backgroundColor: Colors.transparent,
+              child: Hero(
+                tag: url,
+                child: Image.network(url, fit: BoxFit.contain),
+              ),
+            ),
+          );
+        },
+        child: Hero(
+          tag: url,
+          child: Container(
+            margin: EdgeInsets.only(
+              left: isMe ? 50 : 16,
+              right: isMe ? 16 : 50,
+              bottom: 8,
+              top: 8,
+            ),
+            decoration: BoxDecoration(
+              color:
+                  isMe ? kPrimaryColor.withOpacity(0.1) : kCardBackgroundColor,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: kBlack.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FadeInImage.assetNetwork(
+              placeholder: 'assets/pngs/icon.png',
+              image: url,
+              width: 180,
+              height: 180,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoMessageBubble(MessageModel msg, bool isMe) {
+    final url = msg.attachments!.first.url ?? '';
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: () {
+          // TODO: Show fullscreen video (placeholder)
+          showDialog(
+            context: context,
+            builder: (_) => Dialog(
+              backgroundColor: Colors.black,
+              child: _VideoPlayerDialog(url: url),
+            ),
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.only(
+            left: isMe ? 50 : 16,
+            right: isMe ? 16 : 50,
+            bottom: 8,
+            top: 8,
+          ),
+          width: 180,
+          height: 180,
+          decoration: BoxDecoration(
+            color: kCardBackgroundColor,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: kBlack.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: _VideoThumbnail(url: url),
+              ),
+              Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.play_arrow,
+                      color: Colors.white, size: 48),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AudioPlayerWidget extends StatefulWidget {
+  final String url;
+  const _AudioPlayerWidget({Key? key, required this.url}) : super(key: key);
+
+  @override
+  State<_AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
+}
+
+class _AudioPlayerWidgetState extends State<_AudioPlayerWidget> {
+  late final AudioPlayer _audioPlayer;
+  bool _isPlaying = false;
+  Duration _duration = Duration.zero;
+  Duration _position = Duration.zero;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+    _audioPlayer.onPlayerStateChanged.listen((state) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = state == PlayerState.playing;
+        });
+      }
+    });
+    _audioPlayer.onDurationChanged.listen((d) {
+      if (mounted) {
+        setState(() {
+          _duration = d;
+        });
+      }
+    });
+    _audioPlayer.onPositionChanged.listen((p) {
+      if (mounted) {
+        setState(() {
+          _position = p;
+        });
+      }
+    });
+
+    // Load duration immediately
+    _loadAudioDuration();
+  }
+
+  void _loadAudioDuration() async {
+    try {
+      if (widget.url.isNotEmpty) {
+        // Set the source to get duration without playing
+        await _audioPlayer.setSource(UrlSource(widget.url));
+        // Get the duration
+        final duration = await _audioPlayer.getDuration();
+        if (mounted && duration != null) {
+          setState(() {
+            _duration = duration;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading audio duration: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void _togglePlay() async {
+    try {
+      setState(() {
+        _errorMessage = null;
+      });
+
+      if (_isPlaying) {
+        await _audioPlayer.pause();
+      } else {
+        print('Attempting to play audio from URL: ${widget.url}');
+
+        // Check if URL is valid
+        if (widget.url.isEmpty) {
+          setState(() {
+            _errorMessage = 'No audio URL provided';
+          });
+          return;
+        }
+
+        // Try to play the audio
+        await _audioPlayer.play(UrlSource(widget.url));
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Audio playback failed';
+        _isPlaying = false;
+      });
+      print('Audio playback exception: $e');
+
+      // Show a snackbar with more details
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot play audio: ${e.toString()}'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_errorMessage != null) {
+      return Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error, color: Colors.red, size: 14),
+            SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                'Audio unavailable',
+                style: TextStyle(color: Colors.red, fontSize: 11),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Ensure slider bounds are valid
+    final maxDuration = _duration.inMilliseconds.toDouble();
+    final currentPosition = _position.inMilliseconds.toDouble();
+    final sliderValue =
+        maxDuration > 0 ? currentPosition.clamp(0.0, maxDuration) : 0.0;
+
+    return Container(
+      constraints:
+          BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Play/Pause button
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: kPrimaryColor,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: Icon(
+                _isPlaying ? Icons.pause : Icons.play_arrow,
+                color: Colors.white,
+                size: 16,
+              ),
+              onPressed: _togglePlay,
+              padding: EdgeInsets.zero,
+            ),
+          ),
+          SizedBox(width: 8),
+
+          // Time display and slider
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Time labels
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _formatDuration(_position),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: kSecondaryTextColor,
+                      ),
+                    ),
+                    Text(
+                      _formatDuration(_duration),
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: kSecondaryTextColor,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2),
+
+                // Slider
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 3,
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 4),
+                    overlayShape: RoundSliderOverlayShape(overlayRadius: 8),
+                  ),
+                  child: Slider(
+                    value: sliderValue,
+                    min: 0,
+                    max: maxDuration > 0 ? maxDuration : 1,
+                    onChanged: (value) async {
+                      try {
+                        final pos = Duration(milliseconds: value.toInt());
+                        await _audioPlayer.seek(pos);
+                      } catch (e) {
+                        print('Seek error: $e');
+                      }
+                    },
+                    activeColor: kPrimaryColor,
+                    inactiveColor: kStrokeColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(Duration d) {
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+}
+
+class _VideoThumbnail extends StatefulWidget {
+  final String url;
+  const _VideoThumbnail({Key? key, required this.url}) : super(key: key);
+
+  @override
+  State<_VideoThumbnail> createState() => _VideoThumbnailState();
+}
+
+class _VideoThumbnailState extends State<_VideoThumbnail> {
+  VideoPlayerController? _controller;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(widget.url)
+      ..initialize().then((_) {
+        setState(() {
+          _initialized = true;
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_initialized && _controller != null) {
+      return AspectRatio(
+        aspectRatio: _controller!.value.aspectRatio,
+        child: VideoPlayer(_controller!),
+      );
+    } else {
+      return Container(
+        color: Colors.black12,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+  }
+}
+
+class _VideoPlayerDialog extends StatefulWidget {
+  final String url;
+  const _VideoPlayerDialog({Key? key, required this.url}) : super(key: key);
+
+  @override
+  State<_VideoPlayerDialog> createState() => _VideoPlayerDialogState();
+}
+
+class _VideoPlayerDialogState extends State<_VideoPlayerDialog> {
+  late VideoPlayerController _controller;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(widget.url)
+      ..initialize().then((_) {
+        setState(() {
+          _initialized = true;
+        });
+        _controller.play();
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _initialized
+        ? AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: Stack(
+              children: [
+                VideoPlayer(_controller),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ],
+            ),
+          )
+        : const Center(child: LoadingAnimation());
   }
 }

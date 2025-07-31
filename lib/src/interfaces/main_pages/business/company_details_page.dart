@@ -104,6 +104,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
   @override
   Widget build(BuildContext context) {
     final company = widget.company;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double expandedHeight = screenHeight < 700 ? 280 : 220;
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: DefaultTabController(
@@ -114,7 +116,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               backgroundColor: kBackgroundColor,
               elevation: 0,
               pinned: true,
-              expandedHeight: 210,
+              expandedHeight: expandedHeight,
               leading: Padding(
                 padding: const EdgeInsets.all(8),
                 child: InkWell(
@@ -137,7 +139,11 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               flexibleSpace: FlexibleSpaceBar(
                 background: Padding(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 100, bottom: 16),
+                    left: 16,
+                    right: 16,
+                    top: 100,
+                    bottom: 16,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -165,7 +171,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            // Static Category Badge
+                            // Category Badge
                             Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 4),
@@ -183,7 +189,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                               ),
                             ),
                             SizedBox(height: 8),
-                            // Static Rating Row
+                            // Rating Row
                             Consumer(
                               builder: (context, ref, _) {
                                 final ratings =

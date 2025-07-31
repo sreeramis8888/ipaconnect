@@ -32,9 +32,9 @@ class CompaniesNotifier extends _$CompaniesNotifier {
     isLoading = true;
 
     try {
-      final newCompanies = await ref.read(
-          getCompaniesProvider(pageNo: pageNo, limit: limit, categoryId: categoryId)
-              .future);
+      final newCompanies = await ref.read(getCompaniesProvider(
+              pageNo: pageNo, limit: limit, categoryId: categoryId)
+          .future);
 
       if (newCompanies.isEmpty) {
         hasMore = false;
@@ -54,9 +54,8 @@ class CompaniesNotifier extends _$CompaniesNotifier {
     }
   }
 
-
-  Future<void> searchCompanies(String query,{required String categoryId}
-     ) async {
+  Future<void> searchCompanies(String query,
+      {required String categoryId}) async {
     isLoading = true;
     pageNo = 1;
     companies = [];
@@ -64,7 +63,8 @@ class CompaniesNotifier extends _$CompaniesNotifier {
 
     try {
       final newCompanies = await ref.read(
-        getCompaniesProvider(categoryId:categoryId ,
+        getCompaniesProvider(
+          categoryId: categoryId,
           pageNo: pageNo,
           limit: limit,
           query: query,
@@ -73,7 +73,7 @@ class CompaniesNotifier extends _$CompaniesNotifier {
 
       companies = [...newCompanies];
       hasMore = newCompanies.length == limit;
-
+      isFirstLoad = false;
       state = [...companies];
     } catch (e, stackTrace) {
       log(e.toString());
@@ -90,8 +90,9 @@ class CompaniesNotifier extends _$CompaniesNotifier {
 
     try {
       pageNo = 1;
-      final refreshedCompanies = await ref.read(
-          getCompaniesProvider(pageNo: pageNo, limit: limit,categoryId: categoryId).future);
+      final refreshedCompanies = await ref.read(getCompaniesProvider(
+              pageNo: pageNo, limit: limit, categoryId: categoryId)
+          .future);
 
       companies = refreshedCompanies;
       hasMore = refreshedCompanies.length >= limit;
@@ -106,7 +107,8 @@ class CompaniesNotifier extends _$CompaniesNotifier {
     }
   }
 
-  void updateCompanyRating({required String companyId, required double newRating}) {
+  void updateCompanyRating(
+      {required String companyId, required double newRating}) {
     companies = companies.map((company) {
       if (company.id == companyId) {
         return company.copyWith(rating: newRating);

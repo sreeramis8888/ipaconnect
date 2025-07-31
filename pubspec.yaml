@@ -59,6 +59,7 @@ dependencies:
   intl_phone_field: ^3.2.0
   pin_code_fields: ^8.0.1
   image_picker: ^1.1.2
+  record: ^6.0.0
   image: ^4.5.4
   custom_image_crop: ^0.1.1
   path_provider: ^2.1.5
@@ -87,6 +88,8 @@ dependencies:
   share_plus: ^11.0.0
   emoji_picker_flutter: ^4.3.0
   characters: ^1.4.0
+  audioplayers: ^6.5.0
+  video_player: ^2.10.0
 
 
 dev_dependencies:

@@ -203,6 +203,9 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
               phone);
           final verificationId = data['verificationId'];
           final resendToken = data['resendToken'];
+          id = '';
+          token = '';
+          LoggedIn = false;
           if (verificationId != null && verificationId.isNotEmpty) {
             log('Otp Sent successfully');
             Navigator.of(context).pushReplacement(
@@ -491,14 +494,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         if ((savedStatus).toLowerCase() == 'inactive') {
           NavigationService().pushNamedReplacement('RegistrationPage',
               arguments: '+${countryCode ?? '91'}$phone');
-        } 
-        else if ((savedStatus).toLowerCase() == 'pending') {
+        } else if ((savedStatus).toLowerCase() == 'pending') {
           NavigationService().pushNamedReplacement('ApprovalWaitingPage');
-        } 
-        else if ((savedStatus).toLowerCase() == 'awaiting-payment') {
-          NavigationService().pushNamedReplacement('SubscriptionPage',arguments: currency);
-        } 
-        else {
+        } else if ((savedStatus).toLowerCase() == 'awaiting-payment') {
+          NavigationService()
+              .pushNamedReplacement('SubscriptionPage', arguments: currency);
+        } else {
           NavigationService().pushNamedReplacement('MainPage');
         }
       } else {

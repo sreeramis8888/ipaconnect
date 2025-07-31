@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
@@ -30,110 +29,161 @@ class AboutUsPage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          // Group photo
           Container(
             width: double.infinity,
             height: 180,
             child: Image.asset(
-              'assets/pngs/eventlocation.png',
+              'assets/pngs/aboutus_groupphoto.png',
               fit: BoxFit.cover,
             ),
           ),
           Container(
             color: kBackgroundColor,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // About Us text
-                Text('About Us',
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                const SizedBox(height: 8),
-                Text(
-                  'Getting educated is a Right and not a privilege. We at Skepick are committed for making education possible for the deprived. Our platform provides transparency by ensuring a bona fide utilization of funds. Our goal is to use education as the most powerful weapon to secure a sustainable future for the world. We believe education is the only solution to ensuring social equality, poverty eradication, a better labor & order situation, etc. Our sponsors empower students to achieve their aspirations and grow up to be self-dependent & resourceful citizens through their valuable donation. We are the World’s Only Transparent Sponsorship platform opening the education doors for millions of students. We value the continued support from our institution partners to make our vision possible.',
-                  style: GoogleFonts.inter(
-                      fontSize: 15, color: Colors.white.withOpacity(0.85)),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('About Us',
+                          style: kSubHeadingB.copyWith(color: Colors.white)),
+                      const SizedBox(height: 8),
+                      Text(
+                          'Getting educated is a Right and not a privilege. We at Skepick are committed for making education possible for the deprived. Our platform provides transparency by ensuring a bona fide utilization of funds. Our goal is to use education as the most powerful weapon to secure a sustainable future for the world. We believe education is the only solution to ensuring social equality, poverty eradication, a better labor & order situation, etc. Our sponsors empower students to achieve their aspirations and grow up to be self-dependent & resourceful citizens through their valuable donation. We are the World\'s Only Transparent Sponsorship platform opening the education doors for millions of students. We value the continued support from our institution partners to make our vision possible.',
+                          style: TextStyle(color: kSecondaryTextColor)),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 24),
-                // Stats
-                Text('Fueling Impact Through Numbers That Matter',
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _statCard('8', 'Years experience'),
-                    _statCard('2K', 'Members'),
-                    _statCard('6', 'Total Clusters'),
-                    _statCard('100+', 'Total Businesses'),
-                  ],
+
+                Container(
+                  decoration: BoxDecoration(color: kCardBackgroundColor),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Text('Fueling Impact\nThrough Numbers\nThat Matter',
+                            style: kLargeTitleB.copyWith(
+                                color: Colors.white, fontSize: 32)),
+                        const SizedBox(height: 16),
+                        Container(
+                          height: 1,
+                          color: kBackgroundColor,
+                        ),
+                        const SizedBox(height: 10),
+                        // Statistics Grid
+                        GridView.count(
+                          crossAxisCount: 2,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          mainAxisSpacing: 0,
+                          crossAxisSpacing: 16,
+                          children: [
+                            _statCard('8', 'Years experience',
+                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                            _statCard('2K', 'Members',
+                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                            _statCard('6', 'Total Clusters',
+                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                            _statCard('100+', 'Total Businesses',
+                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 32),
                 // Timeline
-                Text('Growth Over Time',
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                const SizedBox(height: 16),
-                _timelineItem(
-                    '2018',
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisi efficitur erat, vitae cursus nunc risus vel lacus.',
-                    'assets/pngs/icon1.png'),
-                const SizedBox(height: 16),
-                _timelineItem(
-                    '2016',
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisi efficitur erat, vitae cursus nunc risus vel lacus.',
-                    'assets/pngs/icon2.png'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Growth Over Time',
+                          style: kSubHeadingB.copyWith(
+                              color: Colors.white, fontSize: 32)),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Explore the key moments that shaped IPA Into a thriving business community. From its founding vision to present-day milestones, our journey reflects growth, collaboration, and a commitment to empowering entrepreneurs across the globe.',
+                        style: TextStyle(color: kSecondaryTextColor),
+                      ),
+                      const SizedBox(height: 24),
+                      _timelineItemNew(
+                          '2018',
+                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisl efficitur erat, vitae cursus nunc risus vel lacus.',
+                          'assets/pngs/icon1.png'),
+                      const SizedBox(height: 24),
+                      _timelineItemNew(
+                          '2018',
+                          'Lorem Ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisi efficitur erat, vitae cursus nunc risus vel lacus.',
+                          'assets/pngs/icon2.png'),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 32),
                 // Vision
-                Text('Vision',
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                const SizedBox(height: 8),
-                Text(
-                  'Being most popular and sought after platform for Keralite business entrepreneurs where they will be connected and flourished as a dynamic business community in GCC.',
-                  style: GoogleFonts.inter(
-                      fontSize: 15, color: Colors.white.withOpacity(0.85)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Vision', style: kSubHeadingB),
+                      const SizedBox(height: 8),
+                      Text(
+                          'Being most popular and sought after platform for Keralite business entrepreneurs where they will be connected and flourished as a dynamic business community in GCC.',
+                          style: TextStyle(color: kSecondaryTextColor)),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 32),
                 // Mission
-                Text('Mission',
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                const SizedBox(height: 8),
-                Text(
-                  'To empower the clients who are entrepreneurs in UAE developing a network to explore potential business opportunities, identify potential clients, customers and partners, boost business relationships, formulate marketing strategies, share requirements, find potential investors and JV partners. To provide long term training to entrepreneurs focusing on advanced marketing skills and updating information on current business scenarios.',
-                  style: GoogleFonts.inter(
-                      fontSize: 15, color: Colors.white.withOpacity(0.85)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Mission',
+                          style: kSubHeadingB),
+                      const SizedBox(height: 8),
+                      Text(
+                          'To empower the clients who are entrepreneurs in UAE developing a network to explore potential business opportunities, identify potential clients, customers and partners, boost business relationships, formulate marketing strategies, share requirements, find potential investors and JV partners. To provide long term training to entrepreneurs focusing on advanced marketing skills and updating information on current business scenarios.',
+                          style: TextStyle(color: kSecondaryTextColor)),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 32),
                 // Board Members
-                Text('Board Members',
-                    style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                const SizedBox(height: 16),
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.8,
-                  children: List.generate(6, (index) => _boardMemberCard()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Board Members',
+                          style: kSubHeadingB.copyWith(color: Colors.white)),
+                      const SizedBox(height: 16),
+                      GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 0.8,
+                        children:
+                            List.generate(6, (index) => _boardMemberCard()),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -142,90 +192,72 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _statCard(String value, String label) {
-    return Container(
-      width: 70,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: kCardBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(value,
-              style: GoogleFonts.poppins(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white)),
-          const SizedBox(height: 4),
-          Text(label,
-              style: GoogleFonts.inter(
-                  fontSize: 12, color: Colors.white.withOpacity(0.8)),
-              textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
-
-  Widget _timelineItem(String year, String description, String imageAsset) {
-    return Row(
+  Widget _statCard(String value, String label, String description) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
+        Text(
+          value,
+          style: kLargeTitleB.copyWith(color: Colors.white, fontSize: 36),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: kSmallTitleSB.copyWith(color: Colors.white.withOpacity(0.8)),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          description,
+          style: kSmallerTitleR.copyWith(color: Colors.grey.withOpacity(0.6)),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
+  Widget _timelineItemNew(String year, String description, String imageAsset) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Year marker with blue bullet
+        Row(
           children: [
             Container(
-              width: 36,
-              height: 36,
+              width: 8,
+              height: 8,
               decoration: BoxDecoration(
-                color: kPrimaryColor.withOpacity(0.15),
+                color: kPrimaryColor,
                 shape: BoxShape.circle,
               ),
-              child: Center(
-                child: Text(year,
-                    style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.bold)),
-              ),
             ),
-            Container(
-              width: 2,
-              height: 60,
-              color: kPrimaryColor.withOpacity(0.2),
-            ),
+            const SizedBox(width: 8),
+            Text(year, style: kSmallTitleR.copyWith(color: Colors.white)),
           ],
         ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: kCardBackgroundColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(imageAsset,
-                      height: 50, width: 50, fit: BoxFit.cover),
+        const SizedBox(height: 12),
+
+        Padding(
+          padding: const EdgeInsets.only(left: 16), // dot + spacing
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                description,
+                style: TextStyle(color: kSecondaryTextColor),
+              ),
+              const SizedBox(height: 16),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imageAsset,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(description,
-                      style: GoogleFonts.inter(
-                          fontSize: 13, color: Colors.white.withOpacity(0.85))),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ],
@@ -255,15 +287,12 @@ class AboutUsPage extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text('Mr. Mitchell Hoeger',
-              style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  fontSize: 15),
+              style: kBodyTitleSB.copyWith(color: Colors.white),
               textAlign: TextAlign.center),
           const SizedBox(height: 4),
           Text('Product Designer',
-              style: GoogleFonts.inter(
-                  color: Colors.white.withOpacity(0.7), fontSize: 13),
+              style:
+                  kSmallTitleR.copyWith(color: Colors.white.withOpacity(0.7)),
               textAlign: TextAlign.center),
         ],
       ),
