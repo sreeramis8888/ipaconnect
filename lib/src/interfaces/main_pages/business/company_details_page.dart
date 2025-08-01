@@ -561,11 +561,14 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                       : Expanded(
                           child: GridView.builder(
                             gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                SliverGridDelegateWithMaxCrossAxisExtent(
                               maxCrossAxisExtent: 220,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
-                              childAspectRatio: 0.50,
+                              childAspectRatio: MediaQuery.of(context)
+                                      .size
+                                      .width /
+                                  (MediaQuery.of(context).size.height / 1.1),
                             ),
                             itemCount: products.length,
                             itemBuilder: (context, index) {
