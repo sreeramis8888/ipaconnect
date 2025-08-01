@@ -1,7 +1,10 @@
 import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
@@ -17,41 +20,92 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     with TickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  
+  bool _isBackgroundLoaded = false;
+  late AnimationController _backgroundAnimationController;
+  late Animation<double> _backgroundAnimation;
+
   // Page 1 animations
   late AnimationController _animationController;
   late Animation<double> _profile1Animation;
   late Animation<double> _profile2Animation;
   late Animation<double> _profile3Animation;
-  
+
   // Page 2 animations
   late AnimationController _snakeAnimationController;
-  late AnimationController _cylinderAnimationController;
   late Animation<double> _snakeAnimation;
+  late AnimationController _cylinderAnimationController;
   late Animation<double> _cylinder1Animation;
   late Animation<double> _cylinder2Animation;
   late Animation<double> _cylinder3Animation;
+
+  // Page 3 animations
+  late AnimationController _ringAnimationController;
+  late Animation<double> _ring1Animation;
+  late Animation<double> _ring2Animation;
+  late Animation<double> _ring3Animation;
+  late Animation<double> _ring4Animation;
 
   @override
   void initState() {
     super.initState();
     _setupAnimations();
+    _preloadBackground();
     _startAnimations();
   }
 
+  Future<void> _preloadBackground() async {
+    try {
+      // Preload the background image
+      await precacheImage(
+        const AssetImage('assets/pngs/subcription_bg.png'),
+        context,
+      );
+      if (mounted) {
+        setState(() {
+          _isBackgroundLoaded = true;
+        });
+        _backgroundAnimationController.forward();
+      }
+    } catch (e) {
+      // If image fails to load, still set as loaded to show fallback
+      if (mounted) {
+        setState(() {
+          _isBackgroundLoaded = true;
+        });
+        _backgroundAnimationController.forward();
+      }
+    }
+  }
+
   void _setupAnimations() {
-    // Page 1 animations
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1800),
+    // Background animation
+    _backgroundAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
       vsync: this,
     );
 
+    _backgroundAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _backgroundAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Page 1 animations
+    _animationController = AnimationController(
+      duration: const Duration(
+          milliseconds: 3000), // Increased from 1800ms for slower animation
+      vsync: this,
+    );
     _profile1Animation = Tween<double>(
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: const Interval(0.0, 0.4, curve: Curves.elasticOut),
+      curve: const Interval(0.1, 0.4,
+          curve: Curves
+              .easeOutCubic), // Changed from elasticOut for smoother animation
     ));
 
     _profile2Animation = Tween<double>(
@@ -59,7 +113,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: const Interval(0.2, 0.6, curve: Curves.elasticOut),
+      curve: const Interval(0.4, 0.7,
+          curve: Curves
+              .easeOutCubic), // Changed from elasticOut for smoother animation
     ));
 
     _profile3Animation = Tween<double>(
@@ -67,19 +123,54 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: const Interval(0.4, 0.8, curve: Curves.elasticOut),
+      curve: const Interval(0.7, 1.0,
+          curve: Curves
+              .easeOutCubic), // Changed from elasticOut for smoother animation
     ));
 
     // Page 2 animations
     _snakeAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
+      duration: Duration(seconds: 3), // 3 seconds to complete the flow
       vsync: this,
     );
 
+    _snakeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _snakeAnimationController,
+      curve: Curves.easeInOut,
+    ));
     _cylinderAnimationController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
+
+    // Listen to page changes
+    _pageController.addListener(() {
+      final page = _pageController.page ?? 0;
+
+      // Start animation ONLY once when reaching page 2 (index 1)
+      if (page >= 1.0 && page < 2.0) {
+        if (_snakeAnimationController.status == AnimationStatus.dismissed) {
+          _snakeAnimationController
+              .forward(); // Only start if not already started
+        }
+      } else if (page < 1.0) {
+        _snakeAnimationController
+            .reset(); // Reset only when going back to page 1
+      }
+      // Don't reset when going to page 3 - let it stay completed
+
+      // Start ring animations when reaching page 3 (index 2)
+      if (page >= 2.0 && page < 3.0) {
+        if (_ringAnimationController.status == AnimationStatus.dismissed) {
+          _ringAnimationController.forward();
+        }
+      } else if (page < 2.0) {
+        _ringAnimationController.reset();
+      }
+    });
 
     _snakeAnimation = Tween<double>(
       begin: 0.0,
@@ -113,8 +204,53 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       curve: const Interval(0.6, 1.0, curve: Curves.elasticOut),
     ));
 
-    // Make snake animation repeat
-    _snakeAnimationController.repeat();
+    // Waterflow animation - smooth and non-repeating
+    _snakeAnimationController.forward();
+
+    // Page 3 ring animations - faster fade-in with overlapping timing
+    _ringAnimationController = AnimationController(
+      duration:
+          const Duration(milliseconds: 1200), // Reduced from 3000ms to 1200ms
+      vsync: this,
+    );
+
+    _ring1Animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _ringAnimationController,
+      curve: const Interval(0.0, 0.4,
+          curve: Curves
+              .easeInOut), // Changed from elasticOut to easeInOut for smoother fade
+    ));
+
+    _ring2Animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _ringAnimationController,
+      curve: const Interval(0.1, 0.5,
+          curve: Curves.easeInOut), // Starts earlier, overlaps with ring1
+    ));
+
+    _ring3Animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _ringAnimationController,
+      curve: const Interval(0.2, 0.6,
+          curve: Curves.easeInOut), // Starts even earlier, more overlap
+    ));
+
+    _ring4Animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _ringAnimationController,
+      curve: const Interval(0.3, 0.7,
+          curve:
+              Curves.easeInOut), // Starts earlier, overlaps with previous rings
+    ));
   }
 
   void _startAnimations() {
@@ -135,9 +271,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   void dispose() {
+    _backgroundAnimationController.dispose();
     _animationController.dispose();
     _snakeAnimationController.dispose();
     _cylinderAnimationController.dispose();
+    _ringAnimationController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -149,29 +287,24 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         curve: Curves.easeInOut,
       );
     } else {
-      // Onboarding completed - mark app as launched and navigate
       await _completeOnboarding();
     }
   }
 
   Future<void> _completeOnboarding() async {
     try {
-      // Mark the app as launched
+   
       await SecureStorage.write('has_launched_before', 'true');
-      
-      // Navigate to appropriate screen based on login status
+
       NavigationService navigationService = NavigationService();
-      
+
       if (LoggedIn) {
-        // User is logged in, go to main page
         navigationService.pushNamedReplacement('MainPage');
       } else {
-        // User is not logged in, go to phone number screen
         navigationService.pushNamedReplacement('PhoneNumber');
       }
     } catch (e) {
       print('Error completing onboarding: $e');
-      // Fallback navigation
       NavigationService().pushNamedReplacement('PhoneNumber');
     }
   }
@@ -179,103 +312,115 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/pngs/subcription_bg.png'), // Replace with your background image
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Status bar spacing
-              const SizedBox(height: 20),
-              
-              // Page content
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                    
-                    // Start page 2 animations when reaching page 2
-                    if (index == 1) {
-                      _cylinderAnimationController.reset();
-                      _startPage2Animations();
-                    }
-                  },
-                  children: [
-                    _buildPage1(),
-                    _buildPage2(),                  
-                    _buildPlaceholderPage('title','description'),
-                  ],
-                ),
+      backgroundColor:
+          const Color(0xFF1D09CD), 
+      body: AnimatedBuilder(
+        animation: _backgroundAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF1D09CD),
+                  const Color.fromARGB(255, 33, 16, 73),
+                  const Color.fromARGB(255, 14, 11, 78),
+                ],
               ),
-              
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Page indicator
-                    SmoothPageIndicator(
-                      controller: _pageController,
-                      count: 3,
-                      effect: const WormEffect(
-                        dotColor: Colors.white24,
-                        activeDotColor: Colors.white,
-                        dotHeight: 8,
-                        dotWidth: 8,
-                        spacing: 8,
-                      ),
-                    ),
-                    
-                    // Next/Get Started button
-                    GestureDetector(
-                      onTap: _nextPage,
-                      child: Container(
-                        width: _currentPage == 2 ? 120 : 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2B5CE6),
-                          shape: _currentPage == 2 ? BoxShape.rectangle : BoxShape.circle,
-                          borderRadius: _currentPage == 2 ? BorderRadius.circular(28) : null,
-                        ),
-                        child: _currentPage == 2
-                            ? const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Get Started',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ],
-                              )
-                            : const Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                                size: 24,
+              image: _isBackgroundLoaded
+                  ? DecorationImage(
+                      image: const AssetImage('assets/pngs/subcription_bg.png'),
+                      fit: BoxFit.cover,
+                      opacity: _backgroundAnimation.value * 0.9,
+                    )
+                  : null,
+            ),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: _isBackgroundLoaded
+                        ? PageView(
+                            controller: _pageController,
+                            onPageChanged: (index) {
+                              setState(() {
+                                _currentPage = index;
+                              });
+                              if (index == 1) {
+                                _cylinderAnimationController.reset();
+                                _startPage2Animations();
+                              }
+                            },
+                            children: [
+                              _buildPage1(),
+                              _buildPage2(),
+                              _buildPage3(),
+                            ],
+                          )
+                        : const Center(
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(3, (index) {
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              width: _currentPage == index ? 20 : 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: _currentPage == index
+                                    ? Colors.white
+                                    : Colors.white.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(3),
                               ),
-                      ),
+                            );
+                          }),
+                        ),
+
+                        // Next button
+                        GestureDetector(
+                          onTap: _nextPage,
+                          child: Container(
+                            width: 56,
+                            height: 56,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF2B5CE6),
+                              shape: BoxShape.circle,
+                            ),
+                            child: SvgPicture.asset(       'assets/splash_assets/next_button.svg')
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          );
+        },
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() => _currentPage = index);
+            if (index == 1) {
+              _startPage2Animations();
+            }
+          },
+
         ),
       ),
     );
@@ -286,14 +431,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          // Profile images section
-          Expanded(
-            flex: 3,
+          // Top area for profile images
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.55, // upper part
             child: Stack(
               children: [
-                // Top profile (bearded man with message bubble)
+                // Top profile
                 Positioned(
-                  top: 80,
+                  top: 40,
                   left: 40,
                   child: AnimatedBuilder(
                     animation: _profile1Animation,
@@ -301,39 +446,39 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       return Transform.scale(
                         scale: _profile1Animation.value,
                         child: Opacity(
-                          opacity: _profile1Animation.value,
+                          opacity: _profile1Animation.value.clamp(0.0, 1.0),
                           child: _buildProfileCard(
-                                'assets/svg/splash_assets/profile1.svg',
+                            'assets/splash_assets/profile2.png',
                           ),
                         ),
                       );
                     },
                   ),
                 ),
-                
-                // Bottom right profile (man in suit with message bubble)
+
+                // Right profile
                 Positioned(
-                  top: 240,
-                  right: 40,
+                  top: 180,
+                  right: 0,
                   child: AnimatedBuilder(
                     animation: _profile2Animation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _profile2Animation.value,
                         child: Opacity(
-                          opacity: _profile2Animation.value,
+                          opacity: _profile2Animation.value.clamp(0.0, 1.0),
                           child: _buildProfileCard(
-                         'assets/svg/splash_assets/profile2.svg',
+                            'assets/splash_assets/profile1.png',
                           ),
                         ),
                       );
                     },
                   ),
                 ),
-                
-                // Bottom left profile (woman in yellow with message bubble)
+
+                // Bottom-left profile
                 Positioned(
-                  top: 400,
+                  bottom: 40,
                   left: 20,
                   child: AnimatedBuilder(
                     animation: _profile3Animation,
@@ -341,9 +486,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       return Transform.scale(
                         scale: _profile3Animation.value,
                         child: Opacity(
-                          opacity: _profile3Animation.value,
+                          opacity: _profile3Animation.value.clamp(0.0, 1.0),
                           child: _buildProfileCard(
-                              'assets/svg/splash_assets/profile3.svg',
+                            'assets/splash_assets/profile3.png',
                           ),
                         ),
                       );
@@ -353,35 +498,34 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ],
             ),
           ),
-          
-          // Text content
-          Expanded(
-            flex: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Expand Your Network',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
+
+          // Spacer between profiles and text
+          const SizedBox(height: 40),
+
+          // Bottom text content
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Expand Your Network',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Discover professionals, list your business & products, and search job profiles.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.8),
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Discover professionals, list your business & products, and search job profiles.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: kSecondaryTextColor,
                 ),
-              ],
-            ),
+                textAlign: TextAlign.left,
+              ),
+            ],
           ),
         ],
       ),
@@ -393,75 +537,76 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          // Snake gradient and cylinders section
-          Expanded(
-            flex: 3,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.55,
             child: Stack(
               children: [
-                // Animated snake gradient background
                 AnimatedBuilder(
                   animation: _snakeAnimation,
                   builder: (context, child) {
                     return CustomPaint(
                       size: Size(MediaQuery.of(context).size.width, 500),
-                      painter: SnakePainter(_snakeAnimation.value),
+                      painter: LiquidSnakePainter(_snakeAnimation.value),
                     );
                   },
                 ),
-                
-                // Cylinder card 1 - "ICA Business Pulse"
                 Positioned(
                   top: 100,
-                  right: 40,
+                  left: 100,
                   child: AnimatedBuilder(
                     animation: _cylinder1Animation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _cylinder1Animation.value,
-                        child: Opacity(
-                          opacity: _cylinder1Animation.value,
-                          child: _buildCylinderCard(
-                            'assets/images/cylinder_card_1.png', // ICA Business Pulse
+                        child: Transform.rotate(
+                          angle: -0.15,
+                          child: Opacity(
+                            opacity: _cylinder1Animation.value.clamp(0.0, 1.0),
+                            child: _buildCylinderCard(
+                              'assets/splash_assets/cylinder_1.png',
+                            ),
                           ),
                         ),
                       );
                     },
                   ),
                 ),
-                
-                // Cylinder card 2 - "BizSphere 2025"
                 Positioned(
-                  top: 200,
-                  left: 60,
+                  top: 130,
+                  left: 120,
                   child: AnimatedBuilder(
                     animation: _cylinder2Animation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _cylinder2Animation.value,
-                        child: Opacity(
-                          opacity: _cylinder2Animation.value,
-                          child: _buildCylinderCard(
-                            'assets/images/cylinder_card_2.png', // BizSphere 2025
+                        child: Transform.rotate(
+                          angle: -0.12, 
+                          child: Opacity(
+                            opacity: _cylinder2Animation.value.clamp(0.0, 1.0),
+                            child: _buildCylinderCard(
+                              'assets/splash_assets/cylinder_2.png',
+                            ),
                           ),
                         ),
                       );
                     },
                   ),
                 ),
-                
-                // Cylinder card 3 - "Swathi Ibrahim" with profile
                 Positioned(
-                  top: 320,
-                  right: 20,
+                  top: 160,
+                  left: 140,
                   child: AnimatedBuilder(
                     animation: _cylinder3Animation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _cylinder3Animation.value,
-                        child: Opacity(
-                          opacity: _cylinder3Animation.value,
-                          child: _buildCylinderCard(
-                            'assets/images/cylinder_card_3.png', // Swathi Ibrahim
+                        child: Transform.rotate(
+                          angle: -0.18, 
+                          child: Opacity(
+                            opacity: _cylinder3Animation.value.clamp(0.0, 1.0),
+                            child: _buildCylinderCard(
+                              'assets/splash_assets/cylinder_3.png',
+                            ),
                           ),
                         ),
                       );
@@ -471,35 +616,150 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               ],
             ),
           ),
-          
-          // Text content for page 2
-          Expanded(
-            flex: 1,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Connect & Collaborate',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
+          const SizedBox(height: 40),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Connect & Collaborate',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Join business communities, collaborate with professionals, and grow your network.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.8),
-                    height: 1.4,
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Join business communities, collaborate with professionals, and grow your network.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: kSecondaryTextColor,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPage3() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.55,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned(
+                  bottom: -120,
+                  right: -240,
+                  child: AnimatedBuilder(
+                    animation: _ring4Animation,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: 0.2,
+                        child: Opacity(
+                          opacity: _ring4Animation.value.clamp(0.0, 1.0),
+                          child: Image.asset(
+                            'assets/splash_assets/ring_4.png',
+                            width: 440,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  textAlign: TextAlign.center,
+                ),
+                Positioned(
+                  top: 50,
+                  left: 50,
+                  child: AnimatedBuilder(
+                    animation: _ring3Animation,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: -0.1,
+                        child: Opacity(
+                          opacity: _ring3Animation.value.clamp(0.0, 1.0),
+                          child: Image.asset(
+                            'assets/splash_assets/ring_3.png',
+                            width: 300,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  left: -20,
+                  child: AnimatedBuilder(
+                    animation: _ring2Animation,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: 0.05,
+                        child: Opacity(
+                          opacity: _ring2Animation.value.clamp(0.0, 1.0),
+                          child: Image.asset(
+                            'assets/splash_assets/ring_2.png',
+                            width: 310,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                Positioned(
+                  top: 20,
+                  left: -30,
+                  child: AnimatedBuilder(
+                    animation: _ring1Animation,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                        angle: -0.15,
+                        child: Opacity(
+                          opacity: _ring1Animation.value.clamp(0.0, 1.0),
+                          child: Image.asset(
+                            'assets/splash_assets/ring_1.png',
+                            width: 180,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 40),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Digital Power',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Access your digital IPA Connect Card, share promotions, IPA stores and enjoy member-only offers and news.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: kSecondaryTextColor,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ],
           ),
         ],
       ),
@@ -508,8 +768,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Widget _buildProfileCard(String imagePath) {
     return Container(
-      width: 150,
-      height: 180,
+      width: 130,
+      height: 130,
       child: Image.asset(
         imagePath,
         fit: BoxFit.contain,
@@ -517,237 +777,143 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildCylinderCard(String imagePath) {
-    return Container(
-      width: 180,
-      height: 60,
+  Widget _buildCylinderCard(
+    String imagePath,
+  ) {
+    return SizedBox(
+      width: 171,
+      height: 170,
       child: Image.asset(
         imagePath,
-        fit: BoxFit.contain,
       ),
     );
   }
 }
 
-class SnakePainter extends CustomPainter {
+class LiquidSnakeWidget extends StatefulWidget {
+  @override
+  _LiquidSnakeWidgetState createState() => _LiquidSnakeWidgetState();
+}
+
+class _LiquidSnakeWidgetState extends State<LiquidSnakeWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(seconds: 4),
+      vsync: this,
+    );
+    _animation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.linear,
+    ));
+    _controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: LiquidSnakePainter(_animation.value),
+          size: Size.infinite,
+        );
+      },
+    );
+  }
+}
+
+class LiquidSnakePainter extends CustomPainter {
   final double animationValue;
-  
-  SnakePainter(this.animationValue);
+
+  LiquidSnakePainter(this.animationValue);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    if (animationValue <= 0) return;
+
+    final width = size.width;
+    final height = size.height;
+
+    final path = Path();
+
+    final startX = -width * 0.2;
+    final startY = height * 0.4;
+    path.moveTo(startX, startY);
+    path.cubicTo(
+      width * 0.1, height * 0.1, 
+      width * 0.4, height * 0.1, 
+      width * 0.3, height * 0.45,
+    );
+    path.cubicTo(
+      width * 0.2, height * 0.7, 
+      width * 0.05, height * 0.6,
+      width * 0.15, height * 0.4,
+    );
+
+    path.cubicTo(
+      width * 0.35,
+      height * 0.1,
+      width * 0.65,
+      height * 0.2,
+      width * 0.6,
+      height * 0.5,
+    );
+    path.cubicTo(
+      width * 0.55,
+      height * 0.75,
+      width * 0.35,
+      height * 0.7,
+      width * 0.5,
+      height * 0.4,
+    );
+    path.cubicTo(
+      width * 0.8,
+      height * 0.2,
+      width * 1.1,
+      height * 0.5,
+      width * 1.2,
+      height * 0.6,
+    );
+
+    final pathMetrics = path.computeMetrics();
+    final pathMetric = pathMetrics.first;
+    final totalLength = pathMetric.length;
+    final currentLength = totalLength * animationValue;
+
+    final extractedPath = pathMetric.extractPath(0, currentLength);
+
+    final gradientPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Color(0xFF1D09CD),
-          Color(0xFF6B46C1),
-          Color(0xFFB9B5FF),
+          const Color(0xFF1D09CD),
+          const Color(0xFFB9B5FF),
         ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+      ).createShader(Rect.fromLTWH(startX, 0, width * 1.4, height))
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = height * 0.08
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
-    final path = Path();
-    final width = size.width;
-    final height = size.height;
-    
-    // Create snake-like path with animation
-    final animOffset = animationValue * 50;
-    
-    // Start point
-    path.moveTo(width * 0.1, height * 0.2 + sin(animationValue * 2 * pi) * 20);
-    
-    // First curve (top curve)
-    path.quadraticBezierTo(
-      width * 0.3 + cos(animationValue * 2 * pi) * 30, 
-      height * 0.1 + sin(animationValue * 2 * pi + 1) * 15,
-      width * 0.6, 
-      height * 0.25 + cos(animationValue * 2 * pi + 0.5) * 25
-    );
-    
-    // Second curve (middle curve)
-    path.quadraticBezierTo(
-      width * 0.8 + sin(animationValue * 2 * pi + 2) * 20, 
-      height * 0.4 + cos(animationValue * 2 * pi + 1.5) * 30,
-      width * 0.5 - cos(animationValue * 2 * pi) * 40, 
-      height * 0.6 + sin(animationValue * 2 * pi + 2.5) * 25
-    );
-    
-    // Third curve (bottom curve)
-    path.quadraticBezierTo(
-      width * 0.2 + sin(animationValue * 2 * pi + 3) * 35, 
-      height * 0.75 + cos(animationValue * 2 * pi + 2) * 20,
-      width * 0.7, 
-      height * 0.85 + sin(animationValue * 2 * pi + 3.5) * 15
-    );
-    
-    // Create thick stroke for snake body
-    final strokePaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Color(0xFFB9B5FF).withOpacity(0.8),
-          Color(0xFF6B46C1).withOpacity(0.6),
-          Color(0xFF1D09CD).withOpacity(0.4),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 80 + sin(animationValue * 4 * pi) * 10
-      ..strokeCap = StrokeCap.round;
-    
-    canvas.drawPath(path, strokePaint);
-    
-    // Add glow effect
-    final glowPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [
-          Color(0xFFB9B5FF).withOpacity(0.3),
-          Colors.transparent,
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 120
-      ..strokeCap = StrokeCap.round;
-    
-    canvas.drawPath(path, glowPaint);
+    canvas.drawPath(extractedPath, gradientPaint);
   }
 
   @override
-  bool shouldRepaint(SnakePainter oldDelegate) => oldDelegate.animationValue != animationValue;
-
-  Widget _buildGetStartedPage() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-            ),
-            child: const Icon(
-              Icons.rocket_launch,
-              size: 80,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 40),
-          const Text(
-            'Ready to Get Started?',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Join thousands of professionals and start building your network today!',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderPage(String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-            ),
-            child: const Icon(
-              Icons.image,
-              size: 80,
-              color: Colors.white54,
-            ),
-          ),
-          const SizedBox(height: 40),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-  Widget _buildPlaceholderPage(String title, String description) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.3)),
-            ),
-            child: const Icon(
-              Icons.image,
-              size: 80,
-              color: Colors.white54,
-            ),
-          ),
-          const SizedBox(height: 40),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1.2,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white.withOpacity(0.8),
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }

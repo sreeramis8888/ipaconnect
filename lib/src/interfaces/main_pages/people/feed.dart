@@ -203,34 +203,6 @@ class _FeedViewState extends ConsumerState<FeedView> {
                 ),
               ],
             ),
-            Positioned(
-              right: 30,
-              bottom: 30,
-              child: GestureDetector(
-                onTap: () {
-                  // if (subscriptionType != 'free') {
-                  _openModalSheet(sheet: 'post');
-                  // } else {
-                  //   showDialog(
-                  //     context: context,
-                  //     builder: (context) => const UpgradeDialog(),
-                  //   );
-                  // }
-                },
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: kPrimaryColor,
-                  ),
-                  child: Icon(
-                    Icons.add,
-                    color: kWhite,
-                    size: 27,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
         // floatingActionButton: FloatingActionButton.extended(
@@ -246,6 +218,30 @@ class _FeedViewState extends ConsumerState<FeedView> {
         //   ),
         //   backgroundColor: const kPrimaryColor,
         // ),
+        floatingActionButton: GestureDetector(
+          onTap: () {
+            // if (subscriptionType != 'free') {
+            _openModalSheet(sheet: 'post');
+            // } else {
+            //   showDialog(
+            //     context: context,
+            //     builder: (context) => const UpgradeDialog(),
+            //   );
+            // }
+          },
+          child: Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: kPrimaryColor,
+            ),
+            child: Icon(
+              Icons.add,
+              color: kWhite,
+              size: 27,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -747,7 +743,8 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                           }
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => ChatScreen(userImage: author.image??'',
+                              builder: (context) => ChatScreen(
+                                userImage: author.image ?? '',
                                 conversationId: conversation.id ?? '',
                                 chatTitle: author.name ?? '',
                                 userId: author.id ?? '',

@@ -122,7 +122,7 @@ flutter:
     - assets/svg/icons/
     - assets/svg/icons/menu_icons/
     - assets/svg/icons/nav_icons/
-    - assets/svg/splash_assets/
+    - assets/splash_assets/
     - .env
 flutter_launcher_icons:
   android: true

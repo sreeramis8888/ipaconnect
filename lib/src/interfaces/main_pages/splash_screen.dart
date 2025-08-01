@@ -28,16 +28,22 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   bool isAppUpdateRequired = false;
   String isFirstLaunch = 'false';
   bool openedAppSettings = false;
   bool hasVersionCheckError = false;
   String errorMessage = '';
   late AnimationController _controller;
+  late AnimationController _backgroundController;
+  late AnimationController _textController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotationAnimation;
   late Animation<double> _opacityAnimation;
+  late Animation<double> _backgroundOpacityAnimation;
+  late Animation<Offset> _backgroundSlideAnimation;
+  late Animation<double> _textOpacityAnimation;
+  late Animation<Offset> _textSlideAnimation;
 
   @override
   void initState() {
@@ -65,6 +71,34 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         .chain(CurveTween(curve: Curves.easeIn))
         .animate(_controller);
 
+    // Background image animations
+    _backgroundController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1200),
+    );
+    _backgroundOpacityAnimation = Tween<double>(begin: 0.0, end: 1)
+        .chain(CurveTween(curve: Curves.easeIn))
+        .animate(_backgroundController);
+    _backgroundSlideAnimation = Tween<Offset>(
+      begin: Offset(0.0, -0.5),
+      end: Offset.zero,
+    ).chain(CurveTween(curve: Curves.easeOutCubic))
+        .animate(_backgroundController);
+
+    // Welcome text animations
+    _textController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1000),
+    );
+    _textOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .chain(CurveTween(curve: Curves.easeIn))
+        .animate(_textController);
+    _textSlideAnimation = Tween<Offset>(
+      begin: Offset(0.0, 0.5),
+      end: Offset.zero,
+    ).chain(CurveTween(curve: Curves.easeOutBack))
+        .animate(_textController);
+
     _controller.forward();
 
     checkFirstLaunch().then((_) {
@@ -76,6 +110,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _controller.dispose();
+    _backgroundController.dispose();
+    _textController.dispose();
     super.dispose();
   }
 
@@ -91,6 +127,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     isFirstLaunch = await SecureStorage.read('has_launched_before') ?? 'false';
     // Note: isFirstLaunch will be 'false' for first-time users
     // We'll set it to 'true' after they complete the intro screens
+    
+    // Start background and text animations for first-time users
+    if (isFirstLaunch == 'false') {
+      Future.delayed(Duration(milliseconds: 500), () {
+        _backgroundController.forward();
+      });
+      Future.delayed(Duration(milliseconds: 1000), () {
+        _textController.forward();
+      });
+    }
   }
 
   Future<void> handlePermissions() async {
@@ -288,11 +334,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         print('First launch : $isFirstLaunch');
         
         // Check if it's the first launch
-        // if (isFirstLaunch == 'false') {
-        //   // Show intro screens for first-time users
-        //   navigationService.pushNamedReplacement('OnboardingScreen');
-        //   return;
-        // }
+        if (isFirstLaunch == 'false') {
+          // Show intro screens for first-time users
+          navigationService.pushNamedReplacement('OnboardingScreen');
+          return;
+        }
         
         if (LoggedIn) {
           final container = ProviderContainer();
@@ -350,10 +396,48 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1B1E4A),
-      body: Stack(
-        children: [
-          Align(
+      backgroundColor: const Color(0xFF1D09CD), // Fallback color matching the theme
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF1D09CD),
+              const Color.fromARGB(255, 33, 16, 73),
+              const Color.fromARGB(255, 14, 11, 78),
+            ],
+          ),
+          image: DecorationImage(
+            image: const AssetImage('assets/pngs/subcription_bg.png'),
+            fit: BoxFit.cover,
+            opacity: 0.9,
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Animated background image for first-time users (on top)
+            if (isFirstLaunch == 'false')
+              AnimatedBuilder(
+                animation: _backgroundController,
+                builder: (context, child) {
+                  return SlideTransition(
+                    position: _backgroundSlideAnimation,
+                    child: FadeTransition(
+                      opacity: _backgroundOpacityAnimation,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          child: Image.asset('assets/splash_assets/splash_intro_bg.png'),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            
+            // Main logo animation
+            Align(
             alignment: Alignment.center,
             child: AnimatedBuilder(
               animation: _controller,
@@ -376,6 +460,38 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               },
             ),
           ),
+          
+          // Welcome text for first-time users
+          if (isFirstLaunch == 'false')
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 100.0),
+                child: AnimatedBuilder(
+                  animation: _textController,
+                  builder: (context, child) {
+                    return SlideTransition(
+                      position: _textSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _textOpacityAnimation,
+                        child: Text(
+                          'Welcome to IPA Connect',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          
+          // Error message overlay
           if (hasVersionCheckError)
             Align(
               alignment: Alignment.bottomCenter,
@@ -401,7 +517,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

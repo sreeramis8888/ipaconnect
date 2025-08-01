@@ -664,7 +664,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           _buildDotIndicator(
                                               _currentVideoIndex,
                                               filteredVideos.length,
-                                              Colors.black),
+                                              Colors.white),
                                       ],
                                     ),
                                   const SizedBox(

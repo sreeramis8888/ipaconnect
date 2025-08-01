@@ -55,134 +55,157 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: kBackgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 70),
-              Center(
-                child: AnimatedSvgLogoPresets.subtle(
-                  assetPath: 'assets/svg/ipa_login_logo.svg',
-                  size: 100,
-                ),
-              ),
-              const SizedBox(height: 70),
-              Text(
-                'Login',
-                style: kHeadTitleB.copyWith(color: kWhite),
-              ),
-              SizedBox(
-                height: 40,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: bottomInset),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Please enter your mobile number',
-                            style: kBodyTitleL.copyWith(color: kWhite)),
-                        const SizedBox(height: 20),
-                        IntlPhoneField(
-                          validator: (phone) {
-                            if (phone!.number.length > 9) {
-                              if (phone.number.length > 10) {
-                                return 'Phone number cannot exceed 10 digits';
-                              }
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            color: kWhite,
-                            letterSpacing: 8,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          controller: _mobileController,
-                          disableLengthCheck: true,
-                          showCountryFlag: true,
-                          cursorColor: kWhite,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: kInputFieldcolor,
-                            hintText: 'Enter your phone number',
-                            hintStyle: kSmallTitleR.copyWith(
-                                color: kWhite, letterSpacing: 0.5),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide: BorderSide(color: kInputFieldcolor),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide: BorderSide(color: kInputFieldcolor),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                              borderSide:
-                                  const BorderSide(color: kInputFieldcolor),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16.0,
-                              horizontal: 10.0,
-                            ),
-                          ),
-                          onCountryChanged: (value) {
-                            ref.read(countryCodeProvider.notifier).state =
-                                value.dialCode;
-                          },
-                          initialCountryCode: 'IN',
-                          onChanged: (PhoneNumber phone) {
-                            print(phone.completeNumber);
-                          },
-                          flagsButtonPadding:
-                              const EdgeInsets.only(left: 10, right: 10.0),
-                          showDropdownIcon: true,
-                          dropdownIcon: Icon(
-                            Icons.arrow_drop_down_outlined,
-                            color: kWhite,
-                          ),
-                          dropdownIconPosition: IconPosition.trailing,
-                          dropdownTextStyle: const TextStyle(
-                            color: kWhite,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text('A 6 digit verification code will be sent',
-                            style: kSmallTitleR.copyWith(
-                                color: Color(0xFFAEB9E1))),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 5, right: 5, top: 10),
-                          child: SizedBox(
-                            height: 50,
-                            width: double.infinity,
-                            child: customButton(
-                              label: 'Send OTP',
-                              onPressed: isLoading
-                                  ? null
-                                  : () => _handleOtpGeneration(context, ref),
-                              fontSize: 16,
-                              isLoading: isLoading,
-                            ),
-                          ),
-                        ),
-                      ],
+        resizeToAvoidBottomInset: false,
+        backgroundColor:
+            const Color(0xFF1D09CD), // Fallback color matching the theme
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF1D09CD),
+                const Color.fromARGB(255, 33, 16, 73),
+                const Color.fromARGB(255, 14, 11, 78),
+              ],
+            ),
+            image: DecorationImage(
+              image: const AssetImage('assets/pngs/subcription_bg.png'),
+              fit: BoxFit.cover,
+              opacity: 0.9,
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 70),
+                  Center(
+                    child: AnimatedSvgLogoPresets.subtle(
+                      assetPath: 'assets/svg/ipa_login_logo.svg',
+                      size: 100,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 70),
+                  Text(
+                    'Verify your Phone Number',
+                    style: kHeadTitleB.copyWith(color: kWhite),
+                  ),
+                  SizedBox(
+                    height: 56,
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: bottomInset),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Please enter your mobile number',
+                                style: kBodyTitleL.copyWith(color: kWhite)),
+                            const SizedBox(height: 20),
+                            IntlPhoneField(
+                              validator: (phone) {
+                                if (phone!.number.length > 9) {
+                                  if (phone.number.length > 10) {
+                                    return 'Phone number cannot exceed 10 digits';
+                                  }
+                                }
+                                return null;
+                              },
+                              style: const TextStyle(
+                                color: kWhite,
+                                letterSpacing: 8,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              controller: _mobileController,
+                              disableLengthCheck: true,
+                              showCountryFlag: true,
+                              cursorColor: kWhite,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: kInputFieldcolor,
+                                hintText: 'Enter your phone number',
+                                hintStyle: TextStyle(
+                                    fontSize: 14,
+                                    letterSpacing: .2,
+                                    fontWeight: FontWeight.w200,
+                                    color: kSecondaryTextColor),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide:
+                                      BorderSide(color: kInputFieldcolor),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide:
+                                      BorderSide(color: kInputFieldcolor),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide:
+                                      const BorderSide(color: kInputFieldcolor),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16.0,
+                                  horizontal: 10.0,
+                                ),
+                              ),
+                              onCountryChanged: (value) {
+                                ref.read(countryCodeProvider.notifier).state =
+                                    value.dialCode;
+                              },
+                              initialCountryCode: 'IN',
+                              onChanged: (PhoneNumber phone) {
+                                print(phone.completeNumber);
+                              },
+                              flagsButtonPadding:
+                                  const EdgeInsets.only(left: 10, right: 10.0),
+                              showDropdownIcon: true,
+                              dropdownIcon: Icon(
+                                Icons.arrow_drop_down_outlined,
+                                color: kWhite,
+                              ),
+                              dropdownIconPosition: IconPosition.trailing,
+                              dropdownTextStyle: const TextStyle(
+                                color: kWhite,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text('A 6 digit verification code will be sent',
+                                style: TextStyle(
+                                    color: kSecondaryTextColor,
+                                    fontWeight: FontWeight.w300)),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 36),
+                              child: SizedBox(
+                                height: 50,
+                                width: double.infinity,
+                                child: customButton(
+                                  label: 'Send OTP',
+                                  onPressed: isLoading
+                                      ? null
+                                      : () =>
+                                          _handleOtpGeneration(context, ref),
+                                  isLoading: isLoading,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Future<void> _handleOtpGeneration(BuildContext context, WidgetRef ref) async {
@@ -349,7 +372,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             // Add back button
             Padding(
               padding: const EdgeInsets.all(8),
@@ -372,10 +395,11 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
               style: kHeadTitleB.copyWith(color: kWhite),
             ),
             SizedBox(
-              height: 40,
+              height: 56,
             ),
             Text('Enter the OTP to verify',
-                style: kSmallerTitleM.copyWith(fontSize: 16, color: kWhite)),
+                style: kBodyTitleR.copyWith(
+                    fontSize: 16, color: kSecondaryTextColor)),
             const SizedBox(height: 10),
             PinCodeTextField(
               appContext: context,
@@ -410,16 +434,13 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-                  child: Text(
-                    _isButtonDisabled
-                        ? 'Resend OTP in $_start seconds'
-                        : 'Enter your OTP',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: _isButtonDisabled ? kGrey : kWhite),
-                  ),
+                Text(
+                  _isButtonDisabled
+                      ? 'Resend OTP in $_start seconds'
+                      : 'Enter your OTP',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: _isButtonDisabled ? kGrey : kSecondaryTextColor),
                 ),
                 GestureDetector(
                   onTap: _isButtonDisabled ? null : resendCode,
@@ -436,7 +457,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.only(top: 36),
               child: SizedBox(
                 height: 47,
                 width: double.infinity,

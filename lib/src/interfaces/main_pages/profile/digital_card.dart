@@ -100,17 +100,23 @@ class DigitalCardPage extends StatelessWidget {
                                       GestureDetector(
                                         onTap: () =>
                                             captureAndShareOrDownloadWidgetScreenshot(
-                                                context,
-                                                user: user),
+                                          context,
+                                          user: user,
+                                        ),
                                         child: Row(
                                           children: [
-                                            Icon(Icons.send,
-                                                color: kWhite, size: 20),
+                                            Transform.rotate(
+                                              angle:
+                                                  -30 * 3.141592653589793 / 180,
+                                              child: Icon(Icons.send,
+                                                  color: kWhite, size: 20),
+                                            ),
                                             SizedBox(width: 4),
-                                            Text('Send Card',
-                                                style: TextStyle(
-                                                    color: kWhite,
-                                                    fontSize: 12)),
+                                            Text(
+                                              'Send Card',
+                                              style: TextStyle(
+                                                  color: kWhite, fontSize: 12),
+                                            ),
                                           ],
                                         ),
                                       ),
