@@ -92,8 +92,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       child: SafeArea(
                         child: TextButton.icon(
                           onPressed: () async {
-                              await SecureStorage.delete('token');
-                await SecureStorage.delete('id');
+                            await SecureStorage.delete('token');
+                            await SecureStorage.delete('id');
 
                             NavigationService()
                                 .pushNamedReplacement('PhoneNumber');

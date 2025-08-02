@@ -94,7 +94,7 @@ class DigitalCardPage extends StatelessWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       SvgPicture.asset(
-                                        'assets/svg/ipa_login_logo.svg',
+                                        'assets/svg/ipaconnect_logo.svg',
                                         height: 22,
                                       ),
                                       GestureDetector(

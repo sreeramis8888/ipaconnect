@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 
@@ -91,7 +92,8 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                 height: 24,
               ),
               label: 'Hierarchy',
-              onTap: () => navigationService.pushNamed('Hierarchies',arguments: user),
+              onTap: () =>
+                  navigationService.pushNamed('Hierarchies', arguments: user),
             ),
             _menuItem(
               icon: SvgPicture.asset(
@@ -100,16 +102,16 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               ),
               label: 'My Submissions',
               onTap: () => navigationService.pushNamed('EnquiriesPage'),
-            ),  if (user.phone !=
-                                            '+919645398555')
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_orders.svg',
-                height: 24,
-              ),
-              label: 'My Orders',
-              onTap: () => navigationService.pushNamed('MyOrdersPage'),
             ),
+            if (user.phone != '+919645398555')
+              _menuItem(
+                icon: SvgPicture.asset(
+                  'assets/svg/icons/menu_icons/my_orders.svg',
+                  height: 24,
+                ),
+                label: 'My Orders',
+                onTap: () => navigationService.pushNamed('MyOrdersPage'),
+              ),
             _menuItem(
               icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/my_reviews.svg',
@@ -216,9 +218,9 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                       final response =
                           await userDataApiService.deleteUser(user.id ?? '');
                       if (response.success) {
-                                  await SecureStorage.delete('token');
-                await SecureStorage.delete('id');
-
+                        await SecureStorage.delete('token');
+                        await SecureStorage.delete('id');
+                        LoggedIn = false;
                         navigationService
                             .pushNamedAndRemoveUntil('PhoneNumber');
                       }

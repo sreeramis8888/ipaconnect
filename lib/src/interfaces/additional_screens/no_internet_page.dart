@@ -19,7 +19,7 @@ class NoInternetPage extends StatelessWidget {
             children: [
               // App Logo
               SvgPicture.asset(
-                'assets/svg/ipa_login_logo.svg',
+                'assets/svg/ipaconnect_logo.svg',
                 height: 90,
               ),
               const SizedBox(height: 36),

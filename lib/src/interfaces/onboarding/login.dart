@@ -365,7 +365,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     NavigationService navigationService = NavigationService();
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFF1D09CD), // Fallback color matching the theme
+      backgroundColor:
+          const Color(0xFF1D09CD), // Fallback color matching the theme
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -458,7 +459,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                           : 'Enter your OTP',
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: _isButtonDisabled ? kGrey : kSecondaryTextColor),
+                          color:
+                              _isButtonDisabled ? kGrey : kSecondaryTextColor),
                     ),
                     GestureDetector(
                       onTap: _isButtonDisabled ? null : resendCode,
