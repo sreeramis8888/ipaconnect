@@ -114,7 +114,7 @@ class _EditUserState extends ConsumerState<EditUser> {
             MaterialPageRoute(
               builder: (context) => CropImageScreen(
                 imageFile: File(image.path),
-                shape: CustomCropShape.Circle, // Use circle crop
+                shape: CustomCropShape.Square, // Use circle crop
                 width: 1,
                 height: 1,
               ),

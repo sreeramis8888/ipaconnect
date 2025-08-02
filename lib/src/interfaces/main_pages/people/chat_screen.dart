@@ -1683,7 +1683,7 @@ I'm interested in this feed. Could you provide more information?
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor,
+                            color: kCardBackgroundColor,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(16),
                               topRight: Radius.circular(16),
@@ -1707,22 +1707,22 @@ I'm interested in this feed. Could you provide more information?
                               );
                             },
                             onCamera: _pickCameraPhoto,
-                            onContact: () {
-                              _hideAttachmentModal();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text('Contact selected (placeholder)')),
-                              );
-                            },
-                            onLocation: () {
-                              _hideAttachmentModal();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Location selected (placeholder)')),
-                              );
-                            },
+                            // onContact: () {
+                            //   _hideAttachmentModal();
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     const SnackBar(
+                            //         content:
+                            //             Text('Contact selected (placeholder)')),
+                            //   );
+                            // },
+                            // onLocation: () {
+                            //   _hideAttachmentModal();
+                            //   ScaffoldMessenger.of(context).showSnackBar(
+                            //     const SnackBar(
+                            //         content: Text(
+                            //             'Location selected (placeholder)')),
+                            //   );
+                            // },
                           ),
                         ),
                       ),

@@ -48,7 +48,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           MaterialPageRoute(
             builder: (context) => CropImageScreen(
               imageFile: File(pickedFile.path),
-              shape: CustomCropShape.Circle,
+              shape: CustomCropShape.Square,
             ),
           ),
         );

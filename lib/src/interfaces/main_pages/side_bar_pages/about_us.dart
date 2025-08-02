@@ -8,6 +8,34 @@ class AboutUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, String>> members = [
+      {
+        "designation": "Kiltons Group",
+        "name": "Riyas Kilton",
+        "photo": "assets/pngs/IPA_Chaiman.JPG",
+      },
+      {
+        "designation": "NRay Designs LLC",
+        "name": "Muhammed Nausheer",
+        "photo": "assets/pngs/BOD_Member_3.png",
+      },
+      {
+        "designation": "Exe Direction, Malabar Gold",
+        "name": "Faisal AK",
+        "photo": "assets/pngs/Founder_Faisal_2.jpeg",
+      },
+      {
+        "designation": "Nazeem Ahmed General Trading llc",
+        "name": "Ayub Kallada",
+        "photo": "assets/pngs/Vice_Chairman_2.jpeg",
+      },
+      {
+        "designation": "Bhima Jewellers LLC",
+        "name": "Nagaraj Rau",
+        "photo": "assets/pngs/BOD Member_2.jpg",
+      },
+    ];
+
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
@@ -151,8 +179,7 @@ class AboutUsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Mission',
-                          style: kSubHeadingB),
+                      Text('Mission', style: kSubHeadingB),
                       const SizedBox(height: 8),
                       Text(
                           'To empower the clients who are entrepreneurs in UAE developing a network to explore potential business opportunities, identify potential clients, customers and partners, boost business relationships, formulate marketing strategies, share requirements, find potential investors and JV partners. To provide long term training to entrepreneurs focusing on advanced marketing skills and updating information on current business scenarios.',
@@ -170,16 +197,25 @@ class AboutUsPage extends StatelessWidget {
                       Text('Board Members',
                           style: kSubHeadingB.copyWith(color: Colors.white)),
                       const SizedBox(height: 16),
-                      GridView.count(
-                        crossAxisCount: 2,
+                      GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.8,
-                        children:
-                            List.generate(6, (index) => _boardMemberCard()),
-                      ),
+                        itemCount: members.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          mainAxisExtent: 240,
+                        ),
+                        itemBuilder: (context, index) {
+                          return _boardMemberCard(
+                            designation: members[index]['designation'] ?? '',
+                            name: members[index]['name'] ?? '',
+                            photo: members[index]['photo'] ?? '',
+                          );
+                        },
+                      )
                     ],
                   ),
                 ),
@@ -264,38 +300,47 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _boardMemberCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: kCardBackgroundColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
+  Widget _boardMemberCard({
+    required String photo,
+    required String name,
+    required String designation,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 160, // Increased height
+          width: 140, // Optional: control width too
+          decoration: BoxDecoration(
+            color: kCardBackgroundColor,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 32,
-            backgroundImage: AssetImage('assets/pngs/icon.png'),
+          clipBehavior: Clip.hardEdge, 
+          child: Image.asset(
+            photo,
+            fit: BoxFit.cover, 
           ),
-          const SizedBox(height: 10),
-          Text('Mr. Mitchell Hoeger',
-              style: kBodyTitleSB.copyWith(color: Colors.white),
-              textAlign: TextAlign.center),
-          const SizedBox(height: 4),
-          Text('Product Designer',
-              style:
-                  kSmallTitleR.copyWith(color: Colors.white.withOpacity(0.7)),
-              textAlign: TextAlign.center),
-        ],
-      ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          name,
+          style: kBodyTitleSB.copyWith(color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          designation,
+          style: kSmallerTitleR.copyWith(color: Colors.white.withOpacity(0.7)),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
