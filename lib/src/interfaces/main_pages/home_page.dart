@@ -8,6 +8,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
+import 'package:ipaconnect/src/data/utils/launch_url.dart';
 
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
@@ -361,20 +362,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             icon: SvgPicture.asset(
                                                 color: kWhite,
                                                 'assets/svg/icons/event_icon.svg')),
-                                        if (widget.user.phone !=
-                                            '+919645398555')
-                                          CustomIconContainer(
-                                              label: 'Store',
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'StorePage');
-                                              },
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/card_icon.svg')),
+                                        // if (widget.user.phone !=
+                                        //     '+919645398555')
+                                        CustomIconContainer(
+                                            label: 'Store',
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                  arguments:
+                                                      widget.user.countryCode,
+                                                  context,
+                                                  'StorePage');
+                                            },
+                                            icon: SvgPicture.asset(
+                                                color: kWhite,
+                                                'assets/svg/icons/card_icon.svg')),
                                         CustomIconContainer(
                                             onTap: () {
                                               ref
@@ -493,7 +494,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                               );
                                             }).toList(),
                                             options: CarouselOptions(
-                                              height: 420,
+                                              height: 370,
                                               scrollPhysics: posters.length > 1
                                                   ? null
                                                   : const NeverScrollableScrollPhysics(),
@@ -518,7 +519,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              left: 15, top: 30, right: 15),
+                                              left: 15, top: 24, right: 15),
                                           child: Row(
                                             children: [
                                               Text('Latest News',
@@ -865,63 +866,73 @@ Widget customPoster({
   required BuildContext context,
   required Promotion poster,
 }) {
-  return GestureDetector(
-    onTap: () {
-      if (poster.link != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => WebViewScreen(
-              backgroundColor: Colors.blue,
-              url: poster.link ?? "",
-              title: poster.title ?? '',
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: AspectRatio(
+            aspectRatio: 19 / 20,
+            child: Image.network(
+              poster.media ?? '',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child; // Image loaded successfully
+                }
+                // While the image is loading, show shimmer effect
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                    ),
+                  ),
+                );
+              },
             ),
-          ),
-        );
-      }
-    },
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10), // Apply the border radius here
-        child: AspectRatio(
-          aspectRatio: 19 / 20,
-          child: Image.network(
-            poster.media ?? '',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                  ),
-                ),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) {
-                return child; // Image loaded successfully
-              }
-              // While the image is loading, show shimmer effect
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.grey,
-                  ),
-                ),
-              );
-            },
           ),
         ),
       ),
-    ),
+      if (poster.link != null)
+        Container(
+          padding: const EdgeInsets.only(top: 4.0, left: 16),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onPressed: () {
+              if (poster.link != null) {
+                launchURL(poster.link ?? '');
+              }
+            },
+            child: Text(
+              'Know more',
+              style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+            ),
+          ),
+        ),
+    ],
   );
 }
 

@@ -46,7 +46,11 @@ class HierarchiesPage extends ConsumerWidget {
       body: asyncHierarchies.when(
         data: (hierarchies) {
           if (hierarchies.isEmpty) {
-            return const Center(child: Text('No hierarchies found'));
+            return Center(
+                child: Text(
+              'No hierarchies found',
+              style: kSmallTitleR,
+            ));
           }
           return ListView.builder(
             itemCount: hierarchies.length,

@@ -91,8 +91,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       alignment: Alignment.topRight,
                       child: SafeArea(
                         child: TextButton.icon(
-                          onPressed: () {
-                            SecureStorage.deleteAll();
+                          onPressed: () async {
+                              await SecureStorage.delete('token');
+                await SecureStorage.delete('id');
+
                             NavigationService()
                                 .pushNamedReplacement('PhoneNumber');
                           },
@@ -165,7 +167,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           val == null || val.isEmpty ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
-                    Text('Desgination', style: kBodyTitleR),
+                    Text('Designation', style: kBodyTitleR),
                     CustomTextFormField(
                       labelText: 'Enter the designation',
                       textController: _designationController,

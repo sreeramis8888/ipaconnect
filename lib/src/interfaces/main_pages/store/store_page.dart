@@ -139,12 +139,12 @@ class _StorePageState extends ConsumerState<StorePage> {
                   ? const Center(child: LoadingAnimation())
                   : GridView.builder(
                       controller: _scrollController,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
-                        childAspectRatio: 0.55,
+                        childAspectRatio: MediaQuery.of(context).size.width /
+                            (MediaQuery.of(context).size.height / 1.16),
                       ),
                       itemCount: products.length,
                       itemBuilder: (context, index) {

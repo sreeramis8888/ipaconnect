@@ -69,30 +69,30 @@ class CampaignCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(
-                      '₹$collected',
-                      style: kSubHeadingB.copyWith(color: kGreen),
-                    ),
-                    const SizedBox(width: 4),
-                    const Text('collected out of '),
-                    Text(
-                      '₹$target',
-                      style: kSmallTitleB,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: kGreyLight,
-                        color: kGreen,
-                        minHeight: 7,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Text(
+                //       '₹$collected',
+                //       style: kSubHeadingB.copyWith(color: kGreen),
+                //     ),
+                //     const SizedBox(width: 4),
+                //     const Text('collected out of '),
+                //     Text(
+                //       '₹$target',
+                //       style: kSmallTitleB,
+                //     ),
+                //     const SizedBox(width: 8),
+                //     Expanded(
+                //       child: LinearProgressIndicator(
+                //         value: progress,
+                //         backgroundColor: kGreyLight,
+                //         color: kGreen,
+                //         minHeight: 7,
+                //         borderRadius: BorderRadius.circular(8),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 const SizedBox(height: 8),
                 if (campaign.targetDate != null)
                   Row(

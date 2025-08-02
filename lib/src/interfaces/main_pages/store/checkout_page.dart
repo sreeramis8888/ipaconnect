@@ -799,7 +799,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
     }
     final data = await service.createOrder(
       cartId: cartId,
-      amount: widget.totalAmount,
+      amount: double.parse(widget.totalAmount.toStringAsFixed(2)),
       currency: widget.userCurrency,
       shippingAddress: ShippingAddress.fromJson(shippingAddressMap),
     );

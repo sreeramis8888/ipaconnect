@@ -347,43 +347,44 @@ class _ProfileHeader extends StatelessWidget {
             ),
           ),
           if (user.id == id)
-            Positioned(
-              top: 30,
-              right: 0,
-              child: Consumer(
-                builder: (context, ref, child) {
-                  return PopupMenuButton<String>(
-                    color: kCardBackgroundColor,
-                    icon: Icon(Icons.more_vert, color: kWhite),
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        NavigationService().pushNamed('EditUser');
-                      } else if (value == 'share') {
-                        captureAndShareOrDownloadWidgetScreenshot(context,
-                            user: user);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Text(
-                              'Edit',
-                              style: kSmallTitleR,
-                            )
-                          ],
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    return PopupMenuButton<String>(
+                      color: kCardBackgroundColor,
+                      icon: Icon(Icons.more_vert, color: kWhite),
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          NavigationService().pushNamed('EditUser');
+                        } else if (value == 'share') {
+                          captureAndShareOrDownloadWidgetScreenshot(context,
+                              user: user);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Text(
+                                'Edit',
+                                style: kSmallTitleR,
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'share',
-                        child: Row(
-                          children: [Text('Share', style: kSmallTitleR)],
+                        PopupMenuItem(
+                          value: 'share',
+                          child: Row(
+                            children: [Text('Share', style: kSmallTitleR)],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           if (user.id != id)
@@ -608,6 +609,7 @@ class _OverviewTabState extends State<_OverviewTab> {
                   style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
             ],
           ),
+        const SizedBox(height: 8),
         if (widget.user.socialMedia != null)
           if (widget.user.socialMedia!.isNotEmpty) const SizedBox(height: 24),
         if (widget.user.socialMedia != null)

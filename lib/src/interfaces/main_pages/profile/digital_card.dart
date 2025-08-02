@@ -83,7 +83,7 @@ class DigitalCardPage extends StatelessWidget {
                             ),
                             Container(
                               width: double.infinity,
-                              height: 320,
+                              height: 350,
                               padding: const EdgeInsets.only(
                                   top: 20, left: 20, right: 20),
                               child: Column(
@@ -160,7 +160,38 @@ class DigitalCardPage extends StatelessWidget {
                                           color: Colors.white, fontSize: 14),
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(colors: [
+                                            Color(0xFF1E62B3).withOpacity(.5),
+                                            kStrokeColor.withOpacity(.5)
+                                          ]),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            SizedBox(
+                                                height: 20,
+                                                width: 20,
+                                                child: Image.network(
+                                                    user.hierarchy?.image ??
+                                                        '')),
+                                            const SizedBox(width: 6),
+                                            Text(user.memberId ?? '',
+                                                style: kSmallTitleB.copyWith(
+                                                    color: kWhite)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),

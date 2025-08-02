@@ -183,7 +183,8 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
               ),
               label: 'Logout',
               onTap: () async {
-                await SecureStorage.deleteAll();
+                await SecureStorage.delete('token');
+                await SecureStorage.delete('id');
 
                 navigationService.pushNamedAndRemoveUntil('PhoneNumber');
               },
@@ -215,7 +216,9 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                       final response =
                           await userDataApiService.deleteUser(user.id ?? '');
                       if (response.success) {
-                        await SecureStorage.deleteAll();
+                                  await SecureStorage.delete('token');
+                await SecureStorage.delete('id');
+
                         navigationService
                             .pushNamedAndRemoveUntil('PhoneNumber');
                       }

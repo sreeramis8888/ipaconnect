@@ -115,13 +115,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'ApprovalWaitingPage':
       page = ApprovalWaitingPage();
-      transitionsBuilder = (context, animation, secondaryAnimation, child) {
-        return RotationTransition(
-          turns: animation,
-          child: child,
-        );
-      };
-      transitionDuration = const Duration(milliseconds: 500);
+
       break;
     case 'CategoryPage':
       BusinessCategoryModel category =

@@ -325,8 +325,12 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                     loading: () => const Center(child: LoadingAnimation()),
                     error: (error, stackTrace) => Column(
                       children: [
-                        const Expanded(
-                          child: Center(child: Text('No Folders yet')),
+                        Expanded(
+                          child: Center(
+                              child: Text(
+                            'No Folders yet',
+                            style: kSmallTitleR,
+                          )),
                         ),
                         if (widget.event.status == 'completed')
                           Padding(

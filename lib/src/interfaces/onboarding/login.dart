@@ -365,113 +365,133 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     NavigationService navigationService = NavigationService();
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: kBackgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            // Add back button
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: InkWell(
-                onTap: () => navigationService.pushNamed('PhoneNumber'),
-                child: CustomRoundButton(
-                  offset: Offset(4, 0),
-                  iconPath: 'assets/svg/icons/arrow_back_ios.svg',
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            Center(
-              child: AnimatedSvgLogoPresets.subtle(
-                  assetPath: 'assets/svg/ipa_login_logo.svg'),
-            ),
-            const SizedBox(height: 70),
-            Text(
-              'Verify OTP',
-              style: kHeadTitleB.copyWith(color: kWhite),
-            ),
-            SizedBox(
-              height: 56,
-            ),
-            Text('Enter the OTP to verify',
-                style: kBodyTitleR.copyWith(
-                    fontSize: 16, color: kSecondaryTextColor)),
-            const SizedBox(height: 10),
-            PinCodeTextField(
-              appContext: context,
-              length: 6,
-              obscureText: false,
-              keyboardType: TextInputType.number,
-              animationType: AnimationType.fade,
-              textStyle: const TextStyle(
-                color: kWhite,
-                fontSize: 25,
-                fontWeight: FontWeight.w300,
-                letterSpacing: 5.0,
-              ),
-              pinTheme: PinTheme(
-                shape: PinCodeFieldShape.box,
-                borderRadius: BorderRadius.circular(5),
-                fieldHeight: 55,
-                fieldWidth: 50,
-                selectedColor: kPrimaryColor,
-                activeColor: const Color.fromARGB(255, 232, 226, 226),
-                inactiveColor: kInputFieldcolor,
-                activeFillColor: kInputFieldcolor,
-                selectedFillColor: kInputFieldcolor,
-                inactiveFillColor: kInputFieldcolor,
-              ),
-              animationDuration: const Duration(milliseconds: 300),
-              backgroundColor: Colors.transparent,
-              enableActiveFill: true,
-              controller: _otpController,
-              onChanged: (value) {},
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: const Color(0xFF1D09CD), // Fallback color matching the theme
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF1D09CD),
+              const Color.fromARGB(255, 33, 16, 73),
+              const Color.fromARGB(255, 14, 11, 78),
+            ],
+          ),
+          image: DecorationImage(
+            image: const AssetImage('assets/pngs/subcription_bg.png'),
+            fit: BoxFit.cover,
+            opacity: 0.9,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _isButtonDisabled
-                      ? 'Resend OTP in $_start seconds'
-                      : 'Enter your OTP',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: _isButtonDisabled ? kGrey : kSecondaryTextColor),
+                const SizedBox(height: 20),
+                // Add back button
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: InkWell(
+                    onTap: () => navigationService.pushNamed('PhoneNumber'),
+                    child: CustomRoundButton(
+                      offset: Offset(4, 0),
+                      iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+                    ),
+                  ),
                 ),
-                GestureDetector(
-                  onTap: _isButtonDisabled ? null : resendCode,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Text(
-                      _isButtonDisabled ? '' : 'Resend Code',
+                const SizedBox(height: 30),
+                Center(
+                  child: AnimatedSvgLogoPresets.subtle(
+                      assetPath: 'assets/svg/ipa_login_logo.svg'),
+                ),
+                const SizedBox(height: 70),
+                Text(
+                  'Verify OTP',
+                  style: kHeadTitleB.copyWith(color: kWhite),
+                ),
+                SizedBox(
+                  height: 56,
+                ),
+                Text('Enter the OTP to verify',
+                    style: kBodyTitleR.copyWith(
+                        fontSize: 16, color: kSecondaryTextColor)),
+                const SizedBox(height: 10),
+                PinCodeTextField(
+                  appContext: context,
+                  length: 6,
+                  obscureText: false,
+                  keyboardType: TextInputType.number,
+                  animationType: AnimationType.fade,
+                  textStyle: const TextStyle(
+                    color: kWhite,
+                    fontSize: 25,
+                    fontWeight: FontWeight.w300,
+                    letterSpacing: 5.0,
+                  ),
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.box,
+                    borderRadius: BorderRadius.circular(5),
+                    fieldHeight: 55,
+                    fieldWidth: 50,
+                    selectedColor: kPrimaryColor,
+                    activeColor: const Color.fromARGB(255, 232, 226, 226),
+                    inactiveColor: kInputFieldcolor,
+                    activeFillColor: kInputFieldcolor,
+                    selectedFillColor: kInputFieldcolor,
+                    inactiveFillColor: kInputFieldcolor,
+                  ),
+                  animationDuration: const Duration(milliseconds: 300),
+                  backgroundColor: Colors.transparent,
+                  enableActiveFill: true,
+                  controller: _otpController,
+                  onChanged: (value) {},
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _isButtonDisabled
+                          ? 'Resend OTP in $_start seconds'
+                          : 'Enter your OTP',
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: _isButtonDisabled ? kGrey : kRed),
+                          color: _isButtonDisabled ? kGrey : kSecondaryTextColor),
+                    ),
+                    GestureDetector(
+                      onTap: _isButtonDisabled ? null : resendCode,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Text(
+                          _isButtonDisabled ? '' : 'Resend Code',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: _isButtonDisabled ? kGrey : kRed),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 36),
+                  child: SizedBox(
+                    height: 47,
+                    width: double.infinity,
+                    child: customButton(
+                      label: 'Verify',
+                      onPressed: isLoading
+                          ? null
+                          : () => _handleOtpVerification(context, ref),
+                      fontSize: 16,
+                      isLoading: isLoading,
                     ),
                   ),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 36),
-              child: SizedBox(
-                height: 47,
-                width: double.infinity,
-                child: customButton(
-                  label: 'Verify',
-                  onPressed: isLoading
-                      ? null
-                      : () => _handleOtpVerification(context, ref),
-                  fontSize: 16,
-                  isLoading: isLoading,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

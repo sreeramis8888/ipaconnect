@@ -110,6 +110,14 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                 campaign.organizer ?? '',
                 style: kSmallerTitleR,
               ),
+              const SizedBox(height: 18),
+              Text(
+                campaign.description ?? '',
+                style: TextStyle(
+                    fontWeight: FontWeight.w300,
+                    fontSize: 12,
+                    color: kSecondaryTextColor),
+              ),
               const SizedBox(height: 8),
             ],
           ),
