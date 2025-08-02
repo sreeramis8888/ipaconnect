@@ -83,8 +83,9 @@ class ConversationModel {
   final String? id;
 
   final String? name;
- 
-  @JsonKey(name: 'unread_count')  final int? unreadCount;
+
+  @JsonKey(name: 'unread_count')
+  final int? unreadCount;
 
   @JsonKey(name: 'is_group')
   final bool? isGroup;

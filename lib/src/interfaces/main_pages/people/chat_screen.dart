@@ -25,6 +25,9 @@ import 'dart:math';
 import 'package:ipaconnect/src/data/services/image_upload.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:video_player/video_player.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:dio/dio.dart';
 
 // WhatsApp-like typing indicator widget
 class TypingIndicator extends StatefulWidget {
@@ -650,6 +653,12 @@ I'm interested in this feed. Could you provide more information?
   }
 
   Widget _buildMessageBubble(MessageModel msg, bool isMe) {
+    // File message
+    if (msg.attachments != null &&
+        msg.attachments!.isNotEmpty &&
+        msg.attachments!.first.type == 'file') {
+      return _buildFileMessageBubble(msg, isMe);
+    }
     // Audio message (support both 'audio' and 'voice' types)
     if (msg.attachments != null &&
         msg.attachments!.isNotEmpty &&
@@ -1326,6 +1335,92 @@ I'm interested in this feed. Could you provide more information?
     }
   }
 
+  Future<void> _pickDocument() async {
+    _hideAttachmentModal();
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [
+          'pdf',
+          'doc',
+          'docx',
+          'txt',
+          'rtf',
+          'ppt',
+          'pptx',
+          'xls',
+          'xlsx'
+        ],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = File(result.files.single.path!);
+        _sendFileMessage(file);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to pick document: $e"),
+          backgroundColor: kRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _sendFileMessage(File file) async {
+    try {
+      final url = await imageUpload(file.path);
+      _socketService.sendMessage(
+        widget.conversationId,
+        '',
+        attachments: [
+          {
+            'url': url,
+            'type': 'file',
+          },
+        ],
+        onAck: (error, message) {
+          if (!mounted) return;
+          if (error == null && message != null) {
+            setState(() {
+              _messages.insert(0, MessageModel.fromJson(message));
+              _listKey.currentState
+                  ?.insertItem(0, duration: const Duration(milliseconds: 400));
+            });
+            _scrollToBottom();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Failed to send file: $error"),
+                backgroundColor: kRed,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to upload file: $e"),
+          backgroundColor: kRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
   void _sendMediaMessage(File file, {required String type}) async {
     try {
       String url;
@@ -1333,6 +1428,8 @@ I'm interested in this feed. Could you provide more information?
         url = await imageUpload(file.path);
       } else if (type == 'voice') {
         url = await imageUpload(file.path); // Use same upload for audio
+      } else if (type == 'file') {
+        url = await imageUpload(file.path); // Use same upload for files
       } else {
         throw Exception('Unsupported media type');
       }
@@ -1698,14 +1795,7 @@ I'm interested in this feed. Could you provide more information?
                           ),
                           child: AttachmentPicker(
                             onGallery: _pickGalleryImage,
-                            onDocument: () {
-                              _hideAttachmentModal();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Document selected (placeholder)')),
-                              );
-                            },
+                            // onDocument: _pickDocument,
                             onCamera: _pickCameraPhoto,
                             // onContact: () {
                             //   _hideAttachmentModal();
@@ -1888,6 +1978,170 @@ I'm interested in this feed. Could you provide more information?
         ),
       ),
     );
+  }
+
+  Widget _buildFileMessageBubble(MessageModel msg, bool isMe) {
+    final attachment = msg.attachments!.first;
+    final url = attachment.url ?? '';
+    final fileName = _extractFileNameFromUrl(url);
+
+    return Align(
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.only(
+          left: isMe ? 50 : 16,
+          right: isMe ? 16 : 50,
+          bottom: 8,
+          top: 8,
+        ),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        child: GestureDetector(
+          onTap: () => _downloadAndOpenDocument(url, fileName),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: isMe
+                  ? LinearGradient(
+                      colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: isMe ? null : kCardBackgroundColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color:
+                    isMe ? Colors.transparent : kStrokeColor.withOpacity(0.3),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: kBlack.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: isMe
+                        ? kWhite.withOpacity(0.2)
+                        : kPrimaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _getDocumentIcon(fileName),
+                    color: isMe ? kWhite : kPrimaryColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        fileName,
+                        style: TextStyle(
+                          color: isMe ? kWhite : kTextColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Tap to download',
+                        style: TextStyle(
+                          color: isMe
+                              ? kWhite.withOpacity(0.7)
+                              : kSecondaryTextColor,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.download,
+                  color: isMe ? kWhite : kPrimaryColor,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getDocumentIcon(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'doc':
+      case 'docx':
+        return Icons.description;
+      case 'xls':
+      case 'xlsx':
+        return Icons.table_chart;
+      case 'ppt':
+      case 'pptx':
+        return Icons.slideshow;
+      case 'txt':
+        return Icons.text_snippet;
+      case 'rtf':
+        return Icons.text_fields;
+      default:
+        return Icons.insert_drive_file;
+    }
+  }
+
+  String _extractFileNameFromUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      final pathSegments = uri.pathSegments;
+      if (pathSegments.isNotEmpty) {
+        final lastSegment = pathSegments.last;
+        if (lastSegment.contains('.')) {
+          return lastSegment;
+        }
+      }
+      return 'Document';
+    } catch (e) {
+      return 'Document';
+    }
+  }
+
+  Future<void> _downloadAndOpenDocument(String url, String fileName) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final savePath = "${dir.path}/$fileName";
+
+      final dio = Dio();
+      await dio.download(url, savePath);
+
+      final result = await OpenFile.open(savePath);
+      debugPrint("OpenFile result: ${result.message}");
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to download document: $e'),
+          backgroundColor: kRed,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
   }
 }
 

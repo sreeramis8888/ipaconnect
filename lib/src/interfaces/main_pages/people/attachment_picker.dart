@@ -4,7 +4,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 
 class AttachmentPicker extends StatelessWidget {
   final VoidCallback onGallery;
-  final VoidCallback onDocument;
+  // final VoidCallback onDocument;
   final VoidCallback onCamera;
   // final VoidCallback onContact;
   // final VoidCallback onLocation;
@@ -12,7 +12,7 @@ class AttachmentPicker extends StatelessWidget {
   const AttachmentPicker({
     Key? key,
     required this.onGallery,
-    required this.onDocument,
+    // required this.onDocument,
     required this.onCamera,
     // required this.onContact,
     // required this.onLocation,
@@ -33,8 +33,8 @@ class AttachmentPicker extends StatelessWidget {
         children: [
           _buildOption(
               context, Icons.image, 'Gallery', onGallery, Colors.purple),
-          _buildOption(context, Icons.insert_drive_file, 'Document', onDocument,
-              Colors.blue),
+          // _buildOption(context, Icons.insert_drive_file, 'Document', onDocument,
+          //     Colors.blue),
           _buildOption(
               context, Icons.camera_alt, 'Camera', onCamera, Colors.green),
           // _buildOption(context, Icons.contacts, 'Contact', onContact, Colors.orange),
