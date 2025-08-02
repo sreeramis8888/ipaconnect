@@ -195,7 +195,7 @@ class DeepLinkService {
                 (route) => false,
               );
               await Future.delayed(Duration(milliseconds: 500));
-              _ref.read(selectedIndexProvider.notifier).updateIndex(4);
+              _ref.read(selectedIndexProvider.notifier).updateIndex(2);
             }
           } catch (e) {
             debugPrint('Error updating tab: $e');
@@ -213,7 +213,7 @@ class DeepLinkService {
                 (route) => false,
               );
               await Future.delayed(Duration(milliseconds: 500));
-              _ref.read(selectedIndexProvider.notifier).updateIndex(3);
+              _ref.read(selectedIndexProvider.notifier).updateIndex(4);
             }
           } catch (e) {
             debugPrint('Error updating tab: $e');
