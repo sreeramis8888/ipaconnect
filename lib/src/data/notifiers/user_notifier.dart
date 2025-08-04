@@ -15,6 +15,8 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
 
   Future<void> _initializeUser() async {
     if (mounted) {
+      // Wait a bit to ensure global variables are loaded
+      await Future.delayed(const Duration(milliseconds: 100));
       await _fetchUserDetails();
     }
   }
@@ -30,6 +32,14 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
     try {
       log('Fetching user details');
       log('Fetch user token:$token');
+      
+      // Check if token is available before making API call
+      if (token.isEmpty) {
+        log('Token is empty, cannot fetch user details');
+        state = const AsyncValue.data(UserModel());
+        return;
+      }
+      
       final user = await ref.read(getUserDetailsProvider.future);
       if (_initialUser == null && user != null) {
         _initialUser = user;

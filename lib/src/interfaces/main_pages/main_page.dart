@@ -28,6 +28,7 @@ import 'package:ipaconnect/src/interfaces/additional_screens/user_status_sreens.
 import 'package:ipaconnect/src/interfaces/additional_screens/subscription_page.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/payment_success_page.dart';
 import 'package:ipaconnect/src/data/notifiers/payment_navigation_provider.dart';
+import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 
 class IconResolver extends StatelessWidget {
   final String iconPath;
@@ -81,12 +82,25 @@ class _MainPageState extends ConsumerState<MainPage> {
     SocketService().connect();
     // Ensure global variables are in sync with SecureStorage
     _loadSecureDataIfNeeded();
+    
+    // Add a listener to watch for token changes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (token.isNotEmpty && id.isNotEmpty) {
+        ref.read(userProvider.notifier).refreshUser();
+      }
+    });
   }
 
   Future<void> _loadSecureDataIfNeeded() async {
-    // If global variables are empty but SecureStorage has data, reload them
-    if ((token.isEmpty || id.isEmpty) && LoggedIn == false) {
-      await loadSecureData();
+    // Always ensure global variables are in sync with SecureStorage
+    await loadSecureData();
+    log('MainPage - After loadSecureData - token: $token, id: $id, LoggedIn: $LoggedIn');
+    
+    // If we have a valid token, refresh the user provider to fetch fresh data
+    if (token.isNotEmpty && id.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(userProvider.notifier).refreshUser();
+      });
     }
   }
 
@@ -98,6 +112,11 @@ class _MainPageState extends ConsumerState<MainPage> {
     await SecureStorage.delete('token');
     await SecureStorage.delete('id');
     await SecureStorage.delete('LoggedIn');
+    
+    // Clear user provider cache to ensure fresh data on next login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(userProvider.notifier).revertToInitialState();
+    });
   }
 
   @override
@@ -302,10 +321,16 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(builder: (context, ref, child) {
-      final selectedIndex = ref.watch(selectedIndexProvider);
-      final asyncUser = ref.watch(userProvider);
-      return asyncUser.when(
+          return Consumer(builder: (context, ref, child) {
+        final selectedIndex = ref.watch(selectedIndexProvider);
+        
+        // Only watch userProvider if we have a valid token
+        log('MainPage - Current token: $token, id: $id');
+        final asyncUser = token.isNotEmpty && id.isNotEmpty 
+            ? ref.watch(userProvider)
+            : const AsyncValue<UserModel>.loading();
+            
+        return asyncUser.when(
         loading: () {
           return Scaffold(
               backgroundColor: Color(0xFF00031A),
@@ -330,8 +355,9 @@ class _MainPageState extends ConsumerState<MainPage> {
           );
         },
         data: (user) {
-          if (user.status == null) {
-            log('User is null');
+          log('MainPage - User data received: ${user.name}, status: ${user.status}');
+          if (user.status == null || user.id == null) {
+            log('User is null or invalid');
             // If user is null but we have a token, clear it and redirect to login
             if (token.isNotEmpty || id.isNotEmpty) {
               _clearInvalidToken();

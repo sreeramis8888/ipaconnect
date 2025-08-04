@@ -9,8 +9,9 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
+import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 
-class CustomAdvancedDrawerMenu extends StatelessWidget {
+class CustomAdvancedDrawerMenu extends ConsumerWidget {
   final UserModel user;
   final BuildContext parentContext;
 
@@ -21,7 +22,7 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final navigationService = NavigationService();
     return SafeArea(
       child: Drawer(
@@ -184,12 +185,24 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                 height: 24,
               ),
               label: 'Logout',
-              onTap: () async {
-                await SecureStorage.delete('token');
-                await SecureStorage.delete('id');
-
-                navigationService.pushNamedAndRemoveUntil('PhoneNumber');
-              },
+                              onTap: () async {
+                  // Clear both SecureStorage and global variables
+                  await SecureStorage.delete('token');
+                  await SecureStorage.delete('id');
+                  await SecureStorage.delete('LoggedIn');
+                  
+                  // Clear global variables
+                  token = '';
+                  id = '';
+                  LoggedIn = false;
+                  
+                  // Clear user provider cache
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ref.read(userProvider.notifier).revertToInitialState();
+                  });
+                  
+                  navigationService.pushNamedAndRemoveUntil('PhoneNumber');
+                },
             ),
             Consumer(
               builder: (context, ref, child) {
@@ -218,9 +231,21 @@ class CustomAdvancedDrawerMenu extends StatelessWidget {
                       final response =
                           await userDataApiService.deleteUser(user.id ?? '');
                       if (response.success) {
+                        // Clear both SecureStorage and global variables
                         await SecureStorage.delete('token');
                         await SecureStorage.delete('id');
+                        await SecureStorage.delete('LoggedIn');
+                        
+                        // Clear global variables
+                        token = '';
+                        id = '';
                         LoggedIn = false;
+                        
+                        // Clear user provider cache
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ref.read(userProvider.notifier).revertToInitialState();
+                        });
+                        
                         navigationService
                             .pushNamedAndRemoveUntil('PhoneNumber');
                       }

@@ -20,6 +20,7 @@ import '../../data/utils/secure_storage.dart';
 import '../components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/data/services/api_routes/auth_api/auth_api_service.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 
 final countryCodeProvider = StateProvider<String?>((ref) => '91');
 
@@ -547,6 +548,13 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         await SecureStorage.write('LoggedIn', 'true');
         log('savedToken: $savedToken');
         log('savedId: $savedId');
+        
+        // Clear any cached user data to ensure fresh data is fetched
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          // This will trigger a fresh user fetch when MainPage loads
+          ref.read(userProvider.notifier).refreshUser();
+        });
+        
         // Navigate based on user status
         if ((savedStatus).toLowerCase() == 'inactive') {
           NavigationService().pushNamedReplacement('RegistrationPage',
