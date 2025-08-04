@@ -317,6 +317,9 @@ class _MainPageState extends ConsumerState<MainPage> {
           );
           }
           else{
+            LoggedIn=false;
+            id='';
+            token='';
            return PhoneNumberScreen();
           }
         },

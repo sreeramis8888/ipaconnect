@@ -63,12 +63,10 @@ class MyApp extends ConsumerWidget {
       ),
       navigatorObservers: [routeObserver],
       builder: (context, child) {
-        return ConnectivityWrapper(
-          child: SingleChildScrollView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: child,
-            ),
+        return SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: child,
           ),
         );
       },
