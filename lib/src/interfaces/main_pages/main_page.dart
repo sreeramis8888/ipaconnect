@@ -79,6 +79,25 @@ class _MainPageState extends ConsumerState<MainPage> {
     super.initState();
     // Connect socket only
     SocketService().connect();
+    // Ensure global variables are in sync with SecureStorage
+    _loadSecureDataIfNeeded();
+  }
+
+  Future<void> _loadSecureDataIfNeeded() async {
+    // If global variables are empty but SecureStorage has data, reload them
+    if ((token.isEmpty || id.isEmpty) && LoggedIn == false) {
+      await loadSecureData();
+    }
+  }
+
+  Future<void> _clearInvalidToken() async {
+    // Clear both global variables and SecureStorage when token is invalid
+    token = '';
+    id = '';
+    LoggedIn = false;
+    await SecureStorage.delete('token');
+    await SecureStorage.delete('id');
+    await SecureStorage.delete('LoggedIn');
   }
 
   @override
@@ -129,6 +148,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     await SecureStorage.write('id', user.id ?? '');
     id = user.id ?? '';
     log('main page user id:$id');
+    log('main pagetoken:$token');
   }
 
   Widget _buildStatusPage(String status, UserModel user, WidgetRef ref) {
@@ -285,8 +305,6 @@ class _MainPageState extends ConsumerState<MainPage> {
     return Consumer(builder: (context, ref, child) {
       final selectedIndex = ref.watch(selectedIndexProvider);
       final asyncUser = ref.watch(userProvider);
-      // Removed paymentNav, paymentResult, and payment navigation logic
-
       return asyncUser.when(
         loading: () {
           return Scaffold(
@@ -296,31 +314,72 @@ class _MainPageState extends ConsumerState<MainPage> {
         },
         error: (error, stackTrace) {
           log('im inside details main page error $error $stackTrace');
-          return PhoneNumberScreen();
+          // Clear invalid token and redirect to login
+          _clearInvalidToken();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              'PhoneNumber',
+              (route) => false,
+            );
+          });
+          return Scaffold(
+            backgroundColor: Color(0xFF00031A),
+            body: Center(
+              child: buildShimmerPromotionsColumn(context: context),
+            ),
+          );
         },
         data: (user) {
           if (user.status == null) {
             log('User is null');
+            // If user is null but we have a token, clear it and redirect to login
+            if (token.isNotEmpty || id.isNotEmpty) {
+              _clearInvalidToken();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  'PhoneNumber',
+                  (route) => false,
+                );
+              });
+              return Scaffold(
+                backgroundColor: Color(0xFF00031A),
+                body: Center(
+                  child: buildShimmerPromotionsColumn(context: context),
+                ),
+              );
+            }
           }
-          ;
+
           _initialize(user: user);
-          if(user.status!=null) {
+          if (user.status != null) {
             return PopScope(
-            canPop: selectedIndex != 0 ? false : true,
-            onPopInvokedWithResult: (didPop, result) {
-              log('im inside mainpage popscope');
-              if (selectedIndex != 0) {
-                ref.read(selectedIndexProvider.notifier).updateIndex(0);
-              }
-            },
-            child: _buildStatusPage(user.status ?? '', user, ref),
-          );
-          }
-          else{
-            LoggedIn=false;
-            id='';
-            token='';
-           return PhoneNumberScreen();
+              canPop: selectedIndex != 0 ? false : true,
+              onPopInvokedWithResult: (didPop, result) {
+                log('im inside mainpage popscope');
+                if (selectedIndex != 0) {
+                  ref.read(selectedIndexProvider.notifier).updateIndex(0);
+                }
+              },
+              child: _buildStatusPage(user.status ?? '', user, ref),
+            );
+          } else {
+            // Clear both global variables and SecureStorage when user status is null
+            LoggedIn = false;
+            id = '';
+            token = '';
+            _clearInvalidToken();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                'PhoneNumber',
+                (route) => false,
+              );
+            });
+            return Scaffold(
+              backgroundColor: Color(0xFF00031A),
+              body: Center(
+                child: buildShimmerPromotionsColumn(context: context),
+              ),
+            );
           }
         },
       );

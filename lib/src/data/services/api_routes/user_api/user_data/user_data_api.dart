@@ -111,7 +111,7 @@ class UserDataApiService {
     log(response.data.toString(), name: 'block User respose data');
     log(response.message.toString(), name: 'block User respose message');
     if (response.success && response.statusCode == 200) {
-      ref.read(userProvider.notifier).refreshUser();
+      // ref.read(userProvider.notifier).refreshUser();
       SnackbarService().showSnackBar('Blocked');
     } else {
       SnackbarService().showSnackBar('Failed to Block');

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
+import 'package:ipaconnect/src/data/utils/globals.dart';
 
 class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
   final Ref<AsyncValue<UserModel>> ref;
@@ -28,6 +29,7 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
   Future<void> _fetchUserDetails() async {
     try {
       log('Fetching user details');
+      log('Fetch user token:$token');
       final user = await ref.read(getUserDetailsProvider.future);
       if (_initialUser == null && user != null) {
         _initialUser = user;

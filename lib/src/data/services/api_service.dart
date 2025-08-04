@@ -44,6 +44,7 @@ class ApiService {
 
   Future<ApiResponse<Map<String, dynamic>>> get(String endpoint) async {
     try {
+      log(token.toString(), name: 'Home page get user token');
       final response = await _client.get(
         Uri.parse('$baseUrl$endpoint'),
         headers: {

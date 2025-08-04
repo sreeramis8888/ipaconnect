@@ -219,17 +219,21 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
         if (phone.length != 9) {
           snackbarService.showSnackBar('Please Enter valid mobile number');
         } else {
-          final authApiService = ref.watch(authApiServiceProvider);
-          final data = await authApiService.submitPhoneNumber(
-              countryCode == '971' ? '9710' : countryCode ?? '91',
-              context,
-              phone);
-          final verificationId = data['verificationId'];
-          final resendToken = data['resendToken'];
-          id = '';
-          token = '';
-          LoggedIn = false;
-          if (verificationId != null && verificationId.isNotEmpty) {
+                final authApiService = ref.watch(authApiServiceProvider);
+      final data = await authApiService.submitPhoneNumber(
+          countryCode == '971' ? '9710' : countryCode ?? '91',
+          context,
+          phone);
+      final verificationId = data['verificationId'];
+      final resendToken = data['resendToken'];
+      // Clear both global variables and SecureStorage
+      id = '';
+      token = '';
+      LoggedIn = false;
+      await SecureStorage.delete('token');
+      await SecureStorage.delete('id');
+      await SecureStorage.delete('LoggedIn');
+      if (verificationId != null && verificationId.isNotEmpty) {
             log('Otp Sent successfully');
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
@@ -256,6 +260,13 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
               phone);
           final verificationId = data['verificationId'];
           final resendToken = data['resendToken'];
+          // Clear both global variables and SecureStorage
+          id = '';
+          token = '';
+          LoggedIn = false;
+          await SecureStorage.delete('token');
+          await SecureStorage.delete('id');
+          await SecureStorage.delete('LoggedIn');
           if (verificationId != null && verificationId.isNotEmpty) {
             log('Otp Sent successfully');
             Navigator.of(context).pushReplacement(
@@ -525,12 +536,15 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       String savedId = responseMap['user_id'] ?? '';
       String savedStatus = responseMap['status'] ?? '';
       String currency = responseMap['currency'] ?? '';
-      token = savedToken;
-      id = savedId;
-
+      
       if (savedToken.isNotEmpty && savedId.isNotEmpty) {
+        // Update both global variables and SecureStorage
+        token = savedToken;
+        id = savedId;
+        LoggedIn = true;
         await SecureStorage.write('token', savedToken);
         await SecureStorage.write('id', savedId);
+        await SecureStorage.write('LoggedIn', 'true');
         log('savedToken: $savedToken');
         log('savedId: $savedId');
         // Navigate based on user status
