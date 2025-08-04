@@ -299,8 +299,13 @@ class _MainPageState extends ConsumerState<MainPage> {
           return PhoneNumberScreen();
         },
         data: (user) {
+          if (user.status == null) {
+            log('User is null');
+          }
+          ;
           _initialize(user: user);
-          return PopScope(
+          if(user.status!=null) {
+            return PopScope(
             canPop: selectedIndex != 0 ? false : true,
             onPopInvokedWithResult: (didPop, result) {
               log('im inside mainpage popscope');
@@ -310,6 +315,10 @@ class _MainPageState extends ConsumerState<MainPage> {
             },
             child: _buildStatusPage(user.status ?? '', user, ref),
           );
+          }
+          else{
+           return PhoneNumberScreen();
+          }
         },
       );
     });
