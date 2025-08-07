@@ -1,26 +1,25 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/utils/youtube_player.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 Widget customVideo({required BuildContext context, required String videoUrl}) {
-
-
-  final ytController = YoutubePlayerController.fromVideoId(
-    videoId: extractYouTubeVideoId('$videoUrl' ?? '') ?? '',
-    autoPlay: false,
-    params: const YoutubePlayerParams(
-      enableJavaScript: true,
+  final videoId = extractYouTubeVideoId(videoUrl) ?? '';
+  final ytController = YoutubePlayerController(
+    initialVideoId: videoId,
+    flags: const YoutubePlayerFlags(disableDragSeek: true,
+      autoPlay: false,
       loop: true,
       mute: false,
-      showControls: true,
-      showFullscreenButton: true,
+      controlsVisibleAtStart: true,
+      enableCaption: true,
+      isLive: false,
     ),
   );
 
   log(
     name: 'Video ID:',
-    extractYouTubeVideoId(videoUrl ?? '') ?? '',
+    videoId,
   );
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,6 +44,7 @@ Widget customVideo({required BuildContext context, required String videoUrl}) {
           child: ClipRRect(
             child: YoutubePlayer(
               controller: ytController,
+              showVideoProgressIndicator: true,
               aspectRatio: 16 / 9,
             ),
           ),

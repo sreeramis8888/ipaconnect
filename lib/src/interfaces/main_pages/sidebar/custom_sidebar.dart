@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
@@ -185,24 +186,24 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                 height: 24,
               ),
               label: 'Logout',
-                              onTap: () async {
-                  // Clear both SecureStorage and global variables
-                  await SecureStorage.delete('token');
-                  await SecureStorage.delete('id');
-                  await SecureStorage.delete('LoggedIn');
-                  
-                  // Clear global variables
-                  token = '';
-                  id = '';
-                  LoggedIn = false;
-                  
-                  // Clear user provider cache
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ref.read(userProvider.notifier).revertToInitialState();
-                  });
-                  
-                  navigationService.pushNamedAndRemoveUntil('PhoneNumber');
-                },
+              onTap: () async {
+                // Clear both SecureStorage and global variables
+                await SecureStorage.delete('token');
+                await SecureStorage.delete('id');
+                await SecureStorage.delete('LoggedIn');
+
+                // Clear global variables
+                token = '';
+                id = '';
+                LoggedIn = false;
+
+                // Clear user provider cache
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  ref.read(userProvider.notifier).revertToInitialState();
+                });
+
+                navigationService.pushNamedAndRemoveUntil('PhoneNumber');
+              },
             ),
             Consumer(
               builder: (context, ref, child) {
@@ -235,17 +236,19 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                         await SecureStorage.delete('token');
                         await SecureStorage.delete('id');
                         await SecureStorage.delete('LoggedIn');
-                        
+
                         // Clear global variables
                         token = '';
                         id = '';
                         LoggedIn = false;
-                        
+
                         // Clear user provider cache
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ref.read(userProvider.notifier).revertToInitialState();
+                          ref
+                              .read(userProvider.notifier)
+                              .revertToInitialState();
                         });
-                        
+
                         navigationService
                             .pushNamedAndRemoveUntil('PhoneNumber');
                       }
@@ -253,6 +256,98 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                   },
                 );
               },
+            ),
+            const SizedBox(height: 8),
+            // Footer
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WebViewScreen(
+                              url: 'https://www.skybertech.com/',
+                              title: 'Skybertech',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: kCardBackgroundColor),
+                          color: kStrokeColor,
+                        ),
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding:
+                                  EdgeInsets.only(top: 10, left: 22, right: 22),
+                              child: Text(
+                                'Powered by',
+                                style: TextStyle(fontSize: 12, color: kWhite),
+                              ),
+                            ),
+                            Image.asset(
+                              scale: 15,
+                              'assets/pngs/skybertechlogo.png',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WebViewScreen(
+                              url: 'https://www.xyvin.com/',
+                              title: 'Xyvin Technologies',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: kCardBackgroundColor),
+                          color: kStrokeColor,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 8),
+                          child: Column(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 2, bottom: 3),
+                                child: Text(
+                                  'Developed by',
+                                  style: TextStyle(fontSize: 12, color: kWhite),
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Image.asset(
+                                scale: 1.6,
+                                fit: BoxFit.contain,
+                                'assets/pngs/xyvin.png',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
