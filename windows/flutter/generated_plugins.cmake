@@ -4,7 +4,6 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
-  audioplayers_windows
   connectivity_plus
   emoji_picker_flutter
   file_selector_windows
@@ -13,7 +12,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_inappwebview_windows
   flutter_secure_storage_windows
   permission_handler_windows
-  record_windows
   share_plus
   url_launcher_windows
 )
