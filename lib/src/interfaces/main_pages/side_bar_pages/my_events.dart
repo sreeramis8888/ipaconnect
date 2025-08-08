@@ -87,7 +87,7 @@ class MyEventsPage extends StatelessWidget {
         navigationService.pushNamed('EventDetails', arguments: event);
       },
       child: Card(
-        color: Colors.white,
+        color: kWhite,
         margin: const EdgeInsets.all(10),
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -196,7 +196,7 @@ class MyEventsPage extends StatelessWidget {
                           Text(
                             event.type ?? 'Event Title',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: kWhite,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -221,7 +221,7 @@ class MyEventsPage extends StatelessWidget {
                               // Date container
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: kWhite,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 padding: const EdgeInsets.symmetric(
@@ -255,7 +255,7 @@ class MyEventsPage extends StatelessWidget {
                               Text(
                                 '$formattedTime - ${DateFormat('hh:mm a').format(dateTime.add(const Duration(hours: 2)))}',
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: kWhite,
                                   fontSize: 14,
                                 ),
                               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -102,7 +103,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
               title: Text(widget.title ?? 'Web View'),
               backgroundColor:
                   widget.backgroundColor ?? Theme.of(context).primaryColor,
-              foregroundColor: widget.foregroundColor ?? Colors.white,
+              foregroundColor: widget.foregroundColor ?? kWhite,
               elevation: 0,
               actions: [
                 IconButton(

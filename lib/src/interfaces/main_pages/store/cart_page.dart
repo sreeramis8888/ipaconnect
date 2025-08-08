@@ -115,7 +115,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                 (context, error, stackTrace) {
                                               return const Icon(
                                                 Icons.image,
-                                                color: Colors.white,
+                                                color: kWhite,
                                                 size: 32,
                                               );
                                             },

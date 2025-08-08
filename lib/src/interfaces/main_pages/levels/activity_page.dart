@@ -93,8 +93,7 @@ class ActivityPage extends ConsumerWidget {
                                       backgroundColor: kStrokeColor,
                                       child: activity.sender?.image != null
                                           ? null
-                                          : Icon(Icons.person,
-                                              color: Colors.white),
+                                          : Icon(Icons.person, color: kWhite),
                                     ),
                                     const SizedBox(width: 8),
                                     Expanded(
@@ -148,8 +147,7 @@ class ActivityPage extends ConsumerWidget {
                                       backgroundColor: kStrokeColor,
                                       child: activity.receiver?.image != null
                                           ? null
-                                          : Icon(Icons.person,
-                                              color: Colors.white),
+                                          : Icon(Icons.person, color: kWhite),
                                     ),
                                   ],
                                 ),

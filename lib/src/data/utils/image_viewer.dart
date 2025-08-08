@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/utils/download_image.dart';
 
 void showImageViewer(String file, BuildContext context) {
@@ -30,7 +31,7 @@ void showImageViewer(String file, BuildContext context) {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.download, color: Colors.white),
+                      icon: const Icon(Icons.download, color: kWhite),
                       onPressed: () => downloadImage(file),
                     ),
                   ),
@@ -41,7 +42,7 @@ void showImageViewer(String file, BuildContext context) {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: const Icon(Icons.close, color: kWhite),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),

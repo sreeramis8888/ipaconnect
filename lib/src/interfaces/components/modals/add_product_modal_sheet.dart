@@ -201,7 +201,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(Icons.close,
-                                        color: Colors.white, size: 20),
+                                        color: kWhite, size: 20),
                                   ),
                                 ),
                               ),

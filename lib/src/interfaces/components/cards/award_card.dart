@@ -102,6 +102,8 @@ class AwardCard extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 award.name ?? '',
                                 style: kSmallTitleR,
                               ),

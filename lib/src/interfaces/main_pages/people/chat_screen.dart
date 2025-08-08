@@ -1969,8 +1969,7 @@ I'm interested in this feed. Could you provide more information?
                     color: Colors.black45,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.play_arrow,
-                      color: Colors.white, size: 48),
+                  child: const Icon(Icons.play_arrow, color: kWhite, size: 48),
                 ),
               ),
             ],
@@ -2301,7 +2300,7 @@ class _AudioPlayerWidgetState extends State<_AudioPlayerWidget> {
             child: IconButton(
               icon: Icon(
                 _isPlaying ? Icons.pause : Icons.play_arrow,
-                color: Colors.white,
+                color: kWhite,
                 size: 16,
               ),
               onPressed: _togglePlay,
@@ -2463,7 +2462,7 @@ class _VideoPlayerDialogState extends State<_VideoPlayerDialog> {
                   top: 8,
                   right: 8,
                   child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
+                    icon: const Icon(Icons.close, color: kWhite),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),

@@ -5,7 +5,6 @@ import 'package:ipaconnect/src/data/models/attendance_user_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
-
 class EventAttendanceSuccessPage extends StatefulWidget {
   final AttendanceUserModel user;
 
@@ -110,7 +109,7 @@ class _EventAttendanceSuccessPageState extends State<EventAttendanceSuccessPage>
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: kWhite,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -142,7 +141,7 @@ class _EventAttendanceSuccessPageState extends State<EventAttendanceSuccessPage>
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: kWhite,
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:convert';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -19,6 +20,18 @@ import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 
 Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
     {bool download = false, required UserModel user}) async {
+  // Prepare QR image bytes from base64 if available; tolerate any data URL prefix
+  Uint8List? qrBytes;
+  if (user.qrCode != null && user.qrCode!.isNotEmpty) {
+    try {
+      final String raw = user.qrCode!;
+      final String base64Part = raw.contains(',') ? raw.split(',').last : raw;
+      qrBytes = base64Decode(base64Part);
+    } catch (_) {
+      qrBytes = null;
+    }
+  }
+
   // Create a GlobalKey to hold the widget's RepaintBoundary
   final boundaryKey = GlobalKey();
 
@@ -101,26 +114,43 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                       child: Center(
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.white,
+                                            color: kWhite,
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                           ),
                                           padding: const EdgeInsets.all(16),
-                                          child: QrImageView(
-                                            data:
-                                                'https://admin.ipaconnect.org/user/${user.id}',
-                                            version: QrVersions.auto,
-                                            size: 170,
-                                            gapless: false,
-                                            foregroundColor: Colors.black,
-                                            backgroundColor: Colors.white,
-                                            errorStateBuilder: (cxt, err) =>
-                                                Center(
-                                              child: Text('QR Error',
-                                                  style: TextStyle(
-                                                      color: Colors.red)),
-                                            ),
-                                          ),
+                                          child: qrBytes != null
+                                              ? Image.memory(
+                                                  qrBytes!,
+                                                  width: 170,
+                                                  height: 170,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      Center(
+                                                    child: Text(
+                                                      'QR Error',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                  ),
+                                                )
+                                              : QrImageView(
+                                                  data:
+                                                      'https://admin.ipaconnect.org/user/${user.id}',
+                                                  version: QrVersions.auto,
+                                                  size: 170,
+                                                  gapless: false,
+                                                  foregroundColor: Colors.black,
+                                                  backgroundColor: kWhite,
+                                                  errorStateBuilder:
+                                                      (cxt, err) => Center(
+                                                    child: Text(
+                                                      'QR Error',
+                                                      style: TextStyle(
+                                                          color: Colors.red),
+                                                    ),
+                                                  ),
+                                                ),
                                         ),
                                       ),
                                     ),
@@ -242,8 +272,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                Icon(Icons.email,
-                                    color: Colors.white, size: 18),
+                                Icon(Icons.email, color: kWhite, size: 18),
                                 if (user.email != null && user.email != '')
                                   const SizedBox(width: 12),
                                 if (user.email != null && user.email != '')
@@ -251,7 +280,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                     child: Text(
                                       user.email ?? '',
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 12),
+                                          color: kWhite, fontSize: 12),
                                     ),
                                   ),
                               ],
@@ -259,14 +288,13 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                Icon(Icons.phone,
-                                    color: Colors.white, size: 18),
+                                Icon(Icons.phone, color: kWhite, size: 18),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     user.phone ?? '',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 12),
+                                    style:
+                                        TextStyle(color: kWhite, fontSize: 12),
                                   ),
                                 ),
                               ],
@@ -278,13 +306,13 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Icon(Icons.location_on,
-                                      color: Colors.white, size: 18),
+                                      color: kWhite, size: 18),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       user.location ?? '',
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 12),
+                                          color: kWhite, fontSize: 12),
                                     ),
                                   ),
                                 ],

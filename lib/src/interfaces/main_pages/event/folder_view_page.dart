@@ -23,11 +23,12 @@ class FolderViewPage extends ConsumerStatefulWidget {
   final String folderName;
   final String eventId;
   final List<EventFile> files;
-  const FolderViewPage( {
+  const FolderViewPage({
     super.key,
     required this.folderId,
     required this.folderName,
-    required this.eventId,required this.files,
+    required this.eventId,
+    required this.files,
   });
 
   @override
@@ -101,7 +102,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
 
   Widget _buildImageItem(EventFile file) {
     return GestureDetector(
-      onTap: () => showImageViewer(file.url,context),
+      onTap: () => showImageViewer(file.url, context),
       child: Stack(
         children: [
           Container(
@@ -133,7 +134,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.white),
+                  icon: const Icon(Icons.delete, color: kWhite),
                   onPressed: () => _showDeleteConfirmation(file),
                 ),
               ),
@@ -157,7 +158,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
+                icon: const Icon(Icons.delete, color: kWhite),
                 onPressed: () => _showDeleteConfirmation(file),
               ),
             ),
@@ -172,7 +173,8 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
       context: context,
       builder: (context) => ConfirmationDialog(
         title: 'Delete $fileType',
-        content: 'Are you sure you want to delete this $fileType?\nThis action cannot be undone.',
+        content:
+            'Are you sure you want to delete this $fileType?\nThis action cannot be undone.',
         confirmText: 'Delete',
         cancelText: 'Cancel',
         icon: Icon(Icons.delete_outline, color: Colors.red.shade700, size: 24),
@@ -184,77 +186,71 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-          final images =widget. files.where((f) => f.type == 'image').toList();
-          final videos =widget.files.where((f) => f.type == 'video').toList();
+    final images = widget.files.where((f) => f.type == 'image').toList();
+    final videos = widget.files.where((f) => f.type == 'video').toList();
 
     return Scaffold(
-      backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        bottom: TabBar(
-          dividerColor: Colors.transparent,
-          enableFeedback: true,
-          isScrollable: false,
-          indicatorColor: kPrimaryColor,
-          indicatorWeight: 3.0,
-          indicatorSize: TabBarIndicatorSize.tab,
-          labelColor: kPrimaryColor,
-          unselectedLabelColor: kSecondaryTextColor,
-          labelStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.3,
-          ),
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Images'),
-            Tab(text: 'Videos'),
-          ],
-        ),
-        title: Text(widget.folderName, style: kBodyTitleR),
         backgroundColor: kBackgroundColor,
-        scrolledUnderElevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8),
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: CustomRoundButton(
-              offset: Offset(4, 0),
-              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+        appBar: AppBar(
+          elevation: 0,
+          bottom: TabBar(
+            dividerColor: Colors.transparent,
+            enableFeedback: true,
+            isScrollable: false,
+            indicatorColor: kPrimaryColor,
+            indicatorWeight: 3.0,
+            indicatorSize: TabBarIndicatorSize.tab,
+            labelColor: kPrimaryColor,
+            unselectedLabelColor: kSecondaryTextColor,
+            labelStyle: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.3,
+            ),
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Images'),
+              Tab(text: 'Videos'),
+            ],
+          ),
+          title: Text(widget.folderName, style: kBodyTitleR),
+          backgroundColor: kBackgroundColor,
+          scrolledUnderElevation: 0,
+          leading: Padding(
+            padding: const EdgeInsets.all(8),
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: CustomRoundButton(
+                offset: Offset(4, 0),
+                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              ),
             ),
           ),
         ),
-      ),
-      body:
-
-           TabBarView(
-            controller: _tabController,
-            children: [
-              // Images Tab
-              GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: images.length,
-                itemBuilder: (context, index) => _buildImageItem(images[index]),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            // Images Tab
+            GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
               ),
+              itemCount: images.length,
+              itemBuilder: (context, index) => _buildImageItem(images[index]),
+            ),
 
-              // Videos Tab
-              ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: videos.length,
-                itemBuilder: (context, index) => _buildVideoItem(videos[index]),
-              ),
-            ],
-          )
-     
-    );
+            // Videos Tab
+            ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: videos.length,
+              itemBuilder: (context, index) => _buildVideoItem(videos[index]),
+            ),
+          ],
+        ));
   }
 }

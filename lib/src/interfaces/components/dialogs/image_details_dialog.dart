@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 
 class ImageDetailsDialog extends StatelessWidget {
   final String imageUrl;
@@ -25,7 +26,7 @@ class ImageDetailsDialog extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: kCardBackgroundColor,
               borderRadius: BorderRadius.circular(15),
             ),
             child: Column(
@@ -56,26 +57,27 @@ class ImageDetailsDialog extends StatelessWidget {
                         title,
                         style: const TextStyle(
                           fontSize: 20,
+                          color: kWhite,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       if (subtitle != null) ...[
                         const SizedBox(height: 8),
                         Text(
-                          subtitle!,
+                          subtitle ?? '',
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.grey,
+                            color: kSecondaryTextColor,
                           ),
                         ),
                       ],
                       if (description != null) ...[
                         const SizedBox(height: 12),
                         Text(
-                          description!,
+                          description ?? '',
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.black87,
+                            color: kSecondaryTextColor,
                           ),
                         ),
                       ],
@@ -94,7 +96,7 @@ class ImageDetailsDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
+                icon: const Icon(Icons.close, color: kWhite),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),

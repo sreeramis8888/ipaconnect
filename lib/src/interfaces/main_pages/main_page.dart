@@ -82,7 +82,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     SocketService().connect();
     // Ensure global variables are in sync with SecureStorage
     _loadSecureDataIfNeeded();
-    
+
     // Add a listener to watch for token changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (token.isNotEmpty && id.isNotEmpty) {
@@ -95,7 +95,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     // Always ensure global variables are in sync with SecureStorage
     await loadSecureData();
     log('MainPage - After loadSecureData - token: $token, id: $id, LoggedIn: $LoggedIn');
-    
+
     // If we have a valid token, refresh the user provider to fetch fresh data
     if (token.isNotEmpty && id.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -112,7 +112,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     await SecureStorage.delete('token');
     await SecureStorage.delete('id');
     await SecureStorage.delete('LoggedIn');
-    
+
     // Clear user provider cache to ensure fresh data on next login
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userProvider.notifier).revertToInitialState();
@@ -202,7 +202,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                   ),
                   child: BottomNavigationBar(
                     currentIndex: selectedIndex,
-                    selectedItemColor: Colors.white,
+                    selectedItemColor: kWhite,
                     unselectedItemColor: Colors.white54,
                     onTap: _onItemTapped,
                     showSelectedLabels: true,
@@ -275,9 +275,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                             Text(
                               labels[index],
                               style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
-                                    : Color(0xFFAEB9E1),
+                                color: isSelected ? kWhite : Color(0xFFAEB9E1),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -321,16 +319,16 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-          return Consumer(builder: (context, ref, child) {
-        final selectedIndex = ref.watch(selectedIndexProvider);
-        
-        // Only watch userProvider if we have a valid token
-        log('MainPage - Current token: $token, id: $id');
-        final asyncUser = token.isNotEmpty && id.isNotEmpty 
-            ? ref.watch(userProvider)
-            : const AsyncValue<UserModel>.loading();
-            
-        return asyncUser.when(
+    return Consumer(builder: (context, ref, child) {
+      final selectedIndex = ref.watch(selectedIndexProvider);
+
+      // Only watch userProvider if we have a valid token
+      log('MainPage - Current token: $token, id: $id');
+      final asyncUser = token.isNotEmpty && id.isNotEmpty
+          ? ref.watch(userProvider)
+          : const AsyncValue<UserModel>.loading();
+
+      return asyncUser.when(
         loading: () {
           return Scaffold(
               backgroundColor: Color(0xFF00031A),

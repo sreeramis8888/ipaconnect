@@ -111,7 +111,7 @@ class _EventsPageState extends ConsumerState<EventsPage>
                     );
                   },
                   backgroundColor: kPrimaryColor,
-                  child: Icon(Icons.add, color: Colors.white),
+                  child: Icon(Icons.add, color: kWhite),
                 )
               : null,
     );

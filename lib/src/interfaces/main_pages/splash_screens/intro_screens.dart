@@ -293,7 +293,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   Future<void> _completeOnboarding() async {
     try {
-   
       await SecureStorage.write('has_launched_before', 'true');
 
       NavigationService navigationService = NavigationService();
@@ -312,8 +311,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          const Color(0xFF1D09CD), 
+      backgroundColor: const Color(0xFF1D09CD),
       body: AnimatedBuilder(
         animation: _backgroundAnimation,
         builder: (context, child) {
@@ -361,18 +359,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           )
                         : const Center(
                             child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(kWhite),
                             ),
                           ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: List.generate(3, (index) {
@@ -383,8 +378,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               height: 6,
                               decoration: BoxDecoration(
                                 color: _currentPage == index
-                                    ? Colors.white
-                                    : Colors.white.withOpacity(0.3),
+                                    ? kWhite
+                                    : kWhite.withOpacity(0.3),
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             );
@@ -394,15 +389,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         // Next button
                         GestureDetector(
                           onTap: _nextPage,
-                          child: Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF2B5CE6),
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(       'assets/splash_assets/next_button.svg')
-                          ),
+                          child: SvgPicture.asset(
+                              'assets/splash_assets/next_button.svg'),
                         ),
                       ],
                     ),
@@ -420,7 +408,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               _startPage2Animations();
             }
           },
-
         ),
       ),
     );
@@ -512,7 +499,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 textAlign: TextAlign.left,
               ),
@@ -580,7 +567,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       return Transform.scale(
                         scale: _cylinder2Animation.value,
                         child: Transform.rotate(
-                          angle: -0.12, 
+                          angle: -0.12,
                           child: Opacity(
                             opacity: _cylinder2Animation.value.clamp(0.0, 1.0),
                             child: _buildCylinderCard(
@@ -601,7 +588,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       return Transform.scale(
                         scale: _cylinder3Animation.value,
                         child: Transform.rotate(
-                          angle: -0.18, 
+                          angle: -0.18,
                           child: Opacity(
                             opacity: _cylinder3Animation.value.clamp(0.0, 1.0),
                             child: _buildCylinderCard(
@@ -626,7 +613,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 textAlign: TextAlign.left,
               ),
@@ -713,7 +700,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     },
                   ),
                 ),
-
                 Positioned(
                   top: 20,
                   left: -30,
@@ -746,7 +732,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 textAlign: TextAlign.left,
               ),
@@ -855,14 +841,20 @@ class LiquidSnakePainter extends CustomPainter {
     final startY = height * 0.4;
     path.moveTo(startX, startY);
     path.cubicTo(
-      width * 0.1, height * 0.1, 
-      width * 0.4, height * 0.1, 
-      width * 0.3, height * 0.45,
+      width * 0.1,
+      height * 0.1,
+      width * 0.4,
+      height * 0.1,
+      width * 0.3,
+      height * 0.45,
     );
     path.cubicTo(
-      width * 0.2, height * 0.7, 
-      width * 0.05, height * 0.6,
-      width * 0.15, height * 0.4,
+      width * 0.2,
+      height * 0.7,
+      width * 0.05,
+      height * 0.6,
+      width * 0.15,
+      height * 0.4,
     );
 
     path.cubicTo(

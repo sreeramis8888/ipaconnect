@@ -9,7 +9,7 @@ const Color kStrokeColor = Color(0xFF0D2A4D);
 const Color kTertiary = Color(0xFFE8EAED);
 const Color kInputFieldcolor = Color(0xFF1C1E4D);
 //Common Colors
-const Color kWhite = Color.fromARGB(255, 255, 255, 255);
+const Color kWhite = Color(0xFFF7F7F7);
 const Color kGrey = Color.fromARGB(255, 200, 200, 200);
 
 const Color kTextColor = Color(0xFFF7F7F7);

@@ -38,16 +38,13 @@ class CompanyCardOptionsDropdown extends StatelessWidget {
           value: 0,
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 4.0),
-            child: Text('Edit', style: TextStyle(color: Colors.white)),
+            child: Text('Edit', style: TextStyle(color: kWhite)),
           ),
         ),
         PopupMenuItem(
           enabled: false,
           height: 1,
-          child: Container(
-              height: .5,
-              color: kStrokeColor 
-              ),
+          child: Container(height: .5, color: kStrokeColor),
         ),
         const PopupMenuItem(
           value: 1,

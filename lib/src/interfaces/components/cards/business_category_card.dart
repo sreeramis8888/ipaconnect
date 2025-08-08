@@ -36,13 +36,13 @@ class CategoryCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: kWhite.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 count.toString(),
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: kWhite,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
@@ -77,7 +77,7 @@ class CategoryCard extends StatelessWidget {
                         errorBuilder: (context, error, stackTrace) {
                           return const Icon(
                             Icons.image,
-                            color: Colors.white,
+                            color: kWhite,
                             size: 32,
                           );
                         },

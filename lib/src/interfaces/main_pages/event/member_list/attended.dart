@@ -35,7 +35,7 @@ class AttendedPage extends StatelessWidget {
             ),
             title: Text("Back"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -81,11 +81,11 @@ class AttendedPage extends StatelessWidget {
                                   },
                                 );
 
-                                try {                 
-                         final userApiService =
+                                try {
+                                  final userApiService =
                                       ref.watch(userDataApiServiceProvider);
                                   final user = await userApiService
-                                      .fetchUserDetailsById(member?.id??'');
+                                      .fetchUserDetailsById(member?.id ?? '');
                                   Navigator.of(context).pop();
                                   navigationService.pushNamed(
                                       'ProfileAnalytics',

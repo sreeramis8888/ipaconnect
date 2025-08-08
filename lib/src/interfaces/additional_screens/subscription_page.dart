@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
+import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -105,20 +107,23 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
       Future.delayed(const Duration(milliseconds: 500), () {
         if (!mounted) return;
         // Only navigate if all converted values are available
-        if (_convertedTotal != null && _convertedRegFee != null && _convertedVat != null && _convertedMonthlyFee != null) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => PaymentSuccessPage(
-              transactionId: result['transaction_id']?.toString() ?? 'N/A',
-              transactionDate:
-                  DateFormat('dd/MM/yyyy | hh:mm a').format(DateTime.now()),
+        if (_convertedTotal != null &&
+            _convertedRegFee != null &&
+            _convertedVat != null &&
+            _convertedMonthlyFee != null) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => PaymentSuccessPage(
+                transactionId: result['transaction_id']?.toString() ?? 'N/A',
+                transactionDate:
+                    DateFormat('dd/MM/yyyy | hh:mm a').format(DateTime.now()),
                 amount: _convertedMonthlyFee!.toStringAsFixed(2),
                 fees: _convertedVat!.toStringAsFixed(2),
                 total: _convertedTotal!.toStringAsFixed(2),
                 currency: widget.userCurrency,
+              ),
             ),
-          ),
-        );
+          );
         } else {
           // Optionally show a loading or error message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -196,7 +201,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
         backgroundColor: Color(0xFF00031A),
         body: Center(
             child: Text('Failed to load subscription info',
-                style: TextStyle(color: Colors.white))),
+                style: TextStyle(color: kWhite))),
       ),
       data: (subscription) {
         if (subscription == null) {
@@ -240,10 +245,25 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
           children: [
             Positioned.fill(
               child: Container(
-                color: const Color(0xFF00031A), // Add background color
+                color: const Color(0xFF00031A),
                 child: Image.asset(
                   'assets/pngs/subcription_bg.png',
                   fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: TextButton.icon(
+                  onPressed: () {
+                    NavigationService().pushNamedReplacement('PhoneNumber');
+                  },
+                  icon: Icon(Icons.logout, color: kPrimaryColor),
+                  label: Text(
+                    'Logout',
+                    style: kSmallTitleB.copyWith(color: kPrimaryColor),
+                  ),
                 ),
               ),
             ),
@@ -286,12 +306,12 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
                           ? const LoadingAnimation()
                           : Text(
                               '${widget.userCurrency} ${_convertedTotal!.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                                color: kWhite,
+                              ),
+                            ),
                       const SizedBox(height: 24),
                       Center(
                         child: _PricingDetailsSection(
@@ -595,7 +615,7 @@ class _SubscriptionPageState extends ConsumerState<SubscriptionPage> {
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style: const TextStyle(color: kWhite, fontSize: 13),
               ),
             ),
           ],
@@ -686,8 +706,8 @@ class _PricingDetailsSectionState extends State<_PricingDetailsSection>
                     const SizedBox(width: 4),
                     const Text(
                       'Pricing Details',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(color: kWhite, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(width: 4),
                     AnimatedBuilder(
@@ -697,7 +717,7 @@ class _PricingDetailsSectionState extends State<_PricingDetailsSection>
                           angle: _arrowController.value * 3.1416 * 2,
                           child: Icon(
                             Icons.keyboard_arrow_down,
-                            color: Colors.white,
+                            color: kWhite,
                             size: 18,
                           ),
                         );
@@ -955,13 +975,13 @@ class _PricingDetailsSectionState extends State<_PricingDetailsSection>
             child: value == 'loading'
                 ? const LoadingAnimation()
                 : Text(
-              value,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              ),
-              softWrap: true,
-            ),
+                    value,
+                    style: TextStyle(
+                      color: kWhite,
+                      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    softWrap: true,
+                  ),
           ),
         ],
       ),

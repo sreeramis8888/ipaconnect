@@ -40,6 +40,7 @@ class UserModel {
   final List<SubData>? websites;
   final List<SubData>? documents;
   final List<Award>? awards;
+  @JsonKey(name: 'qr_code') final String? qrCode;
 
   const UserModel({
     this.name,
@@ -78,6 +79,7 @@ class UserModel {
     this.websites,
     this.documents,
     this.awards,
+    this.qrCode,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
@@ -118,6 +120,7 @@ class UserModel {
     List<SubData>? documents,
     List<Award>? awards,
     bool? isFormActivated,
+    String? qrCode,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -154,6 +157,7 @@ class UserModel {
       documents: documents ?? this.documents,
       awards: awards ?? this.awards,
       isFormActivated: isFormActivated ?? this.isFormActivated,
+      qrCode: qrCode ?? this.qrCode,
     );
   }
 }

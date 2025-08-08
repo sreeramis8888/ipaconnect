@@ -45,7 +45,7 @@ class ReviewBarChart extends StatelessWidget {
               child: Text(
                 'Ratings & Reviews ($totalReviews)',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: kWhite,
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
                 ),
@@ -132,7 +132,7 @@ class ReviewBarChart extends StatelessWidget {
                     Text(
                       averageRating.toStringAsFixed(1),
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: kWhite,
                         fontWeight: FontWeight.bold,
                         fontSize: 32,
                         textBaseline: TextBaseline.alphabetic,
@@ -158,7 +158,7 @@ class ReviewBarChart extends StatelessWidget {
         customButton(
           label: 'Write a review',
           buttonColor: Color(0xFF1A3353),
-          labelColor: Colors.white,
+          labelColor: kWhite,
           onPressed: onWriteReview,
         ),
       ],

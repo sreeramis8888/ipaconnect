@@ -130,7 +130,7 @@ class _PaymentResultOverlayState extends State<PaymentResultOverlay>
                     child: Text(
                       widget.message,
                       style: kLargeTitleSB.copyWith(
-                        color: Colors.white,
+                        color: kWhite,
                         shadows: [
                           const Shadow(color: Colors.black26, blurRadius: 8),
                         ],
@@ -143,7 +143,7 @@ class _PaymentResultOverlayState extends State<PaymentResultOverlay>
                   opacity: _textAnimation,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor: kWhite,
                       foregroundColor: widget.isSuccess ? kPrimaryColor : kRed,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -442,7 +442,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
                                           child: const Text(
                                             'Selected',
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: kWhite,
                                               fontSize: 11,
                                               fontWeight: FontWeight.w500,
                                             ),

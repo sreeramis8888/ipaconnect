@@ -35,7 +35,7 @@ class RegisteredPage extends StatelessWidget {
             ),
             title: Text("Back"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -85,7 +85,7 @@ class RegisteredPage extends StatelessWidget {
                                   final userApiService =
                                       ref.watch(userDataApiServiceProvider);
                                   final user = await userApiService
-                                      .fetchUserDetailsById(member?.id??'');
+                                      .fetchUserDetailsById(member?.id ?? '');
                                   Navigator.of(context).pop();
                                   navigationService.pushNamed(
                                       'ProfileAnalytics',
@@ -117,7 +117,7 @@ class RegisteredPage extends StatelessWidget {
           //     // Handle action
           //   },
           //   backgroundColor: Colors.orange,
-          //   child: Icon(Icons.person_add, color: Colors.white),
+          //   child: Icon(Icons.person_add, color: kWhite),
           // ),
         );
       },

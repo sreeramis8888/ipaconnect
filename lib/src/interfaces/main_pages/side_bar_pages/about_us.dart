@@ -78,7 +78,7 @@ class AboutUsPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('About Us',
-                          style: kSubHeadingB.copyWith(color: Colors.white)),
+                          style: kSubHeadingB.copyWith(color: kWhite)),
                       const SizedBox(height: 8),
                       Text(
                           'Getting educated is a Right and not a privilege. We at Skepick are committed for making education possible for the deprived. Our platform provides transparency by ensuring a bona fide utilization of funds. Our goal is to use education as the most powerful weapon to secure a sustainable future for the world. We believe education is the only solution to ensuring social equality, poverty eradication, a better labor & order situation, etc. Our sponsors empower students to achieve their aspirations and grow up to be self-dependent & resourceful citizens through their valuable donation. We are the World\'s Only Transparent Sponsorship platform opening the education doors for millions of students. We value the continued support from our institution partners to make our vision possible.',
@@ -99,7 +99,7 @@ class AboutUsPage extends StatelessWidget {
                         ),
                         Text('Fueling Impact\nThrough Numbers\nThat Matter',
                             style: kLargeTitleB.copyWith(
-                                color: Colors.white, fontSize: 32)),
+                                color: kWhite, fontSize: 32)),
                         const SizedBox(height: 16),
                         Container(
                           height: 1,
@@ -138,7 +138,7 @@ class AboutUsPage extends StatelessWidget {
                     children: [
                       Text('Growth Over Time',
                           style: kSubHeadingB.copyWith(
-                              color: Colors.white, fontSize: 32)),
+                              color: kWhite, fontSize: 32)),
                       const SizedBox(height: 8),
                       Text(
                         'Explore the key moments that shaped IPA Into a thriving business community. From its founding vision to present-day milestones, our journey reflects growth, collaboration, and a commitment to empowering entrepreneurs across the globe.',
@@ -195,7 +195,7 @@ class AboutUsPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Board Members',
-                          style: kSubHeadingB.copyWith(color: Colors.white)),
+                          style: kSubHeadingB.copyWith(color: kWhite)),
                       const SizedBox(height: 16),
                       GridView.builder(
                         shrinkWrap: true,
@@ -235,12 +235,12 @@ class AboutUsPage extends StatelessWidget {
       children: [
         Text(
           value,
-          style: kLargeTitleB.copyWith(color: Colors.white, fontSize: 36),
+          style: kLargeTitleB.copyWith(color: kWhite, fontSize: 36),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: kSmallTitleSB.copyWith(color: Colors.white.withOpacity(0.8)),
+          style: kSmallTitleSB.copyWith(color: kWhite.withOpacity(0.8)),
         ),
         const SizedBox(height: 4),
         Text(
@@ -269,7 +269,7 @@ class AboutUsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(year, style: kSmallTitleR.copyWith(color: Colors.white)),
+            Text(year, style: kSmallTitleR.copyWith(color: kWhite)),
           ],
         ),
         const SizedBox(height: 12),
@@ -322,22 +322,22 @@ class AboutUsPage extends StatelessWidget {
               ),
             ],
           ),
-          clipBehavior: Clip.hardEdge, 
+          clipBehavior: Clip.hardEdge,
           child: Image.asset(
             photo,
-            fit: BoxFit.cover, 
+            fit: BoxFit.cover,
           ),
         ),
         const SizedBox(height: 10),
         Text(
           name,
-          style: kBodyTitleSB.copyWith(color: Colors.white),
+          style: kBodyTitleSB.copyWith(color: kWhite),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(
           designation,
-          style: kSmallerTitleR.copyWith(color: Colors.white.withOpacity(0.7)),
+          style: kSmallerTitleR.copyWith(color: kWhite.withOpacity(0.7)),
           textAlign: TextAlign.center,
         ),
       ],

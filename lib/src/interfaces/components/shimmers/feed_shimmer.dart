@@ -31,7 +31,7 @@ class FeedShimmer extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: kWhite,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -43,13 +43,13 @@ class FeedShimmer extends StatelessWidget {
                         Container(
                           width: 100,
                           height: 12,
-                          color: Colors.white,
+                          color: kWhite,
                         ),
                         const SizedBox(height: 6),
                         Container(
                           width: 60,
                           height: 10,
-                          color: Colors.white,
+                          color: kWhite,
                         ),
                       ],
                     ),
@@ -61,19 +61,19 @@ class FeedShimmer extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 14,
-                color: Colors.white,
+                color: kWhite,
               ),
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
                 height: 14,
-                color: Colors.white,
+                color: kWhite,
               ),
               const SizedBox(height: 8),
               Container(
                 width: MediaQuery.of(context).size.width * 0.6,
                 height: 14,
-                color: Colors.white,
+                color: kWhite,
               ),
               const SizedBox(height: 16),
               // Post image
@@ -81,7 +81,7 @@ class FeedShimmer extends StatelessWidget {
                 width: double.infinity,
                 height: 180,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: kWhite,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -89,13 +89,13 @@ class FeedShimmer extends StatelessWidget {
               // Action buttons row
               Row(
                 children: [
-                  Container(width: 30, height: 30, color: Colors.white),
+                  Container(width: 30, height: 30, color: kWhite),
                   const SizedBox(width: 24),
-                  Container(width: 30, height: 30, color: Colors.white),
+                  Container(width: 30, height: 30, color: kWhite),
                   const SizedBox(width: 24),
-                  Container(width: 30, height: 30, color: Colors.white),
+                  Container(width: 30, height: 30, color: kWhite),
                   const Spacer(),
-                  Container(width: 29, height: 29, color: Colors.white),
+                  Container(width: 29, height: 29, color: kWhite),
                 ],
               ),
               const SizedBox(height: 16),
@@ -106,7 +106,7 @@ class FeedShimmer extends StatelessWidget {
                     width: 32,
                     height: 32,
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: kWhite,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -114,7 +114,7 @@ class FeedShimmer extends StatelessWidget {
                   Container(
                     width: 120,
                     height: 14,
-                    color: Colors.white,
+                    color: kWhite,
                   ),
                 ],
               ),

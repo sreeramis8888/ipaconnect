@@ -479,7 +479,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           child: Text(
                             'Welcome to IPA Connect',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: kWhite,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.2,
@@ -519,7 +519,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               errorMessage,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: Colors.white,
+                                color: kWhite,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -528,7 +528,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                             TextButton(
                               onPressed: retryVersionCheck,
                               style: TextButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.2),
+                                backgroundColor: kWhite.withOpacity(0.2),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6),
                                 ),
@@ -536,7 +536,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                               child: Text(
                                 'Retry',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: kWhite,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),

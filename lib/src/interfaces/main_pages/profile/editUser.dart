@@ -1127,8 +1127,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     children: [
                                       Text('Activate Form',
                                           style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16)),
+                                              color: kWhite, fontSize: 16)),
                                       Switch(
                                         value: user.isFormActivated ?? true,
                                         onChanged: (val) {

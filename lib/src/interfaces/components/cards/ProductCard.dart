@@ -122,8 +122,8 @@ class ProductCard extends StatelessWidget {
                       size: 14,
                       showNumber: true,
                       color: Colors.amber,
-                      numberStyle: kSmallTitleR.copyWith(
-                          color: Colors.white, fontSize: 10),
+                      numberStyle:
+                          kSmallTitleR.copyWith(color: kWhite, fontSize: 10),
                     ),
                   ],
                 ),
@@ -151,7 +151,7 @@ class ProductCard extends StatelessWidget {
                     Text(
                       '₹${product.discountPrice.toStringAsFixed(0)}',
                       style: kBodyTitleB.copyWith(
-                        color: Colors.white,
+                        color: kWhite,
                         fontSize: 18,
                       ),
                     ),
@@ -160,8 +160,7 @@ class ProductCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 customButton(
                   label: 'View Details',
-                  icon:
-                      Icon(Icons.remove_red_eye, color: Colors.white, size: 18),
+                  icon: Icon(Icons.remove_red_eye, color: kWhite, size: 18),
                   onPressed: () {
                     Navigator.of(context).pushNamed(
                       'ProductDetails',

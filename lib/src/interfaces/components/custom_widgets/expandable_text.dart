@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
 
 class ExpandableText extends StatefulWidget {
@@ -27,7 +28,7 @@ class _ExpandableTextState extends State<ExpandableText> {
       if (match.start > start) {
         spans.add(TextSpan(
           text: text.substring(start, match.start),
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: kWhite),
         ));
       }
 
@@ -50,7 +51,7 @@ class _ExpandableTextState extends State<ExpandableText> {
     if (start < text.length) {
       spans.add(TextSpan(
         text: text.substring(start),
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: kWhite),
       ));
     }
 
@@ -59,7 +60,7 @@ class _ExpandableTextState extends State<ExpandableText> {
 
   @override
   Widget build(BuildContext context) {
-    final defaultTextStyle = const TextStyle(fontSize: 14, color: Colors.white);
+    final defaultTextStyle = const TextStyle(fontSize: 14, color: kWhite);
     final fullSpans = _buildTextSpans(widget.text);
 
     final TextPainter textPainter = TextPainter(

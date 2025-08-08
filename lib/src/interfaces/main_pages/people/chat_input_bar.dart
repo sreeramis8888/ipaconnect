@@ -88,7 +88,7 @@ class _ChatInputBarState extends State<ChatInputBar>
     required IconData icon,
     required Color backgroundColor,
     required VoidCallback onPressed,
-    Color iconColor = Colors.white,
+    Color iconColor = kWhite,
     double size = 48.0,
     Widget? customChild,
   }) {
@@ -175,7 +175,8 @@ class _ChatInputBarState extends State<ChatInputBar>
                                   fontSize: 16,
                                 ),
                                 maxLines: null,
-                                textCapitalization: TextCapitalization.sentences,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
                                 decoration: InputDecoration(
                                   hintText: 'Message',
                                   hintStyle: const TextStyle(
@@ -233,38 +234,42 @@ class _ChatInputBarState extends State<ChatInputBar>
                             onPressed: widget.onCamera,
                           ),
                           const SizedBox(width: 8),
-                           GestureDetector(
-                             onLongPress: () {
-                               // Start recording on long press
-                               if (!widget.isRecording) {
-                                 widget.onVoiceRecord();
-                               }
-                             },
-                             onLongPressEnd: (_) {
-                               // Stop recording when long press ends
-                               if (widget.isRecording) {
-                                 widget.onVoiceRecord();
-                               }
-                             },
-                             child: AnimatedBuilder(
-                               animation: _micScaleAnimation,
-                               builder: (context, child) {
-                                 return Transform.scale(
-                                   scale: widget.isRecording ? _micScaleAnimation.value : 1.0,
-                                   child: _buildActionButton(
-                                     icon: Icons.mic,
-                                     backgroundColor: widget.isRecording ? kRed : kPrimaryColor,
-                                     onPressed: () {
-                                       // Tap to start recording if not already recording
-                                       if (!widget.isRecording) {
-                                         widget.onVoiceRecord();
-                                       }
-                                     },
-                                   ),
-                                 );
-                               },
-                             ),
-                           ),
+                          GestureDetector(
+                            onLongPress: () {
+                              // Start recording on long press
+                              if (!widget.isRecording) {
+                                widget.onVoiceRecord();
+                              }
+                            },
+                            onLongPressEnd: (_) {
+                              // Stop recording when long press ends
+                              if (widget.isRecording) {
+                                widget.onVoiceRecord();
+                              }
+                            },
+                            child: AnimatedBuilder(
+                              animation: _micScaleAnimation,
+                              builder: (context, child) {
+                                return Transform.scale(
+                                  scale: widget.isRecording
+                                      ? _micScaleAnimation.value
+                                      : 1.0,
+                                  child: _buildActionButton(
+                                    icon: Icons.mic,
+                                    backgroundColor: widget.isRecording
+                                        ? kRed
+                                        : kPrimaryColor,
+                                    onPressed: () {
+                                      // Tap to start recording if not already recording
+                                      if (!widget.isRecording) {
+                                        widget.onVoiceRecord();
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                   ],
@@ -362,8 +367,6 @@ class _ChatInputBarState extends State<ChatInputBar>
             ],
           ),
         ),
-        
-
       ],
     );
   }

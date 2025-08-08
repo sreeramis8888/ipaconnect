@@ -146,8 +146,8 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                     height: 6,
                     decoration: BoxDecoration(
                       color: index == _currentIndex
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.3),
+                          ? kWhite
+                          : kWhite.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(3),
                     ),
                   );
@@ -195,7 +195,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                           color: kSecondaryTextColor, size: 14),
                       SizedBox(width: 6),
                       Text(
-                        product.user.name??'',
+                        product.user.name ?? '',
                         style: kBodyTitleR.copyWith(
                             color: kSecondaryTextColor, fontSize: 13),
                       ),
@@ -210,8 +210,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                     ),
                     child: Text(
                       widget.category ?? '',
-                      style: kBodyTitleR.copyWith(
-                          color: Colors.white, fontSize: 11),
+                      style: kBodyTitleR.copyWith(color: kWhite, fontSize: 11),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -230,7 +229,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                       Text(
                         '₹${product.discountPrice.toStringAsFixed(0)}',
                         style: kBodyTitleB.copyWith(
-                          color: Colors.white,
+                          color: kWhite,
                           fontSize: 16,
                         ),
                       ),
@@ -304,8 +303,8 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                             // Navigate to chat screen
                             Navigator.of(context).push(
                               MaterialPageRoute(
-
-                                builder: (context) => ChatScreen(userImage: product.user.image??'',
+                                builder: (context) => ChatScreen(
+                                  userImage: product.user.image ?? '',
                                   conversationId: conversation.id ?? '',
                                   chatTitle: product.user.name ?? '',
                                   userId: product.user.id ?? '',

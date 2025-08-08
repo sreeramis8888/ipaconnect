@@ -295,10 +295,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
           child: isLoading
               ? Row(
                   children: [
-                    SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: LoadingAnimation( )),
+                    SizedBox(width: 16, height: 16, child: LoadingAnimation()),
                     SizedBox(width: 8),
                     Text('Loading...'),
                   ],
@@ -743,7 +740,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.close,
-                                  color: Colors.white, size: 18),
+                                  color: kWhite, size: 18),
                             ),
                           ),
                         ],
@@ -774,7 +771,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.close,
-                                  color: Colors.white, size: 18),
+                                  color: kWhite, size: 18),
                             ),
                           ),
                         ],

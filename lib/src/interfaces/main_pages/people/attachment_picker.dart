@@ -54,7 +54,7 @@ class AttachmentPicker extends StatelessWidget {
           CircleAvatar(
             backgroundColor: color,
             radius: 28,
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: kWhite, size: 28),
           ),
           const SizedBox(height: 8),
           Text(label, style: kSmallTitleR),

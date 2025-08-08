@@ -549,7 +549,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     }
                   },
                   buttonColor: kStrokeColor,
-                  labelColor: Colors.white,
+                  labelColor: kWhite,
                 ),
                 // Speaker Section
                 const SizedBox(height: 20),
@@ -779,7 +779,7 @@ class _AddEventPageState extends State<AddEventPage> {
                               }
                             },
                       buttonColor: kPrimaryColor,
-                      labelColor: Colors.white,
+                      labelColor: kWhite,
                     );
                   },
                 )

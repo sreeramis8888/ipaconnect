@@ -17,14 +17,14 @@
 //         Container(
 //           color: Colors.black,
 //           child: const Center(
-//             child: Icon(Icons.camera_alt, color: Colors.white, size: 100),
+//             child: Icon(Icons.camera_alt, color: kWhite, size: 100),
 //           ),
 //         ),
 //         Positioned(
 //           top: 40,
 //           left: 20,
 //           child: IconButton(
-//             icon: const Icon(Icons.close, color: Colors.white, size: 32),
+//             icon: const Icon(Icons.close, color: kWhite, size: 32),
 //             onPressed: onClose,
 //           ),
 //         ),
@@ -40,7 +40,7 @@
 //                 height: 70,
 //                 decoration: BoxDecoration(
 //                   shape: BoxShape.circle,
-//                   border: Border.all(color: Colors.white, width: 6),
+//                   border: Border.all(color: kWhite, width: 6),
 //                 ),
 //               ),
 //             ),

@@ -127,7 +127,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     : null,
                                 child: _profileImage == null
                                     ? Icon(Icons.person,
-                                        size: 44, color: Colors.white)
+                                        size: 44, color: kWhite)
                                     : null,
                               ),
                             ),
@@ -141,7 +141,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 radius: 16,
                                 backgroundColor: Colors.black,
                                 child: Icon(Icons.camera_alt,
-                                    color: Colors.white, size: 18),
+                                    color: kWhite, size: 18),
                               ),
                             ),
                           ),

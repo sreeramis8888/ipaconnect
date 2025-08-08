@@ -64,7 +64,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
             Text(
               'Payment Successful',
               style: TextStyle(
-                color: Colors.white,
+                color: kWhite,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -84,7 +84,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: kWhite.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: kStrokeColor),
               ),
@@ -277,7 +277,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                                 ),
                                 icon: const Icon(
                                   Icons.share,
-                                  color: Colors.white,
+                                  color: kWhite,
                                   size: 15,
                                 ),
                               ),
@@ -299,7 +299,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                                 ),
                                 icon: const Icon(
                                   Icons.download,
-                                  color: Colors.white,
+                                  color: kWhite,
                                   size: 15,
                                 ),
                               ),
@@ -310,7 +310,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                       ],
                       const Text('Transaction Details',
                           style: TextStyle(
-                              color: Colors.white,
+                              color: kWhite,
                               fontWeight: FontWeight.bold,
                               fontSize: 16)),
                       const SizedBox(height: 10),
@@ -454,7 +454,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                   fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
           Text(value,
               style: TextStyle(
-                  color: Colors.white,
+                  color: kWhite,
                   fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
         ],
       ),

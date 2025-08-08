@@ -182,7 +182,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                               child: Text(
                                 company.category ?? '',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: kWhite,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -223,7 +223,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: kBodyTitleB.copyWith(
-                                  fontSize: 18, color: Colors.white),
+                                  fontSize: 18, color: kWhite),
                             ),
                             const SizedBox(height: 4),
                             // Status

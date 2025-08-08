@@ -6,6 +6,8 @@ import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
 import 'package:ipaconnect/src/data/utils/share_qr.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class DigitalCardPage extends StatelessWidget {
@@ -14,6 +16,17 @@ class DigitalCardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Prepare QR image bytes from base64 if available; tolerate any data URL prefix
+    Uint8List? qrBytes;
+    if (user.qrCode != null && user.qrCode!.isNotEmpty) {
+      try {
+        final String raw = user.qrCode!;
+        final String base64Part = raw.contains(',') ? raw.split(',').last : raw;
+        qrBytes = base64Decode(base64Part);
+      } catch (_) {
+        qrBytes = null;
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF030920),
@@ -129,26 +142,43 @@ class DigitalCardPage extends StatelessWidget {
                                     child: Center(
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: kWhite,
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
                                         padding: const EdgeInsets.all(16),
-                                        child: QrImageView(
-                                          data:
-                                              'https://admin.ipaconnect.org/user/${user.id}',
-                                          version: QrVersions.auto,
-                                          size: 170,
-                                          gapless: false,
-                                          foregroundColor: Colors.black,
-                                          backgroundColor: Colors.white,
-                                          errorStateBuilder: (cxt, err) =>
-                                              Center(
-                                            child: Text('QR Error',
-                                                style: TextStyle(
-                                                    color: Colors.red)),
-                                          ),
-                                        ),
+                                        child: qrBytes != null
+                                            ? Image.memory(
+                                                qrBytes,
+                                                width: 170,
+                                                height: 170,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Center(
+                                                  child: Text(
+                                                    'QR Error',
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                ),
+                                              )
+                                            : QrImageView(
+                                                data:
+                                                    'https://admin.ipaconnect.org/user/${user.id}',
+                                                version: QrVersions.auto,
+                                                size: 170,
+                                                gapless: false,
+                                                foregroundColor: Colors.black,
+                                                backgroundColor: kWhite,
+                                                errorStateBuilder: (cxt, err) =>
+                                                    Center(
+                                                  child: Text(
+                                                    'QR Error',
+                                                    style: TextStyle(
+                                                        color: Colors.red),
+                                                  ),
+                                                ),
+                                              ),
                                       ),
                                     ),
                                   ),
@@ -157,7 +187,7 @@ class DigitalCardPage extends StatelessWidget {
                                     child: Text(
                                       'Scan or click to preview',
                                       style: TextStyle(
-                                          color: Colors.white, fontSize: 14),
+                                          color: kWhite, fontSize: 14),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -275,15 +305,15 @@ class DigitalCardPage extends StatelessWidget {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              Icon(Icons.email, color: Colors.white, size: 18),
+                              Icon(Icons.email, color: kWhite, size: 18),
                               if (user.email != null && user.email != '')
                                 const SizedBox(width: 12),
                               if (user.email != null && user.email != '')
                                 Expanded(
                                   child: Text(
                                     user.email ?? '',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 12),
+                                    style:
+                                        TextStyle(color: kWhite, fontSize: 12),
                                   ),
                                 ),
                             ],
@@ -291,13 +321,12 @@ class DigitalCardPage extends StatelessWidget {
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              Icon(Icons.phone, color: Colors.white, size: 18),
+                              Icon(Icons.phone, color: kWhite, size: 18),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   user.phone ?? '',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 12),
+                                  style: TextStyle(color: kWhite, fontSize: 12),
                                 ),
                               ),
                             ],
@@ -309,13 +338,13 @@ class DigitalCardPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Icon(Icons.location_on,
-                                    color: Colors.white, size: 18),
+                                    color: kWhite, size: 18),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
                                     user.location ?? '',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 12),
+                                    style:
+                                        TextStyle(color: kWhite, fontSize: 12),
                                   ),
                                 ),
                               ],

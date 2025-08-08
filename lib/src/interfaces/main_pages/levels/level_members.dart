@@ -88,7 +88,6 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
           fontWeight: FontWeight.bold,
         ),
         iconTheme: IconThemeData(color: Colors.black),
-       
       ),
       body: RefreshIndicator(
         backgroundColor: kCardBackgroundColor,
@@ -188,19 +187,18 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-         Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateNotificationPage(
-                    hierarchyId: widget.hierarchyId,
-                    hierarchyName: widget.hierarchyName,
-                  ),
-                ),
-              );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateNotificationPage(
+                hierarchyId: widget.hierarchyId,
+                hierarchyName: widget.hierarchyName,
+              ),
+            ),
+          );
         },
         backgroundColor: kPrimaryColor,
-        child: const Icon(Icons.notifications_active_outlined,
-            color: Colors.white),
+        child: const Icon(Icons.notifications_active_outlined, color: kWhite),
       ),
     );
   }

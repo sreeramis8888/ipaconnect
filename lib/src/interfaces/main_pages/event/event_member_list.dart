@@ -14,7 +14,7 @@ class EventMemberList extends StatelessWidget {
         length: 2, // Number of tabs
 
         child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             body: SafeArea(
               child: Column(
                 children: [

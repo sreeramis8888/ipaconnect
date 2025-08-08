@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 
 class BoardDirector {
   final String name;
@@ -105,7 +106,7 @@ class _BoardOfDirectorsCarouselState extends State<BoardOfDirectorsCarousel>
                   const Text(
                     'Bord of Directors',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: kWhite,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -207,7 +208,7 @@ class _BoardOfDirectorsCarouselState extends State<BoardOfDirectorsCarousel>
                     Text(
                       '${directors[_currentIndex].name} (${directors[_currentIndex].title})',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: kWhite,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -217,7 +218,7 @@ class _BoardOfDirectorsCarouselState extends State<BoardOfDirectorsCarousel>
                     Text(
                       directors[_currentIndex].company,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: kWhite.withOpacity(0.7),
                         fontSize: 13,
                       ),
                       textAlign: TextAlign.center,
@@ -239,8 +240,8 @@ class _BoardOfDirectorsCarouselState extends State<BoardOfDirectorsCarousel>
                     height: 6,
                     decoration: BoxDecoration(
                       color: index == _currentIndex
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.3),
+                          ? kWhite
+                          : kWhite.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(3),
                     ),
                   );
@@ -270,7 +271,7 @@ class _BoardOfDirectorsCarouselState extends State<BoardOfDirectorsCarousel>
           end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: Colors.white.withOpacity(isCenter ? 0.8 : 0.3),
+          color: kWhite.withOpacity(isCenter ? 0.8 : 0.3),
           width: isCenter ? 3 : 1.5,
         ),
         boxShadow: isCenter
@@ -292,7 +293,7 @@ class _BoardOfDirectorsCarouselState extends State<BoardOfDirectorsCarousel>
               color: director.backgroundColor,
               child: Icon(
                 Icons.person,
-                color: Colors.white,
+                color: kWhite,
                 size: size * 0.35,
               ),
             );

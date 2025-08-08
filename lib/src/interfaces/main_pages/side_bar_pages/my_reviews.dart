@@ -97,7 +97,7 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
                     child: Text(
                       type,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : kSecondaryTextColor,
+                        color: isSelected ? kWhite : kSecondaryTextColor,
                         fontWeight:
                             isSelected ? FontWeight.bold : FontWeight.w600,
                         fontSize: 14,

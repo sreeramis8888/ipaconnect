@@ -176,7 +176,7 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFEB5757),
-                foregroundColor: Colors.white,
+                foregroundColor: kWhite,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
@@ -187,7 +187,7 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
               child: const Text(
                 'DELETE',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: kWhite,
                   fontSize: 12,
                 ),
               ),
@@ -244,7 +244,7 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
                           Navigator.of(context).pop();
                         },
                         child: Text('Yes, Delete',
-                            style: TextStyle(color: Colors.white)),
+                            style: TextStyle(color: kWhite)),
                       );
                     },
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 
 class AnimatedSvgLogo extends StatefulWidget {
   final String assetPath;
@@ -214,7 +215,6 @@ class _AnimatedSvgLogoState extends State<AnimatedSvgLogo>
   }
 }
 
-
 class AnimatedSvgLogoPresets {
   static Widget subtle({
     required String assetPath,
@@ -233,7 +233,6 @@ class AnimatedSvgLogoPresets {
       colorFilter: colorFilter,
     );
   }
-
 
   static Widget floating({
     required String assetPath,
@@ -334,7 +333,7 @@ class SvgLogoShowcase extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: kWhite,
               ),
             ),
             const SizedBox(height: 20),
@@ -351,7 +350,7 @@ class SvgLogoShowcase extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: kWhite,
               ),
             ),
             const SizedBox(height: 20),
@@ -368,7 +367,7 @@ class SvgLogoShowcase extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: kWhite,
               ),
             ),
             const SizedBox(height: 20),
@@ -392,7 +391,7 @@ class SvgLogoShowcase extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: kWhite,
               ),
             ),
             const SizedBox(height: 20),

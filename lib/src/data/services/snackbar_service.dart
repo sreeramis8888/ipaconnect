@@ -21,7 +21,7 @@ class SnackbarService {
     };
 
     final Color bgColor = backgroundColor ?? typeColors[type]!;
-    final Color iconColor = Colors.white;
+    final Color iconColor = kWhite;
 
     final snackBar = SnackBar(
       content: Container(
@@ -68,7 +68,7 @@ class SnackbarService {
   // Widget _iconBox(IconData icon, Color color) => Container(
   //       padding: EdgeInsets.all(8),
   //       decoration: BoxDecoration(
-  //         color: Colors.white.withOpacity(0.2),
+  //         color: kWhite.withOpacity(0.2),
   //         borderRadius: BorderRadius.circular(12),
   //       ),
   //       child: Icon( icon, color: color, size: 24),
@@ -77,7 +77,7 @@ class SnackbarService {
   Widget _messageText(String message) => Text(
         message,
         style: TextStyle(
-          color: Colors.white,
+          color: kWhite,
           fontSize: 16,
           fontWeight: FontWeight.w600,
           height: 1.4,
@@ -87,13 +87,13 @@ class SnackbarService {
   Widget _okButton() => Container(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: kWhite.withOpacity(0.2),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           'OK',
           style: TextStyle(
-            color: Colors.white,
+            color: kWhite,
             fontSize: 12,
             fontWeight: FontWeight.w700,
           ),

@@ -166,13 +166,13 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                                         widget.event.status!.toUpperCase(),
                                         style: const TextStyle(
                                           fontSize: 12,
-                                          color: Colors.white,
+                                          color: kWhite,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       const SizedBox(width: 4),
                                       const Icon(Icons.circle,
-                                          color: Colors.white, size: 8),
+                                          color: kWhite, size: 8),
                                     ],
                                   ),
                                 ),
@@ -278,7 +278,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                                 horizontal: 16, vertical: 8),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: kWhite,
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
@@ -646,7 +646,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
+      color: kWhite,
       child: child,
     );
   }
