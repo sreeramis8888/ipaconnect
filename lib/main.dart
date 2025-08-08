@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,7 +15,8 @@ import 'package:ipaconnect/src/data/services/notification_service/notification_s
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/router/router.dart' as router;
-import 'package:ipaconnect/src/data/utils/connectivity_wrapper.dart';
+
+import 'package:ipaconnect/src/data/services/crashlytics_service.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -22,6 +26,15 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+  
+  // Enable Crashlytics collection (disable in debug mode if needed)
+  await CrashlyticsService.setCrashlyticsCollectionEnabled(true);
+  
   await loadSecureData();
   await dotenv.load(fileName: ".env");
   FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);

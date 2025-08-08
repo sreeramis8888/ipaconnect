@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:ipaconnect/src/data/utils/globals.dart';
+import 'package:ipaconnect/src/data/services/crashlytics_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'api_service.g.dart';
@@ -64,7 +65,10 @@ class ApiService {
         final message = decoded['message'] ?? 'Failed to load data';
         return ApiResponse.error(message, response.statusCode);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      await CrashlyticsService.logError(e, stackTrace);
+      await CrashlyticsService.setCustomKey('api_endpoint', endpoint);
+      await CrashlyticsService.setCustomKey('api_method', 'GET');
       return ApiResponse.error('Failed to connect to the server: $e');
     }
   }
@@ -93,7 +97,11 @@ class ApiService {
         final message = decoded['message'] ?? 'Failed to post data';
         return ApiResponse.error(message, response.statusCode);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error to Crashlytics
+      await CrashlyticsService.logError(e, stackTrace);
+      await CrashlyticsService.setCustomKey('api_endpoint', endpoint);
+      await CrashlyticsService.setCustomKey('api_method', 'POST');
       return ApiResponse.error('Failed to connect to the server: $e');
     }
   }
@@ -123,7 +131,11 @@ class ApiService {
         final message = decoded['message'] ?? 'Failed to patch data';
         return ApiResponse.error(message, response.statusCode);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error to Crashlytics
+      await CrashlyticsService.logError(e, stackTrace);
+      await CrashlyticsService.setCustomKey('api_endpoint', endpoint);
+      await CrashlyticsService.setCustomKey('api_method', 'PATCH');
       return ApiResponse.error('Failed to connect to the server: $e');
     }
   }
@@ -152,7 +164,11 @@ class ApiService {
         final message = decoded['message'] ?? 'Failed to put data';
         return ApiResponse.error(message, response.statusCode);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error to Crashlytics
+      await CrashlyticsService.logError(e, stackTrace);
+      await CrashlyticsService.setCustomKey('api_endpoint', endpoint);
+      await CrashlyticsService.setCustomKey('api_method', 'PUT');
       return ApiResponse.error('Failed to connect to the server: $e');
     }
   }
@@ -176,7 +192,11 @@ class ApiService {
         final message = decoded['message'] ?? 'Failed to delete data';
         return ApiResponse.error(message, response.statusCode);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // Log error to Crashlytics
+      await CrashlyticsService.logError(e, stackTrace);
+      await CrashlyticsService.setCustomKey('api_endpoint', endpoint);
+      await CrashlyticsService.setCustomKey('api_method', 'DELETE');
       return ApiResponse.error('Failed to connect to the server: $e');
     }
   }

@@ -117,7 +117,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: asyncHomeData.when(
                   data: (homeData) {
                     if (homeData == null) {
-                      return const Center(child: Text('No home data available'));
+                      return const Center(
+                          child: Text('No home data available'));
                     }
                     final banners = homeData.banners;
                     final notices = homeData.notices;
@@ -128,7 +129,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     final campaign = homeData.campaign;
                     final filteredVideos = videos
                         .where((video) =>
-                            video.link != null && video.link!.startsWith('http'))
+                            video.link != null &&
+                            video.link!.startsWith('http'))
                         .toList();
                     return SafeArea(
                       child: Scaffold(
@@ -161,8 +163,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             children: [
                                               Consumer(
                                                 builder: (context, ref, _) {
-                                                  final asyncNotification = ref.watch(
-                                                      fetchNotificationsProvider);
+                                                  final asyncNotification =
+                                                      ref.watch(
+                                                          fetchNotificationsProvider);
                                                   return asyncNotification.when(
                                                     data: (notifications) {
                                                       final notificationCount =
@@ -171,10 +174,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                         children: [
                                                           CustomRoundButton(
                                                             onTap: () async {
-                                                              navigationService.pushNamed(
-                                                                  'NotificationPage',
-                                                                  arguments:
-                                                                      notifications);
+                                                              navigationService
+                                                                  .pushNamed(
+                                                                      'NotificationPage',
+                                                                      arguments:
+                                                                          notifications);
                                                               ref.invalidate(
                                                                   fetchNotificationsProvider);
                                                             },
@@ -233,8 +237,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                         ),
                                                       ],
                                                     ),
-                                                    error: (error, stackTrace) =>
-                                                        CustomRoundButton(
+                                                    error:
+                                                        (error, stackTrace) =>
+                                                            CustomRoundButton(
                                                       onTap: () async {
                                                         navigationService
                                                             .pushNamed(
@@ -269,7 +274,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     Padding(
                                       padding: const EdgeInsets.only(
                                           left: 16, top: 10, right: 16),
-                                      child: Text('Welcome, ${widget.user.name} ',
+                                      child: Text(
+                                          'Welcome, ${widget.user.name} ',
                                           style: kLargeTitleB.copyWith(
                                               color: kTextColor)),
                                     ),
@@ -301,7 +307,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                   banner: banner);
                                             }).toList(),
                                             options: CarouselOptions(
-                                              height: 180,
+                                              height: 175,
                                               scrollPhysics: banners.length > 1
                                                   ? null
                                                   : const NeverScrollableScrollPhysics(),
@@ -370,8 +376,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 label: 'Store',
                                                 onTap: () {
                                                   Navigator.pushNamed(
-                                                      arguments:
-                                                          widget.user.countryCode,
+                                                      arguments: widget
+                                                          .user.countryCode,
                                                       context,
                                                       'StorePage');
                                                 },
@@ -393,7 +399,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                     ),
                                     const SizedBox(height: 16),
-      
+
                                     if (event != null)
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -404,12 +410,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           children: [
                                             Row(
                                               children: [
-                                                Text('Event', style: kBodyTitleB),
+                                                Text('Event',
+                                                    style: kBodyTitleB),
                                                 const Spacer(),
                                                 InkWell(
                                                   onTap: () {
-                                                    navigationService
-                                                        .pushNamed('EventsPage');
+                                                    navigationService.pushNamed(
+                                                        'EventsPage');
                                                   },
                                                   child: Text('View All',
                                                       style:
@@ -433,7 +440,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           ],
                                         ),
                                       ),
-      
+
                                     const SizedBox(height: 16),
                                     if (notices.isNotEmpty)
                                       Column(
@@ -487,7 +494,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                   .map((entry) {
                                                 int index = entry.key;
                                                 Promotion poster = entry.value;
-      
+
                                                 return KeyedSubtree(
                                                   key: ValueKey(index),
                                                   child: customPoster(
@@ -496,8 +503,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 );
                                               }).toList(),
                                               options: CarouselOptions(
-                                                height: 370,
-                                                scrollPhysics: posters.length > 1
+                                                height: 470,
+                                                scrollPhysics: posters.length >
+                                                        1
                                                     ? null
                                                     : const NeverScrollableScrollPhysics(),
                                                 autoPlay: posters.length > 1,
@@ -529,8 +537,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 const Spacer(),
                                                 InkWell(
                                                   onTap: () => ref
-                                                      .read(selectedIndexProvider
-                                                          .notifier)
+                                                      .read(
+                                                          selectedIndexProvider
+                                                              .notifier)
                                                       .updateIndex(3),
                                                   child: Text('see all',
                                                       style: kSmallTitleL),
@@ -549,14 +558,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 final individualNewsModel =
                                                     news[index];
                                                 return Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                          horizontal: 8.0),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 8.0),
                                                   child: SizedBox(
-                                                    width: MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        0.45,
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.45,
                                                     child: newsCard(
                                                       onTap: () {
                                                         ref
@@ -664,8 +674,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             ),
                                           ),
                                           if (videos.length > 1)
-                                            _buildDotIndicator(_currentVideoIndex,
-                                                filteredVideos.length, kWhite),
+                                            _buildDotIndicator(
+                                                _currentVideoIndex,
+                                                filteredVideos.length,
+                                                kWhite),
                                         ],
                                       ),
                                     const SizedBox(
@@ -684,7 +696,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     child: Scaffold(
                       backgroundColor: kBackgroundColor,
                       body: Container(
-                        decoration: const BoxDecoration(color: kBackgroundColor),
+                        decoration:
+                            const BoxDecoration(color: kBackgroundColor),
                         child: SingleChildScrollView(
                           child: buildShimmerPromotionsColumn(context: context),
                         ),
@@ -813,9 +826,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 Widget _buildBanners(
     {required BuildContext context, required Promotion banner}) {
   return Container(
-    width: MediaQuery.sizeOf(context).width / 1.15,
+    width: MediaQuery.sizeOf(context).width,
     child: AspectRatio(
-      aspectRatio: 20 / 11,
+      aspectRatio: 2 / 1,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -879,7 +892,7 @@ Widget customPoster({
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: AspectRatio(
-            aspectRatio: 19 / 20,
+            aspectRatio: 3 / 4,
             child: Image.network(
               poster.media ?? '',
               fit: BoxFit.cover,
