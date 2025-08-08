@@ -65,7 +65,7 @@ class JobProfileCard extends StatelessWidget {
 
           const SizedBox(height: 4),
           Text(profile.designation ?? 'Developer',
-              style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+              style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
 
           const SizedBox(height: 12),
           if (profile.experience != null)

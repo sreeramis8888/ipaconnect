@@ -192,14 +192,14 @@ class ModalSheetTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: kSmallTitleR,
+      style: kSmallTitleL,
       keyboardType: textInputType,
       maxLength: isAward ? 15 : null,
       controller: textController,
       maxLines: maxLines,
       validator: validator,
       decoration: InputDecoration(
-        hintStyle: kSmallTitleR,
+        hintStyle: kSmallTitleL,
         fillColor: kStrokeColor,
         filled: true,
         hintText: label,

@@ -89,10 +89,8 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                       color: kSecondaryTextColor,
                     ),
                     hintText: 'Search Categories',
-                    hintStyle: kBodyTitleR.copyWith(
-                      fontSize: 14,
-                      color: kSecondaryTextColor,
-                    ),
+                    hintStyle:
+                        kSmallTitleL.copyWith(color: kSecondaryTextColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                       borderSide: BorderSide.none,
@@ -110,7 +108,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                     child: Center(
                       child: Text(
                         'No Categories yet',
-                        style: kSmallTitleR,
+                        style: kSmallTitleL,
                       ),
                     ),
                   )
@@ -119,7 +117,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: GridView.builder(
                         controller: _scrollController,
-                        padding: const EdgeInsets.only(bottom: 32,top: 20),
+                        padding: const EdgeInsets.only(bottom: 32, top: 20),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
@@ -130,7 +128,9 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                         itemCount: categories.length + (isLoading ? 2 : 0),
                         itemBuilder: (context, index) {
                           // Show loading indicators if loading
-                          if (isLoading && index >= categories.length && index < categories.length + 2) {
+                          if (isLoading &&
+                              index >= categories.length &&
+                              index < categories.length + 2) {
                             return const Center(
                               child: Padding(
                                 padding: EdgeInsets.all(16.0),
@@ -143,8 +143,10 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                             final category = categories[index];
                             return GestureDetector(
                               onTap: () {
-                                NavigationService navigationService = NavigationService();
-                                navigationService.pushNamed('CategoryPage', arguments: category);
+                                NavigationService navigationService =
+                                    NavigationService();
+                                navigationService.pushNamed('CategoryPage',
+                                    arguments: category);
                               },
                               child: CategoryCard(
                                 title: category.name,

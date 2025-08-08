@@ -846,6 +846,7 @@ class _CoordinatorSelectDialogState
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
                   hintText: 'Search Members',
+                  hintStyle: kSmallTitleL.copyWith(color: kSecondaryTextColor),
                   prefixIcon: Icon(Icons.search),
                   filled: true,
                   fillColor: kWhite,

@@ -9,6 +9,7 @@ import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
+import 'package:ipaconnect/src/data/utils/white_status_bar.dart';
 
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
@@ -93,620 +94,622 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     NavigationService navigationService = NavigationService();
-    return Consumer(
-      builder: (context, ref, child) {
-        final asyncHomeData = ref.watch(homeDataProvider);
-        return RefreshIndicator(
-          backgroundColor: kCardBackgroundColor,
-          color: kPrimaryColor,
-          onRefresh: () async {
-            ref.invalidate(homeDataProvider);
-          },
-          child: AdvancedDrawer(
-            backdropColor: kBackgroundColor,
-            controller: _advancedDrawerController,
-            rtlOpening: true,
-            drawer: CustomAdvancedDrawerMenu(
-              user: widget.user,
-              parentContext: context,
-            ),
-            child: GestureDetector(
-              onHorizontalDragStart: (_) {},
-              child: asyncHomeData.when(
-                data: (homeData) {
-                  if (homeData == null) {
-                    return const Center(child: Text('No home data available'));
-                  }
-                  final banners = homeData.banners;
-                  final notices = homeData.notices;
-                  final posters = homeData.posters;
-                  final videos = homeData.videos;
-                  final event = homeData.event;
-                  final news = homeData.news;
-                  final campaign = homeData.campaign;
-                  final filteredVideos = videos
-                      .where((video) =>
-                          video.link != null && video.link!.startsWith('http'))
-                      .toList();
-                  return SafeArea(
-                    child: Scaffold(
-                      backgroundColor: kBackgroundColor,
-                      body: Container(
-                        decoration:
-                            const BoxDecoration(color: kBackgroundColor),
-                        child: Stack(
-                          children: [
-                            SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.only(left: 16),
-                                    height: 45.0,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        InkWell(
-                                            onTap: () {},
-                                            child: SizedBox(
-                                              width: 80,
-                                              height: 80,
-                                              child: SvgPicture.asset(
-                                                  'assets/svg/ipaconnect_logo.svg'),
-                                            )),
-                                        Row(
-                                          children: [
-                                            Consumer(
-                                              builder: (context, ref, _) {
-                                                final asyncNotification = ref.watch(
-                                                    fetchNotificationsProvider);
-                                                return asyncNotification.when(
-                                                  data: (notifications) {
-                                                    final notificationCount =
-                                                        notifications.length;
-                                                    return Stack(
-                                                      children: [
-                                                        CustomRoundButton(
-                                                          onTap: () async {
-                                                            navigationService.pushNamed(
-                                                                'NotificationPage',
-                                                                arguments:
-                                                                    notifications);
-                                                            ref.invalidate(
-                                                                fetchNotificationsProvider);
-                                                          },
-                                                          iconPath:
-                                                              'assets/svg/icons/notification_icon.svg',
-                                                        ),
-                                                        if (notificationCount >
-                                                            0)
-                                                          Positioned(
-                                                            right: 0,
-                                                            top: 0,
-                                                            child: Container(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(4),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                color: kRed,
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                              ),
-                                                              constraints:
-                                                                  const BoxConstraints(
-                                                                minWidth: 10,
-                                                                minHeight: 10,
-                                                              ),
-                                                              child: Center(
-                                                                child: Text(
-                                                                  notificationCount
-                                                                      .toString(),
-                                                                  style: kSmallTitleB
-                                                                      .copyWith(
-                                                                    color:
-                                                                        kWhite,
-                                                                    fontSize:
-                                                                        10,
+    return WhiteStatusBar(
+      child: Consumer(
+        builder: (context, ref, child) {
+          final asyncHomeData = ref.watch(homeDataProvider);
+          return RefreshIndicator(
+            backgroundColor: kCardBackgroundColor,
+            color: kPrimaryColor,
+            onRefresh: () async {
+              ref.invalidate(homeDataProvider);
+            },
+            child: AdvancedDrawer(
+              backdropColor: kBackgroundColor,
+              controller: _advancedDrawerController,
+              rtlOpening: true,
+              drawer: CustomAdvancedDrawerMenu(
+                user: widget.user,
+                parentContext: context,
+              ),
+              child: GestureDetector(
+                onHorizontalDragStart: (_) {},
+                child: asyncHomeData.when(
+                  data: (homeData) {
+                    if (homeData == null) {
+                      return const Center(child: Text('No home data available'));
+                    }
+                    final banners = homeData.banners;
+                    final notices = homeData.notices;
+                    final posters = homeData.posters;
+                    final videos = homeData.videos;
+                    final event = homeData.event;
+                    final news = homeData.news;
+                    final campaign = homeData.campaign;
+                    final filteredVideos = videos
+                        .where((video) =>
+                            video.link != null && video.link!.startsWith('http'))
+                        .toList();
+                    return SafeArea(
+                      child: Scaffold(
+                        backgroundColor: kBackgroundColor,
+                        body: Container(
+                          decoration:
+                              const BoxDecoration(color: kBackgroundColor),
+                          child: Stack(
+                            children: [
+                              SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.only(left: 16),
+                                      height: 45.0,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          InkWell(
+                                              onTap: () {},
+                                              child: SizedBox(
+                                                width: 80,
+                                                height: 80,
+                                                child: SvgPicture.asset(
+                                                    'assets/svg/ipaconnect_logo.svg'),
+                                              )),
+                                          Row(
+                                            children: [
+                                              Consumer(
+                                                builder: (context, ref, _) {
+                                                  final asyncNotification = ref.watch(
+                                                      fetchNotificationsProvider);
+                                                  return asyncNotification.when(
+                                                    data: (notifications) {
+                                                      final notificationCount =
+                                                          notifications.length;
+                                                      return Stack(
+                                                        children: [
+                                                          CustomRoundButton(
+                                                            onTap: () async {
+                                                              navigationService.pushNamed(
+                                                                  'NotificationPage',
+                                                                  arguments:
+                                                                      notifications);
+                                                              ref.invalidate(
+                                                                  fetchNotificationsProvider);
+                                                            },
+                                                            iconPath:
+                                                                'assets/svg/icons/notification_icon.svg',
+                                                          ),
+                                                          if (notificationCount >
+                                                              0)
+                                                            Positioned(
+                                                              right: 0,
+                                                              top: 0,
+                                                              child: Container(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(4),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: kRed,
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                ),
+                                                                constraints:
+                                                                    const BoxConstraints(
+                                                                  minWidth: 10,
+                                                                  minHeight: 10,
+                                                                ),
+                                                                child: Center(
+                                                                  child: Text(
+                                                                    notificationCount
+                                                                        .toString(),
+                                                                    style: kSmallTitleB
+                                                                        .copyWith(
+                                                                      color:
+                                                                          kWhite,
+                                                                      fontSize:
+                                                                          10,
+                                                                    ),
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
-                                                          ),
-                                                      ],
-                                                    );
-                                                  },
-                                                  loading: () => Stack(
-                                                    children: [
-                                                      CustomRoundButton(
-                                                        onTap: () async {
-                                                          navigationService
-                                                              .pushNamed(
-                                                                  'NotificationPage',
-                                                                  arguments: []);
-                                                        },
-                                                        iconPath:
-                                                            'assets/svg/icons/notification_icon.svg',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  error: (error, stackTrace) =>
-                                                      CustomRoundButton(
-                                                    onTap: () async {
-                                                      navigationService
-                                                          .pushNamed(
-                                                              'NotificationPage',
-                                                              arguments: []);
+                                                        ],
+                                                      );
                                                     },
-                                                    iconPath:
-                                                        'assets/svg/icons/notification_icon.svg',
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            CustomRoundButton(
-                                                onTap: () {
-                                                  _advancedDrawerController
-                                                      .showDrawer();
+                                                    loading: () => Stack(
+                                                      children: [
+                                                        CustomRoundButton(
+                                                          onTap: () async {
+                                                            navigationService
+                                                                .pushNamed(
+                                                                    'NotificationPage',
+                                                                    arguments: []);
+                                                          },
+                                                          iconPath:
+                                                              'assets/svg/icons/notification_icon.svg',
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    error: (error, stackTrace) =>
+                                                        CustomRoundButton(
+                                                      onTap: () async {
+                                                        navigationService
+                                                            .pushNamed(
+                                                                'NotificationPage',
+                                                                arguments: []);
+                                                      },
+                                                      iconPath:
+                                                          'assets/svg/icons/notification_icon.svg',
+                                                    ),
+                                                  );
                                                 },
-                                                iconPath:
-                                                    'assets/svg/icons/menu_icon.svg'),
-                                            SizedBox(
-                                              width: 10,
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16, top: 10, right: 16),
-                                    child: Text('Welcome, ${widget.user.name} ',
-                                        style: kLargeTitleB.copyWith(
-                                            color: kTextColor)),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16,
-                                        right: 16,
-                                        top: 10,
-                                        bottom: 20),
-                                    child: Row(
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            style: kSmallerTitleR.copyWith(
-                                                color: kTextColor),
-                                            'Here\'s to growing your family story, one branch at a time.',
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  if (banners.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        CarouselSlider(
-                                          items: banners.map((banner) {
-                                            return _buildBanners(
-                                                context: context,
-                                                banner: banner);
-                                          }).toList(),
-                                          options: CarouselOptions(
-                                            height: 180,
-                                            scrollPhysics: banners.length > 1
-                                                ? null
-                                                : const NeverScrollableScrollPhysics(),
-                                            autoPlay: banners.length > 1
-                                                ? true
-                                                : false,
-                                            viewportFraction: 1,
-                                            autoPlayInterval:
-                                                const Duration(seconds: 5),
-                                            onPageChanged: (index, reason) {
-                                              setState(() {
-                                                _currentBannerIndex = index;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                      ],
-                                    ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 16, top: 10),
-                                        child: Text('Quick Actions',
-                                            style: kBodyTitleB.copyWith(
-                                                color: kTextColor)),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16, right: 16, top: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        CustomIconContainer(
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                  arguments:
-                                                      widget.user.countryCode,
-                                                  context,
-                                                  'CampaignsMainScreen');
-                                            },
-                                            label: 'CSR',
-                                            icon: SvgPicture.asset(
-                                                color: kWhite,
-                                                'assets/svg/icons/csr_icon.svg')),
-                                        CustomIconContainer(
-                                            onTap: () {
-                                              Navigator.pushNamed(
-                                                  arguments:
-                                                      widget.user.countryCode,
-                                                  context,
-                                                  'EventsPage');
-                                            },
-                                            label: 'Events',
-                                            icon: SvgPicture.asset(
-                                                color: kWhite,
-                                                'assets/svg/icons/event_icon.svg')),
-                                        if (widget.user.phone !=
-                                            '+919645398555')
-                                          CustomIconContainer(
-                                              label: 'Store',
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'StorePage');
-                                              },
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/card_icon.svg')),
-                                        CustomIconContainer(
-                                            onTap: () {
-                                              ref
-                                                  .read(selectedIndexProvider
-                                                      .notifier)
-                                                  .updateIndex(1);
-                                            },
-                                            label: 'Bussiness',
-                                            icon: SvgPicture.asset(
-                                                color: kWhite,
-                                                'assets/svg/icons/offer_icon.svg')),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-
-                                  if (event != null)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text('Event', style: kBodyTitleB),
-                                              const Spacer(),
-                                              InkWell(
-                                                onTap: () {
-                                                  navigationService
-                                                      .pushNamed('EventsPage');
-                                                },
-                                                child: Text('View All',
-                                                    style:
-                                                        kSmallTitleR.copyWith(
-                                                            color:
-                                                                kPrimaryColor)),
                                               ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              CustomRoundButton(
+                                                  onTap: () {
+                                                    _advancedDrawerController
+                                                        .showDrawer();
+                                                  },
+                                                  iconPath:
+                                                      'assets/svg/icons/menu_icon.svg'),
+                                              SizedBox(
+                                                width: 10,
+                                              )
                                             ],
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              navigationService.pushNamed(
-                                                  'EventDetails',
-                                                  arguments: event);
-                                            },
-                                            child: eventWidget(
-                                              context: context,
-                                              event: event,
-                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-
-                                  const SizedBox(height: 16),
-                                  if (notices.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        CarouselSlider(
-                                          items: notices.map((notice) {
-                                            return customNotice(
-                                                context: context,
-                                                notice: notice);
-                                          }).toList(),
-                                          options: CarouselOptions(
-                                            scrollPhysics: notices.length > 1
-                                                ? null
-                                                : const NeverScrollableScrollPhysics(),
-                                            autoPlay: notices.length > 1
-                                                ? true
-                                                : false,
-                                            viewportFraction: 1,
-                                            height: _calculateDynamicHeight(
-                                                notices),
-                                            autoPlayInterval:
-                                                const Duration(seconds: 3),
-                                            onPageChanged: (index, reason) {
-                                              setState(() {
-                                                _currentNoticeIndex = index;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        if (notices.isNotEmpty)
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                        if (notices.length > 1)
-                                          _buildDotIndicator(
-                                              _currentNoticeIndex,
-                                              notices.length,
-                                              const Color.fromARGB(
-                                                  255, 39, 38, 38)),
-                                      ],
-                                    ),
-                                  if (posters.isNotEmpty)
+                                    const SizedBox(height: 20),
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 20),
-                                      child: Column(
+                                      padding: const EdgeInsets.only(
+                                          left: 16, top: 10, right: 16),
+                                      child: Text('Welcome, ${widget.user.name} ',
+                                          style: kLargeTitleB.copyWith(
+                                              color: kTextColor)),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 16,
+                                          right: 16,
+                                          top: 10,
+                                          bottom: 20),
+                                      child: Row(
                                         children: [
-                                          CarouselSlider(
-                                            items: posters
-                                                .asMap()
-                                                .entries
-                                                .map((entry) {
-                                              int index = entry.key;
-                                              Promotion poster = entry.value;
-
-                                              return KeyedSubtree(
-                                                key: ValueKey(index),
-                                                child: customPoster(
-                                                    context: context,
-                                                    poster: poster),
-                                              );
-                                            }).toList(),
-                                            options: CarouselOptions(
-                                              height: 370,
-                                              scrollPhysics: posters.length > 1
-                                                  ? null
-                                                  : const NeverScrollableScrollPhysics(),
-                                              autoPlay: posters.length > 1,
-                                              viewportFraction: 1,
-                                              autoPlayInterval:
-                                                  const Duration(seconds: 5),
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _currentPosterIndex = index;
-                                                });
-                                              },
+                                          Flexible(
+                                            child: Text(
+                                              style: kSmallerTitleR.copyWith(
+                                                  color: kTextColor),
+                                              'Here\'s to growing your family story, one branch at a time.',
                                             ),
                                           )
                                         ],
                                       ),
                                     ),
-                                  if (news.isNotEmpty)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                    if (banners.isNotEmpty)
+                                      Column(
+                                        children: [
+                                          CarouselSlider(
+                                            items: banners.map((banner) {
+                                              return _buildBanners(
+                                                  context: context,
+                                                  banner: banner);
+                                            }).toList(),
+                                            options: CarouselOptions(
+                                              height: 180,
+                                              scrollPhysics: banners.length > 1
+                                                  ? null
+                                                  : const NeverScrollableScrollPhysics(),
+                                              autoPlay: banners.length > 1
+                                                  ? true
+                                                  : false,
+                                              viewportFraction: 1,
+                                              autoPlayInterval:
+                                                  const Duration(seconds: 5),
+                                              onPageChanged: (index, reason) {
+                                                setState(() {
+                                                  _currentBannerIndex = index;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                        ],
+                                      ),
+                                    Row(
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              left: 15, top: 24, right: 15),
-                                          child: Row(
-                                            children: [
-                                              Text('Latest News',
-                                                  style: kBodyTitleB),
-                                              const Spacer(),
-                                              InkWell(
-                                                onTap: () => ref
-                                                    .read(selectedIndexProvider
-                                                        .notifier)
-                                                    .updateIndex(3),
-                                                child: Text('see all',
-                                                    style: kSmallTitleR),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        SizedBox(
-                                          height: 180,
-                                          child: ListView.builder(
-                                            controller: ScrollController(),
-                                            scrollDirection: Axis.horizontal,
-                                            itemCount: news.length,
-                                            itemBuilder: (context, index) {
-                                              final individualNewsModel =
-                                                  news[index];
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.45,
-                                                  child: newsCard(
-                                                    onTap: () {
-                                                      ref
-                                                          .read(
-                                                              selectedIndexProvider
-                                                                  .notifier)
-                                                          .updateIndex(3);
-                                                    },
-                                                    imageUrl:
-                                                        individualNewsModel
-                                                                .media ??
-                                                            '',
-                                                    title: individualNewsModel
-                                                            .title ??
-                                                        '',
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
+                                              left: 16, top: 10),
+                                          child: Text('Quick Actions',
+                                              style: kBodyTitleB.copyWith(
+                                                  color: kTextColor)),
                                         ),
                                       ],
                                     ),
-                                  if (campaign != null)
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 15, top: 10),
-                                              child: Text('Campaign',
-                                                  style: kBodyTitleB),
-                                            ),
-                                            const Spacer(),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 15, top: 10),
-                                              child: InkWell(
+                                    const SizedBox(height: 16),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 16, right: 16, top: 10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          CustomIconContainer(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                    arguments:
+                                                        widget.user.countryCode,
+                                                    context,
+                                                    'CampaignsMainScreen');
+                                              },
+                                              label: 'CSR',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/csr_icon.svg')),
+                                          CustomIconContainer(
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                    arguments:
+                                                        widget.user.countryCode,
+                                                    context,
+                                                    'EventsPage');
+                                              },
+                                              label: 'Events',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/event_icon.svg')),
+                                          if (widget.user.phone !=
+                                              '+919645398555')
+                                            CustomIconContainer(
+                                                label: 'Store',
                                                 onTap: () {
-                                                  navigationService.pushNamed(
-                                                      'CampaignsMainScreen');
+                                                  Navigator.pushNamed(
+                                                      arguments:
+                                                          widget.user.countryCode,
+                                                      context,
+                                                      'StorePage');
                                                 },
-                                                child: Text('View All ',
-                                                    style:
-                                                        kSmallTitleR.copyWith(
-                                                            color:
-                                                                kPrimaryColor)),
+                                                icon: SvgPicture.asset(
+                                                    color: kWhite,
+                                                    'assets/svg/icons/card_icon.svg')),
+                                          CustomIconContainer(
+                                              onTap: () {
+                                                ref
+                                                    .read(selectedIndexProvider
+                                                        .notifier)
+                                                    .updateIndex(1);
+                                              },
+                                              label: 'Bussiness',
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/offer_icon.svg')),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+      
+                                    if (event != null)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text('Event', style: kBodyTitleB),
+                                                const Spacer(),
+                                                InkWell(
+                                                  onTap: () {
+                                                    navigationService
+                                                        .pushNamed('EventsPage');
+                                                  },
+                                                  child: Text('View All',
+                                                      style:
+                                                          kSmallTitleL.copyWith(
+                                                              color:
+                                                                  kPrimaryColor)),
+                                                ),
+                                              ],
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                navigationService.pushNamed(
+                                                    'EventDetails',
+                                                    arguments: event);
+                                              },
+                                              child: eventWidget(
+                                                context: context,
+                                                event: event,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0, vertical: 8.0),
-                                          child: CampaignCard(
-                                            campaign: campaign,
-                                            onLearnMore: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      CampaignDetailPage(
-                                                          campaign: campaign),
+                                      ),
+      
+                                    const SizedBox(height: 16),
+                                    if (notices.isNotEmpty)
+                                      Column(
+                                        children: [
+                                          CarouselSlider(
+                                            items: notices.map((notice) {
+                                              return customNotice(
+                                                  context: context,
+                                                  notice: notice);
+                                            }).toList(),
+                                            options: CarouselOptions(
+                                              scrollPhysics: notices.length > 1
+                                                  ? null
+                                                  : const NeverScrollableScrollPhysics(),
+                                              autoPlay: notices.length > 1
+                                                  ? true
+                                                  : false,
+                                              viewportFraction: 1,
+                                              height: _calculateDynamicHeight(
+                                                  notices),
+                                              autoPlayInterval:
+                                                  const Duration(seconds: 3),
+                                              onPageChanged: (index, reason) {
+                                                setState(() {
+                                                  _currentNoticeIndex = index;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          if (notices.isNotEmpty)
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                          if (notices.length > 1)
+                                            _buildDotIndicator(
+                                                _currentNoticeIndex,
+                                                notices.length,
+                                                const Color.fromARGB(
+                                                    255, 39, 38, 38)),
+                                        ],
+                                      ),
+                                    if (posters.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 20),
+                                        child: Column(
+                                          children: [
+                                            CarouselSlider(
+                                              items: posters
+                                                  .asMap()
+                                                  .entries
+                                                  .map((entry) {
+                                                int index = entry.key;
+                                                Promotion poster = entry.value;
+      
+                                                return KeyedSubtree(
+                                                  key: ValueKey(index),
+                                                  child: customPoster(
+                                                      context: context,
+                                                      poster: poster),
+                                                );
+                                              }).toList(),
+                                              options: CarouselOptions(
+                                                height: 370,
+                                                scrollPhysics: posters.length > 1
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
+                                                autoPlay: posters.length > 1,
+                                                viewportFraction: 1,
+                                                autoPlayInterval:
+                                                    const Duration(seconds: 5),
+                                                onPageChanged: (index, reason) {
+                                                  setState(() {
+                                                    _currentPosterIndex = index;
+                                                  });
+                                                },
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    if (news.isNotEmpty)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 15, top: 24, right: 15),
+                                            child: Row(
+                                              children: [
+                                                Text('Latest News',
+                                                    style: kBodyTitleB),
+                                                const Spacer(),
+                                                InkWell(
+                                                  onTap: () => ref
+                                                      .read(selectedIndexProvider
+                                                          .notifier)
+                                                      .updateIndex(3),
+                                                  child: Text('see all',
+                                                      style: kSmallTitleL),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          SizedBox(
+                                            height: 180,
+                                            child: ListView.builder(
+                                              controller: ScrollController(),
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount: news.length,
+                                              itemBuilder: (context, index) {
+                                                final individualNewsModel =
+                                                    news[index];
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                          horizontal: 8.0),
+                                                  child: SizedBox(
+                                                    width: MediaQuery.of(context)
+                                                            .size
+                                                            .width *
+                                                        0.45,
+                                                    child: newsCard(
+                                                      onTap: () {
+                                                        ref
+                                                            .read(
+                                                                selectedIndexProvider
+                                                                    .notifier)
+                                                            .updateIndex(3);
+                                                      },
+                                                      imageUrl:
+                                                          individualNewsModel
+                                                                  .media ??
+                                                              '',
+                                                      title: individualNewsModel
+                                                              .title ??
+                                                          '',
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    if (campaign != null)
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 15, top: 10),
+                                                child: Text('Campaign',
+                                                    style: kBodyTitleB),
+                                              ),
+                                              const Spacer(),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 15, top: 10),
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    navigationService.pushNamed(
+                                                        'CampaignsMainScreen');
+                                                  },
+                                                  child: Text('View All ',
+                                                      style:
+                                                          kSmallTitleL.copyWith(
+                                                              color:
+                                                                  kPrimaryColor)),
                                                 ),
-                                              );
-                                            },
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  // Container(
-                                  //     width: double.infinity,
-                                  //     height: 400,
-                                  //     child: BoardOfDirectorsCarousel()),
-                                  // SizedBox(
-                                  //   height: 20,
-                                  // ),
-                                  // Videos Carousel
-                                  if (filteredVideos.isNotEmpty)
-                                    Column(
-                                      children: [
-                                        CarouselSlider(
-                                          items: filteredVideos.map((video) {
-                                            return customVideo(
-                                                context: context,
-                                                videoUrl: video.link ?? '');
-                                          }).toList(),
-                                          options: CarouselOptions(
-                                            height: 225,
-                                            scrollPhysics: videos.length > 1
-                                                ? null
-                                                : const NeverScrollableScrollPhysics(),
-                                            viewportFraction: 1,
-                                            onPageChanged: (index, reason) {
-                                              setState(() {
-                                                _currentVideoIndex = index;
-                                              });
-                                            },
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 8.0),
+                                            child: CampaignCard(
+                                              campaign: campaign,
+                                              onLearnMore: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CampaignDetailPage(
+                                                            campaign: campaign),
+                                                  ),
+                                                );
+                                              },
+                                            ),
                                           ),
-                                        ),
-                                        if (videos.length > 1)
-                                          _buildDotIndicator(_currentVideoIndex,
-                                              filteredVideos.length, kWhite),
-                                      ],
+                                        ],
+                                      ),
+                                    const SizedBox(
+                                      height: 20,
                                     ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                ],
+                                    // Container(
+                                    //     width: double.infinity,
+                                    //     height: 400,
+                                    //     child: BoardOfDirectorsCarousel()),
+                                    // SizedBox(
+                                    //   height: 20,
+                                    // ),
+                                    // Videos Carousel
+                                    if (filteredVideos.isNotEmpty)
+                                      Column(
+                                        children: [
+                                          CarouselSlider(
+                                            items: filteredVideos.map((video) {
+                                              return customVideo(
+                                                  context: context,
+                                                  videoUrl: video.link ?? '');
+                                            }).toList(),
+                                            options: CarouselOptions(
+                                              height: 225,
+                                              scrollPhysics: videos.length > 1
+                                                  ? null
+                                                  : const NeverScrollableScrollPhysics(),
+                                              viewportFraction: 1,
+                                              onPageChanged: (index, reason) {
+                                                setState(() {
+                                                  _currentVideoIndex = index;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          if (videos.length > 1)
+                                            _buildDotIndicator(_currentVideoIndex,
+                                                filteredVideos.length, kWhite),
+                                        ],
+                                      ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-                loading: () => SafeArea(
-                  child: Scaffold(
-                    backgroundColor: kBackgroundColor,
-                    body: Container(
-                      decoration: const BoxDecoration(color: kBackgroundColor),
-                      child: SingleChildScrollView(
-                        child: buildShimmerPromotionsColumn(context: context),
-                      ),
-                    ),
-                  ),
-                ),
-                error: (error, stackTrace) {
-                  log(error.toString(), name: 'HOME FETCH ERROR');
-                  return SafeArea(
+                    );
+                  },
+                  loading: () => SafeArea(
                     child: Scaffold(
                       backgroundColor: kBackgroundColor,
                       body: Container(
-                        decoration:
-                            const BoxDecoration(color: kBackgroundColor),
-                        child: const Center(child: Text('NO HOME DATA YET')),
+                        decoration: const BoxDecoration(color: kBackgroundColor),
+                        child: SingleChildScrollView(
+                          child: buildShimmerPromotionsColumn(context: context),
+                        ),
                       ),
                     ),
-                  );
-                },
+                  ),
+                  error: (error, stackTrace) {
+                    log(error.toString(), name: 'HOME FETCH ERROR');
+                    return SafeArea(
+                      child: Scaffold(
+                        backgroundColor: kBackgroundColor,
+                        body: Container(
+                          decoration:
+                              const BoxDecoration(color: kBackgroundColor),
+                          child: const Center(child: Text('NO HOME DATA YET')),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -926,7 +929,7 @@ Widget customPoster({
             },
             child: Text(
               'Know more',
-              style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+              style: kSmallTitleL.copyWith(color: kSecondaryTextColor),
             ),
           ),
         ),

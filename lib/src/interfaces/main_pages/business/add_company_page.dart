@@ -249,7 +249,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                           return ListTile(
                             title: Text(
                               cat.name,
-                              style: kSmallTitleR,
+                              style: kSmallTitleL,
                             ),
                             selected: selected == cat.id?.toString(),
                             onTap: () {
@@ -339,11 +339,11 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: name,
                   decoration: InputDecoration(
                     hintStyle:
-                        kSmallTitleR.copyWith(color: kSecondaryTextColor),
+                        kSmallTitleL.copyWith(color: kSecondaryTextColor),
                     hintText: 'Enter company name',
                     filled: true,
                     fillColor: kCardBackgroundColor,
@@ -377,7 +377,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                                     Icon(Icons.add_a_photo,
                                         color: kPrimaryColor, size: 32),
                                     const SizedBox(height: 8),
-                                    Text('Upload Image', style: kSmallTitleR),
+                                    Text('Upload Image', style: kSmallTitleL),
                                   ],
                                 ),
                     ),
@@ -398,12 +398,12 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: overview,
                   maxLines: 3,
                   decoration: InputDecoration(
                     hintStyle:
-                        kSmallTitleR.copyWith(color: kSecondaryTextColor),
+                        kSmallTitleL.copyWith(color: kSecondaryTextColor),
                     hintText: 'Overview',
                     filled: true,
                     fillColor: kCardBackgroundColor,
@@ -439,7 +439,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                         if (categories.isEmpty &&
                             category != null &&
                             category!.isNotEmpty) {
-                          return Text('Loading...', style: kSmallTitleR);
+                          return Text('Loading...', style: kSmallTitleL);
                         }
                         final found = categories.firstWhere(
                           (cat) => cat.id.toString() == category,
@@ -449,7 +449,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                           found.name.isNotEmpty
                               ? found.name
                               : (category ?? 'Select category'),
-                          style: kSmallTitleR,
+                          style: kSmallTitleL,
                         );
                       },
                     ),
@@ -459,11 +459,11 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 Text('Company Size', style: kSmallTitleM),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: companySize,
                   decoration: InputDecoration(
                     hintStyle:
-                        kSmallTitleR.copyWith(color: kSecondaryTextColor),
+                        kSmallTitleL.copyWith(color: kSecondaryTextColor),
                     hintText: 'Company Size',
                     filled: true,
                     fillColor: kCardBackgroundColor,
@@ -485,7 +485,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue:
                       services.isNotEmpty ? services.join(', ') : null,
                   decoration: InputDecoration(
@@ -536,7 +536,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                       establishedDate != null
                           ? '${establishedDate!.toLocal()}'.split(' ')[0]
                           : 'Select Date',
-                      style: kSmallTitleR,
+                      style: kSmallTitleL,
                     ),
                   ),
                 ),
@@ -545,7 +545,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 Text('Opening Hours', style: kSmallTitleM),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: sunday,
                   decoration: InputDecoration(
                       hintText: 'Sunday',
@@ -559,7 +559,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: monday,
                   decoration: InputDecoration(
                       hintText: 'Monday',
@@ -573,7 +573,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: tuesday,
                   decoration: InputDecoration(
                       hintText: 'Tuesday',
@@ -587,7 +587,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: wednesday,
                   decoration: InputDecoration(
                       hintText: 'Wednesday',
@@ -601,7 +601,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: thursday,
                   decoration: InputDecoration(
                       hintText: 'Thursday',
@@ -615,7 +615,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: friday,
                   decoration: InputDecoration(
                       hintText: 'Friday',
@@ -629,7 +629,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: saturday,
                   decoration: InputDecoration(
                       hintText: 'Saturday',
@@ -645,7 +645,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 Text('Contact Info', style: kSmallTitleM),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: address,
                   decoration: InputDecoration(
                       hintText: 'Address',
@@ -659,7 +659,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: phone,
                   decoration: InputDecoration(
                       hintText: 'Phone',
@@ -673,7 +673,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: email,
                   decoration: InputDecoration(
                       hintText: 'Email',
@@ -687,7 +687,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
-                  style: kSmallTitleR,
+                  style: kSmallTitleL,
                   initialValue: website,
                   decoration: InputDecoration(
                       hintText: 'Website',
@@ -813,7 +813,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                         Expanded(
                           child: TextFormField(
                             controller: videoController,
-                            style: kSmallTitleR,
+                            style: kSmallTitleL,
                             decoration: InputDecoration(
                               hintText: 'YouTube Video URL',
                               filled: true,
@@ -844,7 +844,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                     ...List.generate(videoUrls.length, (index) {
                       return ListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text(videoUrls[index], style: kSmallTitleR),
+                        title: Text(videoUrls[index], style: kSmallTitleL),
                         trailing: IconButton(
                           icon: const Icon(Icons.close, color: Colors.red),
                           onPressed: () => removeVideoUrl(index),

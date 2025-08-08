@@ -535,10 +535,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                     color: kSecondaryTextColor,
                   ),
                   hintText: 'Search Products',
-                  hintStyle: kBodyTitleR.copyWith(
-                    fontSize: 14,
-                    color: kSecondaryTextColor,
-                  ),
+                  hintStyle:  kSmallTitleL.copyWith(color: kSecondaryTextColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
@@ -554,7 +551,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                           child: Center(
                             child: Text(
                               'No Products yet',
-                              style: kSmallTitleR,
+                              style: kSmallTitleL,
                             ),
                           ),
                         )

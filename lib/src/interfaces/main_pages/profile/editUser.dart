@@ -735,7 +735,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       top: 15, left: 16, bottom: 15),
                                   child: Row(
                                     children: [
-                                      Text('Social Media', style: kSmallTitleR),
+                                      Text('Social Media', style: kSmallTitleL),
                                     ],
                                   ),
                                 ),
@@ -801,7 +801,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       children: [
                                         Text(
                                           'Website',
-                                          style: kSmallTitleR,
+                                          style: kSmallTitleL,
                                         ),
                                       ],
                                     ),
@@ -857,7 +857,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       children: [
                                         Text(
                                           'Videos',
-                                          style: kSmallTitleR,
+                                          style: kSmallTitleL,
                                         ),
                                         // CustomSwitch(
                                         //   value:
@@ -930,7 +930,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       children: [
                                         Text(
                                           'Awards',
-                                          style: kSmallTitleR,
+                                          style: kSmallTitleL,
                                         ),
                                       ],
                                     ),
@@ -998,7 +998,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       children: [
                                         Text(
                                           'Documents',
-                                          style: kSmallTitleR,
+                                          style: kSmallTitleL,
                                         ),
                                       ],
                                     ),
@@ -1063,7 +1063,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       children: [
                                         Text(
                                           'Certificates',
-                                          style: kSmallTitleR,
+                                          style: kSmallTitleL,
                                         ),
                                       ],
                                     ),

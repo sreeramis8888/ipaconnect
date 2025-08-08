@@ -150,7 +150,7 @@ class CompanyCard extends StatelessWidget {
                           size: 12,
                           showNumber: true,
                           color: Colors.amber,
-                          numberStyle: kSmallTitleR.copyWith(
+                          numberStyle: kSmallTitleL.copyWith(
                               color: kSecondaryTextColor, fontSize: 10),
                         ),
                       ],

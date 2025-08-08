@@ -40,7 +40,7 @@ class DocumentCard extends StatelessWidget {
           ),
           title: Text(
             brochure.name ?? '',
-            style: kSmallTitleR,
+            style: kSmallTitleL,
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,

@@ -79,9 +79,7 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
                         return isLoading
                             ? Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Center(
-                                    child:
-                                        LoadingAnimation()),
+                                child: Center(child: LoadingAnimation()),
                               )
                             : const SizedBox.shrink();
                       }
@@ -106,7 +104,7 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
                                     enquiry.createdAt != null
                                         ? '${enquiry.createdAt!.day}/${enquiry.createdAt!.month}/${enquiry.createdAt!.year}'
                                         : '',
-                                    style: kSmallTitleR.copyWith(
+                                    style: kSmallTitleL.copyWith(
                                         color: kSecondaryTextColor),
                                   ),
                                 ],
@@ -118,7 +116,7 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
                                       color: kSecondaryTextColor, size: 18),
                                   const SizedBox(width: 6),
                                   Text(enquiry.email ?? '-',
-                                      style: kSmallTitleR),
+                                      style: kSmallTitleL),
                                 ],
                               ),
                               const SizedBox(height: 4),
@@ -128,12 +126,12 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
                                       color: kSecondaryTextColor, size: 18),
                                   const SizedBox(width: 6),
                                   Text(enquiry.phone ?? '-',
-                                      style: kSmallTitleR),
+                                      style: kSmallTitleL),
                                 ],
                               ),
                               const SizedBox(height: 8),
                               Text('Message:', style: kSmallTitleB),
-                              Text(enquiry.message ?? '-', style: kSmallTitleR),
+                              Text(enquiry.message ?? '-', style: kSmallTitleL),
                             ],
                           ),
                         ),

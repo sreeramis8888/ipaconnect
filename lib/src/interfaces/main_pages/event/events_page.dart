@@ -56,7 +56,7 @@ class _EventsPageState extends ConsumerState<EventsPage>
       appBar: AppBar(
         title: Text(
           'Events',
-          style: kSmallTitleR,
+          style: kSmallTitleL,
         ),
         backgroundColor: kBackgroundColor,
         leading: Padding(

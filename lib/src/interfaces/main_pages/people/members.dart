@@ -109,10 +109,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                               color: kSecondaryTextColor,
                             ),
                             hintText: 'Search Members',
-                            hintStyle: kBodyTitleR.copyWith(
-                              fontSize: 14,
-                              color: kSecondaryTextColor,
-                            ),
+                            hintStyle:  kSmallTitleL.copyWith(color: kSecondaryTextColor),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30.0),
                               borderSide: BorderSide.none,
@@ -200,7 +197,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                     ),
                     title: Text(
                       user.name ?? '',
-                      style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+                      style: kSmallTitleL.copyWith(color: kSecondaryTextColor),
                     ),
                     trailing: SizedBox(
                       width: 40,
@@ -226,7 +223,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                           if (conversation != null) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => ChatScreen(userImage: user.image??'',
+                                builder: (context) => ChatScreen(
+                                  userImage: user.image ?? '',
                                   conversationId: conversation.id ?? '',
                                   chatTitle: user.name ?? '',
                                   userId: userId,

@@ -370,7 +370,7 @@ class _ProfileHeader extends StatelessWidget {
                             children: [
                               Text(
                                 'Edit',
-                                style: kSmallTitleR,
+                                style: kSmallTitleL,
                               )
                             ],
                           ),
@@ -378,7 +378,7 @@ class _ProfileHeader extends StatelessWidget {
                         PopupMenuItem(
                           value: 'share',
                           child: Row(
-                            children: [Text('Share', style: kSmallTitleR)],
+                            children: [Text('Share', style: kSmallTitleL)],
                           ),
                         ),
                       ],
@@ -428,7 +428,7 @@ class _ProfileHeader extends StatelessWidget {
                     Flexible(
                       child: Text(
                         user.profession ?? '',
-                        style: kSmallTitleR,
+                        style: kSmallTitleL,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                       ),
@@ -443,7 +443,7 @@ class _ProfileHeader extends StatelessWidget {
                     Flexible(
                       child: Text(
                         user.phone ?? '',
-                        style: kSmallTitleR,
+                        style: kSmallTitleL,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                       ),
@@ -454,7 +454,7 @@ class _ProfileHeader extends StatelessWidget {
                     Flexible(
                       child: Text(
                         user.email ?? '',
-                        style: kSmallTitleR,
+                        style: kSmallTitleL,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                       ),
@@ -472,7 +472,7 @@ class _ProfileHeader extends StatelessWidget {
                           color: kSecondaryTextColor, size: 18),
                       const SizedBox(width: 4),
                       Text(user.location!,
-                          style: kSmallTitleR.copyWith(
+                          style: kSmallTitleL.copyWith(
                               color: kSecondaryTextColor)),
                     ],
                   ),
@@ -542,7 +542,7 @@ class _HeaderButton extends StatelessWidget {
         onPressed: onTap,
         icon: Icon(icon, color: kSecondaryTextColor, size: 20),
         label:
-            Text(label, style: kSmallTitleR, overflow: TextOverflow.ellipsis),
+            Text(label, style: kSmallTitleL, overflow: TextOverflow.ellipsis),
       ),
     );
   }
@@ -575,7 +575,7 @@ class _OverviewTabState extends State<_OverviewTab> {
           if (widget.user.bio != null) const SizedBox(height: 8),
         Text(
           widget.user.bio ?? '',
-          style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+          style: kSmallTitleL.copyWith(color: kSecondaryTextColor),
         ),
         if (widget.user.bio != null) const SizedBox(height: 24),
         Text('Contact', style: kBodyTitleB.copyWith(color: kWhite)),
@@ -586,7 +586,7 @@ class _OverviewTabState extends State<_OverviewTab> {
               Icon(Icons.phone, color: kSecondaryTextColor, size: 18),
               const SizedBox(width: 8),
               Text(widget.user.phone!,
-                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                  style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             ],
           ),
         const SizedBox(height: 8),
@@ -596,7 +596,7 @@ class _OverviewTabState extends State<_OverviewTab> {
               Icon(Icons.email, color: kSecondaryTextColor, size: 18),
               const SizedBox(width: 8),
               Text(widget.user.email!,
-                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                  style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             ],
           ),
         const SizedBox(height: 8),
@@ -606,7 +606,7 @@ class _OverviewTabState extends State<_OverviewTab> {
               Icon(Icons.location_on, color: kSecondaryTextColor, size: 18),
               const SizedBox(width: 8),
               Text(widget.user.location!,
-                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                  style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             ],
           ),
         const SizedBox(height: 8),
@@ -823,7 +823,7 @@ class _SocialCard extends StatelessWidget {
                   socialUrl ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: kSmallTitleR.copyWith(color: kSecondaryTextColor),
+                  style: kSmallTitleL.copyWith(color: kSecondaryTextColor),
                 ),
               ],
             ),
@@ -1046,7 +1046,7 @@ class _ContactFormSectionState extends ConsumerState<_ContactFormSection> {
             Text('Let\'s Talk', style: kSubHeadingB.copyWith(color: kWhite)),
             const SizedBox(height: 18),
             Text('Name',
-                style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             CustomTextFormField(
               labelText: 'Title',
               textController: _nameController,
@@ -1056,7 +1056,7 @@ class _ContactFormSectionState extends ConsumerState<_ContactFormSection> {
             ),
             const SizedBox(height: 18),
             Text('Phone Number',
-                style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             CustomTextFormField(
               labelText: 'Name',
               textController: _phoneController,
@@ -1067,7 +1067,7 @@ class _ContactFormSectionState extends ConsumerState<_ContactFormSection> {
             ),
             const SizedBox(height: 18),
             Text('Email',
-                style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             CustomTextFormField(
               labelText: 'Email',
               textController: _emailController,
@@ -1083,7 +1083,7 @@ class _ContactFormSectionState extends ConsumerState<_ContactFormSection> {
             ),
             const SizedBox(height: 18),
             Text('Message',
-                style: kSmallTitleR.copyWith(color: kSecondaryTextColor)),
+                style: kSmallTitleL.copyWith(color: kSecondaryTextColor)),
             CustomTextFormField(
               labelText: 'Review',
               textController: _messageController,

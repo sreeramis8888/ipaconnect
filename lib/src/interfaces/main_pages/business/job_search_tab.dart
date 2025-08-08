@@ -85,7 +85,7 @@ class _JobSearchTabState extends ConsumerState<JobSearchTab> {
                       decoration: InputDecoration(
                         hintText: 'Search Profile',
                         hintStyle:
-                            kBodyTitleR.copyWith(color: kSecondaryTextColor),
+                            kSmallTitleL.copyWith(color: kSecondaryTextColor),
                         border: InputBorder.none,
                         isDense: true,
                         contentPadding:

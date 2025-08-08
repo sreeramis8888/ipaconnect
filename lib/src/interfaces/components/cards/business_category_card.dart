@@ -88,7 +88,7 @@ class CategoryCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(title,
                     textAlign: TextAlign.center,
-                    style: kSmallTitleR.copyWith(color: Color(0xFFF7F7F7))),
+                    style: kSmallTitleL.copyWith(color: Color(0xFFF7F7F7))),
               ],
             ),
           ),

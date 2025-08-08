@@ -50,7 +50,7 @@ class NotificationPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (notification.subject != null)
-                        Text(notification.subject!, style: kSmallTitleR),
+                        Text(notification.subject!, style: kSmallTitleL),
                       if (notification.content != null) ...[
                         const SizedBox(height: 8),
                         Text(notification.content!,
@@ -103,54 +103,3 @@ class NotificationPage extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

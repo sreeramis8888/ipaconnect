@@ -16,6 +16,7 @@ import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/notification_service/get_fcm.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
+import 'package:ipaconnect/src/data/utils/white_status_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_upgrade_version/flutter_upgrade_version.dart';
 
@@ -395,160 +396,162 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor:
-          const Color(0xFF1D09CD), // Fallback color matching the theme
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1D09CD),
-              const Color.fromARGB(255, 33, 16, 73),
-              const Color.fromARGB(255, 14, 11, 78),
-            ],
-          ),
-          image: DecorationImage(
-            image: const AssetImage('assets/pngs/subcription_bg.png'),
-            fit: BoxFit.cover,
-            opacity: 0.9,
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Animated background image for first-time users (on top)
-            if (isFirstLaunch == 'false')
-              AnimatedBuilder(
-                animation: _backgroundController,
-                builder: (context, child) {
-                  return SlideTransition(
-                    position: _backgroundSlideAnimation,
-                    child: FadeTransition(
-                      opacity: _backgroundOpacityAnimation,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          child: Image.asset(
-                              'assets/splash_assets/splash_intro_bg.png'),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-
-            // Main logo animation
-            Align(
-              alignment: Alignment.center,
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _opacityAnimation.value,
-                    child: Transform.rotate(
-                      angle: _rotationAnimation.value,
-                      child: Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: Container(
-                          width: 140,
-                          height: 140,
-                          child:
-                              SvgPicture.asset('assets/svg/icons/ipa_logo.svg'),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+    return WhiteStatusBar(
+      child: Scaffold(
+        backgroundColor:
+            const Color(0xFF1D09CD), // Fallback color matching the theme
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF1D09CD),
+                const Color.fromARGB(255, 33, 16, 73),
+                const Color.fromARGB(255, 14, 11, 78),
+              ],
             ),
-
-            // Welcome text for first-time users
-            if (isFirstLaunch == 'false' && !hasVersionCheckError)
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 100.0),
-                  child: AnimatedBuilder(
-                    animation: _textController,
-                    builder: (context, child) {
-                      return SlideTransition(
-                        position: _textSlideAnimation,
-                        child: FadeTransition(
-                          opacity: _textOpacityAnimation,
-                          child: Text(
-                            'Welcome to IPA Connect',
-                            style: TextStyle(
-                              color: kWhite,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
-                            textAlign: TextAlign.center,
+            image: DecorationImage(
+              image: const AssetImage('assets/pngs/subcription_bg.png'),
+              fit: BoxFit.cover,
+              opacity: 0.9,
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Animated background image for first-time users (on top)
+              if (isFirstLaunch == 'false')
+                AnimatedBuilder(
+                  animation: _backgroundController,
+                  builder: (context, child) {
+                    return SlideTransition(
+                      position: _backgroundSlideAnimation,
+                      child: FadeTransition(
+                        opacity: _backgroundOpacityAnimation,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            child: Image.asset(
+                                'assets/splash_assets/splash_intro_bg.png'),
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-
-            // Error message overlay - positioned above welcome text when both exist
-            if (hasVersionCheckError)
+      
+              // Main logo animation
               Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: isFirstLaunch == 'false' ? 180.0 : 100.0,
-                    left: 20.0,
-                    right: 20.0,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              errorMessage,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: kWhite,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            TextButton(
-                              onPressed: retryVersionCheck,
-                              style: TextButton.styleFrom(
-                                backgroundColor: kWhite.withOpacity(0.2),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              child: Text(
-                                'Retry',
-                                style: TextStyle(
-                                  color: kWhite,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
+                alignment: Alignment.center,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: Transform.rotate(
+                        angle: _rotationAnimation.value,
+                        child: Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: Container(
+                            width: 140,
+                            height: 140,
+                            child:
+                                SvgPicture.asset('assets/svg/icons/ipa_logo.svg'),
+                          ),
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
-          ],
+      
+              // Welcome text for first-time users
+              if (isFirstLaunch == 'false' && !hasVersionCheckError)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 100.0),
+                    child: AnimatedBuilder(
+                      animation: _textController,
+                      builder: (context, child) {
+                        return SlideTransition(
+                          position: _textSlideAnimation,
+                          child: FadeTransition(
+                            opacity: _textOpacityAnimation,
+                            child: Text(
+                              'Welcome to IPA Connect',
+                              style: TextStyle(
+                                color: kWhite,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+      
+              // Error message overlay - positioned above welcome text when both exist
+              if (hasVersionCheckError)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: isFirstLaunch == 'false' ? 180.0 : 100.0,
+                      left: 20.0,
+                      right: 20.0,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                errorMessage,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: kWhite,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              TextButton(
+                                onPressed: retryVersionCheck,
+                                style: TextButton.styleFrom(
+                                  backgroundColor: kWhite.withOpacity(0.2),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Retry',
+                                  style: TextStyle(
+                                    color: kWhite,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

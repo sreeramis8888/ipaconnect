@@ -43,7 +43,7 @@ class ActivityPage extends ConsumerWidget {
             return Center(
                 child: Text(
               'No Activity Found',
-              style: kSmallTitleR,
+              style: kSmallTitleL,
             ));
           }
           return ListView.builder(
@@ -98,7 +98,7 @@ class ActivityPage extends ConsumerWidget {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        style: kSmallTitleR,
+                                        style: kSmallTitleL,
                                         activity.sender?.name ??
                                             activity.sender?.toString() ??
                                             '',
@@ -131,7 +131,7 @@ class ActivityPage extends ConsumerWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        style: kSmallTitleR,
+                                        style: kSmallTitleL,
                                         activity.receiver?.name ??
                                             activity.receiver?.toString() ??
                                             '',

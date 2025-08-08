@@ -269,7 +269,7 @@ class AboutUsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Text(year, style: kSmallTitleR.copyWith(color: kWhite)),
+            Text(year, style: kSmallTitleL.copyWith(color: kWhite)),
           ],
         ),
         const SizedBox(height: 12),

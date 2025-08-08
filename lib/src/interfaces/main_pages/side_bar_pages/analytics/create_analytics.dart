@@ -284,7 +284,7 @@ class _SendAnalyticRequestPageState
                                 horizontal: 16, vertical: 12),
                             child: Text(
                               user.name ?? '',
-                              style: kSmallTitleR.copyWith(
+                              style: kSmallTitleL.copyWith(
                                 color: isSelected ? kPrimaryColor : kWhite,
                               ),
                             ),

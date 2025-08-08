@@ -197,7 +197,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                               size: 14, color: kSecondaryTextColor),
                           const SizedBox(width: 8),
                           Text(formattedDate,
-                              style: kSmallTitleR.copyWith(
+                              style: kSmallTitleL.copyWith(
                                   color: kSecondaryTextColor)),
                         ],
                       ),
@@ -205,7 +205,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                       Text(
                           widget.event.description ??
                               'No description available',
-                          style: kSmallTitleR.copyWith(
+                          style: kSmallTitleL.copyWith(
                               color: kSecondaryTextColor)),
                     ],
                   ),
@@ -329,7 +329,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                           child: Center(
                               child: Text(
                             'No Folders yet',
-                            style: kSmallTitleR,
+                            style: kSmallTitleL,
                           )),
                         ),
                         if (widget.event.status == 'completed')

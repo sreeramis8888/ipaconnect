@@ -82,7 +82,7 @@ Padding customWebsiteCard({
                   '${website?.name != '' && website?.name != null && website?.name != 'null' ? website?.name : website?.link ?? ''}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: kSmallTitleR),
+                  style: kSmallTitleL),
             ),
           ),
           Container(
@@ -143,7 +143,7 @@ Padding customVideoCard({
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Text(
-                style: kSmallTitleR,
+                style: kSmallTitleL,
                 video?.name != '' &&
                         video?.name != null &&
                         video?.name != 'null'

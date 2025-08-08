@@ -491,7 +491,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                   ),
                                 ),
                                 title: Text(
-                                    style: kSmallTitleR,
+                                    style: kSmallTitleL,
                                     widget.business.comments![index].user !=
                                             null
                                         ? widget.business.comments![index].user!
@@ -499,7 +499,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                             'Unknown User'
                                         : 'Unknown User'),
                                 subtitle: Text(
-                                    style: kSmallTitleR,
+                                    style: kSmallTitleL,
                                     widget.business.comments?[index].comment ??
                                         ''),
                               );

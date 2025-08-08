@@ -126,10 +126,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                         color: kSecondaryTextColor,
                       ),
                       hintText: 'Search Companies',
-                      hintStyle: kBodyTitleR.copyWith(
-                        fontSize: 14,
-                        color: kSecondaryTextColor,
-                      ),
+                      hintStyle: kSmallTitleL.copyWith(color: kSecondaryTextColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30.0),
                         borderSide: BorderSide.none,
@@ -151,7 +148,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                       child: Center(
                         child: Text(
                           'No Companies yet',
-                          style: kSmallTitleR,
+                          style: kSmallTitleL,
                         ),
                       ),
                     )

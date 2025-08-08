@@ -381,7 +381,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage>
           ),
           const SizedBox(height: 16),
           if (savedAddresses.isEmpty)
-            Text('No saved addresses found.', style: kSmallTitleR),
+            Text('No saved addresses found.', style: kSmallTitleL),
           if (savedAddresses.isNotEmpty)
             SizedBox(
               height: 250,

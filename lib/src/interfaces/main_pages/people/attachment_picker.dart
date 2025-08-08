@@ -57,7 +57,7 @@ class AttachmentPicker extends StatelessWidget {
             child: Icon(icon, color: kWhite, size: 28),
           ),
           const SizedBox(height: 8),
-          Text(label, style: kSmallTitleR),
+          Text(label, style: kSmallTitleL),
         ],
       ),
     );

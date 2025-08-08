@@ -1623,7 +1623,7 @@ I'm interested in this feed. Could you provide more information?
                     SizedBox(width: 8),
                     Text(
                       'Report',
-                      style: kSmallTitleR,
+                      style: kSmallTitleL,
                     ),
                   ],
                 ),
@@ -1638,11 +1638,11 @@ I'm interested in this feed. Could you provide more information?
                     isBlocked
                         ? Text(
                             'Unblock',
-                            style: kSmallTitleR,
+                            style: kSmallTitleL,
                           )
                         : Text(
                             'Block',
-                            style: kSmallTitleR,
+                            style: kSmallTitleL,
                           ),
                   ],
                 ),
@@ -1875,7 +1875,6 @@ I'm interested in this feed. Could you provide more information?
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
         onTap: () {
-          // TODO: Show fullscreen image (Hero animation placeholder)
           showDialog(
             context: context,
             builder: (_) => Dialog(
@@ -1910,7 +1909,7 @@ I'm interested in this feed. Could you provide more information?
             ),
             clipBehavior: Clip.antiAlias,
             child: FadeInImage.assetNetwork(
-              placeholder: 'assets/pngs/icon.png',
+              placeholder: 'assets/pngs/icon2.png',
               image: url,
               width: 180,
               height: 180,

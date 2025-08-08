@@ -49,7 +49,7 @@ class HierarchiesPage extends ConsumerWidget {
             return Center(
                 child: Text(
               'No hierarchies found',
-              style: kSmallTitleR,
+              style: kSmallTitleL,
             ));
           }
           return ListView.builder(

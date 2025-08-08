@@ -226,7 +226,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                         ),
                                                         Text('$quantity',
                                                             style:
-                                                                kSmallTitleR),
+                                                                kSmallTitleL),
                                                         InkWell(
                                                           child: Padding(
                                                             padding:
@@ -277,7 +277,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(item.store?.name ?? '',
-                                          style: kSmallTitleR),
+                                          style: kSmallTitleL),
                                       FutureBuilder<double?>(
                                         future: convertCurrency(
                                           from: item.store?.currency != null
@@ -297,7 +297,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                       .spaceBetween,
                                               children: [
                                                 Text('Loading...',
-                                                    style: kSmallTitleR),
+                                                    style: kSmallTitleL),
                                               ],
                                             );
                                           } else if (snapshot.hasError ||
@@ -320,7 +320,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                 Text(
                                                     convertedTotalAmount
                                                         .toStringAsFixed(2),
-                                                    style: kSmallTitleR),
+                                                    style: kSmallTitleL),
                                                 SizedBox(
                                                   width: 4,
                                                 ),
@@ -353,7 +353,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Total', style: kSmallTitleR),
+                            Text('Total', style: kSmallTitleL),
                           ],
                         ),
                         FutureBuilder<double?>(
@@ -374,7 +374,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(''),
-                                      Text('Loading...', style: kSmallTitleR),
+                                      Text('Loading...', style: kSmallTitleL),
                                     ],
                                   ),
                                   const SizedBox(height: 16),
@@ -417,7 +417,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                           Text(
                                               convertedTotalAmount
                                                   .toStringAsFixed(2),
-                                              style: kSmallTitleR),
+                                              style: kSmallTitleL),
                                           const SizedBox(width: 4),
                                           Text(widget.userCurrency,
                                               style: kSmallerTitleR.copyWith(

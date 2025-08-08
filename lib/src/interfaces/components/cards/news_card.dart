@@ -41,7 +41,7 @@ Widget newsCard({
             padding: const EdgeInsets.all(8.0),
             child: Text(
               title,
-              style: kSmallTitleR,
+              style: kSmallTitleL,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),

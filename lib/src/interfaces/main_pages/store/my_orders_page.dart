@@ -84,7 +84,7 @@ class MyOrdersPage extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(product?.name ?? '', style: kSmallTitleR),
+                                Text(product?.name ?? '', style: kSmallTitleL),
                                 const SizedBox(height: 8),
                                 Text('₹${price.toStringAsFixed(0)}',
                                     style: kSmallTitleB),

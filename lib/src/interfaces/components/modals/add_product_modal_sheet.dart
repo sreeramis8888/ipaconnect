@@ -147,7 +147,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text('Add Product', style: kSmallTitleR),
+                  Text('Add Product', style: kSmallTitleL),
                 ],
               ),
               const SizedBox(height: 12),
@@ -167,7 +167,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                             Icon(Icons.add,
                                 color: kSecondaryTextColor, size: 32),
                             const SizedBox(height: 4),
-                            Text('Upload Images', style: kSmallTitleR),
+                            Text('Upload Images', style: kSmallTitleL),
                           ],
                         )
                       : ListView.separated(

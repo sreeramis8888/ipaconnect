@@ -102,7 +102,7 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
                   Expanded(
                     child: Text(
                       widget.hierarchyName,
-                      style: kSmallTitleR,
+                      style: kSmallTitleL,
                     ),
                   ),
                 ],
@@ -156,7 +156,7 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
                                     ),
                                     title: Text(
                                       member.name ?? '',
-                                      style: kSmallTitleR,
+                                      style: kSmallTitleL,
                                     ),
                                     subtitle: Text(
                                       member.email ?? '',

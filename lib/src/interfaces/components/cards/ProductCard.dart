@@ -123,7 +123,7 @@ class ProductCard extends StatelessWidget {
                       showNumber: true,
                       color: Colors.amber,
                       numberStyle:
-                          kSmallTitleR.copyWith(color: kWhite, fontSize: 10),
+                          kSmallTitleL.copyWith(color: kWhite, fontSize: 10),
                     ),
                   ],
                 ),
