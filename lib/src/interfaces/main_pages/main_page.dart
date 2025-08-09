@@ -190,7 +190,8 @@ class _MainPageState extends ConsumerState<MainPage> {
               ),
               ClipRect(
                 child: Container(
-                  height: 80,
+                  //edited the height from 80 to 82
+                  height: 82,
                   decoration: BoxDecoration(
                     color: kWhite,
                     boxShadow: [

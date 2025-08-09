@@ -496,7 +496,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 );
                                               }).toList(),
                                               options: CarouselOptions(
-                                                height: 370,
+                                                height: MediaQuery.of(context).size.height * 0.49,
                                                 scrollPhysics: posters.length > 1
                                                     ? null
                                                     : const NeverScrollableScrollPhysics(),
