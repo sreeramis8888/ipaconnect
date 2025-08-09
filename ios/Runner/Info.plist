@@ -45,6 +45,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	    <key>NSMicrophoneUsageDescription</key>
+<string>We need to access your microphone for sending voice messages</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

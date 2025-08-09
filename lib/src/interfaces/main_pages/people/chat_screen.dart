@@ -1722,34 +1722,36 @@ I'm interested in this feed. Could you provide more information?
                 onUnlock: _toggleRecordingLock,
               ),
               if (!_isRecording)
-                ChatInputBar(
-                  onSendText: (text) {
-                    _controller.text = text;
-                    _sendMessage();
-                  },
-                  onAttachment: _showAttachmentModal,
-                  onCamera: _capturePhoto,
-                  onVoiceRecord: () {
-                    if (_isRecording) {
-                      _stopVoiceRecording();
-                    } else {
-                      _startVoiceRecording();
-                    }
-                  },
-                  isRecording: _isRecording,
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  showEmojiPicker: _showEmojiPicker,
-                  onToggleEmojiPicker: () {
-                    setState(() {
-                      _showEmojiPicker = !_showEmojiPicker;
-                      if (_showEmojiPicker) {
-                        FocusScope.of(context).unfocus();
+                SafeArea(
+                  child: ChatInputBar(
+                    onSendText: (text) {
+                      _controller.text = text;
+                      _sendMessage();
+                    },
+                    onAttachment: _showAttachmentModal,
+                    onCamera: _capturePhoto,
+                    onVoiceRecord: () {
+                      if (_isRecording) {
+                        _stopVoiceRecording();
                       } else {
-                        FocusScope.of(context).requestFocus(_focusNode);
+                        _startVoiceRecording();
                       }
-                    });
-                  },
+                    },
+                    isRecording: _isRecording,
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    showEmojiPicker: _showEmojiPicker,
+                    onToggleEmojiPicker: () {
+                      setState(() {
+                        _showEmojiPicker = !_showEmojiPicker;
+                        if (_showEmojiPicker) {
+                          FocusScope.of(context).unfocus();
+                        } else {
+                          FocusScope.of(context).requestFocus(_focusNode);
+                        }
+                      });
+                    },
+                  ),
                 ),
             ],
           ),
@@ -2232,7 +2234,7 @@ class _AudioPlayerWidgetState extends State<_AudioPlayerWidget> {
         }
 
         // Try to play the audio
-        await _audioPlayer.play(UrlSource(widget.url));
+        await _audioPlayer.play(UrlSource(widget.url,mimeType:'audio/wav' ));
       }
     } catch (e) {
       setState(() {
