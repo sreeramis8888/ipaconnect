@@ -358,6 +358,7 @@ class _CreateNotificationPageState
               ),
               const SizedBox(height: 8),
               CustomTextFormField(
+                backgroundColor: kCardBackgroundColor,
                 labelText: 'Notification Title',
                 textController: titleController,
               ),
@@ -370,6 +371,7 @@ class _CreateNotificationPageState
               ),
               const SizedBox(height: 8),
               CustomTextFormField(
+                backgroundColor: kCardBackgroundColor,
                 maxLines: 3,
                 labelText: 'Message',
                 textController: messageController,
@@ -473,6 +475,7 @@ class _CreateNotificationPageState
               ),
               const SizedBox(height: 8),
               CustomTextFormField(
+                backgroundColor: kCardBackgroundColor,
                 labelText: 'Link',
                 textController: linkController,
               ),

@@ -315,7 +315,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
             backgroundColor: kBackgroundColor,
             centerTitle: true,
             title: Text(
-              "Analytics",
+              "Activity",
               style: kSmallTitleM,
             ),
             // actions: [

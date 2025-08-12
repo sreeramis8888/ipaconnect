@@ -133,50 +133,61 @@ class _StorePageState extends ConsumerState<StorePage> {
             //   ),
             // ),
             const SizedBox(height: 24),
-
-            Expanded(
-              child: products.isEmpty && isLoading
-                  ? const Center(child: LoadingAnimation())
-                  : GridView.builder(
-                      controller: _scrollController,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: MediaQuery.of(context).size.width /
-                            (MediaQuery.of(context).size.height / 1.16),
-                      ),
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        return _ProductCard(
-                          userCurrency: widget.userCurrency,
-                          product: product,
-                          onAddToCart: () async {
-                            if (product.id != null) {
-                              final success =
-                                  await cartNotifier.addToCart(product.id!, 1);
-                              if (success) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Added to cart'),
-                                    backgroundColor: kGreen,
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Item already in cart'),
-                                    backgroundColor: kRed,
-                                  ),
-                                );
-                              }
-                            }
-                          },
+Expanded(
+  child: isLoading
+      ? const Center(child: LoadingAnimation())
+      : products.isEmpty
+          ? const Center(
+              child: Text(
+                'No Products',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: kSecondaryTextColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            )
+          : GridView.builder(
+              controller: _scrollController,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: MediaQuery.of(context).size.width /
+                    (MediaQuery.of(context).size.height / 1.16),
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return _ProductCard(
+                  userCurrency: widget.userCurrency,
+                  product: product,
+                  onAddToCart: () async {
+                    if (product.id != null) {
+                      final success =
+                          await cartNotifier.addToCart(product.id!, 1);
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Added to cart'),
+                            backgroundColor: kGreen,
+                          ),
                         );
-                      },
-                    ),
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Item already in cart'),
+                            backgroundColor: kRed,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                );
+              },
             ),
+)
+
           ],
         ),
       ),

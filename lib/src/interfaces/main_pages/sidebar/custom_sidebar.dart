@@ -67,7 +67,7 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                 color: kWhite,
                 height: 24,
               ),
-              label: 'Analytics',
+              label: 'Activity',
               onTap: () => navigationService.pushNamed('Analytics'),
             ),
             // _menuItem(
@@ -93,7 +93,7 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                 'assets/svg/icons/menu_icons/levels.svg',
                 height: 24,
               ),
-              label: 'Hierarchy',
+              label: 'Clusters',
               onTap: () =>
                   navigationService.pushNamed('Hierarchies', arguments: user),
             ),

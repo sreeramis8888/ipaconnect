@@ -30,7 +30,7 @@ class HierarchiesPage extends ConsumerWidget {
           ),
         ),
         title: Text(
-          "Hierarchies",
+          "Clusters",
           style: kBodyTitleR,
         ),
         centerTitle: true,

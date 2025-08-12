@@ -209,7 +209,7 @@ class _SendAnalyticRequestPageState
                 asyncHierarchies.when(
                   data: (hierarchies) => SelectionDropDown(
                     backgroundColor: kCardBackgroundColor,
-                    hintText: 'Choose Hierarchy',
+                    hintText: 'Choose Cluster',
                     value: selectedHierarchyId,
                     validator: (value) {
                       if (value == null || value.isEmpty) {

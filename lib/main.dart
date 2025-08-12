@@ -32,7 +32,6 @@ Future<void> main() async {
     return true;
   };
   
-  // Enable Crashlytics collection (disable in debug mode if needed)
   await CrashlyticsService.setCrashlyticsCollectionEnabled(true);
   
   await loadSecureData();

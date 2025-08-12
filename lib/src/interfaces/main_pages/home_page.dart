@@ -10,6 +10,7 @@ import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
 import 'package:ipaconnect/src/data/utils/white_status_bar.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
@@ -503,7 +504,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 );
                                               }).toList(),
                                               options: CarouselOptions(
-                                                height: 470,
+                                                height: 500,
                                                 scrollPhysics: posters.length >
                                                         1
                                                     ? null
@@ -927,25 +928,22 @@ Widget customPoster({
         ),
       ),
       if (poster.link != null)
+        SizedBox(
+          height: 16,
+        ),
+      if (poster.link != null)
         Container(
-          padding: const EdgeInsets.only(top: 4.0, left: 16),
-          child: TextButton(
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          width: MediaQuery.of(context).size.width / 2,
+          child: customButton(
+            label: 'Know More',
             onPressed: () {
               if (poster.link != null) {
                 launchURL(poster.link ?? '');
               }
             },
-            child: Text(
-              'Know more',
-              style: kSmallTitleL.copyWith(color: kSecondaryTextColor),
-            ),
           ),
-        ),
+        )
     ],
   );
 }
