@@ -94,6 +94,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     NavigationService navigationService = NavigationService();
     return WhiteStatusBar(
       child: Consumer(
@@ -504,7 +505,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 );
                                               }).toList(),
                                               options: CarouselOptions(
-                                                height: 500,
+                                                height: screenHeight < 900
+                                                    ?550
+                                                    : 500,
                                                 scrollPhysics: posters.length >
                                                         1
                                                     ? null

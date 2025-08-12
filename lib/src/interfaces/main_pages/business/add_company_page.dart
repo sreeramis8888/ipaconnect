@@ -926,7 +926,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                               final companyData = {
                                 'name': name,
                                 'overview': overview,
-                                'category': categoryId, // Always pass ID
+                                'category': categoryId, 
                                 'image': image,
                                 'status': status,
                                 'established_date':
