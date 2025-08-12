@@ -31,9 +31,7 @@ Future<void> main() async {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
-  
   await CrashlyticsService.setCrashlyticsCollectionEnabled(true);
-  
   await loadSecureData();
   await dotenv.load(fileName: ".env");
   FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
