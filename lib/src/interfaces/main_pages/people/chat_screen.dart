@@ -493,7 +493,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
     // Create product inquiry message
     final inquiryMessage = '''
-🔍 Product Inquiry
 
 Product Details:
  ${product.name}
@@ -553,7 +552,6 @@ I'm interested in this product. Could you provide more information?
     final author = feedInquiry['author'];
 
     final inquiryMessage = '''
-📝 Feed Enquiry
 
 Feed Content:
 ${feed.content}
@@ -653,6 +651,16 @@ I'm interested in this feed. Could you provide more information?
   }
 
   Widget _buildMessageBubble(MessageModel msg, bool isMe) {
+    // Check if this is a product inquiry message FIRST (before other attachment checks)
+    if (_isProductInquiryMessage(msg)) {
+      return _buildProductInquiryMessage(msg, isMe);
+    }
+
+    // Check if this is a feed inquiry message
+    if (_isFeedInquiryMessage(msg)) {
+      return _buildFeedInquiryMessage(msg, isMe);
+    }
+
     // File message
     if (msg.attachments != null &&
         msg.attachments!.isNotEmpty &&
@@ -672,15 +680,11 @@ I'm interested in this feed. Could you provide more information?
         msg.attachments!.first.type == 'video') {
       return _buildVideoMessageBubble(msg, isMe);
     }
-    // Image message
+    // Image message (only for pure image messages, not product inquiries)
     if (msg.attachments != null &&
         msg.attachments!.isNotEmpty &&
         msg.attachments!.first.type == 'image') {
       return _buildImageMessageBubble(msg, isMe);
-    }
-    // Check if this is a product inquiry message
-    if (_isProductInquiryMessage(msg)) {
-      return _buildProductInquiryMessage(msg, isMe);
     }
 
     // Single emoji detection
@@ -854,7 +858,11 @@ I'm interested in this feed. Could you provide more information?
   }
 
   bool _isProductInquiryMessage(MessageModel msg) {
-    return msg.message?.contains('🔍 **Product Inquiry**') == true;
+    return msg.message?.contains('🔍 Product Inquiry') == true;
+  }
+
+  bool _isFeedInquiryMessage(MessageModel msg) {
+    return msg.message?.contains('📝 Feed Enquiry') == true;
   }
 
   Widget _buildProductInquiryMessage(MessageModel msg, bool isMe) {
@@ -958,6 +966,161 @@ I'm interested in this feed. Could you provide more information?
                           const SizedBox(width: 8),
                           Text(
                             'Product Inquiry',
+                            style: TextStyle(
+                              color: isMe ? kWhite : kTextColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        msg.message ?? '',
+                        style: TextStyle(
+                          color: isMe ? kWhite : kTextColor,
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isMe) ...[
+            const SizedBox(height: 4),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _formatTime(msg.createdAt),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: kSecondaryTextColor.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                _buildStatus(msg),
+              ],
+            ),
+          ] else ...[
+            const SizedBox(height: 4),
+            Text(
+              _formatTime(msg.createdAt),
+              style: TextStyle(
+                fontSize: 11,
+                color: kSecondaryTextColor.withOpacity(0.7),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeedInquiryMessage(MessageModel msg, bool isMe) {
+    return Container(
+      margin: EdgeInsets.only(
+        left: isMe ? 50 : 16,
+        right: isMe ? 16 : 50,
+        bottom: 4,
+        top: 4,
+      ),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width * 0.75,
+            decoration: BoxDecoration(
+              gradient: isMe
+                  ? LinearGradient(
+                      colors: [kPrimaryColor, kPrimaryColor.withOpacity(0.8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              color: isMe ? null : kCardBackgroundColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color:
+                    isMe ? Colors.transparent : kStrokeColor.withOpacity(0.3),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: kBlack.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Feed image
+                if (msg.attachments != null && msg.attachments!.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                      child: Image.network(
+                        msg.attachments!.first.url ?? '',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: kCardBackgroundColor,
+                          child: Icon(
+                            Icons.broken_image,
+                            color: kSecondaryTextColor,
+                            size: 40,
+                          ),
+                        ),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            color: kCardBackgroundColor,
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                                color: kPrimaryColor,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                // Feed inquiry content
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.article,
+                            color: isMe ? kWhite : kPrimaryColor,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Feed Enquiry',
                             style: TextStyle(
                               color: isMe ? kWhite : kTextColor,
                               fontSize: 16,
@@ -2234,7 +2397,7 @@ class _AudioPlayerWidgetState extends State<_AudioPlayerWidget> {
         }
 
         // Try to play the audio
-        await _audioPlayer.play(UrlSource(widget.url,mimeType:'audio/wav' ));
+        await _audioPlayer.play(UrlSource(widget.url, mimeType: 'audio/wav'));
       }
     } catch (e) {
       setState(() {

@@ -137,7 +137,7 @@ class SocketService {
     print('[Socket] Emitting $event with payload: $payload');
 
     _socket?.emitWithAck(event, payload, ack: (response) {
-      print('[Socket] Received ack for $event: $response');
+      log('[Socket] Received ack for $event: $response');
 
       try {
         if (response is List && response.length >= 3) {
