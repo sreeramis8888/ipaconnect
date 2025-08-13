@@ -54,7 +54,8 @@ class DigitalCardPage extends StatelessWidget {
             child: Center(
               child: StartupStagger(
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(color: kStrokeColor),
                     borderRadius: BorderRadius.circular(24),
@@ -102,30 +103,43 @@ class DigitalCardPage extends StatelessWidget {
                                 Container(
                                   width: double.infinity,
                                   height: 350,
-                                  padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                                  padding: const EdgeInsets.only(
+                                      top: 20, left: 20, right: 20),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       StaggerItem(
                                         order: 1,
                                         from: SlideFrom.top,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            SvgPicture.asset('assets/svg/ipaconnect_logo.svg', height: 22),
+                                            SvgPicture.asset(
+                                                'assets/svg/ipaconnect_logo.svg',
+                                                height: 22),
                                             GestureDetector(
-                                              onTap: () => captureAndShareOrDownloadWidgetScreenshot(
+                                              onTap: () =>
+                                                  captureAndShareOrDownloadWidgetScreenshot(
                                                 context,
                                                 user: user,
                                               ),
                                               child: Row(
                                                 children: [
                                                   Transform.rotate(
-                                                    angle: -30 * 3.141592653589793 / 180,
-                                                    child: Icon(Icons.send, color: kWhite, size: 20),
+                                                    angle: -30 *
+                                                        3.141592653589793 /
+                                                        180,
+                                                    child: Icon(Icons.send,
+                                                        color: kWhite,
+                                                        size: 20),
                                                   ),
                                                   SizedBox(width: 4),
-                                                  Text('Send Card', style: TextStyle(color: kWhite, fontSize: 12)),
+                                                  Text('Send Card',
+                                                      style: TextStyle(
+                                                          color: kWhite,
+                                                          fontSize: 12)),
                                                 ],
                                               ),
                                             ),
@@ -137,12 +151,14 @@ class DigitalCardPage extends StatelessWidget {
                                         order: 2,
                                         from: SlideFrom.bottom,
                                         child: InkWell(
-                                          onTap: () => launchURL('https://admin.ipaconnect.org/user/${user.id}'),
+                                          onTap: () => launchURL(
+                                              'https://admin.ipaconnect.org/user/${user.id}'),
                                           child: Center(
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: kWhite,
-                                                borderRadius: BorderRadius.circular(10),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
                                               padding: const EdgeInsets.all(16),
                                               child: qrBytes != null
@@ -150,22 +166,32 @@ class DigitalCardPage extends StatelessWidget {
                                                       qrBytes,
                                                       width: 170,
                                                       height: 170,
-                                                      errorBuilder: (context, error, stackTrace) =>
+                                                      errorBuilder: (context,
+                                                              error,
+                                                              stackTrace) =>
                                                           Center(
-                                                            child: Text('QR Error', style: TextStyle(color: Colors.red)),
-                                                          ),
+                                                        child: Text('QR Error',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .red)),
+                                                      ),
                                                     )
                                                   : QrImageView(
-                                                      data: 'https://admin.ipaconnect.org/user/${user.id}',
+                                                      data:
+                                                          'https://admin.ipaconnect.org/user/${user.id}',
                                                       version: QrVersions.auto,
                                                       size: 170,
                                                       gapless: false,
-                                                      foregroundColor: Colors.black,
+                                                      foregroundColor:
+                                                          Colors.black,
                                                       backgroundColor: kWhite,
-                                                      errorStateBuilder: (cxt, err) =>
-                                                          Center(
-                                                            child: Text('QR Error', style: TextStyle(color: Colors.red)),
-                                                          ),
+                                                      errorStateBuilder:
+                                                          (cxt, err) => Center(
+                                                        child: Text('QR Error',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .red)),
+                                                      ),
                                                     ),
                                             ),
                                           ),
@@ -176,8 +202,10 @@ class DigitalCardPage extends StatelessWidget {
                                         order: 3,
                                         from: SlideFrom.bottom,
                                         child: Center(
-                                          child: Text('Scan or click to preview',
-                                              style: TextStyle(color: kWhite, fontSize: 14)),
+                                          child: Text(
+                                              'Scan or click to preview',
+                                              style: TextStyle(
+                                                  color: kWhite, fontSize: 14)),
                                         ),
                                       ),
                                       const SizedBox(height: 8),
@@ -185,26 +213,38 @@ class DigitalCardPage extends StatelessWidget {
                                         order: 4,
                                         from: SlideFrom.bottom,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 4),
                                               decoration: BoxDecoration(
-                                                gradient: LinearGradient(colors: [
-                                                  Color(0xFF1E62B3).withOpacity(.5),
+                                                gradient:
+                                                    LinearGradient(colors: [
+                                                  Color(0xFF1E62B3)
+                                                      .withOpacity(.5),
                                                   kStrokeColor.withOpacity(.5)
                                                 ]),
-                                                borderRadius: BorderRadius.circular(10),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                               ),
                                               child: Row(
                                                 children: [
                                                   SizedBox(
                                                       height: 20,
                                                       width: 20,
-                                                      child: Image.network(user.hierarchy?.image ?? '')),
+                                                      child: Image.network(user
+                                                              .hierarchy
+                                                              ?.image ??
+                                                          '')),
                                                   const SizedBox(width: 6),
                                                   Text(user.memberId ?? '',
-                                                      style: kSmallTitleB.copyWith(color: kWhite)),
+                                                      style:
+                                                          kSmallTitleB.copyWith(
+                                                              color: kWhite)),
                                                 ],
                                               ),
                                             ),
@@ -231,7 +271,8 @@ class DigitalCardPage extends StatelessWidget {
                               bottomRight: Radius.circular(24),
                             ),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -242,22 +283,31 @@ class DigitalCardPage extends StatelessWidget {
                                   children: [
                                     CircleAvatar(
                                       backgroundColor: kStrokeColor,
-                                      backgroundImage:
-                                          user.image != null && user.image!.isNotEmpty ? NetworkImage(user.image!) : null,
+                                      backgroundImage: user.image != null &&
+                                              user.image!.isNotEmpty
+                                          ? NetworkImage(user.image!)
+                                          : null,
                                       radius: 28,
-                                      child: (user.image == null || user.image!.isEmpty)
-                                          ? Icon(Icons.person, size: 32, color: kGreyLight)
+                                      child: (user.image == null ||
+                                              user.image!.isEmpty)
+                                          ? Icon(Icons.person,
+                                              size: 32, color: kGreyLight)
                                           : null,
                                     ),
                                     const SizedBox(width: 16),
                                     Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(user.name ?? '', style: kBodyTitleB),
+                                        Text(user.name ?? '',
+                                            style: kBodyTitleB),
                                         Text(
                                           user.profession ?? user.role ?? '',
-                                          style: TextStyle(color: Colors.white70, fontSize: 15),
+                                          style: TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 15),
                                         ),
                                       ],
                                     ),
@@ -298,10 +348,13 @@ class DigitalCardPage extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     Icon(Icons.email, color: kWhite, size: 18),
-                                    if (user.email != null && user.email != '') const SizedBox(width: 12),
+                                    if (user.email != null && user.email != '')
+                                      const SizedBox(width: 12),
                                     if (user.email != null && user.email != '')
                                       Expanded(
-                                        child: Text(user.email ?? '', style: TextStyle(color: kWhite, fontSize: 12)),
+                                        child: Text(user.email ?? '',
+                                            style: TextStyle(
+                                                color: kWhite, fontSize: 12)),
                                       ),
                                   ],
                                 ),
@@ -315,23 +368,30 @@ class DigitalCardPage extends StatelessWidget {
                                     Icon(Icons.phone, color: kWhite, size: 18),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: Text(user.phone ?? '', style: TextStyle(color: kWhite, fontSize: 12)),
+                                      child: Text(user.phone ?? '',
+                                          style: TextStyle(
+                                              color: kWhite, fontSize: 12)),
                                     ),
                                   ],
                                 ),
                               ),
-                              if (user.location != null && user.location != '') const SizedBox(height: 12),
+                              if (user.location != null && user.location != '')
+                                const SizedBox(height: 12),
                               if (user.location != null && user.location != '')
                                 StaggerItem(
                                   order: 10,
                                   from: SlideFrom.left,
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Icon(Icons.location_on, color: kWhite, size: 18),
+                                      Icon(Icons.location_on,
+                                          color: kWhite, size: 18),
                                       const SizedBox(width: 12),
                                       Expanded(
-                                        child: Text(user.location ?? '', style: TextStyle(color: kWhite, fontSize: 12)),
+                                        child: Text(user.location ?? '',
+                                            style: TextStyle(
+                                                color: kWhite, fontSize: 12)),
                                       ),
                                     ],
                                   ),

@@ -41,7 +41,8 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMixin {
+class _HomePageState extends ConsumerState<HomePage>
+    with TickerProviderStateMixin {
   final _advancedDrawerController = AdvancedDrawerController();
   int _currentBannerIndex = 0; // kept for indicator logic if needed later
   int _currentNoticeIndex = 0;
@@ -66,7 +67,10 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     super.dispose();
   }
 
-  Widget _buildStaggered({required int order, required Offset beginOffset, required Widget child}) {
+  Widget _buildStaggered(
+      {required int order,
+      required Offset beginOffset,
+      required Widget child}) {
     final double start = (order * 0.08).clamp(0.0, 1.0);
     final double end = (start + 0.45).clamp(0.0, 1.0);
     final animation = CurvedAnimation(
@@ -76,18 +80,21 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(
-        position: Tween<Offset>(begin: beginOffset, end: Offset.zero).animate(animation),
+        position: Tween<Offset>(begin: beginOffset, end: Offset.zero)
+            .animate(animation),
         child: child,
       ),
     );
   }
 
   Widget _animateFromLeft({required int order, required Widget child}) {
-    return _buildStaggered(order: order, beginOffset: const Offset(-0.1, 0), child: child);
+    return _buildStaggered(
+        order: order, beginOffset: const Offset(-0.1, 0), child: child);
   }
 
   Widget _animateFromBottom({required int order, required Widget child}) {
-    return _buildStaggered(order: order, beginOffset: const Offset(0, 0.1), child: child);
+    return _buildStaggered(
+        order: order, beginOffset: const Offset(0, 0.1), child: child);
   }
 
   Widget _animatedSection({required int order, required Widget child}) {
@@ -363,7 +370,8 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                               }).toList(),
                                               options: CarouselOptions(
                                                 height: 175,
-                                                scrollPhysics: banners.length > 1
+                                                scrollPhysics: banners.length >
+                                                        1
                                                     ? null
                                                     : const NeverScrollableScrollPhysics(),
                                                 autoPlay: banners.length > 1
@@ -404,42 +412,58 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                         padding: const EdgeInsets.only(
                                             left: 16, right: 16, top: 10),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             CustomIconContainer(
                                                 onTap: () {
                                                   Navigator.pushNamed(
-                                                      arguments: widget.user.countryCode,
+                                                      arguments: widget
+                                                          .user.countryCode,
                                                       context,
                                                       'CampaignsMainScreen');
                                                 },
                                                 label: 'CSR',
-                                                icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/csr_icon.svg')),
+                                                icon: SvgPicture.asset(
+                                                    color: kWhite,
+                                                    'assets/svg/icons/csr_icon.svg')),
                                             CustomIconContainer(
                                                 onTap: () {
                                                   Navigator.pushNamed(
-                                                      arguments: widget.user.countryCode,
+                                                      arguments: widget
+                                                          .user.countryCode,
                                                       context,
                                                       'EventsPage');
                                                 },
                                                 label: 'Events',
-                                                icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/event_icon.svg')),
-                                            if (widget.user.phone != '+919645398555')
-                                              CustomIconContainer(
-                                                  label: 'Store',
-                                                  onTap: () {
-                                                    Navigator.pushNamed(
-                                                        arguments: widget.user.countryCode,
-                                                        context,
-                                                        'StorePage');
-                                                  },
-                                                  icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/card_icon.svg')),
+                                                icon: SvgPicture.asset(
+                                                    color: kWhite,
+                                                    'assets/svg/icons/event_icon.svg')),
+                                            // if (widget.user.phone != '+919645398555')
+                                            CustomIconContainer(
+                                                label: 'Store',
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      arguments: widget
+                                                          .user.countryCode,
+                                                      context,
+                                                      'StorePage');
+                                                },
+                                                icon: SvgPicture.asset(
+                                                    color: kWhite,
+                                                    'assets/svg/icons/card_icon.svg')),
                                             CustomIconContainer(
                                                 onTap: () {
-                                                  ref.read(selectedIndexProvider.notifier).updateIndex(1);
+                                                  ref
+                                                      .read(
+                                                          selectedIndexProvider
+                                                              .notifier)
+                                                      .updateIndex(1);
                                                 },
                                                 label: 'Bussiness',
-                                                icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/offer_icon.svg')),
+                                                icon: SvgPicture.asset(
+                                                    color: kWhite,
+                                                    'assets/svg/icons/offer_icon.svg')),
                                           ],
                                         ),
                                       ),
@@ -450,25 +474,36 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                       _animatedSection(
                                         order: 5,
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Row(
                                                 children: [
-                                                  Text('Event', style: kBodyTitleB),
+                                                  Text('Event',
+                                                      style: kBodyTitleB),
                                                   const Spacer(),
                                                   InkWell(
                                                     onTap: () {
-                                                      navigationService.pushNamed('EventsPage');
+                                                      navigationService
+                                                          .pushNamed(
+                                                              'EventsPage');
                                                     },
-                                                    child: Text('View All', style: kSmallTitleL.copyWith(color: kPrimaryColor)),
+                                                    child: Text('View All',
+                                                        style: kSmallTitleL
+                                                            .copyWith(
+                                                                color:
+                                                                    kPrimaryColor)),
                                                   ),
                                                 ],
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  navigationService.pushNamed('EventDetails', arguments: event);
+                                                  navigationService.pushNamed(
+                                                      'EventDetails',
+                                                      arguments: event);
                                                 },
                                                 child: eventWidget(
                                                   context: context,
@@ -488,14 +523,23 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                           children: [
                                             CarouselSlider(
                                               items: notices.map((notice) {
-                                                return customNotice(context: context, notice: notice);
+                                                return customNotice(
+                                                    context: context,
+                                                    notice: notice);
                                               }).toList(),
                                               options: CarouselOptions(
-                                                scrollPhysics: notices.length > 1 ? null : const NeverScrollableScrollPhysics(),
-                                                autoPlay: notices.length > 1 ? true : false,
+                                                scrollPhysics: notices.length >
+                                                        1
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
+                                                autoPlay: notices.length > 1
+                                                    ? true
+                                                    : false,
                                                 viewportFraction: 1,
-                                                height: _calculateDynamicHeight(notices),
-                                                autoPlayInterval: const Duration(seconds: 3),
+                                                height: _calculateDynamicHeight(
+                                                    notices),
+                                                autoPlayInterval:
+                                                    const Duration(seconds: 3),
                                                 onPageChanged: (index, reason) {
                                                   setState(() {
                                                     _currentNoticeIndex = index;
@@ -503,9 +547,14 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                                 },
                                               ),
                                             ),
-                                            if (notices.isNotEmpty) const SizedBox(height: 10),
+                                            if (notices.isNotEmpty)
+                                              const SizedBox(height: 10),
                                             if (notices.length > 1)
-                                              _buildDotIndicator(_currentNoticeIndex, notices.length, const Color.fromARGB(255, 39, 38, 38)),
+                                              _buildDotIndicator(
+                                                  _currentNoticeIndex,
+                                                  notices.length,
+                                                  const Color.fromARGB(
+                                                      255, 39, 38, 38)),
                                           ],
                                         ),
                                       ),
@@ -513,7 +562,8 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                       _animatedSection(
                                         order: 7,
                                         child: Padding(
-                                          padding: const EdgeInsets.only(top: 20),
+                                          padding:
+                                              const EdgeInsets.only(top: 20),
                                           child: Column(
                                             children: [
                                               CarouselSlider(
@@ -522,22 +572,35 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                                     .entries
                                                     .map((entry) {
                                                   int index = entry.key;
-                                                  Promotion poster = entry.value;
+                                                  Promotion poster =
+                                                      entry.value;
 
                                                   return KeyedSubtree(
                                                     key: ValueKey(index),
-                                                    child: customPoster(context: context, poster: poster),
+                                                    child: customPoster(
+                                                        context: context,
+                                                        poster: poster),
                                                   );
                                                 }).toList(),
                                                 options: CarouselOptions(
-                                                  height: screenHeight < 900 ?550 : 500,
-                                                  scrollPhysics: posters.length > 1 ? null : const NeverScrollableScrollPhysics(),
+                                                  height: screenHeight < 900
+                                                      ? 550
+                                                      : 500,
+                                                  scrollPhysics: posters
+                                                              .length >
+                                                          1
+                                                      ? null
+                                                      : const NeverScrollableScrollPhysics(),
                                                   autoPlay: posters.length > 1,
                                                   viewportFraction: 1,
-                                                  autoPlayInterval: const Duration(seconds: 5),
-                                                  onPageChanged: (index, reason) {
+                                                  autoPlayInterval:
+                                                      const Duration(
+                                                          seconds: 5),
+                                                  onPageChanged:
+                                                      (index, reason) {
                                                     setState(() {
-                                                      _currentPosterIndex = index;
+                                                      _currentPosterIndex =
+                                                          index;
                                                     });
                                                   },
                                                 ),
@@ -550,17 +613,25 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                       _animatedSection(
                                         order: 8,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.only(left: 15, top: 24, right: 15),
+                                              padding: const EdgeInsets.only(
+                                                  left: 15, top: 24, right: 15),
                                               child: Row(
                                                 children: [
-                                                  Text('Latest News', style: kBodyTitleB),
+                                                  Text('Latest News',
+                                                      style: kBodyTitleB),
                                                   const Spacer(),
                                                   InkWell(
-                                                    onTap: () => ref.read(selectedIndexProvider.notifier).updateIndex(3),
-                                                    child: Text('see all', style: kSmallTitleL),
+                                                    onTap: () => ref
+                                                        .read(
+                                                            selectedIndexProvider
+                                                                .notifier)
+                                                        .updateIndex(3),
+                                                    child: Text('see all',
+                                                        style: kSmallTitleL),
                                                   )
                                                 ],
                                               ),
@@ -570,20 +641,38 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                               height: 180,
                                               child: ListView.builder(
                                                 controller: ScrollController(),
-                                                scrollDirection: Axis.horizontal,
+                                                scrollDirection:
+                                                    Axis.horizontal,
                                                 itemCount: news.length,
                                                 itemBuilder: (context, index) {
-                                                  final individualNewsModel = news[index];
+                                                  final individualNewsModel =
+                                                      news[index];
                                                   return Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8.0),
                                                     child: SizedBox(
-                                                      width: MediaQuery.of(context).size.width * 0.45,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.45,
                                                       child: newsCard(
                                                         onTap: () {
-                                                          ref.read(selectedIndexProvider.notifier).updateIndex(3);
+                                                          ref
+                                                              .read(
+                                                                  selectedIndexProvider
+                                                                      .notifier)
+                                                              .updateIndex(3);
                                                         },
-                                                        imageUrl: individualNewsModel.media ?? '',
-                                                        title: individualNewsModel.title ?? '',
+                                                        imageUrl:
+                                                            individualNewsModel
+                                                                    .media ??
+                                                                '',
+                                                        title:
+                                                            individualNewsModel
+                                                                    .title ??
+                                                                '',
                                                       ),
                                                     ),
                                                   );
@@ -597,35 +686,52 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                       _animatedSection(
                                         order: 9,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
                                                 Padding(
-                                                  padding: const EdgeInsets.only(left: 15, top: 10),
-                                                  child: Text('Campaign', style: kBodyTitleB),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 15, top: 10),
+                                                  child: Text('Campaign',
+                                                      style: kBodyTitleB),
                                                 ),
                                                 const Spacer(),
                                                 Padding(
-                                                  padding: const EdgeInsets.only(right: 15, top: 10),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 15, top: 10),
                                                   child: InkWell(
                                                     onTap: () {
-                                                      navigationService.pushNamed('CampaignsMainScreen');
+                                                      navigationService.pushNamed(
+                                                          'CampaignsMainScreen');
                                                     },
-                                                    child: Text('View All ', style: kSmallTitleL.copyWith(color: kPrimaryColor)),
+                                                    child: Text('View All ',
+                                                        style: kSmallTitleL
+                                                            .copyWith(
+                                                                color:
+                                                                    kPrimaryColor)),
                                                   ),
                                                 ),
                                               ],
                                             ),
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0,
+                                                      vertical: 8.0),
                                               child: CampaignCard(
                                                 campaign: campaign,
                                                 onLearnMore: () {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (_) => CampaignDetailPage(campaign: campaign),
+                                                      builder: (_) =>
+                                                          CampaignDetailPage(
+                                                              campaign:
+                                                                  campaign),
                                                     ),
                                                   );
                                                 },
@@ -651,12 +757,17 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                         child: Column(
                                           children: [
                                             CarouselSlider(
-                                              items: filteredVideos.map((video) {
-                                                return customVideo(context: context, videoUrl: video.link ?? '');
+                                              items:
+                                                  filteredVideos.map((video) {
+                                                return customVideo(
+                                                    context: context,
+                                                    videoUrl: video.link ?? '');
                                               }).toList(),
                                               options: CarouselOptions(
                                                 height: 225,
-                                                scrollPhysics: videos.length > 1 ? null : const NeverScrollableScrollPhysics(),
+                                                scrollPhysics: videos.length > 1
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
                                                 viewportFraction: 1,
                                                 onPageChanged: (index, reason) {
                                                   setState(() {
@@ -666,7 +777,10 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                                               ),
                                             ),
                                             if (videos.length > 1)
-                                              _buildDotIndicator(_currentVideoIndex, filteredVideos.length, kWhite),
+                                              _buildDotIndicator(
+                                                  _currentVideoIndex,
+                                                  filteredVideos.length,
+                                                  kWhite),
                                           ],
                                         ),
                                       ),
@@ -686,7 +800,8 @@ class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMix
                     child: Scaffold(
                       backgroundColor: kBackgroundColor,
                       body: Container(
-                        decoration: const BoxDecoration(color: kBackgroundColor),
+                        decoration:
+                            const BoxDecoration(color: kBackgroundColor),
                         child: const Center(
                           child: LoadingAnimation(),
                         ),
