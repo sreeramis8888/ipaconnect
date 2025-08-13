@@ -287,129 +287,217 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
           notifier.fetchMoreRatings(
               entityId: company.id ?? '', entityType: 'Company');
         }
-        return ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          children: [
-            const SizedBox(height: 16),
-            // Company Overview
-            Text('Company Overview', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            Text(company.overview ?? '-',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
-            const SizedBox(height: 16),
-            // Industry
-            Text('Industry', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            Text(company.category ?? '-',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
-            const SizedBox(height: 16),
-            // Services
-            Text('Services', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            if (company.services != null && company.services!.isNotEmpty)
-              ...company.services!
-                  .map((s) => Text('• $s',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: kSecondaryTextColor)))
-                  .toList()
-            else
-              Text('-', style: kBodyTitleR),
-            const SizedBox(height: 16),
-            // Location (Map Placeholder)
-            Text('Location', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                color: kCardBackgroundColor,
-                borderRadius: BorderRadius.circular(12),
+        return StartupStagger(
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            children: [
+              const SizedBox(height: 16),
+              // Company Overview
+              StaggerItem(
+                order: 0,
+                from: SlideFrom.left,
+                child: Text('Company Overview', style: kBodyTitleB),
               ),
-              child: Center(
-                child: Text(
-                  company.contactInfo?.address ?? '-',
-                  style: kBodyTitleR,
-                  textAlign: TextAlign.center,
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 1,
+                from: SlideFrom.bottom,
+                child: Text(company.overview ?? '-',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
+              ),
+              const SizedBox(height: 16),
+              // Industry
+              StaggerItem(
+                order: 2,
+                from: SlideFrom.left,
+                child: Text('Industry', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 3,
+                from: SlideFrom.bottom,
+                child: Text(company.category ?? '-',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
+              ),
+              const SizedBox(height: 16),
+              // Services
+              StaggerItem(
+                order: 4,
+                from: SlideFrom.left,
+                child: Text('Services', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 5,
+                from: SlideFrom.bottom,
+                child: company.services != null && company.services!.isNotEmpty
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: company.services!
+                            .map((s) => Text('• $s',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w300,
+                                    color: kSecondaryTextColor)))
+                            .toList(),
+                      )
+                    : Text('-', style: kBodyTitleR),
+              ),
+              const SizedBox(height: 16),
+              // Location (Map Placeholder)
+              StaggerItem(
+                order: 6,
+                from: SlideFrom.left,
+                child: Text('Location', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 7,
+                from: SlideFrom.bottom,
+                child: Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: kCardBackgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      company.contactInfo?.address ?? '-',
+                      style: kBodyTitleR,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            // Website
-            Text('Website', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            Text(company.contactInfo?.website ?? 'Link',
-                style: TextStyle(color: kSecondaryTextColor)),
-            const SizedBox(height: 16),
-            // Established
-            Text('Established', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            Text(
-                company.establishedDate != null
-                    ? '${company.establishedDate!.year}'
-                    : '-',
-                style: TextStyle(color: kSecondaryTextColor)),
-            const SizedBox(height: 16),
-            // Team Size
-            Text('Team Size', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            Text(company.companySize ?? '-',
-                style: TextStyle(color: kSecondaryTextColor)),
-            const SizedBox(height: 16),
-            Text('Opening Hours', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            _buildOpeningHours(),
-            const SizedBox(height: 16),
-            Text('Photo Gallery', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            _buildPhotoGallery(),
-            const SizedBox(height: 16),
-            Text('Video Gallery', style: kBodyTitleB),
-            const SizedBox(height: 4),
-            _buildVideoGallery(),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+              // Website
+              StaggerItem(
+                order: 8,
+                from: SlideFrom.left,
+                child: Text('Website', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 9,
+                from: SlideFrom.bottom,
+                child: Text(company.contactInfo?.website ?? 'Link',
+                    style: TextStyle(color: kSecondaryTextColor)),
+              ),
+              const SizedBox(height: 16),
+              // Established
+              StaggerItem(
+                order: 10,
+                from: SlideFrom.left,
+                child: Text('Established', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 11,
+                from: SlideFrom.bottom,
+                child: Text(
+                    company.establishedDate != null
+                        ? '${company.establishedDate!.year}'
+                        : '-',
+                    style: TextStyle(color: kSecondaryTextColor)),
+              ),
+              const SizedBox(height: 16),
+              // Team Size
+              StaggerItem(
+                order: 12,
+                from: SlideFrom.left,
+                child: Text('Team Size', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 13,
+                from: SlideFrom.bottom,
+                child: Text(company.companySize ?? '-',
+                    style: TextStyle(color: kSecondaryTextColor)),
+              ),
+              const SizedBox(height: 16),
+              StaggerItem(
+                order: 14,
+                from: SlideFrom.left,
+                child: Text('Opening Hours', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 15,
+                from: SlideFrom.bottom,
+                child: _buildOpeningHours(),
+              ),
+              const SizedBox(height: 16),
+              StaggerItem(
+                order: 16,
+                from: SlideFrom.left,
+                child: Text('Photo Gallery', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 17,
+                from: SlideFrom.bottom,
+                child: _buildPhotoGallery(),
+              ),
+              const SizedBox(height: 16),
+              StaggerItem(
+                order: 18,
+                from: SlideFrom.left,
+                child: Text('Video Gallery', style: kBodyTitleB),
+              ),
+              const SizedBox(height: 4),
+              StaggerItem(
+                order: 19,
+                from: SlideFrom.bottom,
+                child: _buildVideoGallery(),
+              ),
+              const SizedBox(height: 16),
 
-            ReviewBarChart(
-              reviews: ratings,
-              onViewAll: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CompanyReviewsPage(company: company),
-                  ),
-                );
-              },
-              onWriteReview: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: kCardBackgroundColor,
-                  builder: (context) => AddReviewModal(
-                    entityId: company.id ?? '',
-                    entityType: 'Company',
-                    notifier: notifier,
-                    onSubmitted: () async {
-                      final ratings = ref.read(ratingNotifierProvider);
-                      if (ratings.isNotEmpty) {
-                        final avgRating = ratings
-                                .map((r) => r.rating)
-                                .fold(0, (a, b) => a + b) /
-                            ratings.length;
-                        ref
-                            .read(companiesNotifierProvider.notifier)
-                            .updateCompanyRating(
-                              companyId: company.id ?? '',
-                              newRating: avgRating,
-                            );
-                      }
-                    },
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+              StaggerItem(
+                order: 20,
+                from: SlideFrom.bottom,
+                child: ReviewBarChart(
+                  reviews: ratings,
+                  onViewAll: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CompanyReviewsPage(company: company),
+                      ),
+                    );
+                  },
+                  onWriteReview: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: kCardBackgroundColor,
+                      builder: (context) => AddReviewModal(
+                        entityId: company.id ?? '',
+                        entityType: 'Company',
+                        notifier: notifier,
+                        onSubmitted: () async {
+                          final ratings = ref.read(ratingNotifierProvider);
+                          if (ratings.isNotEmpty) {
+                            final avgRating = ratings
+                                    .map((r) => r.rating)
+                                    .fold(0, (a, b) => a + b) /
+                                ratings.length;
+                            ref
+                                .read(companiesNotifierProvider.notifier)
+                                .updateCompanyRating(
+                                  companyId: company.id ?? '',
+                                  newRating: avgRating,
+                                );
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         );
       },
     );
