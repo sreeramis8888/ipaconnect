@@ -3,8 +3,21 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 
-class AboutUsPage extends StatelessWidget {
+class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key});
+
+  @override
+  State<AboutUsPage> createState() => _AboutUsPageState();
+}
+
+class _AboutUsPageState extends State<AboutUsPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +68,7 @@ class AboutUsPage extends StatelessWidget {
             style: kBodyTitleM.copyWith(color: kSecondaryTextColor)),
       ),
       body: ListView(
+        controller: _scrollController,
         padding: EdgeInsets.zero,
         children: [
           Container(
@@ -74,16 +88,19 @@ class AboutUsPage extends StatelessWidget {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('About Us',
-                          style: kSubHeadingB.copyWith(color: kWhite)),
-                      const SizedBox(height: 8),
-                      Text(
-                          'Getting educated is a Right and not a privilege. We at Skepick are committed for making education possible for the deprived. Our platform provides transparency by ensuring a bona fide utilization of funds. Our goal is to use education as the most powerful weapon to secure a sustainable future for the world. We believe education is the only solution to ensuring social equality, poverty eradication, a better labor & order situation, etc. Our sponsors empower students to achieve their aspirations and grow up to be self-dependent & resourceful citizens through their valuable donation. We are the World\'s Only Transparent Sponsorship platform opening the education doors for millions of students. We value the continued support from our institution partners to make our vision possible.',
-                          style: TextStyle(color: kSecondaryTextColor)),
-                    ],
+                  child: _ScrollReveal(
+                    controller: _scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('About Us',
+                            style: kSubHeadingB.copyWith(color: kWhite)),
+                        const SizedBox(height: 8),
+                        Text(
+                            'Getting educated is a Right and not a privilege. We at Skepick are committed for making education possible for the deprived. Our platform provides transparency by ensuring a bona fide utilization of funds. Our goal is to use education as the most powerful weapon to secure a sustainable future for the world. We believe education is the only solution to ensuring social equality, poverty eradication, a better labor & order situation, etc. Our sponsors empower students to achieve their aspirations and grow up to be self-dependent & resourceful citizens through their valuable donation. We are the World\'s Only Transparent Sponsorship platform opening the education doors for millions of students. We value the continued support from our institution partners to make our vision possible.',
+                            style: TextStyle(color: kSecondaryTextColor)),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -91,41 +108,43 @@ class AboutUsPage extends StatelessWidget {
                   decoration: BoxDecoration(color: kCardBackgroundColor),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Text('Fueling Impact\nThrough Numbers\nThat Matter',
-                            style: kLargeTitleB.copyWith(
-                                color: kWhite, fontSize: 32)),
-                        const SizedBox(height: 16),
-                        Container(
-                          height: 1,
-                          color: kBackgroundColor,
-                        ),
-                        const SizedBox(height: 10),
-                        // Statistics Grid
-                        GridView.count(
-                          crossAxisCount: 2,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          mainAxisSpacing: 0,
-                          crossAxisSpacing: 16,
-                          children: [
-                            _statCard('8', 'Years experience',
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
-                            _statCard('2K', 'Members',
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
-                            _statCard('6', 'Total Clusters',
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
-                            _statCard('100+', 'Total Businesses',
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-                      ],
+                    child: _ScrollReveal(
+                      controller: _scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Text('Fueling Impact\nThrough Numbers\nThat Matter',
+                              style: kLargeTitleB.copyWith(
+                                  color: kWhite, fontSize: 32)),
+                          const SizedBox(height: 16),
+                          Container(
+                            height: 1,
+                            color: kBackgroundColor,
+                          ),
+                          const SizedBox(height: 10),
+                          GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            mainAxisSpacing: 0,
+                            crossAxisSpacing: 16,
+                            children: [
+                              _statCard('8', 'Years experience',
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                              _statCard('2K', 'Members',
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                              _statCard('6', 'Total Clusters',
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                              _statCard('100+', 'Total Businesses',
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -133,90 +152,102 @@ class AboutUsPage extends StatelessWidget {
                 // Timeline
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Growth Over Time',
-                          style: kSubHeadingB.copyWith(
-                              color: kWhite, fontSize: 32)),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Explore the key moments that shaped IPA Into a thriving business community. From its founding vision to present-day milestones, our journey reflects growth, collaboration, and a commitment to empowering entrepreneurs across the globe.',
-                        style: TextStyle(color: kSecondaryTextColor),
-                      ),
-                      const SizedBox(height: 24),
-                      _timelineItemNew(
-                          '2018',
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisl efficitur erat, vitae cursus nunc risus vel lacus.',
-                          'assets/pngs/icon1.png'),
-                      const SizedBox(height: 24),
-                      _timelineItemNew(
-                          '2018',
-                          'Lorem Ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisi efficitur erat, vitae cursus nunc risus vel lacus.',
-                          'assets/pngs/icon2.png'),
-                    ],
+                  child: _ScrollReveal(
+                    controller: _scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Growth Over Time',
+                            style: kSubHeadingB.copyWith(
+                                color: kWhite, fontSize: 32)),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Explore the key moments that shaped IPA Into a thriving business community. From its founding vision to present-day milestones, our journey reflects growth, collaboration, and a commitment to empowering entrepreneurs across the globe.',
+                          style: TextStyle(color: kSecondaryTextColor),
+                        ),
+                        const SizedBox(height: 24),
+                        _timelineItemNew(
+                            '2018',
+                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisl efficitur erat, vitae cursus nunc risus vel lacus.',
+                            'assets/pngs/icon1.png'),
+                        const SizedBox(height: 24),
+                        _timelineItemNew(
+                            '2018',
+                            'Lorem Ipsum dolor sit amet, consectetur adipiscing elit. Morbi facilisis, justo ac tincidunt tincidunt, sapien nisi efficitur erat, vitae cursus nunc risus vel lacus.',
+                            'assets/pngs/icon2.png'),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
                 // Vision
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Vision', style: kSubHeadingB),
-                      const SizedBox(height: 8),
-                      Text(
-                          'Being most popular and sought after platform for Keralite business entrepreneurs where they will be connected and flourished as a dynamic business community in GCC.',
-                          style: TextStyle(color: kSecondaryTextColor)),
-                    ],
+                  child: _ScrollReveal(
+                    controller: _scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Vision', style: kSubHeadingB),
+                        const SizedBox(height: 8),
+                        Text(
+                            'Being most popular and sought after platform for Keralite business entrepreneurs where they will be connected and flourished as a dynamic business community in GCC.',
+                            style: TextStyle(color: kSecondaryTextColor)),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
                 // Mission
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Mission', style: kSubHeadingB),
-                      const SizedBox(height: 8),
-                      Text(
-                          'To empower the clients who are entrepreneurs in UAE developing a network to explore potential business opportunities, identify potential clients, customers and partners, boost business relationships, formulate marketing strategies, share requirements, find potential investors and JV partners. To provide long term training to entrepreneurs focusing on advanced marketing skills and updating information on current business scenarios.',
-                          style: TextStyle(color: kSecondaryTextColor)),
-                    ],
+                  child: _ScrollReveal(
+                    controller: _scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Mission', style: kSubHeadingB),
+                        const SizedBox(height: 8),
+                        Text(
+                            'To empower the clients who are entrepreneurs in UAE developing a network to explore potential business opportunities, identify potential clients, customers and partners, boost business relationships, formulate marketing strategies, share requirements, find potential investors and JV partners. To provide long term training to entrepreneurs focusing on advanced marketing skills and updating information on current business scenarios.',
+                            style: TextStyle(color: kSecondaryTextColor)),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 32),
                 // Board Members
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Board Members',
-                          style: kSubHeadingB.copyWith(color: kWhite)),
-                      const SizedBox(height: 16),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: members.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 240,
-                        ),
-                        itemBuilder: (context, index) {
-                          return _boardMemberCard(
-                            designation: members[index]['designation'] ?? '',
-                            name: members[index]['name'] ?? '',
-                            photo: members[index]['photo'] ?? '',
-                          );
-                        },
-                      )
-                    ],
+                  child: _ScrollReveal(
+                    controller: _scrollController,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Board Members',
+                            style: kSubHeadingB.copyWith(color: kWhite)),
+                        const SizedBox(height: 16),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: members.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            mainAxisExtent: 240,
+                          ),
+                          itemBuilder: (context, index) {
+                            return _boardMemberCard(
+                              designation: members[index]['designation'] ?? '',
+                              name: members[index]['name'] ?? '',
+                              photo: members[index]['photo'] ?? '',
+                            );
+                          },
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -341,6 +372,74 @@ class AboutUsPage extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+}
+
+class _ScrollReveal extends StatefulWidget {
+  final ScrollController controller;
+  final Widget child;
+  final double offset; // proportion from top of screen to trigger reveal
+  const _ScrollReveal({required this.controller, required this.child, this.offset = 0.1});
+
+  @override
+  State<_ScrollReveal> createState() => _ScrollRevealState();
+}
+
+class _ScrollRevealState extends State<_ScrollReveal>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animController;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+  bool _played = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _fade = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slide = Tween<Offset>(begin: Offset(0, 0.1), end: Offset.zero)
+        .animate(_fade);
+    widget.controller.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onScroll);
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_played) return;
+    final renderObject = context.findRenderObject();
+    if (renderObject is! RenderBox) return;
+    final position = renderObject.localToGlobal(Offset.zero);
+    final size = renderObject.size;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    final double top = position.dy;
+    final double bottom = top + size.height;
+    final double triggerTop = screenHeight * (1.0 - widget.offset);
+
+    if (top < triggerTop && bottom > 0) {
+      _animController.forward();
+      _played = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(
+        position: _slide,
+        child: widget.child,
+      ),
     );
   }
 }

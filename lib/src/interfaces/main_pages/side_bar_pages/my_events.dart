@@ -10,6 +10,7 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class MyEventsPage extends StatelessWidget {
   const MyEventsPage({Key? key}) : super(key: key);
@@ -39,15 +40,21 @@ class MyEventsPage extends StatelessWidget {
           body: asyncEvents.when(
             data: (registeredEvents) {
               if (registeredEvents.isNotEmpty) {
-                return ListView.builder(
+                return StartupStagger(
+                  child: ListView.builder(
                   itemCount: registeredEvents.length,
                   itemBuilder: (context, index) {
-                    return Padding(
+                    return StaggerItem(
+                      order: 1 + (index % 8),
+                      from: SlideFrom.bottom,
+                      child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: eventCard(
                           context: context, event: registeredEvents[index]),
+                    ),
                     );
                   },
+                ),
                 );
               } else {
                 return Center(

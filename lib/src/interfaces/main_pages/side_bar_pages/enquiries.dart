@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/enquiry_model.dart';
 import 'package:ipaconnect/src/data/notifiers/enquiry_notifier.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class EnquiriesPage extends ConsumerStatefulWidget {
   const EnquiriesPage({Key? key}) : super(key: key);
@@ -70,73 +71,79 @@ class _EnquiriesPageState extends ConsumerState<EnquiriesPage> {
             ? Center(child: LoadingAnimation())
             : enquiries.isEmpty
                 ? Center(child: Text('No Enquiries', style: kBodyTitleB))
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16.0),
-                    itemCount: enquiries.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == enquiries.length) {
-                        return isLoading
-                            ? Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Center(child: LoadingAnimation()),
-                              )
-                            : const SizedBox.shrink();
-                      }
-                      final enquiry = enquiries[index];
-                      return Card(
-                        color: kCardBackgroundColor,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                : StartupStagger(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: enquiries.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == enquiries.length) {
+                          return isLoading
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Center(child: LoadingAnimation()),
+                                )
+                              : const SizedBox.shrink();
+                        }
+                        final enquiry = enquiries[index];
+                        return StaggerItem(
+                          order: 1 + (index % 8),
+                          from: SlideFrom.bottom,
+                          child: Card(
+                            color: kCardBackgroundColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.person, color: kPrimaryColor),
-                                  const SizedBox(width: 8),
-                                  Text(enquiry.name ?? '-', style: kBodyTitleB),
-                                  const Spacer(),
-                                  Text(
-                                    enquiry.createdAt != null
-                                        ? '${enquiry.createdAt!.day}/${enquiry.createdAt!.month}/${enquiry.createdAt!.year}'
-                                        : '',
-                                    style: kSmallTitleL.copyWith(
-                                        color: kSecondaryTextColor),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.person, color: kPrimaryColor),
+                                      const SizedBox(width: 8),
+                                      Text(enquiry.name ?? '-', style: kBodyTitleB),
+                                      const Spacer(),
+                                      Text(
+                                        enquiry.createdAt != null
+                                            ? '${enquiry.createdAt!.day}/${enquiry.createdAt!.month}/${enquiry.createdAt!.year}'
+                                            : '',
+                                        style: kSmallTitleL.copyWith(
+                                            color: kSecondaryTextColor),
+                                      ),
+                                    ],
                                   ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.email,
+                                          color: kSecondaryTextColor, size: 18),
+                                      const SizedBox(width: 6),
+                                      Text(enquiry.email ?? '-',
+                                          style: kSmallTitleL),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.phone,
+                                          color: kSecondaryTextColor, size: 18),
+                                      const SizedBox(width: 6),
+                                      Text(enquiry.phone ?? '-',
+                                          style: kSmallTitleL),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text('Message:', style: kSmallTitleB),
+                                  Text(enquiry.message ?? '-', style: kSmallTitleL),
                                 ],
                               ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Icon(Icons.email,
-                                      color: kSecondaryTextColor, size: 18),
-                                  const SizedBox(width: 6),
-                                  Text(enquiry.email ?? '-',
-                                      style: kSmallTitleL),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Icon(Icons.phone,
-                                      color: kSecondaryTextColor, size: 18),
-                                  const SizedBox(width: 6),
-                                  Text(enquiry.phone ?? '-',
-                                      style: kSmallTitleL),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text('Message:', style: kSmallTitleB),
-                              Text(enquiry.message ?? '-', style: kSmallTitleL),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
       ),
     );

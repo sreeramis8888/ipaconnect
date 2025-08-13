@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/models/order_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/store_api/store_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class MyOrdersPage extends ConsumerWidget {
   const MyOrdersPage({Key? key}) : super(key: key);
@@ -40,67 +41,73 @@ class MyOrdersPage extends ConsumerWidget {
             ? Center(
                 child: Text('No orders found.', style: kBodyTitleR),
               )
-            : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  final product = order.store;
-                  final productImage = order.store?.image ?? '';
-                  final price = order.amount ?? 0;
-                  final quantity = order.quantity ?? 0;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: kCardBackgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            bottomLeft: Radius.circular(12),
-                          ),
-                          child: productImage != null && productImage.isNotEmpty
-                              ? Image.network(
-                                  productImage,
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
-                                )
-                              : Container(
-                                  width: 80,
-                                  height: 80,
-                                  color: kGrey,
-                                  child: const Icon(Icons.image,
-                                      color: kWhite, size: 40),
-                                ),
+            : StartupStagger(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    final order = orders[index];
+                    final product = order.store;
+                    final productImage = order.store?.image ?? '';
+                    final price = order.amount ?? 0;
+                    final quantity = order.quantity ?? 0;
+                    return StaggerItem(
+                      order: 1 + (index % 8),
+                      from: SlideFrom.bottom,
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: kCardBackgroundColor,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(product?.name ?? '', style: kSmallTitleL),
-                                const SizedBox(height: 8),
-                                Text('₹${price.toStringAsFixed(0)}',
-                                    style: kSmallTitleB),
-                              ],
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                              child: productImage.isNotEmpty
+                                  ? Image.network(
+                                      productImage,
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      width: 80,
+                                      height: 80,
+                                      color: kGrey,
+                                      child: const Icon(Icons.image,
+                                          color: kWhite, size: 40),
+                                    ),
                             ),
-                          ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(product?.name ?? '', style: kSmallTitleL),
+                                    const SizedBox(height: 8),
+                                    Text('₹${price.toStringAsFixed(0)}',
+                                        style: kSmallTitleB),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: Text('Quantity: $quantity',
+                                  style: kSmallerTitleR),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: Text('Quantity: $quantity',
-                              style: kSmallerTitleR),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                      ),
+                    );
+                  },
+                ),
               ),
       ),
     );

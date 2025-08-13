@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,7 +16,7 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/folder_view_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/media_upload_page.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class EventDetailsPage extends ConsumerStatefulWidget {
   final EventsModel event;
@@ -186,28 +185,43 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                 child: Padding(
                   padding:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.event.eventName ?? '', style: kBodyTitleB),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.calendar_today,
-                              size: 14, color: kSecondaryTextColor),
-                          const SizedBox(width: 8),
-                          Text(formattedDate,
+                  child: StartupStagger(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        StaggerItem(
+                          order: 0,
+                          from: SlideFrom.bottom,
+                          child: Text(widget.event.eventName ?? '',
+                              style: kBodyTitleB),
+                        ),
+                        const SizedBox(height: 8),
+                        StaggerItem(
+                          order: 1,
+                          from: SlideFrom.bottom,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  size: 14, color: kSecondaryTextColor),
+                              const SizedBox(width: 8),
+                              Text(formattedDate,
+                                  style: kSmallTitleL.copyWith(
+                                      color: kSecondaryTextColor)),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        StaggerItem(
+                          order: 2,
+                          from: SlideFrom.bottom,
+                          child: Text(
+                              widget.event.description ??
+                                  'No description available',
                               style: kSmallTitleL.copyWith(
                                   color: kSecondaryTextColor)),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                          widget.event.description ??
-                              'No description available',
-                          style: kSmallTitleL.copyWith(
-                              color: kSecondaryTextColor)),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

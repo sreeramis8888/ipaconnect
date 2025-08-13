@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/members_notifier.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart';
@@ -70,7 +71,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      body: ListView.builder(
+      body: StartupStagger(
+        child: ListView.builder(
         controller: _scrollController,
         padding: EdgeInsets.zero,
         itemCount: 1 +
@@ -82,7 +84,10 @@ class _MembersPageState extends ConsumerState<MembersPage> {
         itemBuilder: (context, index) {
           if (index == 0) {
             // Search bar and header widgets
-            return Container(
+            return StaggerItem(
+              order: 0,
+              from: SlideFrom.left,
+              child: Container(
               padding: const EdgeInsets.only(left: 10, right: 10, top: 20),
               child: Column(
                 children: [
@@ -126,6 +131,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                   )
                 ],
               ),
+            ),
             );
           }
 
@@ -154,7 +160,10 @@ class _MembersPageState extends ConsumerState<MembersPage> {
           if (userIndex < users.length) {
             final user = users[userIndex];
             final userId = user.id ?? '';
-            return GestureDetector(
+            return StaggerItem(
+              order: 1 + (userIndex % 10),
+              from: SlideFrom.bottom,
+              child: GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -248,6 +257,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                   ),
                 ],
               ),
+            )
             );
           }
 
@@ -258,6 +268,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
           return const SizedBox.shrink();
         },
+      ),
       ),
     );
   }

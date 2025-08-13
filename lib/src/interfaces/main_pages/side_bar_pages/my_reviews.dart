@@ -8,6 +8,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class MyReviewsPage extends ConsumerStatefulWidget {
   const MyReviewsPage({Key? key}) : super(key: key);
@@ -65,11 +66,15 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
         backgroundColor: kBackgroundColor,
         iconTheme: const IconThemeData(color: kSecondaryTextColor),
       ),
-      body: Column(
+      body: StartupStagger(
+        child: Column(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
+            child: StaggerItem(
+              order: 0,
+              from: SlideFrom.left,
+              child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: _types.map((type) {
                 final bool isSelected = _selectedType == type;
@@ -107,6 +112,7 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
                 );
               }).toList(),
             ),
+            ),
           ),
           Expanded(
             child: isLoading
@@ -120,7 +126,11 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
                             child: ListView.builder(
                               itemCount: ratings.length,
                               itemBuilder: (context, index) {
-                                return _reviewTile(ratings[index]);
+                                return StaggerItem(
+                                  order: 1 + (index % 8),
+                                  from: SlideFrom.bottom,
+                                  child: _reviewTile(ratings[index]),
+                                );
                               },
                             ),
                           ),
@@ -138,6 +148,7 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
                       ),
           ),
         ],
+      ),
       ),
     );
   }

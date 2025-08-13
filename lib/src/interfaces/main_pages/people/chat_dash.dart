@@ -14,6 +14,7 @@ import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 // Typing indicator widget for chat dashboard
 class TypingIndicator extends StatefulWidget {
@@ -349,7 +350,8 @@ class _ChatDashState extends ConsumerState<ChatDash> {
     }
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      body: ListView.builder(
+      body: StartupStagger(
+        child: ListView.builder(
         itemCount: chats.length,
         itemBuilder: (context, index) {
           final conversation = chats[index];
@@ -365,7 +367,10 @@ class _ChatDashState extends ConsumerState<ChatDash> {
             (member) => member.id != id,
             orElse: () => UserModel(id: '', name: '', email: ''),
           );
-          return Column(
+          return StaggerItem(
+            order: 1 + (index % 8),
+            from: SlideFrom.bottom,
+            child: Column(
             children: [
               Consumer(
                 builder: (context, ref, _) {
@@ -474,8 +479,10 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                 height: 1,
               ),
             ],
+          ),
           );
         },
+      ),
       ),
     );
   }

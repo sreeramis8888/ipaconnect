@@ -7,17 +7,16 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
-import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
 import 'package:ipaconnect/src/data/utils/white_status_bar.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
-import 'package:ipaconnect/src/interfaces/components/custom_widgets/board_of_director_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
-import 'package:ipaconnect/src/interfaces/components/shimmers/promotion_shimmers.dart';
+// Removed shimmer usage in favor of unified loading indicator
+import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -28,8 +27,7 @@ import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import '../components/custom_widgets/custom_video.dart';
 import 'package:ipaconnect/src/data/services/api_routes/home_api/home_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/notification_api/notification_api_service.dart';
-import 'notification_page.dart';
-import 'package:ipaconnect/src/data/models/notification_model.dart';
+// Unused imports removed
 import 'campaigns/campaign_detail_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -43,18 +41,57 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> with TickerProviderStateMixin {
   final _advancedDrawerController = AdvancedDrawerController();
-  int _currentBannerIndex = 0;
+  int _currentBannerIndex = 0; // kept for indicator logic if needed later
   int _currentNoticeIndex = 0;
-  int _currentPosterIndex = 0;
-  int _currentEventIndex = 0;
+  int _currentPosterIndex = 0; // kept for indicator logic if needed later
   int _currentVideoIndex = 0;
+  late final AnimationController _startupController;
+  bool _hasAnimated = false;
 
   @override
   void initState() {
     super.initState();
     // _notificationsFuture will be initialized in build with ref
+    _startupController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+  }
+
+  @override
+  void dispose() {
+    _startupController.dispose();
+    super.dispose();
+  }
+
+  Widget _buildStaggered({required int order, required Offset beginOffset, required Widget child}) {
+    final double start = (order * 0.08).clamp(0.0, 1.0);
+    final double end = (start + 0.45).clamp(0.0, 1.0);
+    final animation = CurvedAnimation(
+      parent: _startupController,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(begin: beginOffset, end: Offset.zero).animate(animation),
+        child: child,
+      ),
+    );
+  }
+
+  Widget _animateFromLeft({required int order, required Widget child}) {
+    return _buildStaggered(order: order, beginOffset: const Offset(-0.1, 0), child: child);
+  }
+
+  Widget _animateFromBottom({required int order, required Widget child}) {
+    return _buildStaggered(order: order, beginOffset: const Offset(0, 0.1), child: child);
+  }
+
+  Widget _animatedSection({required int order, required Widget child}) {
+    return _animateFromBottom(order: order, child: child);
   }
 
   // Future<List<NotificationModel>> _fetchNotifications(WidgetRef ref) async {
@@ -121,6 +158,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                     if (homeData == null) {
                       return const Center(
                           child: Text('No home data available'));
+                    }
+                    if (!_hasAnimated) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted || _hasAnimated) return;
+                        _startupController.reset();
+                        _startupController.forward();
+                        _hasAnimated = true;
+                      });
                     }
                     final banners = homeData.banners;
                     final notices = homeData.notices;
@@ -273,376 +318,321 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                     ),
                                     const SizedBox(height: 20),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16, top: 10, right: 16),
-                                      child: Text(
-                                          'Welcome, ${widget.user.name} ',
-                                          style: kLargeTitleB.copyWith(
-                                              color: kTextColor)),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16,
-                                          right: 16,
-                                          top: 10,
-                                          bottom: 20),
-                                      child: Row(
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              style: kSmallerTitleR.copyWith(
-                                                  color: kTextColor),
-                                              'Here\'s to growing your family story, one branch at a time.',
-                                            ),
-                                          )
-                                        ],
+                                    _animateFromLeft(
+                                      order: 0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16, top: 10, right: 16),
+                                        child: Text(
+                                            'Welcome, ${widget.user.name} ',
+                                            style: kLargeTitleB.copyWith(
+                                                color: kTextColor)),
                                       ),
                                     ),
-                                    if (banners.isNotEmpty)
-                                      Column(
-                                        children: [
-                                          CarouselSlider(
-                                            items: banners.map((banner) {
-                                              return _buildBanners(
-                                                  context: context,
-                                                  banner: banner);
-                                            }).toList(),
-                                            options: CarouselOptions(
-                                              height: 175,
-                                              scrollPhysics: banners.length > 1
-                                                  ? null
-                                                  : const NeverScrollableScrollPhysics(),
-                                              autoPlay: banners.length > 1
-                                                  ? true
-                                                  : false,
-                                              viewportFraction: 1,
-                                              autoPlayInterval:
-                                                  const Duration(seconds: 5),
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _currentBannerIndex = index;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          const SizedBox(height: 10),
-                                        ],
-                                      ),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 16, top: 10),
-                                          child: Text('Quick Actions',
-                                              style: kBodyTitleB.copyWith(
-                                                  color: kTextColor)),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16, right: 16, top: 10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          CustomIconContainer(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'CampaignsMainScreen');
-                                              },
-                                              label: 'CSR',
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/csr_icon.svg')),
-                                          CustomIconContainer(
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'EventsPage');
-                                              },
-                                              label: 'Events',
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/event_icon.svg')),
-                                          if (widget.user.phone !=
-                                              '+919645398555')
-                                            CustomIconContainer(
-                                                label: 'Store',
-                                                onTap: () {
-                                                  Navigator.pushNamed(
-                                                      arguments: widget
-                                                          .user.countryCode,
-                                                      context,
-                                                      'StorePage');
-                                                },
-                                                icon: SvgPicture.asset(
-                                                    color: kWhite,
-                                                    'assets/svg/icons/card_icon.svg')),
-                                          CustomIconContainer(
-                                              onTap: () {
-                                                ref
-                                                    .read(selectedIndexProvider
-                                                        .notifier)
-                                                    .updateIndex(1);
-                                              },
-                                              label: 'Bussiness',
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/offer_icon.svg')),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    if (event != null)
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                    _animateFromLeft(
+                                      order: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16,
+                                            right: 16,
+                                            top: 10,
+                                            bottom: 20),
+                                        child: Row(
                                           children: [
-                                            Row(
-                                              children: [
-                                                Text('Event',
-                                                    style: kBodyTitleB),
-                                                const Spacer(),
-                                                InkWell(
-                                                  onTap: () {
-                                                    navigationService.pushNamed(
-                                                        'EventsPage');
-                                                  },
-                                                  child: Text('View All',
-                                                      style:
-                                                          kSmallTitleL.copyWith(
-                                                              color:
-                                                                  kPrimaryColor)),
-                                                ),
-                                              ],
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                navigationService.pushNamed(
-                                                    'EventDetails',
-                                                    arguments: event);
-                                              },
-                                              child: eventWidget(
-                                                context: context,
-                                                event: event,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                    const SizedBox(height: 16),
-                                    if (notices.isNotEmpty)
-                                      Column(
-                                        children: [
-                                          CarouselSlider(
-                                            items: notices.map((notice) {
-                                              return customNotice(
-                                                  context: context,
-                                                  notice: notice);
-                                            }).toList(),
-                                            options: CarouselOptions(
-                                              scrollPhysics: notices.length > 1
-                                                  ? null
-                                                  : const NeverScrollableScrollPhysics(),
-                                              autoPlay: notices.length > 1
-                                                  ? true
-                                                  : false,
-                                              viewportFraction: 1,
-                                              height: _calculateDynamicHeight(
-                                                  notices),
-                                              autoPlayInterval:
-                                                  const Duration(seconds: 3),
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _currentNoticeIndex = index;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          if (notices.isNotEmpty)
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                          if (notices.length > 1)
-                                            _buildDotIndicator(
-                                                _currentNoticeIndex,
-                                                notices.length,
-                                                const Color.fromARGB(
-                                                    255, 39, 38, 38)),
-                                        ],
-                                      ),
-                                    if (posters.isNotEmpty)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        child: Column(
-                                          children: [
-                                            CarouselSlider(
-                                              items: posters
-                                                  .asMap()
-                                                  .entries
-                                                  .map((entry) {
-                                                int index = entry.key;
-                                                Promotion poster = entry.value;
-
-                                                return KeyedSubtree(
-                                                  key: ValueKey(index),
-                                                  child: customPoster(
-                                                      context: context,
-                                                      poster: poster),
-                                                );
-                                              }).toList(),
-                                              options: CarouselOptions(
-                                                height: screenHeight < 900
-                                                    ?550
-                                                    : 500,
-                                                scrollPhysics: posters.length >
-                                                        1
-                                                    ? null
-                                                    : const NeverScrollableScrollPhysics(),
-                                                autoPlay: posters.length > 1,
-                                                viewportFraction: 1,
-                                                autoPlayInterval:
-                                                    const Duration(seconds: 5),
-                                                onPageChanged: (index, reason) {
-                                                  setState(() {
-                                                    _currentPosterIndex = index;
-                                                  });
-                                                },
+                                            Flexible(
+                                              child: Text(
+                                                style: kSmallerTitleR.copyWith(
+                                                    color: kTextColor),
+                                                'Here\'s to growing your family story, one branch at a time.',
                                               ),
                                             )
                                           ],
                                         ),
                                       ),
-                                    if (news.isNotEmpty)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                    ),
+                                    if (banners.isNotEmpty)
+                                      _animatedSection(
+                                        order: 4,
+                                        child: Column(
+                                          children: [
+                                            CarouselSlider(
+                                              items: banners.map((banner) {
+                                                return _buildBanners(
+                                                    context: context,
+                                                    banner: banner);
+                                              }).toList(),
+                                              options: CarouselOptions(
+                                                height: 175,
+                                                scrollPhysics: banners.length > 1
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
+                                                autoPlay: banners.length > 1
+                                                    ? true
+                                                    : false,
+                                                viewportFraction: 1,
+                                                autoPlayInterval:
+                                                    const Duration(seconds: 5),
+                                                onPageChanged: (index, reason) {
+                                                  setState(() {
+                                                    _currentBannerIndex = index;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                          ],
+                                        ),
+                                      ),
+                                    _animateFromBottom(
+                                      order: 2,
+                                      child: Row(
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                left: 15, top: 24, right: 15),
-                                            child: Row(
-                                              children: [
-                                                Text('Latest News',
-                                                    style: kBodyTitleB),
-                                                const Spacer(),
-                                                InkWell(
-                                                  onTap: () => ref
-                                                      .read(
-                                                          selectedIndexProvider
-                                                              .notifier)
-                                                      .updateIndex(3),
-                                                  child: Text('see all',
-                                                      style: kSmallTitleL),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(height: 10),
-                                          SizedBox(
-                                            height: 180,
-                                            child: ListView.builder(
-                                              controller: ScrollController(),
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: news.length,
-                                              itemBuilder: (context, index) {
-                                                final individualNewsModel =
-                                                    news[index];
-                                                return Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8.0),
-                                                  child: SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.45,
-                                                    child: newsCard(
-                                                      onTap: () {
-                                                        ref
-                                                            .read(
-                                                                selectedIndexProvider
-                                                                    .notifier)
-                                                            .updateIndex(3);
-                                                      },
-                                                      imageUrl:
-                                                          individualNewsModel
-                                                                  .media ??
-                                                              '',
-                                                      title: individualNewsModel
-                                                              .title ??
-                                                          '',
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                                left: 16, top: 10),
+                                            child: Text('Quick Actions',
+                                                style: kBodyTitleB.copyWith(
+                                                    color: kTextColor)),
                                           ),
                                         ],
                                       ),
-                                    if (campaign != null)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 15, top: 10),
-                                                child: Text('Campaign',
-                                                    style: kBodyTitleB),
-                                              ),
-                                              const Spacer(),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 15, top: 10),
-                                                child: InkWell(
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _animateFromBottom(
+                                      order: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16, right: 16, top: 10),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            CustomIconContainer(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      arguments: widget.user.countryCode,
+                                                      context,
+                                                      'CampaignsMainScreen');
+                                                },
+                                                label: 'CSR',
+                                                icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/csr_icon.svg')),
+                                            CustomIconContainer(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      arguments: widget.user.countryCode,
+                                                      context,
+                                                      'EventsPage');
+                                                },
+                                                label: 'Events',
+                                                icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/event_icon.svg')),
+                                            if (widget.user.phone != '+919645398555')
+                                              CustomIconContainer(
+                                                  label: 'Store',
                                                   onTap: () {
-                                                    navigationService.pushNamed(
-                                                        'CampaignsMainScreen');
+                                                    Navigator.pushNamed(
+                                                        arguments: widget.user.countryCode,
+                                                        context,
+                                                        'StorePage');
                                                   },
-                                                  child: Text('View All ',
-                                                      style:
-                                                          kSmallTitleL.copyWith(
-                                                              color:
-                                                                  kPrimaryColor)),
+                                                  icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/card_icon.svg')),
+                                            CustomIconContainer(
+                                                onTap: () {
+                                                  ref.read(selectedIndexProvider.notifier).updateIndex(1);
+                                                },
+                                                label: 'Bussiness',
+                                                icon: SvgPicture.asset(color: kWhite, 'assets/svg/icons/offer_icon.svg')),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    if (event != null)
+                                      _animatedSection(
+                                        order: 5,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text('Event', style: kBodyTitleB),
+                                                  const Spacer(),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      navigationService.pushNamed('EventsPage');
+                                                    },
+                                                    child: Text('View All', style: kSmallTitleL.copyWith(color: kPrimaryColor)),
+                                                  ),
+                                                ],
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  navigationService.pushNamed('EventDetails', arguments: event);
+                                                },
+                                                child: eventWidget(
+                                                  context: context,
+                                                  event: event,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0, vertical: 8.0),
-                                            child: CampaignCard(
-                                              campaign: campaign,
-                                              onLearnMore: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        CampaignDetailPage(
-                                                            campaign: campaign),
-                                                  ),
-                                                );
-                                              },
+                                        ),
+                                      ),
+
+                                    const SizedBox(height: 16),
+                                    if (notices.isNotEmpty)
+                                      _animatedSection(
+                                        order: 6,
+                                        child: Column(
+                                          children: [
+                                            CarouselSlider(
+                                              items: notices.map((notice) {
+                                                return customNotice(context: context, notice: notice);
+                                              }).toList(),
+                                              options: CarouselOptions(
+                                                scrollPhysics: notices.length > 1 ? null : const NeverScrollableScrollPhysics(),
+                                                autoPlay: notices.length > 1 ? true : false,
+                                                viewportFraction: 1,
+                                                height: _calculateDynamicHeight(notices),
+                                                autoPlayInterval: const Duration(seconds: 3),
+                                                onPageChanged: (index, reason) {
+                                                  setState(() {
+                                                    _currentNoticeIndex = index;
+                                                  });
+                                                },
+                                              ),
                                             ),
+                                            if (notices.isNotEmpty) const SizedBox(height: 10),
+                                            if (notices.length > 1)
+                                              _buildDotIndicator(_currentNoticeIndex, notices.length, const Color.fromARGB(255, 39, 38, 38)),
+                                          ],
+                                        ),
+                                      ),
+                                    if (posters.isNotEmpty)
+                                      _animatedSection(
+                                        order: 7,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 20),
+                                          child: Column(
+                                            children: [
+                                              CarouselSlider(
+                                                items: posters
+                                                    .asMap()
+                                                    .entries
+                                                    .map((entry) {
+                                                  int index = entry.key;
+                                                  Promotion poster = entry.value;
+
+                                                  return KeyedSubtree(
+                                                    key: ValueKey(index),
+                                                    child: customPoster(context: context, poster: poster),
+                                                  );
+                                                }).toList(),
+                                                options: CarouselOptions(
+                                                  height: screenHeight < 900 ?550 : 500,
+                                                  scrollPhysics: posters.length > 1 ? null : const NeverScrollableScrollPhysics(),
+                                                  autoPlay: posters.length > 1,
+                                                  viewportFraction: 1,
+                                                  autoPlayInterval: const Duration(seconds: 5),
+                                                  onPageChanged: (index, reason) {
+                                                    setState(() {
+                                                      _currentPosterIndex = index;
+                                                    });
+                                                  },
+                                                ),
+                                              )
+                                            ],
                                           ),
-                                        ],
+                                        ),
+                                      ),
+                                    if (news.isNotEmpty)
+                                      _animatedSection(
+                                        order: 8,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 15, top: 24, right: 15),
+                                              child: Row(
+                                                children: [
+                                                  Text('Latest News', style: kBodyTitleB),
+                                                  const Spacer(),
+                                                  InkWell(
+                                                    onTap: () => ref.read(selectedIndexProvider.notifier).updateIndex(3),
+                                                    child: Text('see all', style: kSmallTitleL),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            SizedBox(
+                                              height: 180,
+                                              child: ListView.builder(
+                                                controller: ScrollController(),
+                                                scrollDirection: Axis.horizontal,
+                                                itemCount: news.length,
+                                                itemBuilder: (context, index) {
+                                                  final individualNewsModel = news[index];
+                                                  return Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                    child: SizedBox(
+                                                      width: MediaQuery.of(context).size.width * 0.45,
+                                                      child: newsCard(
+                                                        onTap: () {
+                                                          ref.read(selectedIndexProvider.notifier).updateIndex(3);
+                                                        },
+                                                        imageUrl: individualNewsModel.media ?? '',
+                                                        title: individualNewsModel.title ?? '',
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    if (campaign != null)
+                                      _animatedSection(
+                                        order: 9,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 15, top: 10),
+                                                  child: Text('Campaign', style: kBodyTitleB),
+                                                ),
+                                                const Spacer(),
+                                                Padding(
+                                                  padding: const EdgeInsets.only(right: 15, top: 10),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      navigationService.pushNamed('CampaignsMainScreen');
+                                                    },
+                                                    child: Text('View All ', style: kSmallTitleL.copyWith(color: kPrimaryColor)),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                                              child: CampaignCard(
+                                                campaign: campaign,
+                                                onLearnMore: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) => CampaignDetailPage(campaign: campaign),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     const SizedBox(
                                       height: 20,
@@ -656,33 +646,29 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     // ),
                                     // Videos Carousel
                                     if (filteredVideos.isNotEmpty)
-                                      Column(
-                                        children: [
-                                          CarouselSlider(
-                                            items: filteredVideos.map((video) {
-                                              return customVideo(
-                                                  context: context,
-                                                  videoUrl: video.link ?? '');
-                                            }).toList(),
-                                            options: CarouselOptions(
-                                              height: 225,
-                                              scrollPhysics: videos.length > 1
-                                                  ? null
-                                                  : const NeverScrollableScrollPhysics(),
-                                              viewportFraction: 1,
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _currentVideoIndex = index;
-                                                });
-                                              },
+                                      _animatedSection(
+                                        order: 10,
+                                        child: Column(
+                                          children: [
+                                            CarouselSlider(
+                                              items: filteredVideos.map((video) {
+                                                return customVideo(context: context, videoUrl: video.link ?? '');
+                                              }).toList(),
+                                              options: CarouselOptions(
+                                                height: 225,
+                                                scrollPhysics: videos.length > 1 ? null : const NeverScrollableScrollPhysics(),
+                                                viewportFraction: 1,
+                                                onPageChanged: (index, reason) {
+                                                  setState(() {
+                                                    _currentVideoIndex = index;
+                                                  });
+                                                },
+                                              ),
                                             ),
-                                          ),
-                                          if (videos.length > 1)
-                                            _buildDotIndicator(
-                                                _currentVideoIndex,
-                                                filteredVideos.length,
-                                                kWhite),
-                                        ],
+                                            if (videos.length > 1)
+                                              _buildDotIndicator(_currentVideoIndex, filteredVideos.length, kWhite),
+                                          ],
+                                        ),
                                       ),
                                     const SizedBox(
                                       height: 20,
@@ -700,10 +686,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                     child: Scaffold(
                       backgroundColor: kBackgroundColor,
                       body: Container(
-                        decoration:
-                            const BoxDecoration(color: kBackgroundColor),
-                        child: SingleChildScrollView(
-                          child: buildShimmerPromotionsColumn(context: context),
+                        decoration: const BoxDecoration(color: kBackgroundColor),
+                        child: const Center(
+                          child: LoadingAnimation(),
                         ),
                       ),
                     ),
@@ -730,11 +715,12 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
+  // Unused legacy widget retained for potential future analytics integration
   Widget _buildStatCard(String title, String value) {
     return InkWell(
       onTap: () {
         String? initialTab;
-        String? requestType;
+        String? requestType; // reserved for future use
 
         switch (title) {
           case 'BUSINESS GIVEN':

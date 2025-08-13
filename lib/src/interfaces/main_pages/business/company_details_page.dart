@@ -7,23 +7,20 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
 import 'package:ipaconnect/src/data/utils/image_viewer.dart';
-import 'package:ipaconnect/src/data/utils/youtube_player.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_video.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_product_modal_sheet.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart' as globals;
 import 'package:ipaconnect/src/data/notifiers/rating_notifier.dart';
-import 'package:ipaconnect/src/data/models/rating_model.dart';
-import 'package:ipaconnect/src/data/services/api_routes/rating_api/rating_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/review_bar_chart.dart';
 import 'package:ipaconnect/src/data/notifiers/companies_notifier.dart';
 import 'company_reviews_page.dart';
 import 'package:ipaconnect/main.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class CompanyDetailsPage extends ConsumerStatefulWidget {
   final CompanyModel company;
@@ -137,112 +134,114 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               ),
               centerTitle: false,
               flexibleSpace: FlexibleSpaceBar(
-                background: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 100,
-                    bottom: 16,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: kCardBackgroundColor,
-                          image: company.image != null
-                              ? DecorationImage(
-                                  image: NetworkImage(company.image!),
-                                  fit: BoxFit.cover,
-                                )
-                              : null,
-                        ),
-                        child: company.image == null
-                            ? Icon(Icons.business,
-                                size: 40, color: kSecondaryTextColor)
-                            : null,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            // Category Badge
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Color(0xFF1A233A),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                company.category ?? '',
-                                style: TextStyle(
-                                  color: kWhite,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                background: StartupStagger(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 100,
+                      bottom: 16,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        StaggerItem(
+                          order: 0,
+                          from: SlideFrom.left,
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: kCardBackgroundColor,
+                              image: company.image != null
+                                  ? DecorationImage(
+                                      image: NetworkImage(company.image!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
                             ),
-                            SizedBox(height: 8),
-                            // Rating Row
-                            Consumer(
-                              builder: (context, ref, _) {
-                                final ratings =
-                                    ref.watch(ratingNotifierProvider);
-                                double avgRating = 0;
-                                if (ratings.isNotEmpty) {
-                                  avgRating = ratings
-                                          .map((r) => r.rating)
-                                          .fold(0, (a, b) => a + b) /
-                                      ratings.length;
-                                } else {
-                                  avgRating = company.rating ?? 0;
-                                }
-                                return StarRating(
-                                  rating: avgRating,
-                                  size: 14,
-                                  showNumber: true,
-                                  color: Colors.amber,
-                                  numberStyle: TextStyle(
-                                    color: kSecondaryTextColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
+                            child: company.image == null
+                                ? Icon(Icons.business,
+                                    size: 40, color: kSecondaryTextColor)
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: StaggerItem(
+                            order: 1,
+                            from: SlideFrom.bottom,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF1A233A),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                );
-                              },
+                                  child: Text(
+                                    company.category ?? '',
+                                    style: TextStyle(
+                                      color: kWhite,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Consumer(
+                                  builder: (context, ref, _) {
+                                    final ratings = ref.watch(ratingNotifierProvider);
+                                    double avgRating = ratings.isNotEmpty
+                                        ? ratings
+                                                .map((r) => r.rating)
+                                                .fold(0, (a, b) => a + b) /
+                                            ratings.length
+                                        : (company.rating ?? 0);
+                                    return StarRating(
+                                      rating: avgRating,
+                                      size: 14,
+                                      showNumber: true,
+                                      color: Colors.amber,
+                                      numberStyle: TextStyle(
+                                        color: kSecondaryTextColor,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  company.name ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: kBodyTitleB.copyWith(
+                                      fontSize: 18, color: kWhite),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  company.status == 'active'
+                                      ? '• Active'
+                                      : '• Inactive',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: company.status == 'active'
+                                        ? Color(0xFF00D615)
+                                        : Colors.red,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 4),
-                            // Company Name
-                            Text(
-                              company.name ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: kBodyTitleB.copyWith(
-                                  fontSize: 18, color: kWhite),
-                            ),
-                            const SizedBox(height: 4),
-                            // Status
-                            Text(
-                              company.status == 'active'
-                                  ? '• Active'
-                                  : '• Inactive',
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: company.status == 'active'
-                                    ? Color(0xFF00D615)
-                                    : Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -506,7 +505,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     final isFirstLoad = ref.read(productsNotifierProvider.notifier).isFirstLoad;
     final isOwner = widget.company.user?.id == globals.id;
     final categories = <String>[widget.company.category ?? 'General'];
-    return Stack(
+    return StartupStagger(
+      child: Stack(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -515,30 +515,34 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
             children: [
               const SizedBox(height: 8),
               // Search Bar
-              TextField(
-                onChanged: _onSearchChanged,
-                onSubmitted: _onSearchSubmitted,
-                cursorColor: kWhite,
-                style: kBodyTitleR.copyWith(
-                  fontSize: 14,
-                  color: kSecondaryTextColor,
-                ),
-                decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  filled: true,
-                  fillColor: kCardBackgroundColor,
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    size: 20,
+              StaggerItem(
+                order: 0,
+                from: SlideFrom.left,
+                child: TextField(
+                  onChanged: _onSearchChanged,
+                  onSubmitted: _onSearchSubmitted,
+                  cursorColor: kWhite,
+                  style: kBodyTitleR.copyWith(
+                    fontSize: 14,
                     color: kSecondaryTextColor,
                   ),
-                  hintText: 'Search Products',
-                  hintStyle:  kSmallTitleL.copyWith(color: kSecondaryTextColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                    borderSide: BorderSide.none,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    filled: true,
+                    fillColor: kCardBackgroundColor,
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 20,
+                      color: kSecondaryTextColor,
+                    ),
+                    hintText: 'Search Products',
+                    hintStyle:  kSmallTitleL.copyWith(color: kSecondaryTextColor),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
@@ -556,26 +560,34 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                           ),
                         )
                       : Expanded(
-                          child: GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 220,
-                              mainAxisSpacing: 16,
-                              crossAxisSpacing: 16,
-                              childAspectRatio: MediaQuery.of(context)
-                                      .size
-                                      .width /
-                                  (MediaQuery.of(context).size.height / 1.1),
+                          child: StaggerItem(
+                            order: 1,
+                            from: SlideFrom.bottom,
+                            child: GridView.builder(
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 220,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: MediaQuery.of(context)
+                                        .size
+                                        .width /
+                                    (MediaQuery.of(context).size.height / 1.1),
+                              ),
+                              itemCount: products.length,
+                              itemBuilder: (context, index) {
+                                final product = products[index];
+                                return StaggerItem(
+                                  order: 2 + (index % 8),
+                                  from: SlideFrom.bottom,
+                                  child: ProductCard(
+                                    companyUserId: widget.company.user?.id ?? '',
+                                    category: widget.company.category ?? '',
+                                    product: product,
+                                  ),
+                                );
+                              },
                             ),
-                            itemCount: products.length,
-                            itemBuilder: (context, index) {
-                              final product = products[index];
-                              return ProductCard(
-                                companyUserId: widget.company.user?.id ?? '',
-                                category: widget.company.category ?? '',
-                                product: product,
-                              );
-                            },
                           ),
                         ),
             ],
@@ -602,6 +614,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
             ),
           ),
       ],
+    ),
     );
   }
 }

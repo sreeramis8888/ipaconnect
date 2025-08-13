@@ -8,6 +8,7 @@ import 'package:ipaconnect/src/data/notifiers/business_category_notifier.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/business_category_card.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class BusinessCategoryTab extends ConsumerStatefulWidget {
   const BusinessCategoryTab({super.key});
@@ -61,44 +62,49 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
     final isFirstLoad =
         ref.read(businessCategoryNotifierProvider.notifier).isFirstLoad;
 
-    return Column(
+    return StartupStagger(
+      child: Column(
       children: [
         SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: _onSearchChanged,
-                  onSubmitted: _onSearchSubmitted,
-                  cursorColor: kWhite,
-                  style: kBodyTitleR.copyWith(
-                    fontSize: 14,
-                    color: kSecondaryTextColor,
-                  ),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 16),
-                    filled: true,
-                    fillColor: kCardBackgroundColor,
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      size: 20,
+        StaggerItem(
+          order: 0,
+          from: SlideFrom.left,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onChanged: _onSearchChanged,
+                    onSubmitted: _onSearchSubmitted,
+                    cursorColor: kWhite,
+                    style: kBodyTitleR.copyWith(
+                      fontSize: 14,
                       color: kSecondaryTextColor,
                     ),
-                    hintText: 'Search Categories',
-                    hintStyle:
-                        kSmallTitleL.copyWith(color: kSecondaryTextColor),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 16),
+                      filled: true,
+                      fillColor: kCardBackgroundColor,
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                        color: kSecondaryTextColor,
+                      ),
+                      hintText: 'Search Categories',
+                      hintStyle:
+                          kSmallTitleL.copyWith(color: kSecondaryTextColor),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         ),
         isFirstLoad
@@ -113,55 +119,57 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
                     ),
                   )
                 : Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: GridView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.only(bottom: 32, top: 20),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 1.0,
+                    child: StaggerItem(
+                      order: 1,
+                      from: SlideFrom.bottom,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: GridView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.only(bottom: 32, top: 20),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.0,
+                          ),
+                          itemCount: categories.length + (isLoading ? 2 : 0),
+                          itemBuilder: (context, index) {
+                            if (isLoading &&
+                                index >= categories.length &&
+                                index < categories.length + 2) {
+                              return const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: LoadingAnimation(),
+                                ),
+                              );
+                            }
+                            if (index < categories.length) {
+                              final category = categories[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  NavigationService navigationService =
+                                      NavigationService();
+                                  navigationService.pushNamed('CategoryPage',
+                                      arguments: category);
+                                },
+                                child: CategoryCard(
+                                  title: category.name,
+                                  iconUrl: category.icon ?? '',
+                                  count: category.companyCount ?? 0,
+                                ),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
                         ),
-                        itemCount: categories.length + (isLoading ? 2 : 0),
-                        itemBuilder: (context, index) {
-                          // Show loading indicators if loading
-                          if (isLoading &&
-                              index >= categories.length &&
-                              index < categories.length + 2) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: LoadingAnimation(),
-                              ),
-                            );
-                          }
-                          // Show category cards
-                          if (index < categories.length) {
-                            final category = categories[index];
-                            return GestureDetector(
-                              onTap: () {
-                                NavigationService navigationService =
-                                    NavigationService();
-                                navigationService.pushNamed('CategoryPage',
-                                    arguments: category);
-                              },
-                              child: CategoryCard(
-                                title: category.name,
-                                iconUrl: category.icon ?? '',
-                                count: category.companyCount ?? 0,
-                              ),
-                            );
-                          }
-                          // Fallback (shouldn't reach here)
-                          return const SizedBox.shrink();
-                        },
                       ),
                     ),
                   ),
       ],
+    ),
     );
   }
 }

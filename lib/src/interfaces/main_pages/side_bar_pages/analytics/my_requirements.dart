@@ -11,6 +11,7 @@ import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.d
 
 import 'package:shimmer/shimmer.dart';
 import 'package:ipaconnect/src/data/notifiers/feed_notifier.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class MyRequirements extends ConsumerStatefulWidget {
   const MyRequirements({super.key});
@@ -76,30 +77,36 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
           : myPosts.isNotEmpty
               ? Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          itemCount: myPosts.length + (isLoading ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            if (index == myPosts.length) {
-                              return Center(child: LoadingAnimation());
-                            }
-                            return _buildPostCard(
-                              context,
-                              myPosts[index].status ?? '',
-                              myPosts[index].content ?? '',
-                              '3 messages',
-                              myPosts[index].createdAt!,
-                              myPosts[index].id!,
-                              imageUrl: myPosts[index].media,
-                            );
-                          },
+                  child: StartupStagger(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            itemCount: myPosts.length + (isLoading ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == myPosts.length) {
+                                return Center(child: LoadingAnimation());
+                              }
+                              return StaggerItem(
+                                order: 1 + (index % 8),
+                                from: SlideFrom.bottom,
+                                child: _buildPostCard(
+                                  context,
+                                  myPosts[index].status ?? '',
+                                  myPosts[index].content ?? '',
+                                  '3 messages',
+                                  myPosts[index].createdAt!,
+                                  myPosts[index].id!,
+                                  imageUrl: myPosts[index].media,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 16),
-                    ],
+                        SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 )
               : Center(

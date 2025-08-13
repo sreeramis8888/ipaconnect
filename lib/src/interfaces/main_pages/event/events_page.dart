@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/notifiers/events_notifier.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/events_api/events_api.dart';
-import 'package:ipaconnect/src/data/services/navigation_service.dart';
+// Removed unused NavigationService import
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/add_event.dart';
+// Staggered animations are applied within individual widgets
 
 class EventsPage extends ConsumerStatefulWidget {
   const EventsPage({Key? key}) : super(key: key);

@@ -6,28 +6,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
-import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
-import 'package:ipaconnect/src/data/services/api_routes/subscription_api/subscription_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
-import 'package:ipaconnect/src/data/utils/currency_converted.dart';
+// Unused imports removed
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
-import 'package:ipaconnect/src/interfaces/components/shimmers/promotion_shimmers.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/home_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_list_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_preview.dart';
-import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
+// Unused imports removed
 import 'package:ipaconnect/src/interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/data/services/socket_service.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/user_status_sreens.dart';
-import 'package:ipaconnect/src/interfaces/additional_screens/subscription_page.dart';
-import 'package:ipaconnect/src/interfaces/additional_screens/payment_success_page.dart';
-import 'package:ipaconnect/src/data/notifiers/payment_navigation_provider.dart';
+// Unused imports removed
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 
 class IconResolver extends StatelessWidget {
@@ -311,7 +305,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         return Scaffold(
           backgroundColor: Color(0xFF00031A),
           body: Center(
-            child: buildShimmerPromotionsColumn(context: context),
+            child: const LoadingAnimation(),
           ),
         );
     }
@@ -332,8 +326,7 @@ class _MainPageState extends ConsumerState<MainPage> {
         loading: () {
           return Scaffold(
               backgroundColor: Color(0xFF00031A),
-              body: SingleChildScrollView(
-                  child: buildShimmerPromotionsColumn(context: context)));
+              body: const Center(child: LoadingAnimation()));
         },
         error: (error, stackTrace) {
           log('im inside details main page error $error $stackTrace');
@@ -348,7 +341,7 @@ class _MainPageState extends ConsumerState<MainPage> {
           return Scaffold(
             backgroundColor: Color(0xFF00031A),
             body: Center(
-              child: buildShimmerPromotionsColumn(context: context),
+              child: const LoadingAnimation(),
             ),
           );
         },
@@ -368,7 +361,7 @@ class _MainPageState extends ConsumerState<MainPage> {
               return Scaffold(
                 backgroundColor: Color(0xFF00031A),
                 body: Center(
-                  child: buildShimmerPromotionsColumn(context: context),
+                  child: const LoadingAnimation(size: 40),
                 ),
               );
             }
@@ -401,7 +394,7 @@ class _MainPageState extends ConsumerState<MainPage> {
             return Scaffold(
               backgroundColor: Color(0xFF00031A),
               body: Center(
-                child: buildShimmerPromotionsColumn(context: context),
+                child: const LoadingAnimation(),
               ),
             );
           }

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/news_api/news_api_service.dart';
 import 'package:ipaconnect/src/data/utils/get_time_ago.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 import '../../../data/models/news_model.dart';
 import 'news_page.dart';
-import 'bookmark_page.dart';
 
 class NewsListPage extends ConsumerWidget {
   const NewsListPage({super.key});
@@ -81,7 +80,8 @@ class NewsListPage extends ConsumerWidget {
         body: asyncNewsModel.when(
           data: (news) {
             if (news.isNotEmpty) {
-              return Column(
+              return StartupStagger(
+                child: Column(
                 children: [
                   // Padding(
                   //   padding: const EdgeInsets.symmetric(
@@ -121,15 +121,34 @@ class NewsListPage extends ConsumerWidget {
                   //     ],
                   //   ),
                   // ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: news.length,
-                      itemBuilder: (context, index) {
-                        return NewsCard(news: news[index], allNews: news);
-                      },
+                  StaggerItem(
+                    order: 0,
+                    from: SlideFrom.left,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+                      child: Row(
+                        children: [
+                          Icon(Icons.feed_outlined, color: kPrimaryColor, size: 18),
+                          SizedBox(width: 6),
+                          Text('Latest News', style: kBodyTitleB),
+                        ],
+                      ),
+                    ),
+                  ),
+                  StaggerItem(
+                    order: 1,
+                    from: SlideFrom.bottom,
+                    child: Expanded(
+                      child: ListView.builder(
+                        itemCount: news.length,
+                        itemBuilder: (context, index) {
+                          return NewsCard(news: news[index], allNews: news);
+                        },
+                      ),
                     ),
                   ),
                 ],
+              ),
               );
             } else {
               return Center(

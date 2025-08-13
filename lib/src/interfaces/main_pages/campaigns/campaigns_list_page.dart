@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
-import 'package:ipaconnect/src/data/models/campaign_model.dart';
-import 'package:ipaconnect/src/data/services/api_routes/campain_api/campaign_api.dart';
+// Removed unused imports
 import 'package:ipaconnect/src/data/notifiers/campaigns_notifier.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
@@ -94,7 +93,6 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                   : const SizedBox.shrink();
                             }
                             final campaign = campaigns[index];
-                            final isMyCampaign = false;
                             return Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8.0),

@@ -19,6 +19,7 @@ import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.
 import 'package:ipaconnect/src/interfaces/components/modals/add_review_modal.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/people/chat_screen.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class ProductDetailsPage extends ConsumerStatefulWidget {
   final String category;
@@ -85,11 +86,15 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
         centerTitle: false,
       ),
       body: SingleChildScrollView(
-        child: Column(
+        child: StartupStagger(
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Product Images - Scrollable
-            Container(
+            StaggerItem(
+              order: 0,
+              from: SlideFrom.bottom,
+              child: Container(
               width: double.infinity,
               height: 200,
               color: kCardBackgroundColor,
@@ -132,6 +137,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                           color: kSecondaryTextColor, size: 60),
                     ),
             ),
+            ),
             // Dots indicator (animated)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -155,7 +161,10 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
               ),
             ),
             // Product Info
-            Padding(
+            StaggerItem(
+              order: 1,
+              from: SlideFrom.left,
+              child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: Column(
@@ -338,7 +347,9 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                 ],
               ),
             ),
+            ),
           ],
+        ),
         ),
       ),
     );

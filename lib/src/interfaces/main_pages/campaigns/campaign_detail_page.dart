@@ -4,6 +4,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/campaign_model.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 
 class CampaignDetailPage extends StatefulWidget {
   final CampaignModel campaign;
@@ -43,83 +44,97 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.network(
-                      campaign.media ?? '',
-                      fit: BoxFit.cover,
-                    )),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Text('₹$target', style: kSmallTitleB),
-                  const SizedBox(width: 60),
-                  // Expanded(
-                  //   child: LinearProgressIndicator(
-                  //     value: progress,
-                  //     backgroundColor: kGreyLight,
-                  //     color: kGreen,
-                  //     minHeight: 7,
-                  //     borderRadius: BorderRadius.circular(8),
-                  //   ),
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Text('DUE DATE',
-                      style:
-                          kSmallerTitleB.copyWith(color: kGrey, fontSize: 10)),
-                  const Spacer(),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: kStrokeColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_month,
-                            color: kPrimaryColor, size: 12),
-                        const SizedBox(width: 4),
-                        Text(
-                          dueDate,
-                          style: kSmallerTitleB.copyWith(color: kPrimaryColor),
-                        ),
-                      ],
-                    ),
+          child: StartupStagger(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                StaggerItem(
+                  order: 0,
+                  from: SlideFrom.bottom,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Image.network(
+                          campaign.media ?? '',
+                          fit: BoxFit.cover,
+                        )),
                   ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              Text(
-                campaign.name ?? '',
-                style: kSubHeadingB.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                campaign.organizer ?? '',
-                style: kSmallerTitleR,
-              ),
-              const SizedBox(height: 18),
-              Text(
-                campaign.description ?? '',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 12,
-                    color: kSecondaryTextColor),
-              ),
-              const SizedBox(height: 8),
-            ],
+                ),
+                const SizedBox(height: 12),
+                StaggerItem(
+                  order: 1,
+                  from: SlideFrom.bottom,
+                  child: Row(
+                    children: [
+                      Text('₹$target', style: kSmallTitleB),
+                      const SizedBox(width: 60),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                StaggerItem(
+                  order: 2,
+                  from: SlideFrom.bottom,
+                  child: Row(
+                    children: [
+                      Text('DUE DATE',
+                          style: kSmallerTitleB.copyWith(color: kGrey, fontSize: 10)),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: kStrokeColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_month, color: kPrimaryColor, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              dueDate,
+                              style: kSmallerTitleB.copyWith(color: kPrimaryColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                StaggerItem(
+                  order: 3,
+                  from: SlideFrom.bottom,
+                  child: Text(
+                    campaign.name ?? '',
+                    style: kSubHeadingB.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                StaggerItem(
+                  order: 4,
+                  from: SlideFrom.bottom,
+                  child: Text(
+                    campaign.organizer ?? '',
+                    style: kSmallerTitleR,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                StaggerItem(
+                  order: 5,
+                  from: SlideFrom.bottom,
+                  child: Text(
+                    campaign.description ?? '',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w300,
+                        fontSize: 12,
+                        color: kSecondaryTextColor),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
           ),
         ),
       ),

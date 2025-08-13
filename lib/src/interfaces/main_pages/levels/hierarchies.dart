@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/services/api_routes/hierarchy/hierarchy_api_
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/create_notification_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/levels/level_members.dart';
 
@@ -52,12 +53,16 @@ class HierarchiesPage extends ConsumerWidget {
               style: kSmallTitleL,
             ));
           }
-          return ListView.builder(
+          return StartupStagger(
+            child: ListView.builder(
             itemCount: hierarchies.length,
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemBuilder: (context, index) {
               final hierarchy = hierarchies[index];
-              return Padding(
+              return StaggerItem(
+                order: 1 + (index % 8),
+                from: SlideFrom.bottom,
+                child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Container(
@@ -105,8 +110,10 @@ class HierarchiesPage extends ConsumerWidget {
                     },
                   ),
                 ),
+              ),
               );
             },
+          ),
           );
         },
         loading: () => const Center(child: LoadingAnimation()),

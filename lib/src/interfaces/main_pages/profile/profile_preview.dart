@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
@@ -14,25 +14,26 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/cards/award_card.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/certificate_card.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/document_card.dart';
-import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
+// import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_video.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
-import 'package:ipaconnect/src/interfaces/components/shimmers/preview_shimmer.dart';
+// import 'package:ipaconnect/src/interfaces/components/shimmers/preview_shimmer.dart';
 import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/company_details_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/digital_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+// import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
-import 'package:ipaconnect/src/data/models/company_model.dart';
+// import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/company_card.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/add_company_page.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
 import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+// import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ipaconnect/src/data/services/api_routes/enquiry_api/enquiry_api_service.dart';
 
 class ReviewsState extends StateNotifier<int> {
@@ -130,10 +131,22 @@ class _ProfilePreviewByIdState extends ConsumerState<ProfilePreviewById>
                 if (_selectedTabIndex == 0)
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: _OverviewTab(user: user),
+                    child: StartupStagger(
+                      child: StaggerItem(
+                        order: 0,
+                        from: SlideFrom.bottom,
+                        child: _OverviewTab(user: user),
+                      ),
+                    ),
                   )
                 else
-                  _BusinessTab(userId: user.id ?? ''),
+                  StartupStagger(
+                    child: StaggerItem(
+                      order: 0,
+                      from: SlideFrom.bottom,
+                      child: _BusinessTab(userId: user.id ?? ''),
+                    ),
+                  ),
                 if (user.id != id) _ContactFormSection(),
               ],
             ),
@@ -241,10 +254,22 @@ class _ProfilePreviewFromModelState
               if (_selectedTabIndex == 0)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: _OverviewTab(user: user),
+                  child: StartupStagger(
+                    child: StaggerItem(
+                      order: 0,
+                      from: SlideFrom.bottom,
+                      child: _OverviewTab(user: user),
+                    ),
+                  ),
                 )
               else
-                _BusinessTab(userId: user.id ?? ''),
+                StartupStagger(
+                  child: StaggerItem(
+                    order: 0,
+                    from: SlideFrom.bottom,
+                    child: _BusinessTab(userId: user.id ?? ''),
+                  ),
+                ),
               if (user.id != id) _ContactFormSection(),
             ],
           ),
@@ -515,38 +540,7 @@ class _ProfileHeader extends StatelessWidget {
   }
 }
 
-class _HeaderButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _HeaderButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 150,
-      height: 48,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: kStrokeColor,
-          foregroundColor: kWhite,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-        ),
-        onPressed: onTap,
-        icon: Icon(icon, color: kSecondaryTextColor, size: 20),
-        label:
-            Text(label, style: kSmallTitleL, overflow: TextOverflow.ellipsis),
-      ),
-    );
-  }
-}
+// Removed unused _HeaderButton widget
 
 class _OverviewTab extends StatefulWidget {
   final UserModel user;
@@ -963,7 +957,7 @@ class _BusinessTab extends ConsumerWidget {
                         final deleted =
                             await companyApi.deleteCompany(company.id!);
                         if (deleted) {
-                          ref.refresh(
+                          ref.invalidate(
                               getCompaniesByUserIdProvider(userId: userId));
                         }
                       }
