@@ -129,7 +129,7 @@ class _HomePageState extends ConsumerState<HomePage>
   double _estimateTextHeight(String text, double fontSize) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final int numLines = (text.length / (screenWidth / fontSize)).ceil();
-    return numLines * fontSize * 1.2 - 70;
+    return numLines * fontSize * 1.2 - 10;
   }
 
   double _posterCarouselHeight(List<Promotion> posters) {
@@ -448,7 +448,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                 icon: SvgPicture.asset(
                                                     color: kWhite,
                                                     'assets/svg/icons/event_icon.svg')),
-                                            // if (widget.user.phone != '+919645398555')
+                                            if (widget.user.phone != '+919645398555')
                                             CustomIconContainer(
                                                 label: 'Store',
                                                 onTap: () {

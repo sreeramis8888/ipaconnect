@@ -80,76 +80,39 @@ class NewsListPage extends ConsumerWidget {
         body: asyncNewsModel.when(
           data: (news) {
             if (news.isNotEmpty) {
-              return StartupStagger(
-                child: Column(
-                children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       horizontal: 16.0, vertical: 8.0),
-                  //   child: Row(
-                  //     children: [
-                  //       Expanded(
-                  //         child: TextField(
-                  //           cursorColor: kWhite,
-                  //           style: kBodyTitleR.copyWith(
-                  //             fontSize: 14,
-                  //             color: kSecondaryTextColor,
-                  //           ),
-                  //           decoration: InputDecoration(
-                  //             isDense: true,
-                  //             contentPadding: const EdgeInsets.symmetric(
-                  //                 vertical: 10, horizontal: 16),
-                  //             filled: true,
-                  //             fillColor: kCardBackgroundColor,
-                  //             prefixIcon: const Icon(
-                  //               Icons.search,
-                  //               size: 20,
-                  //               color: kSecondaryTextColor,
-                  //             ),
-                  //             hintText: 'Search News',
-                  //             hintStyle: kBodyTitleR.copyWith(
-                  //               fontSize: 14,
-                  //               color: kSecondaryTextColor,
-                  //             ),
-                  //             border: OutlineInputBorder(
-                  //               borderRadius: BorderRadius.circular(30.0),
-                  //               borderSide: BorderSide.none,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
-                  StaggerItem(
-                    order: 0,
-                    from: SlideFrom.left,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 16, right: 16, top: 8),
-                      child: Row(
-                        children: [
-                          Icon(Icons.feed_outlined, color: kPrimaryColor, size: 18),
-                          SizedBox(width: 6),
-                          Text('Latest News', style: kBodyTitleB),
-                        ],
-                      ),
-                    ),
-                  ),
-                  StaggerItem(
-                    order: 1,
-                    from: SlideFrom.bottom,
-                    child: Expanded(
-                      child: ListView.builder(
-                        itemCount: news.length,
-                        itemBuilder: (context, index) {
-                          return NewsCard(news: news[index], allNews: news);
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              );
+              return  StartupStagger(
+  child: Column(
+    children: [
+      StaggerItem(
+        order: 0,
+        from: SlideFrom.left,
+        child: Padding(
+          padding: EdgeInsets.only(left: 16, right: 16, top: 8),
+          child: Row(
+            children: [
+              Icon(Icons.feed_outlined, color: kPrimaryColor, size: 18),
+              SizedBox(width: 6),
+              Text('Latest News', style: kBodyTitleB),
+            ],
+          ),
+        ),
+      ),
+      Expanded( // ✅ Now directly under Column
+        child: StaggerItem(
+          order: 1,
+          from: SlideFrom.bottom,
+          child: ListView.builder(
+            itemCount: news.length,
+            itemBuilder: (context, index) {
+              return NewsCard(news: news[index], allNews: news);
+            },
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+
             } else {
               return Center(
                 child: Text(
