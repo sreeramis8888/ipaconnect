@@ -132,13 +132,22 @@ class _HomePageState extends ConsumerState<HomePage>
     return numLines * fontSize * 1.2 - 70;
   }
 
+  double _posterCarouselHeight(List<Promotion> posters) {
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    // Image uses AspectRatio 3/4 with horizontal padding 16 on each side
+    final double posterImageHeight = (screenWidth - 32) * 4 / 3;
+    // Extra space for gap + button when any poster has a link
+    final bool anyPosterHasLink = posters.any((p) => p.link != null);
+    final double buttonBlockHeight = anyPosterHasLink ? 80.0 : 0.0;
+    return posterImageHeight + buttonBlockHeight;
+  }
+
   CarouselController controller = CarouselController();
   String? startDate;
   String? endDate;
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
     NavigationService navigationService = NavigationService();
     return WhiteStatusBar(
       child: Consumer(
@@ -583,9 +592,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   );
                                                 }).toList(),
                                                 options: CarouselOptions(
-                                                  height: screenHeight < 900
-                                                      ? 550
-                                                      : 500,
+                                                  height:
+                                                      _posterCarouselHeight(posters),
                                                   scrollPhysics: posters
                                                               .length >
                                                           1

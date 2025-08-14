@@ -27,3 +27,4 @@ class CrashlyticsService {
     await _crashlytics.setCrashlyticsCollectionEnabled(enabled);
   }
 }
+
