@@ -11,6 +11,7 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 // Removed unused my_orders_page import
 import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
+import 'package:ipaconnect/src/data/services/api_routes/store_api/store_api_service.dart';
 
 class StorePage extends ConsumerStatefulWidget {
   final String userCurrency;
@@ -42,10 +43,12 @@ class _StorePageState extends ConsumerState<StorePage> {
   Widget build(BuildContext context) {
     final products = ref.watch(storeNotifierProvider);
     final notifier = ref.read(storeNotifierProvider.notifier);
+    final cart = ref.watch(cartNotifierProvider);
     final cartNotifier = ref.read(cartNotifierProvider.notifier);
+    final storeApi = ref.read(storeApiServiceProvider);
     final isLoading = notifier.isLoading;
     // final hasMore = notifier.hasMore; // reserved for pagination UI
-    final cartItemCount = cartNotifier.getCartItemCount();
+    final cartItemCount = (cart?.products?.length ?? storeApi.lastCartCount);
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -134,67 +137,71 @@ class _StorePageState extends ConsumerState<StorePage> {
             //   ),
             // ),
             const SizedBox(height: 24),
-Expanded(
-  child: isLoading
-      ? const Center(child: LoadingAnimation())
-      : products.isEmpty
-          ? const Center(
-              child: Text(
-                'No Products',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: kSecondaryTextColor,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+            Expanded(
+              child: isLoading
+                  ? const Center(child: LoadingAnimation())
+                  : products.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'No Products',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: kSecondaryTextColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
+                      : GridView.builder(
+                          controller: _scrollController,
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 220,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                            childAspectRatio:
+                                MediaQuery.of(context).size.width /
+                                    (MediaQuery.of(context).size.height / 1.3),
+                          ),
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            final product = products[index];
+                            return StartupStagger(
+                              child: StaggerItem(
+                                order: 0,
+                                from: SlideFrom.bottom,
+                                child: _ProductCard(
+                                  userCurrency: widget.userCurrency,
+                                  product: product,
+                                  onAddToCart: () async {
+                                    if (product.id != null) {
+                                      final success = await cartNotifier
+                                          .addToCart(product.id!, 1);
+                                      if (success) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('Added to cart'),
+                                            backgroundColor: kGreen,
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content:
+                                                Text('Item already in cart'),
+                                            backgroundColor: kRed,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
             )
-          : GridView.builder(
-              controller: _scrollController,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: MediaQuery.of(context).size.width /
-                    (MediaQuery.of(context).size.height / 1.16),
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return StartupStagger(
-                  child: StaggerItem(
-                    order: 0,
-                    from: SlideFrom.bottom,
-                    child: _ProductCard(
-                      userCurrency: widget.userCurrency,
-                      product: product,
-                      onAddToCart: () async {
-                        if (product.id != null) {
-                          final success =
-                              await cartNotifier.addToCart(product.id!, 1);
-                          if (success) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added to cart'),
-                                backgroundColor: kGreen,
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Item already in cart'),
-                                backgroundColor: kRed,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
-)
-
           ],
         ),
       ),

@@ -18,12 +18,15 @@ StoreApiService storeApiService(Ref ref) {
 class StoreApiService {
   final ApiService _apiService;
   final String _tag = '[StoreApiService]';
+  int _lastCartCount = 0;
 
   StoreApiService(this._apiService);
 
   void _log(String message) {
     log('$_tag $message');
   }
+
+  int get lastCartCount => _lastCartCount;
 
   // Store Products
   Future<List<StoreModel>> getStoreProducts({
@@ -42,7 +45,16 @@ class StoreApiService {
       _log('Response: ${response.success}, message: ${response.message}');
 
       if (response.success && response.data != null) {
-        final List<dynamic> data = response.data!['data'];
+        final Map<String, dynamic> responseMap = response.data!;
+        final List<dynamic> data = responseMap['data'];
+        final Map<String, dynamic>? totalCountMap =
+            responseMap['total_count'] as Map<String, dynamic>?;
+        if (totalCountMap != null) {
+          final num? parsedCartCount = totalCountMap['cart_count'] as num?;
+          _lastCartCount = parsedCartCount?.toInt() ?? 0;
+        } else {
+          _lastCartCount = 0;
+        }
         return data.map((json) => StoreModel.fromJson(json)).toList();
       }
     } catch (e, st) {

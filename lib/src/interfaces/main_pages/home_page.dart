@@ -448,7 +448,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                 icon: SvgPicture.asset(
                                                     color: kWhite,
                                                     'assets/svg/icons/event_icon.svg')),
-                                            if (widget.user.phone != '+919645398555')
+                                            // if (widget.user.phone != '+919645398555')
                                             CustomIconContainer(
                                                 label: 'Store',
                                                 onTap: () {
@@ -592,8 +592,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   );
                                                 }).toList(),
                                                 options: CarouselOptions(
-                                                  height:
-                                                      _posterCarouselHeight(posters),
+                                                  height: _posterCarouselHeight(
+                                                      posters),
                                                   scrollPhysics: posters
                                                               .length >
                                                           1
