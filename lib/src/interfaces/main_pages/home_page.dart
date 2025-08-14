@@ -134,11 +134,9 @@ class _HomePageState extends ConsumerState<HomePage>
 
   double _posterCarouselHeight(List<Promotion> posters) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
-    // Image uses AspectRatio 3/4 with horizontal padding 16 on each side
     final double posterImageHeight = (screenWidth - 32) * 4 / 3;
-    // Extra space for gap + button when any poster has a link
     final bool anyPosterHasLink = posters.any((p) => p.link != null);
-    final double buttonBlockHeight = anyPosterHasLink ? 80.0 : 0.0;
+    final double buttonBlockHeight = anyPosterHasLink ? 20.0 : 0.0;
     return posterImageHeight + buttonBlockHeight;
   }
 
@@ -448,19 +446,20 @@ class _HomePageState extends ConsumerState<HomePage>
                                                 icon: SvgPicture.asset(
                                                     color: kWhite,
                                                     'assets/svg/icons/event_icon.svg')),
-                                            if (widget.user.phone != '+919645398555')
-                                            CustomIconContainer(
-                                                label: 'Store',
-                                                onTap: () {
-                                                  Navigator.pushNamed(
-                                                      arguments: widget
-                                                          .user.countryCode,
-                                                      context,
-                                                      'StorePage');
-                                                },
-                                                icon: SvgPicture.asset(
-                                                    color: kWhite,
-                                                    'assets/svg/icons/card_icon.svg')),
+                                            if (widget.user.phone !=
+                                                '+919645398555')
+                                              CustomIconContainer(
+                                                  label: 'Store',
+                                                  onTap: () {
+                                                    Navigator.pushNamed(
+                                                        arguments: widget
+                                                            .user.countryCode,
+                                                        context,
+                                                        'StorePage');
+                                                  },
+                                                  icon: SvgPicture.asset(
+                                                      color: kWhite,
+                                                      'assets/svg/icons/card_icon.svg')),
                                             CustomIconContainer(
                                                 onTap: () {
                                                   ref
@@ -997,65 +996,55 @@ Widget customPoster({
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: AspectRatio(
-            aspectRatio: 3 / 4,
-            child: Image.network(
-              poster.media ?? '',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.grey,
+      InkWell(
+        onTap: () {
+          if (poster.link != null) {
+            launchURL(poster.link ?? '');
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: AspectRatio(
+              aspectRatio: 3 / 4,
+              child: Image.network(
+                poster.media ?? '',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                );
-              },
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) {
-                  return child; // Image loaded successfully
-                }
-                // While the image is loading, show shimmer effect
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.grey,
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child; // Image loaded successfully
+                  }
+
+                  return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ),
       ),
-      if (poster.link != null)
-        SizedBox(
-          height: 16,
-        ),
-      if (poster.link != null)
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          width: MediaQuery.of(context).size.width / 2,
-          child: customButton(
-            label: 'Know More',
-            onPressed: () {
-              if (poster.link != null) {
-                launchURL(poster.link ?? '');
-              }
-            },
-          ),
-        )
     ],
   );
 }
