@@ -24,8 +24,8 @@ class AddProductModalSheet extends ConsumerStatefulWidget {
   final String companyId;
   final ProductModel? productToEdit;
   const AddProductModalSheet({
-    Key? key, 
-    required this.categories, 
+    Key? key,
+    required this.categories,
     required this.companyId,
     this.productToEdit,
   }) : super(key: key);
@@ -41,8 +41,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
   List<Uint8List> imageBytesList = [];
   List<String> existingImageUrls = []; // For existing product images
   final nameController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final sellerNameController = TextEditingController();
+
   final actualPriceController = TextEditingController();
   final offerPriceController = TextEditingController();
   final List<TextEditingController> specificationControllers = [
@@ -58,12 +57,10 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
     final product = widget.productToEdit;
     if (product != null) {
       nameController.text = product.name;
-      // Note: ProductModel doesn't have description field, so we'll leave it empty
-      sellerNameController.text = product.user.name ?? '';
       actualPriceController.text = product.actualPrice.toString();
       offerPriceController.text = product.discountPrice.toString();
       showOnPublicProfile = product.isPublic;
-      
+
       // Handle specifications
       if (product.specifications.isNotEmpty) {
         specificationControllers.clear();
@@ -71,7 +68,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
           specificationControllers.add(TextEditingController(text: spec));
         }
       }
-      
+
       // Handle existing images
       if (product.images.isNotEmpty) {
         existingImageUrls = product.images.map((img) => img.url).toList();
@@ -129,8 +126,6 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
   @override
   void dispose() {
     nameController.dispose();
-    descriptionController.dispose();
-    sellerNameController.dispose();
     actualPriceController.dispose();
     offerPriceController.dispose();
     for (final c in specificationControllers) {
@@ -181,7 +176,11 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text(widget.productToEdit != null ? 'Edit Product' : 'Add Product', style: kSmallTitleL),
+                  Text(
+                      widget.productToEdit != null
+                          ? 'Edit Product'
+                          : 'Add Product',
+                      style: kSmallTitleL),
                 ],
               ),
               const SizedBox(height: 12),
@@ -214,7 +213,8 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                         )
                       : ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: imageBytesList.length + existingImageUrls.length,
+                          itemCount:
+                              imageBytesList.length + existingImageUrls.length,
                           separatorBuilder: (_, __) => SizedBox(width: 8),
                           itemBuilder: (context, index) {
                             if (index < imageBytesList.length) {
@@ -264,13 +264,15 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                                       fit: BoxFit.cover,
                                       width: 100,
                                       height: 100,
-                                      errorBuilder: (context, error, stackTrace) {
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
                                         return Container(
                                           width: 100,
                                           height: 100,
                                           color: kCardBackgroundColor,
                                           child: Icon(Icons.broken_image,
-                                              color: kSecondaryTextColor, size: 40),
+                                              color: kSecondaryTextColor,
+                                              size: 40),
                                         );
                                       },
                                     ),
@@ -310,15 +312,6 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                 textController: nameController,
               ),
               const SizedBox(height: 12),
-              Text('Description', style: kBodyTitleR),
-              const SizedBox(height: 4),
-              CustomTextFormField(
-                backgroundColor: kCardBackgroundColor,
-                labelText: 'Description',
-                textController: descriptionController,
-                maxLines: 3,
-              ),
-              const SizedBox(height: 12),
               Text('Specifications', style: kBodyTitleR),
               const SizedBox(height: 4),
               ListView.builder(
@@ -354,12 +347,6 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
               const SizedBox(height: 12),
               Text('Seller Name', style: kBodyTitleR),
               const SizedBox(height: 4),
-              CustomTextFormField(
-                backgroundColor: kCardBackgroundColor,
-                labelText: 'Name',
-                textController: sellerNameController,
-              ),
-              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -410,8 +397,10 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
               ),
               const SizedBox(height: 20),
               customButton(
-                label: isUploading 
-                    ? (widget.productToEdit != null ? 'Updating...' : 'Posting...') 
+                label: isUploading
+                    ? (widget.productToEdit != null
+                        ? 'Updating...'
+                        : 'Posting...')
                     : (widget.productToEdit != null ? 'Update' : 'Post'),
                 onPressed: isUploading
                     ? null
@@ -419,14 +408,14 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                         SnackbarService snackbarService = SnackbarService();
 
                         List<String> imageUrls = [];
-                        
+
                         // Upload new images if any
                         if (imagePaths.isNotEmpty) {
                           final newImageUrls = await _uploadImagesIfNeeded();
                           if (newImageUrls.isEmpty) return;
                           imageUrls.addAll(newImageUrls);
                         }
-                        
+
                         // Add existing image URLs
                         imageUrls.addAll(existingImageUrls);
                         final productsApiService =
@@ -438,7 +427,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                             .map((c) => c.text.trim())
                             .where((s) => s.isNotEmpty)
                             .toList();
-                        
+
                         bool? result;
                         if (widget.productToEdit != null) {
                           // Update existing product
@@ -474,22 +463,23 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                             isPublic: showOnPublicProfile,
                           );
                         }
-                        
+
                         setState(() {
                           isUploading = false;
                         });
                         if (result != false) {
                           Navigator.of(context).pop();
-                          snackbarService.showSnackBar(
-                              widget.productToEdit != null 
-                                  ? 'Product updated successfully!'
-                                  : 'Product posted successfully and will be reviewed by admin');
+                          snackbarService.showSnackBar(widget.productToEdit !=
+                                  null
+                              ? 'Product updated successfully!'
+                              : 'Product posted successfully and will be reviewed by admin');
                           ref
                               .read(productsNotifierProvider.notifier)
-                              .refreshProducts(widget.companyId);
+                              .refreshProducts(widget.companyId,
+                                  isUserProducts: true);
                         } else {
                           snackbarService.showSnackBar(
-                              widget.productToEdit != null 
+                              widget.productToEdit != null
                                   ? 'Failed to update product!'
                                   : 'Failed to post product!',
                               type: SnackbarType.error);

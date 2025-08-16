@@ -20,7 +20,7 @@ class ProductsApiService {
   ProductsApiService(this._apiService);
 
   Future<List<ProductModel>> getProducts({
-    required String companyId, 
+    required String companyId,
     String? query,
     int pageNo = 1,
     int limit = 10,
@@ -154,7 +154,7 @@ Future<List<ProductModel>> getProducts(Ref ref,
     String? query}) async {
   final productsApiService = ref.watch(productsApiServiceProvider);
   return productsApiService.getProducts(
-    companyId: companyId, 
+    companyId: companyId,
     query: query,
     pageNo: pageNo,
     limit: limit,
@@ -169,7 +169,7 @@ Future<List<ProductModel>> getProductsForUser(Ref ref,
     String? query}) async {
   final productsApiService = ref.watch(productsApiServiceProvider);
   return productsApiService.getProductsForUser(
-    companyId: companyId, 
+    companyId: companyId,
     query: query,
     pageNo: pageNo,
     limit: limit,
