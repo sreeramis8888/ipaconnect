@@ -25,7 +25,7 @@ final productsApiServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ProductsApiServiceRef = AutoDisposeProviderRef<ProductsApiService>;
-String _$getProductsHash() => r'e1ff6600ca86adfd64b6bf02e9ff3d5de74f5426';
+String _$getProductsHash() => r'858359d65c31d8f058627bbfbd5a640ae046f381';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -225,6 +225,190 @@ class _GetProductsProviderElement
   String get companyId => (origin as GetProductsProvider).companyId;
   @override
   String? get query => (origin as GetProductsProvider).query;
+}
+
+String _$getProductsForUserHash() =>
+    r'f74571b1d46d20c73ddceac971db4e41c74a5604';
+
+/// See also [getProductsForUser].
+@ProviderFor(getProductsForUser)
+const getProductsForUserProvider = GetProductsForUserFamily();
+
+/// See also [getProductsForUser].
+class GetProductsForUserFamily extends Family<AsyncValue<List<ProductModel>>> {
+  /// See also [getProductsForUser].
+  const GetProductsForUserFamily();
+
+  /// See also [getProductsForUser].
+  GetProductsForUserProvider call({
+    int pageNo = 1,
+    int limit = 10,
+    required String companyId,
+    String? query,
+  }) {
+    return GetProductsForUserProvider(
+      pageNo: pageNo,
+      limit: limit,
+      companyId: companyId,
+      query: query,
+    );
+  }
+
+  @override
+  GetProductsForUserProvider getProviderOverride(
+    covariant GetProductsForUserProvider provider,
+  ) {
+    return call(
+      pageNo: provider.pageNo,
+      limit: provider.limit,
+      companyId: provider.companyId,
+      query: provider.query,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getProductsForUserProvider';
+}
+
+/// See also [getProductsForUser].
+class GetProductsForUserProvider
+    extends AutoDisposeFutureProvider<List<ProductModel>> {
+  /// See also [getProductsForUser].
+  GetProductsForUserProvider({
+    int pageNo = 1,
+    int limit = 10,
+    required String companyId,
+    String? query,
+  }) : this._internal(
+          (ref) => getProductsForUser(
+            ref as GetProductsForUserRef,
+            pageNo: pageNo,
+            limit: limit,
+            companyId: companyId,
+            query: query,
+          ),
+          from: getProductsForUserProvider,
+          name: r'getProductsForUserProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getProductsForUserHash,
+          dependencies: GetProductsForUserFamily._dependencies,
+          allTransitiveDependencies:
+              GetProductsForUserFamily._allTransitiveDependencies,
+          pageNo: pageNo,
+          limit: limit,
+          companyId: companyId,
+          query: query,
+        );
+
+  GetProductsForUserProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.pageNo,
+    required this.limit,
+    required this.companyId,
+    required this.query,
+  }) : super.internal();
+
+  final int pageNo;
+  final int limit;
+  final String companyId;
+  final String? query;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<ProductModel>> Function(GetProductsForUserRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetProductsForUserProvider._internal(
+        (ref) => create(ref as GetProductsForUserRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        pageNo: pageNo,
+        limit: limit,
+        companyId: companyId,
+        query: query,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<ProductModel>> createElement() {
+    return _GetProductsForUserProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetProductsForUserProvider &&
+        other.pageNo == pageNo &&
+        other.limit == limit &&
+        other.companyId == companyId &&
+        other.query == query;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, pageNo.hashCode);
+    hash = _SystemHash.combine(hash, limit.hashCode);
+    hash = _SystemHash.combine(hash, companyId.hashCode);
+    hash = _SystemHash.combine(hash, query.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetProductsForUserRef
+    on AutoDisposeFutureProviderRef<List<ProductModel>> {
+  /// The parameter `pageNo` of this provider.
+  int get pageNo;
+
+  /// The parameter `limit` of this provider.
+  int get limit;
+
+  /// The parameter `companyId` of this provider.
+  String get companyId;
+
+  /// The parameter `query` of this provider.
+  String? get query;
+}
+
+class _GetProductsForUserProviderElement
+    extends AutoDisposeFutureProviderElement<List<ProductModel>>
+    with GetProductsForUserRef {
+  _GetProductsForUserProviderElement(super.provider);
+
+  @override
+  int get pageNo => (origin as GetProductsForUserProvider).pageNo;
+  @override
+  int get limit => (origin as GetProductsForUserProvider).limit;
+  @override
+  String get companyId => (origin as GetProductsForUserProvider).companyId;
+  @override
+  String? get query => (origin as GetProductsForUserProvider).query;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -100,154 +100,161 @@ class _CategorypageState extends ConsumerState<Categorypage> {
       ),
       body: StartupStagger(
         child: Column(
-        children: [
-          // Search Bar
-          StaggerItem(
-            order: 0,
-            from: SlideFrom.left,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      onChanged: _onSearchChanged,
-                      onSubmitted: _onSearchSubmitted,
-                      cursorColor: kWhite,
-                      style: kBodyTitleR.copyWith(
-                        fontSize: 14,
-                        color: kSecondaryTextColor,
-                      ),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 16),
-                        filled: true,
-                        fillColor: kCardBackgroundColor,
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          size: 20,
+          children: [
+            // Search Bar
+            StaggerItem(
+              order: 0,
+              from: SlideFrom.left,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        onChanged: _onSearchChanged,
+                        onSubmitted: _onSearchSubmitted,
+                        cursorColor: kWhite,
+                        style: kBodyTitleR.copyWith(
+                          fontSize: 14,
                           color: kSecondaryTextColor,
                         ),
-                        hintText: 'Search Companies',
-                        hintStyle: kSmallTitleL.copyWith(color: kSecondaryTextColor),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-
-          isFirstLoad
-              ? const Center(child: LoadingAnimation())
-              : companies.isEmpty
-                  ? Expanded(
-                      child: Center(
-                        child: Text(
-                          'No Companies yet',
-                          style: kSmallTitleL,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 16),
+                          filled: true,
+                          fillColor: kCardBackgroundColor,
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            size: 20,
+                            color: kSecondaryTextColor,
+                          ),
+                          hintText: 'Search Companies',
+                          hintStyle:
+                              kSmallTitleL.copyWith(color: kSecondaryTextColor),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     )
-              : Expanded(
-                      child: StaggerItem(
-                        order: 1,
-                        from: SlideFrom.bottom,
-                        child: ListView.builder(
-                          itemCount: 3,
-                          itemBuilder: (context, index) {
-                            if (index == companies.length && isLoading) {
-                              return const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: LoadingAnimation(),
-                                ),
-                              );
-                            }
-                            if (index < companies.length) {
-                              final company = companies[index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
-                                child: CompanyCard(
-                                  userName: company.user?.name ?? '',
-                                  companyUserId: company.user?.id ?? '',
-                                  companyName: company.name ?? '',
-                                  rating: company.rating ?? 0,
-                                  industry: company.category ?? '',
-                                  location: company.contactInfo?.address ?? '',
-                                  isActive:
-                                      company.status == 'active' ? true : false,
-                                  imageUrl: company.image,
-                                  onViewDetails: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            CompanyDetailsPage(company: company),
-                                      ),
-                                    );
-                                  },
-                                  onEdit: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AddCompanyPage(
-                                            companyToEdit: company),
-                                      ),
-                                    );
-                                    if (result == true) {
-                                      // Refresh companies after edit
-                                      await ref
-                                          .read(companiesNotifierProvider.notifier)
-                                          .refreshCompanies();
-                                    }
-                                  },
-                                  onDelete: () async {
-                                    final confirmed = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => ConfirmationDialog(
-                                        title: 'Delete Company',
-                                        content:
-                                            'Are you sure you want to delete this company?',
-                                        confirmText: 'Delete',
-                                        cancelText: 'Cancel',
-                                        icon: const Icon(Icons.delete_outline,
-                                            color: Colors.red, size: 24),
-                                      ),
-                                    );
-                                    if (confirmed == true) {
-                                      final container =
-                                          ProviderScope.containerOf(context);
-                                      final companyApi =
-                                          container.read(companyApiServiceProvider);
-                                      final deleted = await companyApi
-                                          .deleteCompany(company.id!);
-                                      if (deleted) {
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+
+            isFirstLoad
+                ? const Center(child: LoadingAnimation())
+                : companies.isEmpty
+                    ? Expanded(
+                        child: Center(
+                          child: Text(
+                            'No Companies yet',
+                            style: kSmallTitleL,
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: StaggerItem(
+                          order: 1,
+                          from: SlideFrom.bottom,
+                          child: ListView.builder(
+                            itemCount: 3,
+                            itemBuilder: (context, index) {
+                              if (index == companies.length && isLoading) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: LoadingAnimation(),
+                                  ),
+                                );
+                              }
+                              if (index < companies.length) {
+                                final company = companies[index];
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 10),
+                                  child: CompanyCard(
+                                    userName: company.user?.name ?? '',
+                                    companyUserId: company.user?.id ?? '',
+                                    companyName: company.name ?? '',
+                                    rating: company.rating ?? 0,
+                                    industry: company.category ?? '',
+                                    location:
+                                        company.contactInfo?.address ?? '',
+                                    isActive: company.status == 'active'
+                                        ? true
+                                        : false,
+                                    imageUrl: company.image,
+                                    onViewDetails: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CompanyDetailsPage(
+                                                  company: company),
+                                        ),
+                                      );
+                                    },
+                                    onEdit: () async {
+                                      final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AddCompanyPage(
+                                              companyToEdit: company),
+                                        ),
+                                      );
+                                      if (result == true) {
+                                        // Refresh companies after edit
                                         await ref
-                                            .read(companiesNotifierProvider.notifier)
+                                            .read(companiesNotifierProvider
+                                                .notifier)
                                             .refreshCompanies();
                                       }
-                                    }
-                                  },
-                                ),
-                              );
-                            }
-                            return const SizedBox.shrink();
-                          },
+                                    },
+                                    onDelete: () async {
+                                      final confirmed = await showDialog<bool>(
+                                        context: context,
+                                        builder: (context) =>
+                                            ConfirmationDialog(
+                                          title: 'Delete Company',
+                                          content:
+                                              'Are you sure you want to delete this company?',
+                                          confirmText: 'Delete',
+                                          cancelText: 'Cancel',
+                                          icon: const Icon(Icons.delete_outline,
+                                              color: Colors.red, size: 24),
+                                        ),
+                                      );
+                                      if (confirmed == true) {
+                                        final container =
+                                            ProviderScope.containerOf(context);
+                                        final companyApi = container
+                                            .read(companyApiServiceProvider);
+                                        final deleted = await companyApi
+                                            .deleteCompany(company.id!);
+                                        if (deleted) {
+                                          await ref
+                                              .read(companiesNotifierProvider
+                                                  .notifier)
+                                              .refreshCompanies();
+                                        }
+                                      }
+                                    },
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
                         ),
                       ),
-                    ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

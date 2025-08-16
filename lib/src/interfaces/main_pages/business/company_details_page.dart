@@ -21,6 +21,8 @@ import 'package:ipaconnect/src/data/notifiers/companies_notifier.dart';
 import 'company_reviews_page.dart';
 import 'package:ipaconnect/main.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
+import 'package:ipaconnect/src/interfaces/components/custom_widgets/confirmation_dialog.dart';
+import 'package:ipaconnect/src/data/services/api_routes/products_api/products_api_service.dart';
 
 class CompanyDetailsPage extends ConsumerStatefulWidget {
   final CompanyModel company;
@@ -69,17 +71,18 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
   }
 
   Future<void> _fetchInitialProducts() async {
-    await ref
-        .read(productsNotifierProvider.notifier)
-        .fetchMoreProducts(widget.company.id);
+    final isCurrentUser = globals.id == widget.company.user?.id ;
+    await ref.read(productsNotifierProvider.notifier).fetchMoreProducts(
+          widget.company.id,isUserProducts: isCurrentUser
+        );
   }
 
-  void _onScroll() {
+  void _onScroll() {final isCurrentUser = globals.id == widget.company.user?.id ;
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       ref
           .read(productsNotifierProvider.notifier)
-          .fetchMoreProducts(widget.company.id);
+          .fetchMoreProducts(widget.company.id,isUserProducts: isCurrentUser);
     }
   }
 
@@ -195,7 +198,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                                 SizedBox(height: 8),
                                 Consumer(
                                   builder: (context, ref, _) {
-                                    final ratings = ref.watch(ratingNotifierProvider);
+                                    final ratings =
+                                        ref.watch(ratingNotifierProvider);
                                     double avgRating = ratings.isNotEmpty
                                         ? ratings
                                                 .map((r) => r.rating)
@@ -304,7 +308,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                 from: SlideFrom.bottom,
                 child: Text(company.overview ?? '-',
                     style: TextStyle(
-                        fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
+                        fontWeight: FontWeight.w300,
+                        color: kSecondaryTextColor)),
               ),
               const SizedBox(height: 16),
               // Industry
@@ -319,7 +324,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                 from: SlideFrom.bottom,
                 child: Text(company.category ?? '-',
                     style: TextStyle(
-                        fontWeight: FontWeight.w300, color: kSecondaryTextColor)),
+                        fontWeight: FontWeight.w300,
+                        color: kSecondaryTextColor)),
               ),
               const SizedBox(height: 16),
               // Services
@@ -462,7 +468,8 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CompanyReviewsPage(company: company),
+                        builder: (context) =>
+                            CompanyReviewsPage(company: company),
                       ),
                     );
                   },
@@ -595,114 +602,176 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
     final categories = <String>[widget.company.category ?? 'General'];
     return StartupStagger(
       child: Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              // Search Bar
-              StaggerItem(
-                order: 0,
-                from: SlideFrom.left,
-                child: TextField(
-                  onChanged: _onSearchChanged,
-                  onSubmitted: _onSearchSubmitted,
-                  cursorColor: kWhite,
-                  style: kBodyTitleR.copyWith(
-                    fontSize: 14,
-                    color: kSecondaryTextColor,
-                  ),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                    filled: true,
-                    fillColor: kCardBackgroundColor,
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      size: 20,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                // Search Bar
+                StaggerItem(
+                  order: 0,
+                  from: SlideFrom.left,
+                  child: TextField(
+                    onChanged: _onSearchChanged,
+                    onSubmitted: _onSearchSubmitted,
+                    cursorColor: kWhite,
+                    style: kBodyTitleR.copyWith(
+                      fontSize: 14,
                       color: kSecondaryTextColor,
                     ),
-                    hintText: 'Search Products',
-                    hintStyle:  kSmallTitleL.copyWith(color: kSecondaryTextColor),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                      borderSide: BorderSide.none,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 16),
+                      filled: true,
+                      fillColor: kCardBackgroundColor,
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 20,
+                        color: kSecondaryTextColor,
+                      ),
+                      hintText: 'Search Products',
+                      hintStyle:
+                          kSmallTitleL.copyWith(color: kSecondaryTextColor),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Product Grid
-              isFirstLoad
-                  ? const Center(child: LoadingAnimation())
-                  : products.isEmpty
-                      ? Expanded(
-                          child: Center(
-                            child: Text(
-                              'No Products yet',
-                              style: kSmallTitleL,
-                            ),
-                          ),
-                        )
-                      : Expanded(
-                          child: StaggerItem(
-                            order: 1,
-                            from: SlideFrom.bottom,
-                            child: GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 220,
-                                mainAxisSpacing: 16,
-                                crossAxisSpacing: 16,
-                                childAspectRatio: MediaQuery.of(context)
-                                        .size
-                                        .width /
-                                    (MediaQuery.of(context).size.height / 1.1),
+                const SizedBox(height: 16),
+                // Product Grid
+                isFirstLoad
+                    ? const Center(child: LoadingAnimation())
+                    : products.isEmpty
+                        ? Expanded(
+                            child: Center(
+                              child: Text(
+                                'No Products yet',
+                                style: kSmallTitleL,
                               ),
-                              itemCount: products.length,
-                              itemBuilder: (context, index) {
-                                final product = products[index];
-                                return StaggerItem(
-                                  order: 2 + (index % 8),
-                                  from: SlideFrom.bottom,
-                                  child: ProductCard(
-                                    companyUserId: widget.company.user?.id ?? '',
-                                    category: widget.company.category ?? '',
-                                    product: product,
-                                  ),
-                                );
-                              },
+                            ),
+                          )
+                        : Expanded(
+                            child: StaggerItem(
+                              order: 1,
+                              from: SlideFrom.bottom,
+                              child: GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 220,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio:
+                                      MediaQuery.of(context).size.width /
+                                          (MediaQuery.of(context).size.height /
+                                              1.1),
+                                ),
+                                itemCount: products.length,
+                                itemBuilder: (context, index) {
+                                  final product = products[index];
+                                  return StaggerItem(
+                                    order: 2 + (index % 8),
+                                    from: SlideFrom.bottom,
+                                    child: ProductCard(
+                                      companyUserId:
+                                          widget.company.user?.id ?? '',
+                                      category: widget.company.category ?? '',
+                                      product: product,
+                                      onEdit: () async {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          builder: (context) =>
+                                              AddProductModalSheet(
+                                            categories: categories,
+                                            companyId: widget.company.id ?? '',
+                                            productToEdit: product,
+                                          ),
+                                        );
+                                      },
+                                      onDelete: () async {
+                                        final confirmed =
+                                            await showDialog<bool>(
+                                          context: context,
+                                          builder: (context) =>
+                                              ConfirmationDialog(
+                                            title: 'Delete Product',
+                                            content:
+                                                'Are you sure you want to delete this product?',
+                                            confirmText: 'Delete',
+                                            cancelText: 'Cancel',
+                                            icon: const Icon(
+                                                Icons.delete_outline,
+                                                color: Colors.red,
+                                                size: 24),
+                                          ),
+                                        );
+                                        if (confirmed == true) {
+                                          final container =
+                                              ProviderScope.containerOf(
+                                                  context);
+                                          final productsApi = container
+                                              .read(productsApiServiceProvider);
+                                          final deleted = await productsApi
+                                              .deleteProduct(product.id);
+                                          if (deleted) {
+                                            ref
+                                                .read(productsNotifierProvider
+                                                    .notifier)
+                                                .refreshProducts(
+                                                    widget.company.id ?? '');
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      'Product deleted successfully')),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      'Failed to delete product')),
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        ),
-            ],
-          ),
-        ),
-        if (isOwner)
-          Positioned(
-            bottom: 24,
-            right: 24,
-            child: FloatingActionButton(
-              backgroundColor: kPrimaryColor,
-              child: const Icon(Icons.add, color: kWhite),
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => AddProductModalSheet(
-                    categories: categories,
-                    companyId: widget.company.id ?? '',
-                  ),
-                );
-              },
+              ],
             ),
           ),
-      ],
-    ),
+          if (isOwner)
+            Positioned(
+              bottom: 24,
+              right: 24,
+              child: FloatingActionButton(
+                backgroundColor: kPrimaryColor,
+                child: const Icon(Icons.add, color: kWhite),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => AddProductModalSheet(
+                      categories: categories,
+                      companyId: widget.company.id ?? '',
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

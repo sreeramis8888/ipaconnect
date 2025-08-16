@@ -17,13 +17,18 @@ import 'package:ipaconnect/src/data/services/image_upload.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/services/api_routes/products_api/products_api_service.dart';
+import 'package:ipaconnect/src/data/models/product_model.dart';
 
 class AddProductModalSheet extends ConsumerStatefulWidget {
   final List<String> categories;
   final String companyId;
-  const AddProductModalSheet(
-      {Key? key, required this.categories, required this.companyId})
-      : super(key: key);
+  final ProductModel? productToEdit;
+  const AddProductModalSheet({
+    Key? key, 
+    required this.categories, 
+    required this.companyId,
+    this.productToEdit,
+  }) : super(key: key);
 
   @override
   ConsumerState<AddProductModalSheet> createState() =>
@@ -34,6 +39,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
   String? selectedCategory;
   List<String> imagePaths = [];
   List<Uint8List> imageBytesList = [];
+  List<String> existingImageUrls = []; // For existing product images
   final nameController = TextEditingController();
   final descriptionController = TextEditingController();
   final sellerNameController = TextEditingController();
@@ -44,6 +50,34 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
   ];
   bool showOnPublicProfile = true;
   bool isUploading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prefill fields if editing
+    final product = widget.productToEdit;
+    if (product != null) {
+      nameController.text = product.name;
+      // Note: ProductModel doesn't have description field, so we'll leave it empty
+      sellerNameController.text = product.user.name ?? '';
+      actualPriceController.text = product.actualPrice.toString();
+      offerPriceController.text = product.discountPrice.toString();
+      showOnPublicProfile = product.isPublic;
+      
+      // Handle specifications
+      if (product.specifications.isNotEmpty) {
+        specificationControllers.clear();
+        for (final spec in product.specifications) {
+          specificationControllers.add(TextEditingController(text: spec));
+        }
+      }
+      
+      // Handle existing images
+      if (product.images.isNotEmpty) {
+        existingImageUrls = product.images.map((img) => img.url).toList();
+      }
+    }
+  }
 
   Future<void> _pickAndCropImage() async {
     final picker = ImagePicker();
@@ -147,10 +181,18 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text('Add Product', style: kSmallTitleL),
+                  Text(widget.productToEdit != null ? 'Edit Product' : 'Add Product', style: kSmallTitleL),
                 ],
               ),
               const SizedBox(height: 12),
+              if (existingImageUrls.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'Existing Images (tap to remove)',
+                    style: kSmallTitleL.copyWith(color: kSecondaryTextColor),
+                  ),
+                ),
               GestureDetector(
                 onTap: _pickAndCropImage,
                 child: Container(
@@ -160,7 +202,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                     color: kCardBackgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: imageBytesList.isEmpty
+                  child: (imageBytesList.isEmpty && existingImageUrls.isEmpty)
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -172,41 +214,90 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                         )
                       : ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: imageBytesList.length,
+                          itemCount: imageBytesList.length + existingImageUrls.length,
                           separatorBuilder: (_, __) => SizedBox(width: 8),
-                          itemBuilder: (context, index) => Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.memory(
-                                  imageBytesList[index],
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
-                                ),
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      imageBytesList.removeAt(index);
-                                      imagePaths.removeAt(index);
-                                    });
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
+                          itemBuilder: (context, index) {
+                            if (index < imageBytesList.length) {
+                              // Local images (new uploads)
+                              return Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.memory(
+                                      imageBytesList[index],
+                                      fit: BoxFit.cover,
+                                      width: 100,
+                                      height: 100,
                                     ),
-                                    child: Icon(Icons.close,
-                                        color: kWhite, size: 20),
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          imageBytesList.removeAt(index);
+                                          imagePaths.removeAt(index);
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.black54,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(Icons.close,
+                                            color: kWhite, size: 20),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // Existing images (URLs)
+                              final urlIndex = index - imageBytesList.length;
+                              return Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      existingImageUrls[urlIndex],
+                                      fit: BoxFit.cover,
+                                      width: 100,
+                                      height: 100,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          width: 100,
+                                          height: 100,
+                                          color: kCardBackgroundColor,
+                                          child: Icon(Icons.broken_image,
+                                              color: kSecondaryTextColor, size: 40),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          existingImageUrls.removeAt(urlIndex);
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.black54,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(Icons.close,
+                                            color: kWhite, size: 20),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          },
                         ),
                 ),
               ),
@@ -319,17 +410,25 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
               ),
               const SizedBox(height: 20),
               customButton(
-                label: isUploading ? 'Posting...' : 'Post',
+                label: isUploading 
+                    ? (widget.productToEdit != null ? 'Updating...' : 'Posting...') 
+                    : (widget.productToEdit != null ? 'Update' : 'Post'),
                 onPressed: isUploading
                     ? null
                     : () async {
                         SnackbarService snackbarService = SnackbarService();
 
                         List<String> imageUrls = [];
+                        
+                        // Upload new images if any
                         if (imagePaths.isNotEmpty) {
-                          imageUrls = await _uploadImagesIfNeeded();
-                          if (imageUrls.isEmpty) return;
+                          final newImageUrls = await _uploadImagesIfNeeded();
+                          if (newImageUrls.isEmpty) return;
+                          imageUrls.addAll(newImageUrls);
                         }
+                        
+                        // Add existing image URLs
+                        imageUrls.addAll(existingImageUrls);
                         final productsApiService =
                             ref.read(productsApiServiceProvider);
                         setState(() {
@@ -339,33 +438,60 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                             .map((c) => c.text.trim())
                             .where((s) => s.isNotEmpty)
                             .toList();
-                        final result = await productsApiService.postProduct(
-                          companyId: widget.companyId,
-                          name: nameController.text.trim(),
-                          actualPrice: double.tryParse(
-                                  actualPriceController.text.trim()) ??
-                              0.0,
-                          discountPrice: double.tryParse(
-                                  offerPriceController.text.trim()) ??
-                              0.0,
-                          imageUrls: imageUrls,
-                          tags: [],
-                          specifications: specifications,
-                          isPublic: showOnPublicProfile,
-                        );
+                        
+                        bool? result;
+                        if (widget.productToEdit != null) {
+                          // Update existing product
+                          result = await productsApiService.updateProduct(
+                            productId: widget.productToEdit!.id,
+                            companyId: widget.companyId,
+                            name: nameController.text.trim(),
+                            actualPrice: double.tryParse(
+                                    actualPriceController.text.trim()) ??
+                                0.0,
+                            discountPrice: double.tryParse(
+                                    offerPriceController.text.trim()) ??
+                                0.0,
+                            imageUrls: imageUrls,
+                            tags: [],
+                            specifications: specifications,
+                            isPublic: showOnPublicProfile,
+                          );
+                        } else {
+                          // Create new product
+                          result = await productsApiService.postProduct(
+                            companyId: widget.companyId,
+                            name: nameController.text.trim(),
+                            actualPrice: double.tryParse(
+                                    actualPriceController.text.trim()) ??
+                                0.0,
+                            discountPrice: double.tryParse(
+                                    offerPriceController.text.trim()) ??
+                                0.0,
+                            imageUrls: imageUrls,
+                            tags: [],
+                            specifications: specifications,
+                            isPublic: showOnPublicProfile,
+                          );
+                        }
+                        
                         setState(() {
                           isUploading = false;
                         });
                         if (result != false) {
                           Navigator.of(context).pop();
                           snackbarService.showSnackBar(
-                              'Product posted successfully and will be reviewed by admin');
+                              widget.productToEdit != null 
+                                  ? 'Product updated successfully!'
+                                  : 'Product posted successfully and will be reviewed by admin');
                           ref
                               .read(productsNotifierProvider.notifier)
                               .refreshProducts(widget.companyId);
                         } else {
                           snackbarService.showSnackBar(
-                              'Failed to post product!',
+                              widget.productToEdit != null 
+                                  ? 'Failed to update product!'
+                                  : 'Failed to post product!',
                               type: SnackbarType.error);
                         }
                       },

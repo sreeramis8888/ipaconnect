@@ -1,13 +1,5 @@
 import 'dart:developer';
-import 'package:ipaconnect/src/data/models/business_category_model.dart';
-import 'package:ipaconnect/src/data/models/chat_model.dart';
-import 'package:ipaconnect/src/data/models/company_model.dart';
-import 'package:ipaconnect/src/data/models/feed_model.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
-import 'package:ipaconnect/src/data/services/api_routes/business_category_api/business_category_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/feed_api/feed_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/products_api/products_api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,19 +15,30 @@ class ProductsNotifier extends _$ProductsNotifier {
   final int limit = 14;
   bool hasMore = true;
   String? searchQuery;
+  bool isUserProducts = false;
+  
   @override
   List<ProductModel> build() {
     return [];
   }
 
-  Future<void> fetchMoreProducts(String? companyId) async {
+  Future<void> fetchMoreProducts(String? companyId, {bool isUserProducts = false}) async {
     if (isLoading || !hasMore) return;
 
     isLoading = true;
+    this.isUserProducts = isUserProducts;
 
     try {
-      final refreshedProducts = await ref.read(getProductsProvider(
-              pageNo: pageNo, limit: limit, companyId: companyId ?? '')
+      final refreshedProducts = isUserProducts 
+        ? await ref.read(getProductsForUserProvider(
+            pageNo: pageNo, 
+            limit: limit, 
+            companyId: companyId ?? '')
+          .future)
+        : await ref.read(getProductsProvider(
+            pageNo: pageNo, 
+            limit: limit, 
+            companyId: companyId ?? '')
           .future);
 
       if (refreshedProducts.isEmpty) {
@@ -56,21 +59,31 @@ class ProductsNotifier extends _$ProductsNotifier {
     }
   }
 
-  Future<void> searchProducts(String query,{required String companyId}
-     ) async {
+  Future<void> searchProducts(String query, {required String companyId, bool isUserProducts = false}) async {
     isLoading = true;
     pageNo = 1;
     products = [];
     searchQuery = query;
+    this.isUserProducts = isUserProducts;
 
     try {
-      final newProducts = await ref.read(
-        getProductsProvider(companyId:companyId ,
-          pageNo: pageNo,
-          limit: limit,
-          query: query,
-        ).future,
-      );
+      final newProducts = isUserProducts
+        ? await ref.read(
+          getProductsForUserProvider(
+            companyId: companyId,
+            pageNo: pageNo,
+            limit: limit,
+            query: query,
+          ).future,
+        )
+        : await ref.read(
+          getProductsProvider(
+            companyId: companyId,
+            pageNo: pageNo,
+            limit: limit,
+            query: query,
+          ).future,
+        );
 
       products = [...newProducts];
       hasMore = newProducts.length == limit;
@@ -84,15 +97,24 @@ class ProductsNotifier extends _$ProductsNotifier {
     }
   }
 
-  Future<void> refreshProducts(String? companyId) async {
+  Future<void> refreshProducts(String? companyId, {bool isUserProducts = false}) async {
     if (isLoading) return;
 
     isLoading = true;
+    this.isUserProducts = isUserProducts;
 
     try {
       pageNo = 1;
-      final refreshedProducts = await ref.read(getProductsProvider(
-              pageNo: pageNo, limit: limit, companyId: companyId ?? '')
+      final refreshedProducts = isUserProducts
+        ? await ref.read(getProductsForUserProvider(
+            pageNo: pageNo, 
+            limit: limit, 
+            companyId: companyId ?? '')
+          .future)
+        : await ref.read(getProductsProvider(
+            pageNo: pageNo, 
+            limit: limit, 
+            companyId: companyId ?? '')
           .future);
 
       products = refreshedProducts;

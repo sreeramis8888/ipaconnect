@@ -286,7 +286,8 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                   ''
                                               : '',
                                           to: widget.userCurrency,
-                                          amount: item.store?.price ?? 0.0,
+                                          amount: (item.store?.price ?? 0.0) *
+                                              (item.quantity ?? 0),
                                         ),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==

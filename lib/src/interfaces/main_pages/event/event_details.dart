@@ -415,7 +415,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                                                 '${folder.videoCount ?? 0} Videos, ${folder.imageCount ?? 0} Photos',
                                                 style: TextStyle(
                                                   fontSize: 14,
-                                                  color: Colors.grey[600],
+                                                  color: kSecondaryTextColor,
                                                 ),
                                               ),
                                             ],

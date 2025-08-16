@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/dialogs/block_report_dialog.dart';
 import 'package:ipaconnect/src/interfaces/components/dropdown/block_report_dropdown.dart';
+import 'package:ipaconnect/src/interfaces/components/dropdown/product_card_options_dropdown.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/star_rating.dart';
 
@@ -13,11 +14,15 @@ class ProductCard extends StatelessWidget {
   final ProductModel product;
   final String category;
   final String companyUserId;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
   const ProductCard({
     Key? key,
     required this.product,
     required this.category,
     required this.companyUserId,
+    this.onEdit,
+    this.onDelete,
   }) : super(key: key);
 
   @override
@@ -98,6 +103,15 @@ class ProductCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     offset: const Offset(0, 40),
+                  ),
+                ),
+              if (companyUserId == id)
+                Positioned(
+                  top: 4,
+                  right: 8,
+                  child: ProductCardOptionsDropdown(
+                    onEdit: onEdit,
+                    onDelete: onDelete,
                   ),
                 ),
             ],

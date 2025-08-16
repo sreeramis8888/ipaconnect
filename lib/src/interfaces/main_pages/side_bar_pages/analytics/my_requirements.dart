@@ -110,7 +110,10 @@ class _MyRequirementsState extends ConsumerState<MyRequirements> {
                   ),
                 )
               : Center(
-                  child: Text('No Business Posts Added'),
+                  child: Text(
+                    'No Posts Added',
+                    style: kBodyTitleR,
+                  ),
                 ),
     );
   }
