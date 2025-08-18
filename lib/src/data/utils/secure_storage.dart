@@ -2,14 +2,23 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 
 class SecureStorage {
-  static final FlutterSecureStorage _storage = FlutterSecureStorage();
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   static Future<void> write(String key, String value) async {
     await _storage.write(key: key, value: value);
   }
 
   static Future<String?> read(String key) async {
-    return await _storage.read(key: key);
+    try {
+      return await _storage.read(key: key);
+    } catch (e) {
+      await _storage.delete(key: key);
+      return null;
+    }
   }
 
   static Future<void> delete(String key) async {
