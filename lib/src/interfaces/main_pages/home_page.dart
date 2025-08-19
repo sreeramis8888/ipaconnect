@@ -9,7 +9,6 @@ import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
 import 'package:ipaconnect/src/data/utils/white_status_bar.dart';
-import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
@@ -44,9 +43,9 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage>
     with TickerProviderStateMixin {
   final _advancedDrawerController = AdvancedDrawerController();
-  int _currentBannerIndex = 0; // kept for indicator logic if needed later
+  int _currentBannerIndex = 0;
   int _currentNoticeIndex = 0;
-  int _currentPosterIndex = 0; // kept for indicator logic if needed later
+  int _currentPosterIndex = 0;
   int _currentVideoIndex = 0;
   late final AnimationController _startupController;
   bool _hasAnimated = false;
@@ -437,8 +436,6 @@ class _HomePageState extends ConsumerState<HomePage>
                                             CustomIconContainer(
                                                 onTap: () {
                                                   Navigator.pushNamed(
-                                                      arguments: widget
-                                                          .user.countryCode,
                                                       context,
                                                       'EventsPage');
                                                 },

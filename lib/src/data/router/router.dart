@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
@@ -31,8 +30,6 @@ import 'package:ipaconnect/src/interfaces/main_pages/splash_screens/intro_screen
 import 'package:ipaconnect/src/interfaces/main_pages/store/my_orders_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/store_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/store/cart_page.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/store/address_selection_page.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/store/add_address_page.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/approval_waiting.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 
@@ -151,7 +148,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = EventMemberList(event: event);
       break;
     case 'EventsPage':
-      page = EventsPage();
+      final int? initialTabIndex = settings?.arguments as int?;
+      page = EventsPage(initialTabIndex: initialTabIndex ?? 0);
       break;
     case 'MyOrdersPage':
       page = MyOrdersPage();

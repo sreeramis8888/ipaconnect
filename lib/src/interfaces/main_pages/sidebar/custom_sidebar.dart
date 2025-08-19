@@ -153,11 +153,9 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                 height: 24,
               ),
               label: 'Events',
-              onTap: () =>                  Navigator.pushNamed(
-                                                      arguments: 
-                                                          user.countryCode,
-                                                      context,
-                                                      'EventsPage')
+              onTap: () => Navigator.pushNamed(
+                  context,
+                  'EventsPage')
             ),
             _menuItem(
               icon: SvgPicture.asset(

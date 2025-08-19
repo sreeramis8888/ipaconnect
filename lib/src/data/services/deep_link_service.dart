@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/notification_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
-import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/router/nav_router.dart';
 import 'package:ipaconnect/src/data/services/api_routes/chat_api/chat_api_service.dart';
 import 'package:ipaconnect/src/data/services/api_routes/events_api/events_api.dart';
 import 'package:ipaconnect/src/data/services/api_routes/notification_api/notification_api_service.dart';
-import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
@@ -130,6 +128,24 @@ class DeepLinkService {
           }
           break;
 
+        case 'my_events':
+          try {
+            if (NavigationService.navigatorKey.currentState != null) {
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamedAndRemoveUntil(
+                'MainPage',
+                (route) => false,
+              );
+              await Future.delayed(Duration(milliseconds: 500));
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamed('EventsPage', arguments: 1);
+            }
+          } catch (e) {
+            debugPrint('Error navigating to My Events: $e');
+            _showError('Unable to navigate to events');
+          }
+          break;
+
         case 'my_requirements':
           try {
             if (NavigationService.navigatorKey.currentState != null) {
@@ -147,44 +163,57 @@ class DeepLinkService {
             _showError('Unable to navigate to requirements');
           }
           break;
-
-        // case 'my_products':
-        //   try {
-        //     if (NavigationService.navigatorKey.currentState != null) {
-        //       NavigationService.navigatorKey.currentState
-        //           ?.pushNamedAndRemoveUntil(
-        //         'MainPage',
-        //         (route) => false,
-        //       );
-        //       await Future.delayed(Duration(milliseconds: 500));
-
-        //       NavigationService.navigatorKey.currentState
-        //           ?.pushNamed('/my_products');
-        //     }
-        //   } catch (e) {
-        //     debugPrint('Error navigating to products: $e');
-        //     _showError('Unable to navigate to products');
-        //   }
-        //   break;
-
-        // case 'my_subscription':
-        //   try {
-        //     // First navigate to mainpage if not already there
-        //     if (NavigationService.navigatorKey.currentState != null) {
-        //       NavigationService.navigatorKey.currentState
-        //           ?.pushNamedAndRemoveUntil(
-        //         'MainPage',
-        //         (route) => false,
-        //       );
-        //       await Future.delayed(Duration(milliseconds: 500));
-        //       NavigationService.navigatorKey.currentState
-        //           ?.pushNamed('/my_subscription');
-        //     }
-        //   } catch (e) {
-        //     debugPrint('Error navigating to subscription: $e');
-        //     _showError('Unable to navigate to subscription');
-        //   }
-        //   break;
+        case 'analytics':
+          try {
+            if (NavigationService.navigatorKey.currentState != null) {
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamedAndRemoveUntil(
+                'MainPage',
+                (route) => false,
+              );
+              await Future.delayed(Duration(milliseconds: 500));
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamed('Analytics');
+            }
+          } catch (e) {
+            debugPrint('Error navigating to Activity: $e');
+            _showError('Unable to navigate to Activity');
+          }
+          break;
+        case 'my_enquiries':
+          try {
+            if (NavigationService.navigatorKey.currentState != null) {
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamedAndRemoveUntil(
+                'MainPage',
+                (route) => false,
+              );
+              await Future.delayed(Duration(milliseconds: 500));
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamed('EnquiriesPage');
+            }
+          } catch (e) {
+            debugPrint('Error navigating to Enquiries: $e');
+            _showError('Unable to navigate to Enquiries');
+          }
+          break;
+        case 'my_reviews':
+          try {
+            if (NavigationService.navigatorKey.currentState != null) {
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamedAndRemoveUntil(
+                'MainPage',
+                (route) => false,
+              );
+              await Future.delayed(Duration(milliseconds: 500));
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamed('MyReviews');
+            }
+          } catch (e) {
+            debugPrint('Error navigating to Reviews: $e');
+            _showError('Unable to navigate to Reviews');
+          }
+          break;
 
         case 'requirements':
           try {
@@ -217,7 +246,24 @@ class DeepLinkService {
             }
           } catch (e) {
             debugPrint('Error updating tab: $e');
-            _showError('Unable to navigate to requirements');
+            _showError('Unable to navigate to News');
+          }
+          break;
+        case 'products':
+          try {
+            // First navigate to mainpage if not already there
+            if (NavigationService.navigatorKey.currentState != null) {
+              NavigationService.navigatorKey.currentState
+                  ?.pushNamedAndRemoveUntil(
+                'MainPage',
+                (route) => false,
+              );
+              await Future.delayed(Duration(milliseconds: 500));
+              _ref.read(selectedIndexProvider.notifier).updateIndex(5);
+            }
+          } catch (e) {
+            debugPrint('Error updating tab: $e');
+            _showError('Unable to navigate to products');
           }
           break;
 
@@ -264,24 +310,32 @@ class DeepLinkService {
         return id != null
             ? 'ipaconnect://app/event/$id'
             : 'ipaconnect://app/event';
-      case 'my_subscription':
-        return 'ipaconnect://app/my_subscription';
       case 'my_products':
         return 'ipaconnect://app/my_products';
       case 'my_requirements':
         return 'ipaconnect://app/my_requirements';
+      case 'analytics':
+        return 'ipaconnect://app/analytics';
       case 'in-app':
         return 'ipaconnect://app/notification';
-      case 'products':
-        return id != null
-            ? 'ipaconnect://app/products/$id'
-            : 'ipaconnect://app/products';
+      // case 'products':
+      //   return id != null
+      //       ? 'ipaconnect://app/products/$id'
+      //       : 'ipaconnect://app/products';
       case 'news':
         return 'ipaconnect://app/news';
+      case 'my_events':
+        return 'ipaconnect://app/my_events';
       case 'requirements':
         return 'ipaconnect://app/requirements';
+      case 'my_enquiries':
+        return 'ipaconnect://app/my_enquiries';
+      case 'my_reviews':
+        return 'ipaconnect://app/my_reviews';
       case 'mainpage':
         return 'ipaconnect://app/mainpage';
+      case 'products':
+        return 'ipaconnect://app/products';
       default:
         return null;
     }

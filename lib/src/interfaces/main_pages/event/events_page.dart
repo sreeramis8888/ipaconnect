@@ -4,15 +4,15 @@ import 'package:ipaconnect/src/data/notifiers/events_notifier.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/events_api/events_api.dart';
-// Removed unused NavigationService import
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/event/add_event.dart';
-// Staggered animations are applied within individual widgets
 
 class EventsPage extends ConsumerStatefulWidget {
-  const EventsPage({Key? key}) : super(key: key);
+  final int initialTabIndex;
+
+  const EventsPage({Key? key, this.initialTabIndex = 0}) : super(key: key);
 
   @override
   ConsumerState<EventsPage> createState() => _EventsPageState();
@@ -26,7 +26,15 @@ class _EventsPageState extends ConsumerState<EventsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    final int safeInitialIndex = (widget.initialTabIndex >= 0 &&
+            widget.initialTabIndex <= 2)
+        ? widget.initialTabIndex
+        : 0;
+    _tabController =
+        TabController(length: 3, vsync: this, initialIndex: safeInitialIndex);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
     _scrollController.addListener(_onScroll);
     _fetchInitialEvents();
   }
