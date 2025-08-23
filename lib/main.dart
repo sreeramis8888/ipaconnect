@@ -7,9 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ipaconnect/firebase_options.dart';
+import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/services/notification_service/notification_service.dart';
 import 'package:ipaconnect/src/data/utils/secure_storage.dart';
@@ -44,17 +46,21 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
     final notificationService = ref.watch(notificationServiceProvider);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       notificationService.initialize();
+
+      final darkBg = kBackgroundColor;
+      await FlutterStatusbarcolor.setStatusBarColor(darkBg);
+      FlutterStatusbarcolor.setStatusBarWhiteForeground(
+        useWhiteForeground(darkBg),
+      );
+      final navBg = kCardBackgroundColor;
+      await FlutterStatusbarcolor.setNavigationBarColor(navBg);
+      FlutterStatusbarcolor.setNavigationBarWhiteForeground(
+        useWhiteForeground(navBg),
+      );
     });
 
     return MaterialApp(
@@ -65,10 +71,14 @@ class MyApp extends ConsumerWidget {
       initialRoute: 'Splash',
       title: 'IPA',
       theme: ThemeData(
+        brightness: Brightness.dark,
         textTheme: GoogleFonts.robotoTextTheme(
           Theme.of(context).textTheme,
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       navigatorObservers: [routeObserver],
