@@ -23,10 +23,12 @@ import 'package:custom_image_crop/custom_image_crop.dart';
 import 'package:ipaconnect/src/data/notifiers/loading_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/members_notifier.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 
 class AddEventPage extends StatefulWidget {
-  const AddEventPage({Key? key}) : super(key: key);
+  final EventsModel? eventToEdit;
+  const AddEventPage({Key? key, this.eventToEdit}) : super(key: key);
 
   @override
   State<AddEventPage> createState() => _AddEventPageState();
@@ -37,6 +39,7 @@ class _AddEventPageState extends State<AddEventPage> {
   String? _eventType;
   String? _platform;
   File? _eventImage;
+  String? _existingImageUrl; // For editing existing events
   DateTime? _startDate;
   DateTime? _endDate;
   TimeOfDay? _startTime;
@@ -195,6 +198,55 @@ class _AddEventPageState extends State<AddEventPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.eventToEdit != null) {
+      final event = widget.eventToEdit!;
+      _eventType = event.type;
+      _platform = event.platform;
+      if (event.image != null && event.image!.isNotEmpty) {
+        _existingImageUrl = event.image;
+      }
+      _startDate = event.eventStartDate;
+      _endDate = event.eventEndDate;
+      if (_startDate != null) {
+        _startTime = TimeOfDay.fromDateTime(_startDate!);
+        _startDateController.text = _startDate!.toLocal().toString().split(' ')[0];
+        _startTimeController.text = _startTime!.format(context);
+      }
+      if (_endDate != null) {
+        _endTime = TimeOfDay.fromDateTime(_endDate!);
+        _endDateController.text = _endDate!.toLocal().toString().split(' ')[0];
+        _endTimeController.text = _endTime!.format(context);
+      }
+      _eventNameController.text = event.eventName ?? '';
+      _descriptionController.text = event.description ?? '';
+      _linkController.text = event.link ?? '';
+      _venueController.text = event.venue ?? '';
+      _organiserNameController.text = event.organiserName ?? '';
+      _limit = event.limit;
+      _limitController.text = event.limit?.toString() ?? '';
+      _posterVisibilityStartDate = event.posterVisibilityStartDate;
+      _posterVisibilityEndDate = event.posterVisibilityEndDate;
+      if (_posterVisibilityStartDate != null) {
+        _posterVisibilityStartDateController.text = _posterVisibilityStartDate!.toLocal().toString().split(' ')[0];
+      }
+      if (_posterVisibilityEndDate != null) {
+        _posterVisibilityEndDateController.text = _posterVisibilityEndDate!.toLocal().toString().split(' ')[0];
+      }
+      if (event.speakers != null) {
+        _speakers = event.speakers!.map((speaker) => {
+          'name': speaker.name ?? '',
+          'designation': speaker.designation ?? '',
+          'role': speaker.role ?? '',
+          if (speaker.image != null) 'image': speaker.image,
+        }).toList();
+      }
+      // Note: coordinators will need to be fetched separately as they are just IDs
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -213,7 +265,7 @@ class _AddEventPageState extends State<AddEventPage> {
               ),
             ),
           ),
-          title: Text('Add New Event',
+          title: Text(widget.eventToEdit != null ? 'Edit Event' : 'Add New Event',
               style: kBodyTitleR.copyWith(
                   fontSize: 16, color: kSecondaryTextColor)),
           centerTitle: false,
@@ -267,7 +319,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       height: 120,
                       color: kCardBackgroundColor,
                       child: Center(
-                          child: _eventImage == null
+                          child: _eventImage == null && _existingImageUrl == null
                               ? const Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -296,12 +348,21 @@ class _AddEventPageState extends State<AddEventPage> {
                                                     BorderRadius.circular(10)),
                                             height: double.infinity,
                                             width: 60,
-                                            child: Image.file(_eventImage!)),
+                                            child: Image.file(_eventImage!))
+                                      else if (_existingImageUrl != null)
+                                        Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            height: double.infinity,
+                                            width: 60,
+                                            child: Image.network(_existingImageUrl!)),
                                       const Spacer(),
                                       InkWell(
                                         onTap: () {
                                           setState(() {
                                             _eventImage = null;
+                                            _existingImageUrl = null;
                                           });
                                         },
                                         child: SvgPicture.asset(
@@ -682,7 +743,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   builder: (context, ref, child) {
                     final eventApiService = ref.watch(eventsApiServiceProvider);
                     return customButton(
-                      label: 'Create event',
+                      label: widget.eventToEdit != null ? 'Update Event' : 'Create Event',
                       isLoading: ref.watch(loadingProvider),
                       onPressed: ref.watch(loadingProvider)
                           ? null
@@ -715,6 +776,8 @@ class _AddEventPageState extends State<AddEventPage> {
                                 String image = '';
                                 if (_eventImage != null) {
                                   image = await imageUpload(_eventImage!.path);
+                                } else if (_existingImageUrl != null) {
+                                  image = _existingImageUrl!;
                                 }
                                 // Validate required fields
                                 if (eventName.isEmpty ||
@@ -737,31 +800,60 @@ class _AddEventPageState extends State<AddEventPage> {
                                   return;
                                 }
                                 try {
-                                  final result =
-                                      await eventApiService.postEvent(
-                                    eventName: eventName,
-                                    description: description,
-                                    type: _eventType ?? '',
-                                    image: image,
-                                    eventStartDate: eventStartDate,
-                                    eventEndDate: eventEndDate,
-                                    posterVisibilityStartDate:
-                                        posterVisibilityStartDate,
-                                    posterVisibilityEndDate:
-                                        posterVisibilityEndDate,
-                                    organiserName: organiserName,
-                                    limit: limit,
-                                    speakers: _speakers,
-                                    platform: platform,
-                                    link: link,
-                                    venue: venue,
-                                    coordinators: _selectedCoordinators
-                                        .map((u) => u.id ?? '')
-                                        .toList(),
-                                  );
+                                  EventsModel result;
+                                  if (widget.eventToEdit != null) {
+                                    // Update existing event
+                                    result = await eventApiService.updateEvent(
+                                      eventId: widget.eventToEdit!.id!,
+                                      eventName: eventName,
+                                      description: description,
+                                      type: _eventType ?? '',
+                                      image: image,
+                                      eventStartDate: eventStartDate,
+                                      eventEndDate: eventEndDate,
+                                      posterVisibilityStartDate:
+                                          posterVisibilityStartDate,
+                                      posterVisibilityEndDate:
+                                          posterVisibilityEndDate,
+                                      organiserName: organiserName,
+                                      limit: limit,
+                                      speakers: _speakers,
+                                      platform: platform,
+                                      link: link,
+                                      venue: venue,
+                                      coordinators: _selectedCoordinators
+                                          .map((u) => u.id ?? '')
+                                          .toList(),
+                                    );
+                                  } else {
+                                    // Create new event
+                                    result = await eventApiService.postEvent(
+                                      eventName: eventName,
+                                      description: description,
+                                      type: _eventType ?? '',
+                                      image: image,
+                                      eventStartDate: eventStartDate,
+                                      eventEndDate: eventEndDate,
+                                      posterVisibilityStartDate:
+                                          posterVisibilityStartDate,
+                                      posterVisibilityEndDate:
+                                          posterVisibilityEndDate,
+                                      organiserName: organiserName,
+                                      limit: limit,
+                                      speakers: _speakers,
+                                      platform: platform,
+                                      link: link,
+                                      venue: venue,
+                                      coordinators: _selectedCoordinators
+                                          .map((u) => u.id ?? '')
+                                          .toList(),
+                                    );
+                                  }
                                   if (result.eventName != null) {
                                     SnackbarService().showSnackBar(
-                                      'Event Created successfully and will be reviewed by admin',
+                                      widget.eventToEdit != null
+                                          ? 'Event Updated successfully'
+                                          : 'Event Created successfully and will be reviewed by admin',
                                       type: SnackbarType.success,
                                     );
                                     Navigator.of(context).pop();

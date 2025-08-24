@@ -184,7 +184,7 @@ class _MainPageState extends ConsumerState<MainPage> {
               ),
               ClipRect(
                 child: Container(
-                  height: 80,
+                  height: 65,
                   decoration: BoxDecoration(
                     color: kWhite,
                     boxShadow: [
@@ -244,7 +244,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                                             BoxShadow(
                                               color: kPrimaryColor
                                                   .withOpacity(0.95),
-                                              blurRadius: 38,
+                                              blurRadius: 28,
                                               spreadRadius: 10,
                                               offset: Offset(0, 8),
                                             ),

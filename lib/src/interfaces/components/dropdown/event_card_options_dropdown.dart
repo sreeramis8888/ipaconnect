@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 
-class ProductCardOptionsDropdown extends StatelessWidget {
+class EventCardOptionsDropdown extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
-  const ProductCardOptionsDropdown({
+  const EventCardOptionsDropdown({
     Key? key,
     this.onEdit,
     this.onDelete,
@@ -57,7 +57,3 @@ class ProductCardOptionsDropdown extends StatelessWidget {
     );
   }
 }
-
-
-
-
