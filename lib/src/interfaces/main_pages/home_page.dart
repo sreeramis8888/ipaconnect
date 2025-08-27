@@ -14,7 +14,6 @@ import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button
 import 'package:ipaconnect/src/interfaces/components/cards/news_card.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event_widget.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
-// Removed shimmer usage in favor of unified loading indicator
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
 import 'package:shimmer/shimmer.dart';
@@ -135,7 +134,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final double posterImageHeight = (screenWidth - 32) * 4 / 3;
     final bool anyPosterHasLink = posters.any((p) => p.link != null);
-    final double buttonBlockHeight = anyPosterHasLink ? 20.0 : 0.0;
+    final double buttonBlockHeight = anyPosterHasLink ? 50.0 : 0.0;
     return posterImageHeight + buttonBlockHeight;
   }
 
@@ -168,8 +167,7 @@ class _HomePageState extends ConsumerState<HomePage>
               child: asyncHomeData.when(
                 data: (homeData) {
                   if (homeData == null) {
-                    return const Center(
-                        child: Text('No home data available'));
+                    return const Center(child: Text('No home data available'));
                   }
                   if (!_hasAnimated) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -188,8 +186,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   final campaign = homeData.campaign;
                   final filteredVideos = videos
                       .where((video) =>
-                          video.link != null &&
-                          video.link!.startsWith('http'))
+                          video.link != null && video.link!.startsWith('http'))
                       .toList();
                   return SafeArea(
                     child: Scaffold(
@@ -222,9 +219,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                           children: [
                                             Consumer(
                                               builder: (context, ref, _) {
-                                                final asyncNotification =
-                                                    ref.watch(
-                                                        fetchNotificationsProvider);
+                                                final asyncNotification = ref.watch(
+                                                    fetchNotificationsProvider);
                                                 return asyncNotification.when(
                                                   data: (notifications) {
                                                     final notificationCount =
@@ -233,11 +229,10 @@ class _HomePageState extends ConsumerState<HomePage>
                                                       children: [
                                                         CustomRoundButton(
                                                           onTap: () async {
-                                                            navigationService
-                                                                .pushNamed(
-                                                                    'NotificationPage',
-                                                                    arguments:
-                                                                        notifications);
+                                                            navigationService.pushNamed(
+                                                                'NotificationPage',
+                                                                arguments:
+                                                                    notifications);
                                                             ref.invalidate(
                                                                 fetchNotificationsProvider);
                                                           },
@@ -296,9 +291,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                                       ),
                                                     ],
                                                   ),
-                                                  error:
-                                                      (error, stackTrace) =>
-                                                          CustomRoundButton(
+                                                  error: (error, stackTrace) =>
+                                                      CustomRoundButton(
                                                     onTap: () async {
                                                       navigationService
                                                           .pushNamed(
@@ -375,8 +369,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                             }).toList(),
                                             options: CarouselOptions(
                                               height: 175,
-                                              scrollPhysics: banners.length >
-                                                      1
+                                              scrollPhysics: banners.length > 1
                                                   ? null
                                                   : const NeverScrollableScrollPhysics(),
                                               autoPlay: banners.length > 1
@@ -423,8 +416,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                           CustomIconContainer(
                                               onTap: () {
                                                 Navigator.pushNamed(
-                                                    arguments: widget
-                                                        .user.countryCode,
+                                                    arguments:
+                                                        widget.user.countryCode,
                                                     context,
                                                     'CampaignsMainScreen');
                                               },
@@ -435,8 +428,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                           CustomIconContainer(
                                               onTap: () {
                                                 Navigator.pushNamed(
-                                                    context,
-                                                    'EventsPage');
+                                                    context, 'EventsPage');
                                               },
                                               label: 'Events',
                                               icon: SvgPicture.asset(
@@ -459,9 +451,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                           CustomIconContainer(
                                               onTap: () {
                                                 ref
-                                                    .read(
-                                                        selectedIndexProvider
-                                                            .notifier)
+                                                    .read(selectedIndexProvider
+                                                        .notifier)
                                                     .updateIndex(1);
                                               },
                                               label: 'Bussiness',
@@ -473,7 +464,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                     ),
                                   ),
                                   const SizedBox(height: 20),
-    
+
                                   if (event != null)
                                     _animatedSection(
                                       order: 5,
@@ -491,13 +482,12 @@ class _HomePageState extends ConsumerState<HomePage>
                                                 const Spacer(),
                                                 InkWell(
                                                   onTap: () {
-                                                    navigationService
-                                                        .pushNamed(
-                                                            'EventsPage');
+                                                    navigationService.pushNamed(
+                                                        'EventsPage');
                                                   },
                                                   child: Text('View All',
-                                                      style: kSmallTitleL
-                                                          .copyWith(
+                                                      style:
+                                                          kSmallTitleL.copyWith(
                                                               color:
                                                                   kPrimaryColor)),
                                                 ),
@@ -518,7 +508,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ),
                                       ),
                                     ),
-    
+
                                   const SizedBox(height: 16),
                                   if (notices.isNotEmpty)
                                     _animatedSection(
@@ -532,8 +522,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   notice: notice);
                                             }).toList(),
                                             options: CarouselOptions(
-                                              scrollPhysics: notices.length >
-                                                      1
+                                              scrollPhysics: notices.length > 1
                                                   ? null
                                                   : const NeverScrollableScrollPhysics(),
                                               autoPlay: notices.length > 1
@@ -566,8 +555,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                     _animatedSection(
                                       order: 7,
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 20),
+                                        padding: const EdgeInsets.only(top: 20),
                                         child: Column(
                                           children: [
                                             CarouselSlider(
@@ -576,9 +564,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   .entries
                                                   .map((entry) {
                                                 int index = entry.key;
-                                                Promotion poster =
-                                                    entry.value;
-    
+                                                Promotion poster = entry.value;
+
                                                 return KeyedSubtree(
                                                   key: ValueKey(index),
                                                   child: customPoster(
@@ -589,21 +576,17 @@ class _HomePageState extends ConsumerState<HomePage>
                                               options: CarouselOptions(
                                                 height: _posterCarouselHeight(
                                                     posters),
-                                                scrollPhysics: posters
-                                                            .length >
+                                                scrollPhysics: posters.length >
                                                         1
                                                     ? null
                                                     : const NeverScrollableScrollPhysics(),
                                                 autoPlay: posters.length > 1,
                                                 viewportFraction: 1,
                                                 autoPlayInterval:
-                                                    const Duration(
-                                                        seconds: 5),
-                                                onPageChanged:
-                                                    (index, reason) {
+                                                    const Duration(seconds: 5),
+                                                onPageChanged: (index, reason) {
                                                   setState(() {
-                                                    _currentPosterIndex =
-                                                        index;
+                                                    _currentPosterIndex = index;
                                                   });
                                                 },
                                               ),
@@ -644,8 +627,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                             height: 180,
                                             child: ListView.builder(
                                               controller: ScrollController(),
-                                              scrollDirection:
-                                                  Axis.horizontal,
+                                              scrollDirection: Axis.horizontal,
                                               itemCount: news.length,
                                               itemBuilder: (context, index) {
                                                 final individualNewsModel =
@@ -672,10 +654,9 @@ class _HomePageState extends ConsumerState<HomePage>
                                                           individualNewsModel
                                                                   .media ??
                                                               '',
-                                                      title:
-                                                          individualNewsModel
-                                                                  .title ??
-                                                              '',
+                                                      title: individualNewsModel
+                                                              .title ??
+                                                          '',
                                                     ),
                                                   ),
                                                 );
@@ -695,25 +676,23 @@ class _HomePageState extends ConsumerState<HomePage>
                                           Row(
                                             children: [
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                        left: 15, top: 10),
+                                                padding: const EdgeInsets.only(
+                                                    left: 15, top: 10),
                                                 child: Text('Campaign',
                                                     style: kBodyTitleB),
                                               ),
                                               const Spacer(),
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.only(
-                                                        right: 15, top: 10),
+                                                padding: const EdgeInsets.only(
+                                                    right: 15, top: 10),
                                                 child: InkWell(
                                                   onTap: () {
                                                     navigationService.pushNamed(
                                                         'CampaignsMainScreen');
                                                   },
                                                   child: Text('View All ',
-                                                      style: kSmallTitleL
-                                                          .copyWith(
+                                                      style:
+                                                          kSmallTitleL.copyWith(
                                                               color:
                                                                   kPrimaryColor)),
                                                 ),
@@ -721,10 +700,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                             ],
                                           ),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 8.0,
-                                                    vertical: 8.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 8.0),
                                             child: CampaignCard(
                                               campaign: campaign,
                                               onLearnMore: () {
@@ -733,8 +710,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   MaterialPageRoute(
                                                     builder: (_) =>
                                                         CampaignDetailPage(
-                                                            campaign:
-                                                                campaign),
+                                                            campaign: campaign),
                                                   ),
                                                 );
                                               },
@@ -760,8 +736,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                       child: Column(
                                         children: [
                                           CarouselSlider(
-                                            items:
-                                                filteredVideos.map((video) {
+                                            items: filteredVideos.map((video) {
                                               return customVideo(
                                                   context: context,
                                                   videoUrl: video.link ?? '');
@@ -803,8 +778,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   child: Scaffold(
                     backgroundColor: kBackgroundColor,
                     body: Container(
-                      decoration:
-                          const BoxDecoration(color: kBackgroundColor),
+                      decoration: const BoxDecoration(color: kBackgroundColor),
                       child: const Center(
                         child: LoadingAnimation(),
                       ),
@@ -857,7 +831,7 @@ class _HomePageState extends ConsumerState<HomePage>
             requestType = 'Referral';
             break;
           case 'ONE V ONE MEETINGS':
-            initialTab = 'sent'; // or 'received' based on your preference
+            initialTab = 'sent';
             requestType = 'One v One Meeting';
             break;
         }
@@ -991,55 +965,55 @@ Widget customPoster({
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      InkWell(
-        onTap: () {
-          if (poster.link != null) {
-            launchURL(poster.link ?? '');
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: AspectRatio(
-              aspectRatio: 3 / 4,
-              child: Image.network(
-                poster.media ?? '',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
-                      ),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: AspectRatio(
+            aspectRatio: 3 / 4,
+            child: Image.network(
+              poster.media ?? '',
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
                     ),
-                  );
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child; // Image loaded successfully
-                  }
+                  ),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child; // Image loaded successfully
+                }
 
-                  return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.grey,
-                      ),
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ),
       ),
+      TextButton(
+          onPressed: () {
+            if (poster.link != null && poster.link!.isNotEmpty) {
+              launchURL(poster.link!);
+            }
+          },
+          child: Text('Know More >'))
     ],
   );
 }

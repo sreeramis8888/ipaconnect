@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
-import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import '../../../api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -52,14 +51,20 @@ class UserDataApiService {
     int pageNo = 1,
     int limit = 10,
     String? query,
+    String? hierarchyId,
   }) async {
     Map<String, String> queryParams = {};
     if (query != null && query.isNotEmpty) {
       queryParams['search'] = query;
     }
 
+    final String queryString = Uri(queryParameters: queryParams).query;
+
     final response = await _apiService.get(
-        '/users?status=active&page_no=$pageNo&limit=$limit&${Uri(queryParameters: queryParams).query}');
+      hierarchyId != null && hierarchyId.isNotEmpty
+          ? '/users?hierarchy=$hierarchyId&page_no=$pageNo&limit=$limit&$queryString&status=active'
+          : '/users?status=active&page_no=$pageNo&limit=$limit&$queryString',
+    );
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
@@ -155,8 +160,9 @@ Future<List<UserModel>> fetchAllUsers(
   int pageNo = 1,
   int limit = 10,
   String? query,
+  String? hierarchyId,
 }) async {
   final userApiService = ref.watch(userDataApiServiceProvider);
   return userApiService.fetchAllUsers(
-      limit: limit, pageNo: pageNo, query: query);
+      limit: limit, pageNo: pageNo, query: query, hierarchyId: hierarchyId);
 }

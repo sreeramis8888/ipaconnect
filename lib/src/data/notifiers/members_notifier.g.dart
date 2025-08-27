@@ -6,7 +6,7 @@ part of 'members_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$membersNotifierHash() => r'807a574a91e8b8fdbb608146f625e2091002f51a';
+String _$membersNotifierHash() => r'425880f803e9252778af3b9435426fbfb8b418bc';
 
 /// See also [MembersNotifier].
 @ProviderFor(MembersNotifier)

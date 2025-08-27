@@ -761,7 +761,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     child: Row(
                       children: [
                         SvgPicture.asset(
-                          'assets/svg/icons/share.svg',
+                          'assets/svg/icons/share_icon.svg',
                           color: kSecondaryTextColor,
                         ),
                         const SizedBox(width: 4),

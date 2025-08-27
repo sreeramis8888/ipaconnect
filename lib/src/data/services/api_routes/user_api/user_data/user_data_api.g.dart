@@ -195,7 +195,7 @@ class _GetUserDetailsByIdProviderElement
   String get userId => (origin as GetUserDetailsByIdProvider).userId;
 }
 
-String _$fetchAllUsersHash() => r'6ed8a63c9e199c64ee56b14f77b8842d3fb63ba8';
+String _$fetchAllUsersHash() => r'dbac27041c4b484f77ff526d8915ecf8aefefb55';
 
 /// See also [fetchAllUsers].
 @ProviderFor(fetchAllUsers)
@@ -211,11 +211,13 @@ class FetchAllUsersFamily extends Family<AsyncValue<List<UserModel>>> {
     int pageNo = 1,
     int limit = 10,
     String? query,
+    String? hierarchyId,
   }) {
     return FetchAllUsersProvider(
       pageNo: pageNo,
       limit: limit,
       query: query,
+      hierarchyId: hierarchyId,
     );
   }
 
@@ -227,6 +229,7 @@ class FetchAllUsersFamily extends Family<AsyncValue<List<UserModel>>> {
       pageNo: provider.pageNo,
       limit: provider.limit,
       query: provider.query,
+      hierarchyId: provider.hierarchyId,
     );
   }
 
@@ -252,12 +255,14 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
     int pageNo = 1,
     int limit = 10,
     String? query,
+    String? hierarchyId,
   }) : this._internal(
           (ref) => fetchAllUsers(
             ref as FetchAllUsersRef,
             pageNo: pageNo,
             limit: limit,
             query: query,
+            hierarchyId: hierarchyId,
           ),
           from: fetchAllUsersProvider,
           name: r'fetchAllUsersProvider',
@@ -271,6 +276,7 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
           pageNo: pageNo,
           limit: limit,
           query: query,
+          hierarchyId: hierarchyId,
         );
 
   FetchAllUsersProvider._internal(
@@ -283,11 +289,13 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
     required this.pageNo,
     required this.limit,
     required this.query,
+    required this.hierarchyId,
   }) : super.internal();
 
   final int pageNo;
   final int limit;
   final String? query;
+  final String? hierarchyId;
 
   @override
   Override overrideWith(
@@ -305,6 +313,7 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
         pageNo: pageNo,
         limit: limit,
         query: query,
+        hierarchyId: hierarchyId,
       ),
     );
   }
@@ -319,7 +328,8 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
     return other is FetchAllUsersProvider &&
         other.pageNo == pageNo &&
         other.limit == limit &&
-        other.query == query;
+        other.query == query &&
+        other.hierarchyId == hierarchyId;
   }
 
   @override
@@ -328,6 +338,7 @@ class FetchAllUsersProvider extends AutoDisposeFutureProvider<List<UserModel>> {
     hash = _SystemHash.combine(hash, pageNo.hashCode);
     hash = _SystemHash.combine(hash, limit.hashCode);
     hash = _SystemHash.combine(hash, query.hashCode);
+    hash = _SystemHash.combine(hash, hierarchyId.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -344,6 +355,9 @@ mixin FetchAllUsersRef on AutoDisposeFutureProviderRef<List<UserModel>> {
 
   /// The parameter `query` of this provider.
   String? get query;
+
+  /// The parameter `hierarchyId` of this provider.
+  String? get hierarchyId;
 }
 
 class _FetchAllUsersProviderElement
@@ -357,6 +371,8 @@ class _FetchAllUsersProviderElement
   int get limit => (origin as FetchAllUsersProvider).limit;
   @override
   String? get query => (origin as FetchAllUsersProvider).query;
+  @override
+  String? get hierarchyId => (origin as FetchAllUsersProvider).hierarchyId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

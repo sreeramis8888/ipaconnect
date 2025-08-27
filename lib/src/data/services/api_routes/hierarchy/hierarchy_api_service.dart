@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/heirarchy_model.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
@@ -24,6 +26,7 @@ class HierarchyApiService {
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
+      log(data.toString());
       return data.map((json) => HierarchyModel.fromJson(json)).toList();
     } else {
       return [];
@@ -39,6 +42,7 @@ class HierarchyApiService {
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
+
       return data.map((json) => UserModel.fromJson(json)).toList();
     } else {
       return [];

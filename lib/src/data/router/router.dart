@@ -7,7 +7,7 @@ import 'package:ipaconnect/src/data/models/notification_model.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/additional_screens/subscription_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaigns/campaigns_list_page.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/levels/activity_page.dart'
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/levels/activity_page.dart'
     show ActivityPage;
 import 'package:ipaconnect/src/interfaces/main_pages/notification_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/profile_preview.dart'
@@ -36,7 +36,7 @@ import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
 import '../../interfaces/main_pages/side_bar_pages/analytics/my_requirements.dart';
 import '../../interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/levels/hierarchies.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/levels/hierarchies.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/about_us.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {

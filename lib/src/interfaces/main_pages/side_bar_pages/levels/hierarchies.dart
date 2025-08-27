@@ -7,8 +7,8 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/levels/create_notification_page.dart';
-import 'package:ipaconnect/src/interfaces/main_pages/levels/level_members.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/levels/create_notification_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/levels/level_members.dart';
 
 class HierarchiesPage extends ConsumerWidget {
   final UserModel user;

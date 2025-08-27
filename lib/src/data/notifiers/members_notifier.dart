@@ -13,6 +13,7 @@ class MembersNotifier extends _$MembersNotifier {
   bool hasMore = true;
   String? searchQuery;
   String? district;
+  String? clusterId;
   bool isFirstLoad = true;
   List<String>? tags;
 
@@ -35,6 +36,8 @@ class MembersNotifier extends _$MembersNotifier {
         fetchAllUsersProvider(
           pageNo: pageNo,
           limit: limit,
+          hierarchyId: clusterId,
+          query: searchQuery,
         ).future,
       );
 
@@ -73,6 +76,7 @@ class MembersNotifier extends _$MembersNotifier {
           pageNo: pageNo,
           limit: limit,
           query: query,
+          hierarchyId: clusterId,
         ).future,
       );
 
@@ -100,6 +104,8 @@ class MembersNotifier extends _$MembersNotifier {
         fetchAllUsersProvider(
           pageNo: pageNo,
           limit: limit,
+          query: searchQuery,
+          hierarchyId: clusterId,
         ).future,
       );
 
@@ -118,6 +124,16 @@ class MembersNotifier extends _$MembersNotifier {
   void setDistrict(String? newDistrict) {
     district = newDistrict;
     refresh(); // Auto-refresh when district is updated
+  }
+
+  void setCluster(String? newClusterId) {
+    if (clusterId == newClusterId) return;
+    clusterId = newClusterId;
+    // Reset pagination and refresh with new filter
+    pageNo = 1;
+    hasMore = true;
+    users = [];
+    refresh();
   }
 
   void setTags(List<String>? newTags) {
