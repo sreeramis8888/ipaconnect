@@ -78,7 +78,7 @@ class CustomTextFormField extends StatelessWidget {
                         .read(userProvider.notifier)
                         .updateProfession(profession: textController!.text);
                     break;
-                  case 'Email ID':
+                  case 'Enter Email ID':
                     ref
                         .read(userProvider.notifier)
                         .updateEmail(textController!.text);

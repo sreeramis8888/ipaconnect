@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/product_model.dart';
+import 'package:ipaconnect/src/data/utils/remove_nulls.dart';
 import '../../../models/promotions_model.dart';
 import '../../api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -66,36 +67,36 @@ class ProductsApiService {
       return [];
     }
   }
+Future<bool?> postProduct({
+  required String companyId,
+  required String name,
+  required List<String> specifications,
+  required double actualPrice,
+  required double discountPrice,
+  required List<String> imageUrls,
+  required List<String> tags,
+  required bool isPublic,
+}) async {
+  Map<String, dynamic> body = {
+    'company': companyId,
+    'name': name,
+    'specifications': specifications,
+    'actual_price': actualPrice,
+    'discount_price': discountPrice,
+    'images': imageUrls.map((url) => {'url': url}).toList(),
+    'tags': tags,
+    'is_public': isPublic,
+  };
 
-  Future<bool?> postProduct({
-    required String companyId,
-    required String name,
-    required List<String> specifications,
-    required double actualPrice,
-    required double discountPrice,
-    required List<String> imageUrls,
-    required List<String> tags,
-    required bool isPublic,
-  }) async {
-    final body = {
-      'company': companyId,
-      'name': name,
-      'specifications': specifications,
-      'actual_price': actualPrice,
-      'discount_price': discountPrice,
-      'images': imageUrls.map((url) => {'url': url}).toList(),
-      'tags': tags,
-      'is_public': isPublic,
-    };
-    final response = await _apiService.post('/product', body);
-    log(response.message.toString());
-    log(response.data.toString());
-    if (response.success && response.data != null) {
-      return response.success;
-    } else {
-      return response.success;
-    }
-  }
+  body = cleanMap(body); 
+
+  final response = await _apiService.post('/product', body);
+  log(response.message.toString());
+  log(response.data.toString());
+
+  return response.success;
+}
+
 
   Future<bool> deleteProduct(String productId) async {
     final response = await _apiService.delete('/product/$productId');

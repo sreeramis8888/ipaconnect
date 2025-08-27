@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/services/api_service.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
+import 'package:ipaconnect/src/data/utils/remove_nulls.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'company_api_service.g.dart';
@@ -56,10 +57,11 @@ class CompanyApiService {
       return [];
     }
   }
-
 Future<bool> createCompany(Map<String, dynamic> data) async {
   SnackbarService snackbarService = SnackbarService();
-  data.removeWhere((key, value) => value == null);
+
+  data = cleanMap(data); 
+  log(data.toString());
 
   final response = await _apiService.post('/company', data);
   log(response.message.toString());

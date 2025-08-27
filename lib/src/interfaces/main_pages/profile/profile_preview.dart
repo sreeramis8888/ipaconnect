@@ -460,31 +460,68 @@ class _ProfileHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.phone, color: kWhite, size: 18),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        user.phone ?? '',
-                        style: kSmallTitleL,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                      ),
-                    ),
-                    const SizedBox(width: 18),
-                    Icon(Icons.email, color: kWhite, size: 18),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        user.email ?? '',
-                        style: kSmallTitleL,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
-                      ),
-                    ),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final textPainter = TextPainter(
+                      text:
+                          TextSpan(text: user.email ?? '', style: kSmallTitleL),
+                      maxLines: 1,
+                      textDirection: TextDirection.ltr,
+                    )..layout(
+                        maxWidth: constraints.maxWidth -
+                            100); // subtract icons/padding width
+
+                    final fitsInOneLine =
+                        textPainter.didExceedMaxLines == false;
+
+                    if (fitsInOneLine) {
+                      // Single row
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.phone, color: kWhite, size: 18),
+                          const SizedBox(width: 6),
+                          Text(user.phone ?? '', style: kSmallTitleL),
+                          const SizedBox(width: 18),
+                          Icon(Icons.email, color: kWhite, size: 18),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(user.email ?? '', style: kSmallTitleL),
+                          ),
+                        ],
+                      );
+                    } else {
+                      // Column fallback
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.phone, color: kWhite, size: 18),
+                              const SizedBox(width: 6),
+                              Text(user.phone ?? '', style: kSmallTitleL),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.email, color: kWhite, size: 18),
+                              const SizedBox(width: 6),
+                              Flexible(
+                                child: Text(
+                                  user.email ?? '',
+                                  style: kSmallTitleL,
+                                  softWrap: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
                 SizedBox(
                   height: 5,
