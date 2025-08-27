@@ -127,7 +127,7 @@ class _HomePageState extends ConsumerState<HomePage>
   double _estimateTextHeight(String text, double fontSize) {
     final double screenWidth = MediaQuery.sizeOf(context).width;
     final int numLines = (text.length / (screenWidth / fontSize)).ceil();
-    return numLines * fontSize * 1.2 - 10;
+    return numLines * fontSize * 1.2 + 6;
   }
 
   double _posterCarouselHeight(List<Promotion> posters) {
@@ -1062,6 +1062,13 @@ Widget customNotice({
                   notice.description?.trim() ?? '',
                   style: const TextStyle(color: kSecondaryTextColor),
                 ),
+                TextButton(
+                    onPressed: () {
+                      if (notice.link != null && notice.link!.isNotEmpty) {
+                        launchURL(notice.link!);
+                      }
+                    },
+                    child: Text('Know More >'))
               ],
             ),
           ),

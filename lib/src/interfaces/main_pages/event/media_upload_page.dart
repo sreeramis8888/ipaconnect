@@ -5,6 +5,7 @@ import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/services/api_routes/folder_api/folder_api.dart';
 import 'package:ipaconnect/src/data/services/image_upload.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 
 class MediaUploadPage extends ConsumerStatefulWidget {
@@ -134,23 +135,21 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kWhite,
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         bottom: TabBar(
-          enableFeedback: true,
-          isScrollable: false,
-          indicatorColor: kPrimaryColor,
-          indicatorWeight: 3.0,
-          indicatorSize: TabBarIndicatorSize.tab,
-          labelColor: kPrimaryColor,
-          unselectedLabelColor: Colors.grey.shade600,
-          labelStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.3,
-          ),
           controller: _tabController,
+          indicatorColor: kPrimaryColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicatorWeight: 3,
+          labelColor: kPrimaryColor,
+          dividerColor: kBackgroundColor,
+          unselectedLabelColor: kSecondaryTextColor,
+          labelStyle: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
           tabs: const [
             Tab(text: 'Images'),
             Tab(text: 'Videos'),
@@ -159,16 +158,22 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
         title: const Text(
           "Add Media",
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: kWhite,
           ),
         ),
-        backgroundColor: kWhite,
+        backgroundColor: kBackgroundColor,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: InkWell(
+            onTap: () => Navigator.pop(context),
+            child: CustomRoundButton(
+              offset: Offset(4, 0),
+              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            ),
+          ),
         ),
       ),
       body: _isUploading
@@ -190,21 +195,21 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
+                                color: kCardBackgroundColor,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade200),
+                                border: Border.all(color: kStrokeColor),
                               ),
                               child: Row(
                                 children: [
                                   Icon(Icons.info_outline,
-                                      color: Colors.grey.shade700, size: 20),
+                                      color: kSecondaryTextColor, size: 20),
                                   const SizedBox(width: 12),
                                   const Text(
                                     'Select up to 3 images',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.black87,
+                                      color: kSecondaryTextColor,
                                     ),
                                   ),
                                 ],
@@ -282,10 +287,9 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                       onTap: _pickImage,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.grey.shade50,
+                                          color: kCardBackgroundColor,
                                           border: Border.all(
-                                              color: Colors.grey.shade300,
-                                              width: 2),
+                                              color: kStrokeColor, width: 2),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -295,13 +299,13 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                           children: [
                                             Icon(Icons.add_photo_alternate,
                                                 size: 32,
-                                                color: Colors.grey.shade600),
+                                                color: kSecondaryTextColor),
                                             const SizedBox(height: 8),
                                             Text(
                                               'Add Image',
                                               style: TextStyle(
                                                 fontSize: 12,
-                                                color: Colors.grey.shade600,
+                                                color: kSecondaryTextColor,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -328,21 +332,21 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade50,
+                                color: kCardBackgroundColor,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade200),
+                                border: Border.all(color: kStrokeColor),
                               ),
                               child: Row(
                                 children: [
                                   Icon(Icons.info_outline,
-                                      color: Colors.grey.shade700, size: 20),
+                                      color: kSecondaryTextColor, size: 20),
                                   const SizedBox(width: 12),
                                   const Text(
                                     'Add up to 3 YouTube video links',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.black87,
+                                      color: kSecondaryTextColor,
                                     ),
                                   ),
                                 ],
@@ -356,19 +360,19 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                     controller: _videoLinkController,
                                     decoration: InputDecoration(
                                       hintText: 'Enter YouTube video link',
-                                      hintStyle: TextStyle(
-                                          color: Colors.grey.shade500),
+                                      hintStyle:
+                                          TextStyle(color: kSecondaryTextColor),
                                       filled: true,
-                                      fillColor: Colors.grey.shade50,
+                                      fillColor: kCardBackgroundColor,
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                            color: Colors.grey.shade300),
+                                        borderSide:
+                                            BorderSide(color: kStrokeColor),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                            color: Colors.grey.shade300),
+                                        borderSide:
+                                            BorderSide(color: kStrokeColor),
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -464,7 +468,7 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: kWhite,
+                    color: kCardBackgroundColor,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),

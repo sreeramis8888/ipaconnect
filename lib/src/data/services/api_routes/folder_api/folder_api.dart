@@ -72,8 +72,8 @@ class FolderApiService {
     required String eventId,
     required List<Map<String, dynamic>> files,
   }) async {
-    final response = await _apiService.post('/folder/user/file/add', {
-      'eventId': eventId,
+    final response = await _apiService.post('/folders/add-to-public-folder', {
+      'event_id': eventId,
       'files': files,
     });
     if (response.success && response.data != null) {
@@ -89,9 +89,10 @@ class FolderApiService {
     required String eventId,
     required List<String> fileIds,
   }) async {
-    final response = await _apiService.post('/folder/user/file/delete', {
-      'eventId': eventId,
-      'fileIds': fileIds,
+    final response =
+        await _apiService.post('/folders/remove-from-public-folder', {
+      'event_id': eventId,
+      'file_ids': fileIds,
     });
     if (response.success && response.data != null) {
       return Folder.fromJson(response.data!['data']);
