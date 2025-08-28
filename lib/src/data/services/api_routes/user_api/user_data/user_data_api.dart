@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/services/snackbar_service.dart';
+import 'package:ipaconnect/src/data/utils/remove_nulls.dart';
 import '../../../api_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,8 +14,8 @@ class UserDataApiService {
   UserDataApiService(this._apiService);
   Future<ApiResponse<Map<String, dynamic>>> updateUser(
       String userId, UserModel user) async {
-    final filteredJson = user.toJson()
-      ..removeWhere((key, value) => value == null);
+    final mapData = user.toJson();
+    final filteredJson = cleanMap(mapData);
 
     final response = await _apiService.patch(
       '/users/update',
