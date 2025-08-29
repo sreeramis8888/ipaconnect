@@ -38,11 +38,13 @@ class FolderViewPage extends ConsumerStatefulWidget {
 class _FolderViewPageState extends ConsumerState<FolderViewPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late List<EventFile> _files;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _files = List<EventFile>.from(widget.files);
   }
 
   @override
@@ -58,8 +60,17 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
         eventId: widget.eventId,
         fileIds: [file.id!],
       );
-      // Refresh the folder data
-      ref.invalidate(getFilesProvider(folderId: widget.folderId));
+      // Update local state so UI reflects removal immediately
+      if (mounted) {
+        setState(() {
+          _files.removeWhere((f) => f.id == file.id);
+        });
+        // Invalidate folders provider so parent counts refresh
+        ref.invalidate(getFoldersProvider(eventId: widget.eventId));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File deleted')),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -188,8 +199,8 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
 
   @override
   Widget build(BuildContext context) {
-    final images = widget.files.where((f) => f.type == 'image').toList();
-    final videos = widget.files.where((f) => f.type == 'video').toList();
+    final images = _files.where((f) => f.type == 'image').toList();
+    final videos = _files.where((f) => f.type == 'video').toList();
 
     return Scaffold(
         backgroundColor: kBackgroundColor,
