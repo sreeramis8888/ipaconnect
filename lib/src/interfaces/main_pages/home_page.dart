@@ -731,6 +731,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                   // ),
                                   // Videos Carousel
                                   if (filteredVideos.isNotEmpty)
+                                  
                                     _animatedSection(
                                       order: 10,
                                       child: Column(
@@ -754,10 +755,13 @@ class _HomePageState extends ConsumerState<HomePage>
                                               },
                                             ),
                                           ),
+                                          
                                           if (videos.length > 1)
                                             _buildDotIndicator(
+                                              
                                                 _currentVideoIndex,
                                                 filteredVideos.length,
+                                                // videos.length,
                                                 kWhite),
                                         ],
                                       ),
