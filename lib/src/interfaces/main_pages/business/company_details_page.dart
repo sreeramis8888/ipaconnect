@@ -598,7 +598,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
       children: videos
           .map((v) => Padding(
               padding: EdgeInsets.only(bottom: 20),
-              child: customVideo(context: context, videoUrl: v.url ?? '',videoHeading: v.text)))
+              child: customVideo(context: context, videoUrl: v.url ?? '')))
           .toList(),
     );
   }

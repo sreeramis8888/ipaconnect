@@ -183,10 +183,9 @@ class MediaItem {
   @JsonKey(name: '_id')
   final String? id;
   final String? url;
-  //heading for non-youtube videos
-  final String? text;
+  
 
-  MediaItem({this.id, this.url, this.text});
+  MediaItem({this.id, this.url});
 
   factory MediaItem.fromJson(Map<String, dynamic> json) =>
       _$MediaItemFromJson(json);
