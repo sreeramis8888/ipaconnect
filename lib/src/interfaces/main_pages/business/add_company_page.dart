@@ -36,7 +36,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
   String? overview;
   String? category;
   String? image;
-  DateTime? establishedDate;
+  int? establishedDate;
   String? companySize;
   List<String> services = [];
 
@@ -166,6 +166,32 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
       });
     }
   }
+Future<int?> showYearPickerDialog(BuildContext context, {int? selectedYear}) async {
+  final currentYear = DateTime.now().year;
+
+  return showDialog<int>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Select Year'),
+        content: SizedBox(
+          // Height for the scrollable year list
+          height: 300,
+          width: 300,
+          child: YearPicker(
+            firstDate: DateTime(1900),
+            lastDate: DateTime(currentYear),
+            initialDate: DateTime(selectedYear ?? currentYear),
+            selectedDate: DateTime(selectedYear ?? currentYear),
+            onChanged: (DateTime dateTime) {
+              Navigator.pop(context, dateTime.year);
+            },
+          ),
+        ),
+      );
+    },
+  );
+}
 
   Future<void> pickGalleryPhoto() async {
     final picker = ImagePicker();
@@ -515,12 +541,11 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: establishedDate ?? DateTime.now(),
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime.now(),
-                    );
+                  final picked = await showYearPickerDialog(context, selectedYear: 2005);
+if (picked != null) {
+  print("Selected Year: $picked");
+}
+
                     if (picked != null) {
                       setState(() => establishedDate = picked);
                     }
@@ -534,7 +559,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                     ),
                     child: Text(
                       establishedDate != null
-                          ? '${establishedDate!.toLocal()}'.split(' ')[0]
+                          ? establishedDate.toString()
                           : 'Select Date',
                       style: kSmallTitleL,
                     ),
@@ -930,7 +955,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
                                 'image': image,
                                 'status': status,
                                 'established_date':
-                                    establishedDate?.toIso8601String(),
+                                    establishedDate,
                                 'company_size': companySize,
                                 'services': services,
                                 'tags': tags,

@@ -403,7 +403,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                 from: SlideFrom.bottom,
                 child: Text(
                     company.establishedDate != null
-                        ? '${company.establishedDate!.year}'
+                        ? '${company.establishedDate}'
                         : '-',
                     style: TextStyle(color: kSecondaryTextColor)),
               ),

@@ -13,9 +13,7 @@ CompanyModel _$CompanyModelFromJson(Map<String, dynamic> json) => CompanyModel(
       category: json['category'] as String?,
       image: json['image'] as String?,
       status: json['status'] as String?,
-      establishedDate: json['established_date'] == null
-          ? null
-          : DateTime.parse(json['established_date'] as String),
+      establishedDate: (json['established_date'] as num?)?.toInt(),
       companySize: json['company_size'] as String?,
       services: (json['services'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -48,7 +46,7 @@ Map<String, dynamic> _$CompanyModelToJson(CompanyModel instance) =>
       'category': instance.category,
       'image': instance.image,
       'status': instance.status,
-      'established_date': instance.establishedDate?.toIso8601String(),
+      'established_date': instance.establishedDate,
       'company_size': instance.companySize,
       'services': instance.services,
       'tags': instance.tags,
