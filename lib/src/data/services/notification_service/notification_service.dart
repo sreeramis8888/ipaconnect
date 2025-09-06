@@ -105,71 +105,32 @@ class NotificationService {
     }
   }
 
-  // void _handleMessageOpenedApp(RemoteMessage message) {
-  //   try {
-  //     String? deepLink;
-  //     if (message.data.containsKey('screen')) {
-  //       final id = message.data['id'];
-  //       deepLink =
-  //           _deepLinkService.getDeepLinkPath(message.data['screen'], id: id);
-  //     }
-
-  //     if (deepLink != null) {
-  //       _deepLinkService.handleDeepLink(Uri.parse(deepLink));
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Message opened app handling error: $e');
-  //   }
-  // }
-
   void _handleMessageOpenedApp(RemoteMessage message) {
-  try {
-    if (message.data.containsKey('screen')) {
-      final screen = message.data['screen'];
-      final id = message.data['id'];
-
-      if (screen == "news") {
-        _deepLinkService.handleDeepLink(Uri.parse("/news/$id"));
-      } else if (screen == "event") {
-        _deepLinkService.handleDeepLink(Uri.parse("/events/$id"));
-      } else {
-        // fallback → go to notification list
-        _deepLinkService.handleDeepLink(Uri.parse("/notifications"));
+    try {
+      String? deepLink;
+      if (message.data.containsKey('screen')) {
+        final id = message.data['id'];
+        deepLink =
+            _deepLinkService.getDeepLinkPath(message.data['screen'], id: id);
       }
+
+      if (deepLink != null) {
+        _deepLinkService.handleDeepLink(Uri.parse(deepLink));
+      }
+    } catch (e) {
+      debugPrint('Message opened app handling error: $e');
     }
-  } catch (e) {
-    debugPrint('Message opened app handling error: $e');
   }
-}
 
-
-  // void _handleNotificationTap(NotificationResponse response) {
-  //   try {
-  //     if (response.payload != null) {
-  //       _deepLinkService.handleDeepLink(Uri.parse(response.payload!));
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Notification tap handling error: $e');
-  //   }
-  // }
   void _handleNotificationTap(NotificationResponse response) {
-  try {
-    if (response.payload != null) {
-      final uri = Uri.parse(response.payload!);
-      final screen = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : "";
-
-      if (screen == "news") {
-        _deepLinkService.handleDeepLink(uri);
-      } else if (screen == "events") {
-        _deepLinkService.handleDeepLink(uri);
-      } else {
-        _deepLinkService.handleDeepLink(Uri.parse("/notifications"));
+    try {
+      if (response.payload != null) {
+        _deepLinkService.handleDeepLink(Uri.parse(response.payload!));
       }
+    } catch (e) {
+      debugPrint('Notification tap handling error: $e');
     }
-  } catch (e) {
-    debugPrint('Notification tap handling error: $e');
   }
-}
 
   Future<void> _handleInitialMessage() async {
     try {
