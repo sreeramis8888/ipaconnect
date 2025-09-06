@@ -131,11 +131,11 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                               }
                               return ListView.separated(
                                 controller: scrollController,
-                                itemCount: hierarchies.length,
+                                itemCount: hierarchies.length > 2 ? hierarchies.length - 2 : 0,
                                 separatorBuilder: (_, __) =>
-                                    Divider(height: 1, color: kStrokeColor),
+                                    Divider(height: 1, color: kStrokeColor),      
                                 itemBuilder: (context, index) {
-                                  final h = hierarchies[index];
+                                  final h = hierarchies[index + 2];
                                   return ListTile(
                                     contentPadding: EdgeInsets.zero,
                                     leading: CircleAvatar(
