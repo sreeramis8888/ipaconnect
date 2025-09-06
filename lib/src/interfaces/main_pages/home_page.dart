@@ -16,6 +16,7 @@ import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/profile/digital_card.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -329,10 +330,55 @@ class _HomePageState extends ConsumerState<HomePage>
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                           left: 16, top: 10, right: 16),
-                                      child: Text(
-                                          'Welcome, ${widget.user.name} ',
-                                          style: kLargeTitleB.copyWith(
-                                              color: kTextColor)),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                              'Welcome, ${widget.user.name} ',
+                                              style: kLargeTitleB.copyWith(
+                                                  color: kTextColor)),
+
+                                          Positioned(
+                                                top: 210,
+                                                right: 10,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) => DigitalCardPage(user: widget.user),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    width: 38,
+                                                    height: 38,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(8.0),
+                                                      gradient: const RadialGradient(
+                                                        center: Alignment.topLeft,
+                                                        radius: 1.2,
+                                                        colors: [
+                                                          Color(0x802EA7FF),
+                                                          Color(0x331C1B33),
+                                                        ],
+                                                        stops: [0.0, .7],
+                                                      ),
+                                                      border: Border.all(
+                                                        color: Color(0x1A17B9FF),
+                                                        width: 1.2,
+                                                      ),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.qr_code,
+                                                      color: kWhite,
+                                                      size: 25,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   _animateFromLeft(
@@ -508,49 +554,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ),
                                       ),
                                     ),
-
-                                  const SizedBox(height: 16),
-                                  if (notices.isNotEmpty)
-                                    _animatedSection(
-                                      order: 6,
-                                      child: Column(
-                                        children: [
-                                          CarouselSlider(
-                                            items: notices.map((notice) {
-                                              return customNotice(
-                                                  context: context,
-                                                  notice: notice);
-                                            }).toList(),
-                                            options: CarouselOptions(
-                                              scrollPhysics: notices.length > 1
-                                                  ? null
-                                                  : const NeverScrollableScrollPhysics(),
-                                              autoPlay: notices.length > 1
-                                                  ? true
-                                                  : false,
-                                              viewportFraction: 1,
-                                              height: _calculateDynamicHeight(
-                                                  notices),
-                                              autoPlayInterval:
-                                                  const Duration(seconds: 3),
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _currentNoticeIndex = index;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                          if (notices.isNotEmpty)
-                                            const SizedBox(height: 10),
-                                          if (notices.length > 1)
-                                            _buildDotIndicator(
-                                                _currentNoticeIndex,
-                                                notices.length,
-                                                const Color.fromARGB(
-                                                    255, 39, 38, 38)),
-                                        ],
-                                      ),
-                                    ),
+                                  
                                   if (posters.isNotEmpty)
                                     _animatedSection(
                                       order: 7,
@@ -595,7 +599,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ),
                                       ),
                                     ),
-                                  if (news.isNotEmpty)
+
+                                    if (news.isNotEmpty)
                                     _animatedSection(
                                       order: 8,
                                       child: Column(
@@ -666,6 +671,51 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ],
                                       ),
                                     ),
+
+                                  const SizedBox(height: 16),
+                                  if (notices.isNotEmpty)
+                                    _animatedSection(
+                                      order: 6,
+                                      child: Column(
+                                        children: [
+                                          CarouselSlider(
+                                            items: notices.map((notice) {
+                                              return customNotice(
+                                                  context: context,
+                                                  notice: notice);
+                                            }).toList(),
+                                            options: CarouselOptions(
+                                              scrollPhysics: notices.length > 1
+                                                  ? null
+                                                  : const NeverScrollableScrollPhysics(),
+                                              autoPlay: notices.length > 1
+                                                  ? true
+                                                  : false,
+                                              viewportFraction: 1,
+                                              height: _calculateDynamicHeight(
+                                                  notices),
+                                              autoPlayInterval:
+                                                  const Duration(seconds: 3),
+                                              onPageChanged: (index, reason) {
+                                                setState(() {
+                                                  _currentNoticeIndex = index;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          if (notices.isNotEmpty)
+                                            const SizedBox(height: 10),
+                                          if (notices.length > 1)
+                                            _buildDotIndicator(
+                                                _currentNoticeIndex,
+                                                notices.length,
+                                                const Color.fromARGB(
+                                                    255, 39, 38, 38)),
+                                        ],
+                                      ),
+                                    ),
+                                  
+                                  
                                   if (campaign != null)
                                     _animatedSection(
                                       order: 9,
