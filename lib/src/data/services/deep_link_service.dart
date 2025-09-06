@@ -113,7 +113,7 @@ class DeepLinkService {
             }
           }
           break;
-        case 'event':
+        case 'events':
           if (pathSegments.length > 1) {
             final eventId = pathSegments[1];
             try {
@@ -242,7 +242,7 @@ class DeepLinkService {
                 (route) => false,
               );
               await Future.delayed(Duration(milliseconds: 500));
-              _ref.read(selectedIndexProvider.notifier).updateIndex(4);
+              _ref.read(selectedIndexProvider.notifier).updateIndex(3);
             }
           } catch (e) {
             debugPrint('Error updating tab: $e');
@@ -306,10 +306,10 @@ class DeepLinkService {
         return id != null
             ? 'ipaconnect://app/chat/$id'
             : 'ipaconnect://app/chat';
-      case 'event':
+      case 'events':
         return id != null
-            ? 'ipaconnect://app/event/$id'
-            : 'ipaconnect://app/event';
+            ? 'ipaconnect://app/events/$id'
+            : 'ipaconnect://app/events';
       case 'my_products':
         return 'ipaconnect://app/my_products';
       case 'my_requirements':

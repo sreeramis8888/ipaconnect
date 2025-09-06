@@ -17,7 +17,7 @@ class EventsApiService {
   EventsApiService(this._apiService);
 
   Future<EventsModel> fetchEventById(String id) async {
-    final response = await _apiService.get('/events/single/$id');
+    final response = await _apiService.get('/events/$id');
     if (response.success && response.data != null) {
       final dynamic data = response.data!['data'];
       return EventsModel.fromJson(data);
