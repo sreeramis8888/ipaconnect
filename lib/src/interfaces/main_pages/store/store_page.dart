@@ -231,7 +231,7 @@ class _ProductCard extends StatelessWidget {
         children: [
           // Product image
           Container(
-            height: 125,
+            height: 115,
             width: double.infinity,
             decoration: BoxDecoration(
               color: kGreyLight,

@@ -434,20 +434,20 @@ class _HomePageState extends ConsumerState<HomePage>
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
                                                   'assets/svg/icons/event_icon.svg')),
-                                          if (widget.user.phone !=
-                                              '+919645398555')
-                                            CustomIconContainer(
-                                                label: 'Store',
-                                                onTap: () {
-                                                  Navigator.pushNamed(
-                                                      arguments: widget
-                                                          .user.countryCode,
-                                                      context,
-                                                      'StorePage');
-                                                },
-                                                icon: SvgPicture.asset(
-                                                    color: kWhite,
-                                                    'assets/svg/icons/card_icon.svg')),
+                                          // if (widget.user.phone !=
+                                          //     '+919645398555')
+                                          CustomIconContainer(
+                                              label: 'Store',
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                    arguments:
+                                                        widget.user.countryCode,
+                                                    context,
+                                                    'StorePage');
+                                              },
+                                              icon: SvgPicture.asset(
+                                                  color: kWhite,
+                                                  'assets/svg/icons/card_icon.svg')),
                                           CustomIconContainer(
                                               onTap: () {
                                                 ref
@@ -731,7 +731,6 @@ class _HomePageState extends ConsumerState<HomePage>
                                   // ),
                                   // Videos Carousel
                                   if (filteredVideos.isNotEmpty)
-                                  
                                     _animatedSection(
                                       order: 10,
                                       child: Column(
@@ -755,10 +754,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                               },
                                             ),
                                           ),
-                                          
                                           if (videos.length > 1)
                                             _buildDotIndicator(
-                                              
                                                 _currentVideoIndex,
                                                 filteredVideos.length,
                                                 // videos.length,
@@ -913,7 +910,7 @@ Widget _buildBanners(
   return Container(
     width: MediaQuery.sizeOf(context).width,
     child: AspectRatio(
-      aspectRatio: 2 / 1,
+      aspectRatio: 16 / 9,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -980,7 +977,7 @@ Widget customPoster({
             aspectRatio: 3 / 4,
             child: Image.network(
               poster.media ?? '',
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
                 return Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
