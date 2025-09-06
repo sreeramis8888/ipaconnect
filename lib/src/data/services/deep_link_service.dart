@@ -337,7 +337,7 @@ class DeepLinkService {
       case 'products':
         return 'ipaconnect://app/products';
       default:
-        return null;
+        return 'ipaconnect://app/general';
     }
   }
 }
