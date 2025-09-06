@@ -9,16 +9,15 @@ import 'package:ipaconnect/src/data/services/deep_link_service.dart';
 import 'package:flutter/material.dart';
 
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  // Get the deepLinkService from its provider
   final deepLinkService = ref.watch(deepLinkServiceProvider);
-  return NotificationService(deepLinkService);
+  return NotificationService(ref, deepLinkService);
 });
 
 class NotificationService {
+  final Ref _ref;
   final DeepLinkService _deepLinkService;
 
-  // Constructor now takes DeepLinkService
-  NotificationService(this._deepLinkService);
+  NotificationService(this._ref, this._deepLinkService);
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -71,7 +70,10 @@ class NotificationService {
   // }
 
   void _handleForegroundMessage(RemoteMessage message) {
-    log("Notification recieved: ${message.data}");
+    log("Notification received: ${message.data}");
+
+    _ref.invalidate(notificationApiServiceProvider);
+
     try {
       if (message.notification != null && Platform.isAndroid) {
         String? deepLink;
@@ -83,22 +85,20 @@ class NotificationService {
           );
         }
 
-        const AndroidNotificationDetails androidPlatformChannelSpecifics =
-            AndroidNotificationDetails(
+        const androidDetails = AndroidNotificationDetails(
           'your_channel_id',
           'your_channel_name',
           importance: Importance.max,
           priority: Priority.high,
-          showWhen: true,
         );
-        const NotificationDetails platformChannelSpecifics =
-            NotificationDetails(android: androidPlatformChannelSpecifics);
+        const notificationDetails =
+            NotificationDetails(android: androidDetails);
 
         flutterLocalNotificationsPlugin.show(
           message.hashCode,
           message.notification?.title,
           message.notification?.body,
-          platformChannelSpecifics,
+          notificationDetails,
           payload: deepLink,
         );
       }
