@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -580,7 +581,15 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
 
   Widget _buildVideoGallery() {
     final videos = widget.company.gallery?.videos;
+    if (videos != null) {
+  for (var i = 0; i < videos.length; i++) {
+    final v = videos[i];
+    // this uses the generated toJson() — make sure build_runner was run
+    log('Parsed MediaItem[$i]: ${v.toJson()}', name: 'CompanyUI');
+  }
+}
     if (videos == null || videos.isEmpty) {
+      
       return Text('No videos available', style: kBodyTitleR);
     }
     // Placeholder: just show video URLs as text
