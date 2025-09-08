@@ -123,7 +123,7 @@ class ProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product.name,
+                  product.name ?? '',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: kSmallTitleB.copyWith(color: kWhite),
@@ -143,7 +143,7 @@ class ProductCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Seller: ${product.user.name}',
+                  'Seller: ${product.user?.name}',
                   style: kSmallerTitleR.copyWith(
                       color: kSecondaryTextColor, fontSize: 12),
                   maxLines: 1,
@@ -152,23 +152,25 @@ class ProductCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Text(
-                      '₹${product.actualPrice.toStringAsFixed(0)}',
-                      style: kBodyTitleR.copyWith(
-                        color: kPrimaryColor,
-                        fontSize: 16,
-                        decoration: TextDecoration.lineThrough,
-                        decorationColor: kPrimaryColor,
+                    if (product.actualPrice != null)
+                      Text(
+                        '₹${product.actualPrice?.toStringAsFixed(0)}',
+                        style: kBodyTitleR.copyWith(
+                          color: kPrimaryColor,
+                          fontSize: 16,
+                          decoration: TextDecoration.lineThrough,
+                          decorationColor: kPrimaryColor,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '₹${product.discountPrice.toStringAsFixed(0)}',
-                      style: kBodyTitleB.copyWith(
-                        color: kWhite,
-                        fontSize: 18,
+                    if (product.actualPrice != null) const SizedBox(width: 8),
+                    if (product.discountPrice != null)
+                      Text(
+                        '₹${product.discountPrice?.toStringAsFixed(0)}',
+                        style: kBodyTitleB.copyWith(
+                          color: kWhite,
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 10),

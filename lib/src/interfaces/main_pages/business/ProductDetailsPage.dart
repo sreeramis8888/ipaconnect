@@ -112,7 +112,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                         return AspectRatio(
                           aspectRatio: 16 / 9,
                           child: Image.network(
-                            imageUrl,
+                            imageUrl??'',
                             fit: BoxFit.cover,
                             width: double.infinity,
                             loadingBuilder: (context, child, loadingProgress) {
@@ -204,7 +204,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                           color: kSecondaryTextColor, size: 14),
                       SizedBox(width: 6),
                       Text(
-                        product.user.name ?? '',
+                        product.user?.name ?? '',
                         style: kBodyTitleR.copyWith(
                             color: kSecondaryTextColor, fontSize: 13),
                       ),
@@ -226,7 +226,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                   Row(
                     children: [
                       Text(
-                        '₹${product.actualPrice.toStringAsFixed(0)}',
+                        '₹${product.actualPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleR.copyWith(
                           color: kPrimaryColor,
                           fontSize: 16,
@@ -236,7 +236,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        '₹${product.discountPrice.toStringAsFixed(0)}',
+                        '₹${product.discountPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleB.copyWith(
                           color: kWhite,
                           fontSize: 16,
@@ -304,7 +304,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                         try {
                           final chatApi = ref.read(chatApiServiceProvider);
                           final conversation = await chatApi
-                              .create1to1Conversation(product.user.id ?? '');
+                              .create1to1Conversation(product.user?.id ?? '');
 
                           Navigator.of(context).pop(); // Close loading dialog
 
@@ -313,10 +313,10 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ChatScreen(
-                                  userImage: product.user.image ?? '',
+                                  userImage: product.user?.image ?? '',
                                   conversationId: conversation.id ?? '',
-                                  chatTitle: product.user.name ?? '',
-                                  userId: product.user.id ?? '',
+                                  chatTitle: product.user?.name ?? '',
+                                  userId: product.user?.id ?? '',
                                   initialProductInquiry: {
                                     'product': product,
                                     'category': widget.category,

@@ -8,29 +8,39 @@ part of 'product_model.dart';
 
 ProductModel _$ProductModelFromJson(Map<String, dynamic> json) => ProductModel(
       id: json['_id'] as String,
-      user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
-      company: json['company'] as String,
-      name: json['name'] as String,
-      specifications: (json['specifications'] as List<dynamic>)
-          .map((e) => e as String)
-          .toList(),
-      actualPrice: (json['actual_price'] as num).toDouble(),
-      discountPrice: (json['discount_price'] as num).toDouble(),
-      images: (json['images'] as List<dynamic>)
-          .map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      user: json['user'] == null
+          ? null
+          : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      company: json['company'] as String?,
+      name: json['name'] as String?,
+      specifications: (json['specifications'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      actualPrice: (json['actual_price'] as num?)?.toDouble(),
+      discountPrice: (json['discount_price'] as num?)?.toDouble(),
+      images: (json['images'] as List<dynamic>?)
+              ?.map((e) => ProductImage.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
       rating: (json['rating'] as num?)?.toDouble(),
-      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
-      isPublic: json['is_public'] as bool,
-      status: json['status'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+              [],
+      isPublic: json['is_public'] as bool? ?? false,
+      status: json['status'] as String?,
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
     <String, dynamic>{
       '_id': instance.id,
-      'user': instance.user.toJson(),
+      'user': instance.user?.toJson(),
       'company': instance.company,
       'name': instance.name,
       'specifications': instance.specifications,
@@ -41,13 +51,13 @@ Map<String, dynamic> _$ProductModelToJson(ProductModel instance) =>
       'tags': instance.tags,
       'is_public': instance.isPublic,
       'status': instance.status,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'updatedAt': instance.updatedAt.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
     };
 
 ProductImage _$ProductImageFromJson(Map<String, dynamic> json) => ProductImage(
       id: json['_id'] as String,
-      url: json['url'] as String,
+      url: json['url'] as String?,
     );
 
 Map<String, dynamic> _$ProductImageToJson(ProductImage instance) =>

@@ -8,43 +8,50 @@ class ProductModel {
   @JsonKey(name: '_id')
   final String id;
 
-  final UserModel user;
-  final String company;
-  final String name;
+  final UserModel? user;
+  final String? company;
+  final String? name;
+
+  @JsonKey(defaultValue: [])
   final List<String> specifications;
+
   final double? rating;
+
   @JsonKey(name: 'actual_price')
-  final double actualPrice;
+  final double? actualPrice;
 
   @JsonKey(name: 'discount_price')
-  final double discountPrice;
+  final double? discountPrice;
 
+  @JsonKey(defaultValue: [])
   final List<ProductImage> images;
+
+  @JsonKey(defaultValue: [])
   final List<String> tags;
 
-  @JsonKey(name: 'is_public')
+  @JsonKey(name: 'is_public', defaultValue: false)
   final bool isPublic;
 
-  final String status;
+  final String? status;
 
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   ProductModel({
     required this.id,
-    required this.user,
-    required this.company,
-    required this.name,
-    required this.specifications,
-    required this.actualPrice,
-    required this.discountPrice,
-    required this.images,
-    required this.rating,
-    required this.tags,
-    required this.isPublic,
-    required this.status,
-    required this.createdAt,
-    required this.updatedAt,
+    this.user,
+    this.company,
+    this.name,
+    this.specifications = const [],
+    this.actualPrice,
+    this.discountPrice,
+    this.images = const [],
+    this.rating,
+    this.tags = const [],
+    this.isPublic = false,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) =>
@@ -87,14 +94,14 @@ class ProductModel {
   }
 }
 
-
 @JsonSerializable()
 class ProductImage {
   @JsonKey(name: '_id')
   final String id;
-  final String url;
 
-  ProductImage({required this.id, required this.url});
+  final String? url;
+
+  ProductImage({required this.id, this.url});
 
   factory ProductImage.fromJson(Map<String, dynamic> json) =>
       _$ProductImageFromJson(json);

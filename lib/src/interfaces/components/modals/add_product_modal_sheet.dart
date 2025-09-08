@@ -67,7 +67,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
     // Prefill fields if editing
     final product = widget.productToEdit;
     if (product != null) {
-      nameController.text = product.name;
+      nameController.text = product.name ?? '';
       actualPriceController.text = product.actualPrice.toString();
       offerPriceController.text = product.discountPrice.toString();
       showOnPublicProfile = product.isPublic;
@@ -82,7 +82,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
 
       // Handle existing images
       if (product.images.isNotEmpty) {
-        existingImageUrls = product.images.map((img) => img.url).toList();
+        existingImageUrls = product.images.map((img) => img.url ?? '').toList();
       }
     }
   }
