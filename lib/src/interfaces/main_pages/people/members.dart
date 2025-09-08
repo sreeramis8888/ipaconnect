@@ -283,19 +283,43 @@ class _MembersPageState extends ConsumerState<MembersPage> {
             }
 
             // No members found
-            if (!isFirstLoad && users.isEmpty && index == 1) {
-              return Column(
-                children: [
-                  SizedBox(height: 100),
-                  Center(
-                    child: Text(
-                      'No Members Found',
-                      style: kSubHeadingL,
+            // if (!isFirstLoad && users.isEmpty && index == 1) {
+            //   return Column(
+            //     children: [
+            //       SizedBox(height: 100),
+            //       Center(
+            //         child: Text(
+            //           'No Members Found',
+            //           style: kSubHeadingL,
+            //         ),
+            //       ),
+            //     ],
+            //   );
+            // }
+
+
+            // Show loader while searching/filtering
+              if (isLoading && users.isEmpty) {
+                return const Center(child: LoadingAnimation());
+              }
+
+              // No members found (after loading finishes)
+              if (!isFirstLoad && !isLoading && users.isEmpty && index == 1) {
+                return Column(
+                  children: [
+                    SizedBox(height: 100),
+                    Center(
+                      child: Text(
+                        'No Members Found',
+                        style: kSubHeadingL,
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
+                  ],
+                );
+              }
+
+
+
 
             // User list
             final userIndex = index - 1;

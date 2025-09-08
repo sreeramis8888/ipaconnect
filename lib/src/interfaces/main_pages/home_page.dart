@@ -435,6 +435,14 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ],
                                       ),
                                     ),
+                                    if (banners.length > 1)
+                                            _buildDotIndicator(
+                                                _currentBannerIndex,
+                                                banners.length,
+                                                // videos.length,
+                                                kWhite),
+
+
                                   _animateFromBottom(
                                     order: 2,
                                     child: Row(
@@ -600,6 +608,13 @@ class _HomePageState extends ConsumerState<HomePage>
                                       ),
                                     ),
 
+                                    if (posters.length > 1)
+                                            _buildDotIndicator(
+                                                _currentPosterIndex,
+                                                posters.length,
+                                                // videos.length,
+                                                kWhite),
+
                                     if (news.isNotEmpty)
                                     _animatedSection(
                                       order: 8,
@@ -668,6 +683,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                               },
                                             ),
                                           ),
+
+                                          
                                         ],
                                       ),
                                     ),
@@ -705,15 +722,24 @@ class _HomePageState extends ConsumerState<HomePage>
                                           ),
                                           if (notices.isNotEmpty)
                                             const SizedBox(height: 10),
-                                          if (notices.length > 1)
-                                            _buildDotIndicator(
-                                                _currentNoticeIndex,
-                                                notices.length,
-                                                const Color.fromARGB(
-                                                    255, 39, 38, 38)),
+                                          // if (notices.length > 1)
+                                          //   _buildDotIndicator(
+                                          //       _currentNoticeIndex,
+                                          //       notices.length,
+                                          //       const Color.fromARGB(
+                                          //           255, 39, 38, 38)),
                                         ],
                                       ),
                                     ),
+
+                                    if (notices.length > 1)
+                                            _buildDotIndicator(
+                                                _currentNoticeIndex,
+                                                notices.length,
+                                                kWhite
+                                                ),
+
+                                    
                                   
                                   
                                   if (campaign != null)
@@ -944,12 +970,23 @@ class _HomePageState extends ConsumerState<HomePage>
       child: SmoothPageIndicator(
         controller: PageController(initialPage: currentIndex),
         count: itemCount,
-        effect: WormEffect(
-          dotHeight: 10,
-          dotWidth: 10,
-          activeDotColor: color,
+        effect:
+          ExpandingDotsEffect(
+          expansionFactor: 3,   
+          spacing: 8,
+          radius: 8,
+          dotWidth: 8,
+          dotHeight: 8,
           dotColor: Colors.grey,
-        ),
+          activeDotColor: color,
+          ), 
+        // WormEffect(
+        //   dotHeight: 10,
+        //   dotWidth: 10,
+        //   activeDotColor: color,
+        //   dotColor: Colors.grey,
+        // ),
+
       ),
     );
   }
