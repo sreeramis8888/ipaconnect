@@ -684,12 +684,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                             ),
                                           ),
 
-                                          if (news.length > 1)
-                                            _buildDotIndicator(
-                                                _currentVideoIndex,
-                                                filteredVideos.length,
-                                                // videos.length,
-                                                kWhite),
+                                          
                                         ],
                                       ),
                                     ),
@@ -727,15 +722,24 @@ class _HomePageState extends ConsumerState<HomePage>
                                           ),
                                           if (notices.isNotEmpty)
                                             const SizedBox(height: 10),
-                                          if (notices.length > 1)
-                                            _buildDotIndicator(
-                                                _currentNoticeIndex,
-                                                notices.length,
-                                                const Color.fromARGB(
-                                                    255, 39, 38, 38)),
+                                          // if (notices.length > 1)
+                                          //   _buildDotIndicator(
+                                          //       _currentNoticeIndex,
+                                          //       notices.length,
+                                          //       const Color.fromARGB(
+                                          //           255, 39, 38, 38)),
                                         ],
                                       ),
                                     ),
+
+                                    if (notices.length > 1)
+                                            _buildDotIndicator(
+                                                _currentNoticeIndex,
+                                                notices.length,
+                                                kWhite
+                                                ),
+
+                                    
                                   
                                   
                                   if (campaign != null)
