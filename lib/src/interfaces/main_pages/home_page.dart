@@ -338,45 +338,41 @@ class _HomePageState extends ConsumerState<HomePage>
                                               style: kLargeTitleB.copyWith(
                                                   color: kTextColor)),
 
-                                          Positioned(
-                                                top: 210,
-                                                right: 10,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) => DigitalCardPage(user: widget.user),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: Container(
-                                                    width: 38,
-                                                    height: 38,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(8.0),
-                                                      gradient: const RadialGradient(
-                                                        center: Alignment.topLeft,
-                                                        radius: 1.2,
-                                                        colors: [
-                                                          Color(0x802EA7FF),
-                                                          Color(0x331C1B33),
-                                                        ],
-                                                        stops: [0.0, .7],
-                                                      ),
-                                                      border: Border.all(
-                                                        color: Color(0x1A17B9FF),
-                                                        width: 1.2,
-                                                      ),
-                                                    ),
-                                                    child: Icon(
-                                                      Icons.qr_code,
-                                                      color: kWhite,
-                                                      size: 25,
-                                                    ),
-                                                  ),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => DigitalCardPage(user: widget.user),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              width: 38,
+                                              height: 38,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(8.0),
+                                                gradient: const RadialGradient(
+                                                  center: Alignment.topLeft,
+                                                  radius: 1.2,
+                                                  colors: [
+                                                    Color(0x802EA7FF),
+                                                    Color(0x331C1B33),
+                                                  ],
+                                                  stops: [0.0, .7],
+                                                ),
+                                                border: Border.all(
+                                                  color: Color(0x1A17B9FF),
+                                                  width: 1.2,
                                                 ),
                                               ),
+                                              child: Icon(
+                                                Icons.qr_code,
+                                                color: kWhite,
+                                                size: 25,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
