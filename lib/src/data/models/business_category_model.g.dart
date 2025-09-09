@@ -20,6 +20,7 @@ BusinessCategoryModel _$BusinessCategoryModelFromJson(
           ? null
           : DateTime.parse(json['updatedAt'] as String),
       companyCount: (json['company_count'] as num?)?.toInt(),
+      status: json['status'] as bool?,
     );
 
 Map<String, dynamic> _$BusinessCategoryModelToJson(
@@ -32,4 +33,5 @@ Map<String, dynamic> _$BusinessCategoryModelToJson(
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'company_count': instance.companyCount,
+      'status': instance.status,
     };

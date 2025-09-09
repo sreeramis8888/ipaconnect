@@ -15,13 +15,40 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
   bool isLoading = false;
   bool isFirstLoad = true;
   int pageNo = 1;
-  final int limit = 14;
+  final int limit = 50;
   bool hasMore = true;
   String? searchQuery;
   @override
   List<BusinessCategoryModel> build() {
     return [];
   }
+
+  // Future<void> fetchMoreCategories() async {
+  //   if (isLoading || !hasMore) return;
+
+  //   isLoading = true;
+
+  //   try {
+  //     final newCategories = await ref.read(
+  //         getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
+
+  //     if (newCategories.isEmpty) {
+  //       hasMore = false;
+  //     } else {
+  //       categories = [...categories, ...newCategories];
+  //       pageNo++;
+  //       hasMore = newCategories.length >= limit;
+  //     }
+
+  //     isFirstLoad = false;
+  //     state = categories;
+  //   } catch (e, stackTrace) {
+  //     log(e.toString());
+  //     log(stackTrace.toString());
+  //   } finally {
+  //     isLoading = false;
+  //   }
+  // }
 
   Future<void> fetchMoreCategories() async {
     if (isLoading || !hasMore) return;
@@ -30,14 +57,18 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
 
     try {
       final newCategories = await ref.read(
-          getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
+        getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future,
+      );
 
-      if (newCategories.isEmpty) {
+      // FILTER ONLY ACTIVE CATEGORIES
+      final activeCategories = newCategories.where((c) => c.status == true).toList();
+
+      if (activeCategories.isEmpty) {
         hasMore = false;
       } else {
-        categories = [...categories, ...newCategories];
+        categories = [...categories, ...activeCategories];
         pageNo++;
-        hasMore = newCategories.length >= limit;
+        hasMore = activeCategories.length >= limit;
       }
 
       isFirstLoad = false;
@@ -50,6 +81,7 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
     }
   }
 
+
   Future<void> refreshCategories() async {
     if (isLoading) return;
 
@@ -60,8 +92,9 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
       final refreshedCategories = await ref.read(
           getBusinessCategoriesProvider(pageNo: pageNo, limit: limit).future);
 
-      categories = refreshedCategories;
-      hasMore = refreshedCategories.length >= limit;
+      // FILTER ONLY ACTIVE CATEGORIES
+      categories = refreshedCategories.where((c) => c.status == true).toList();
+      hasMore = categories.length >= limit;
       isFirstLoad = false;
       state = categories;
       log('refreshed');
@@ -72,6 +105,7 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
       isLoading = false;
     }
   }
+
 
   
   Future<void> searchCategories(String query,
@@ -89,10 +123,11 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
           query: query,
         ).future,
       );
+  //FILTER ONLY ACTIVE CATEGORIES
+      final activeCategories = newCategories.where((c) => c.status == true).toList();
 
-      categories = [...newCategories];
-      hasMore = newCategories.length == limit;
-
+      categories = [...activeCategories];
+      hasMore = activeCategories.length == limit;
       state = [...categories];
     } catch (e, stackTrace) {
       log(e.toString());
@@ -101,4 +136,5 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
       isLoading = false;
     }
   }
+  
 }

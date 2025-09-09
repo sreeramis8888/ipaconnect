@@ -19,6 +19,8 @@ class BusinessCategoryModel {
   @JsonKey(name: 'company_count')
   final int? companyCount;
 
+  final bool? status;
+
   BusinessCategoryModel({
     required this.id,
     required this.name,
@@ -27,6 +29,7 @@ class BusinessCategoryModel {
     this.createdAt,
     this.updatedAt,
     this.companyCount,
+    this.status
   });
 
   factory BusinessCategoryModel.fromJson(Map<String, dynamic> json) =>
@@ -42,6 +45,7 @@ class BusinessCategoryModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     int? companyCount,
+    bool? status,
   }) {
     return BusinessCategoryModel(
       id: id ?? this.id,
@@ -51,6 +55,7 @@ class BusinessCategoryModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       companyCount: companyCount ?? this.companyCount,
+      status: status ?? this.status,
     );
   }
 }

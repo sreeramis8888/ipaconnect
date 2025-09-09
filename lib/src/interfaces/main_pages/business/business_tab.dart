@@ -45,6 +45,7 @@ class _BusinessCategoryTabState extends ConsumerState<BusinessCategoryTab> {
     await ref
         .read(businessCategoryNotifierProvider.notifier)
         .fetchMoreCategories();
+        
   }
 
   void _onScroll() {
