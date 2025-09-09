@@ -154,7 +154,7 @@ class ProductCard extends StatelessWidget {
                   children: [
                     if (product.actualPrice != null)
                       Text(
-                        'AED${product.actualPrice?.toStringAsFixed(0)}',
+                        '₹${product.actualPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleR.copyWith(
                           color: kPrimaryColor,
                           fontSize: 16,
@@ -165,7 +165,7 @@ class ProductCard extends StatelessWidget {
                     if (product.actualPrice != null) const SizedBox(width: 8),
                     if (product.discountPrice != null)
                       Text(
-                        'AED${product.discountPrice?.toStringAsFixed(0)}',
+                        '₹${product.discountPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleB.copyWith(
                           color: kWhite,
                           fontSize: 18,

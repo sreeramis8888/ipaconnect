@@ -497,7 +497,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 Product Details:
  ${product.name}
 $category
-• Price: AED${product.discountPrice.toStringAsFixed(0)} (Original: AED${product.actualPrice.toStringAsFixed(0)})
+• Price: ₹${product.discountPrice.toStringAsFixed(0)} (Original: ₹${product.actualPrice.toStringAsFixed(0)})
 
 Specifications:
 ${product.specifications.isNotEmpty ? product.specifications.map((spec) => '• $spec').join('\n') : '• No specifications available'}

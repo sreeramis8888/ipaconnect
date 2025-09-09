@@ -226,7 +226,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                   Row(
                     children: [
                       Text(
-                        'AED${product.actualPrice?.toStringAsFixed(0)}',
+                        '₹${product.actualPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleR.copyWith(
                           color: kPrimaryColor,
                           fontSize: 16,
@@ -236,7 +236,7 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        'AED${product.discountPrice?.toStringAsFixed(0)}',
+                        '₹${product.discountPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleB.copyWith(
                           color: kWhite,
                           fontSize: 16,

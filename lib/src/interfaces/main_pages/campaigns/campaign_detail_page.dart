@@ -68,7 +68,7 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   from: SlideFrom.bottom,
                   child: Row(
                     children: [
-                      Text('AED$target', style: kSmallTitleB),
+                      Text('₹$target', style: kSmallTitleB),
                       const SizedBox(width: 60),
                     ],
                   ),
