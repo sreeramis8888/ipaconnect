@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:http/http.dart' as http;
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
 import 'package:ipaconnect/src/data/models/chat_model.dart';
 import 'package:ipaconnect/src/data/models/feed_model.dart';

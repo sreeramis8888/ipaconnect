@@ -55,6 +55,9 @@ class ApiService {
           'x-api-key': apiKey
         },
       );
+      // 👇 log raw response from backend
+      log("API RAW RESPONSE (${response.statusCode}): ${response.body}",
+    name: 'API_SERVICE_GET');
 
       log(name: 'HITTING API', '$baseUrl$endpoint');
       final decoded = json.decode(response.body);

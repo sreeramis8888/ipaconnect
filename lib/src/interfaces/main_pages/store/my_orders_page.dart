@@ -91,7 +91,7 @@ class MyOrdersPage extends ConsumerWidget {
                                   children: [
                                     Text(product?.name ?? '', style: kSmallTitleL),
                                     const SizedBox(height: 8),
-                                    Text('₹${price.toStringAsFixed(0)}',
+                                    Text('AED${price.toStringAsFixed(0)}',
                                         style: kSmallTitleB),
                                   ],
                                 ),
