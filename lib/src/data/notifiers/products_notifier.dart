@@ -41,13 +41,28 @@ class ProductsNotifier extends _$ProductsNotifier {
             companyId: companyId ?? '')
           .future);
 
-      if (refreshedProducts.isEmpty) {
+
+      // CHANGE: keep only products with status == 'approved' 
+      
+      final approvedProducts = refreshedProducts
+          .where((p) => (p.status ?? '').toLowerCase() == 'approved')
+          .toList();
+      
+      if (approvedProducts.isEmpty) {
         hasMore = false;
       } else {
-        products = [...products, ...refreshedProducts];
+        products = [...products, ...approvedProducts];
         pageNo++;
-        hasMore = refreshedProducts.length >= limit;
+        hasMore = approvedProducts.length >= limit;
       }
+
+      // if (refreshedProducts.isEmpty) {
+      //   hasMore = false;
+      // } else {
+      //   products = [...products, ...refreshedProducts];
+      //   pageNo++;
+      //   hasMore = refreshedProducts.length >= limit;
+      // }
 
       isFirstLoad = false;
       state = products;
@@ -85,8 +100,13 @@ class ProductsNotifier extends _$ProductsNotifier {
           ).future,
         );
 
-      products = [...newProducts];
-      hasMore = newProducts.length == limit;
+      // CHANGE: keep only approved
+      final approvedProducts = newProducts
+          .where((p) => (p.status ?? '').toLowerCase() == 'approved')
+          .toList(); 
+
+      products = [...approvedProducts];
+      hasMore = approvedProducts.length == limit;
 
       state = [...products];
     } catch (e, stackTrace) {
@@ -117,8 +137,15 @@ class ProductsNotifier extends _$ProductsNotifier {
             companyId: companyId ?? '')
           .future);
 
-      products = refreshedProducts;
-      hasMore = refreshedProducts.length >= limit;
+      // CHANGE: keep only approved
+      products = refreshedProducts
+          .where((p) => (p.status ?? '').toLowerCase() == 'approved')
+          .toList();
+
+
+
+      // products = refreshedProducts;
+      hasMore = products.length >= limit;
       isFirstLoad = false;
       state = products;
       log('refreshed');

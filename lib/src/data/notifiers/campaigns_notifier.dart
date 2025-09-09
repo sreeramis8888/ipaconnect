@@ -31,13 +31,17 @@ class CampaignsNotifier extends _$CampaignsNotifier {
     try {
       final newCampaigns = await ref
           .read(fetchCampaignsProvider(pageNo: pageNo, limit: limit).future);
+      
+       //  change: filter only active campaigns
+      final activeCampaigns = newCampaigns.where((c) => c.status == "active").toList();
 
-      if (newCampaigns.isEmpty) {
+
+      if (activeCampaigns.isEmpty) {
         hasMore = false;
       } else {
-        campaigns = [...campaigns, ...newCampaigns];
+        campaigns = [...campaigns, ...activeCampaigns];
         pageNo++;
-        hasMore = newCampaigns.length >= limit;
+        hasMore = activeCampaigns.length >= limit;
       }
 
       isFirstLoad = false;
@@ -60,8 +64,13 @@ class CampaignsNotifier extends _$CampaignsNotifier {
       final refreshedCampaigns = await ref
           .read(fetchCampaignsProvider(pageNo: pageNo, limit: limit).future);
 
-      campaigns = refreshedCampaigns;
-      hasMore = refreshedCampaigns.length >= limit;
+      
+      //  change: filter only active campaigns
+      final activeCampaigns = refreshedCampaigns.where((c) => c.status == "active").toList();
+
+
+      campaigns = activeCampaigns;
+      hasMore = activeCampaigns.length >= limit;
       isFirstLoad = false;
       state = campaigns;
       log('refreshed');

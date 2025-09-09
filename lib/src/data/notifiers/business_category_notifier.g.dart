@@ -7,7 +7,7 @@ part of 'business_category_notifier.dart';
 // **************************************************************************
 
 String _$businessCategoryNotifierHash() =>
-    r'2e6294891ba63656087e3e1b4bf92abf2f59de4b';
+    r'f7002370fc366678becdf2d85ec80e73326148a4';
 
 /// See also [BusinessCategoryNotifier].
 @ProviderFor(BusinessCategoryNotifier)

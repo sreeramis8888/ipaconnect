@@ -36,12 +36,17 @@ class CompaniesNotifier extends _$CompaniesNotifier {
               pageNo: pageNo, limit: limit, categoryId: categoryId)
           .future);
 
-      if (newCompanies.isEmpty) {
+      
+      //  change: filter only active companies
+      final activeCompanies = newCompanies.where((c) => c.status == "active").toList();
+
+
+      if (activeCompanies.isEmpty) {
         hasMore = false;
       } else {
-        companies = [...companies, ...newCompanies];
+        companies = [...companies, ...activeCompanies];
         pageNo++;
-        hasMore = newCompanies.length >= limit;
+        hasMore = activeCompanies.length >= limit;
       }
 
       isFirstLoad = false;
@@ -70,9 +75,12 @@ class CompaniesNotifier extends _$CompaniesNotifier {
           query: query,
         ).future,
       );
+      //  change: filter only active companies
+      final activeCompanies = newCompanies.where((c) => c.status == "active").toList();
 
-      companies = [...newCompanies];
-      hasMore = newCompanies.length == limit;
+
+      companies = [...activeCompanies];
+      hasMore = activeCompanies.length == limit;
       isFirstLoad = false;
       state = [...companies];
     } catch (e, stackTrace) {
@@ -94,8 +102,12 @@ class CompaniesNotifier extends _$CompaniesNotifier {
               pageNo: pageNo, limit: limit, categoryId: categoryId)
           .future);
 
-      companies = refreshedCompanies;
-      hasMore = refreshedCompanies.length >= limit;
+      // 🔥 change: filter only active companies
+      final activeCompanies = refreshedCompanies.where((c) => c.status == "active").toList();
+
+
+      companies = activeCompanies;
+      hasMore = activeCompanies.length >= limit;
       isFirstLoad = false;
       state = companies;
       log('refreshed');
