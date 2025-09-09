@@ -55,16 +55,17 @@ Widget eventWidget({
                 child: CachedNetworkImage(
                   imageUrl: event.image ?? '',
                   width: double.infinity,
-                  height: 140,
+                  //event card height increased
+                  height: 200,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(
                     width: double.infinity,
-                    height: 140,
+                    height: 200,
                     color: Colors.grey[300],
                   ),
                   errorWidget: (context, url, error) => Container(
                     width: double.infinity,
-                    height: 140,
+                    height: 200,
                     color: Colors.grey[300],
                   ),
                 ),
