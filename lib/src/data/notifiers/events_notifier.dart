@@ -30,13 +30,18 @@ class EventsNotifier extends _$EventsNotifier {
       final newEvents = await ref
           .read(fetchEventsProvider(pageNo: pageNo, limit: limit).future);
 
-      if (newEvents.isEmpty) {
+      //  only events with status == "live"
+      final liveEvents =
+          newEvents.where((event) => event.status == "live" || event.status == "pending").toList();
+
+
+      if (liveEvents.isEmpty) {
         hasMore = false;
       } else {
-        events = [...events, ...newEvents];
+        events = [...events, ...liveEvents];
         pageNo++;
         // Only set hasMore to false if we get fewer items than the limit
-        hasMore = newEvents.length >= limit;
+        hasMore = liveEvents.length >= limit;
       }
 
       isFirstLoad = false;
@@ -59,8 +64,10 @@ class EventsNotifier extends _$EventsNotifier {
       final refreshedEvents = await ref
           .read(fetchEventsProvider(pageNo: pageNo, limit: limit).future);
 
-      events = refreshedEvents;
-      hasMore = refreshedEvents.length >= limit;
+      //  only "live" events
+      events = refreshedEvents.where((event) =>event.status == "live" || event.status == "pending").toList();
+
+      hasMore = events.length >= limit;
       isFirstLoad = false;
       state = events;
       log('refreshed');
@@ -78,6 +85,7 @@ class EventsNotifier extends _$EventsNotifier {
     try {
       pageNo = 1;
       final myCreatedEvents = await ref.read(fetchMyCreatedEventsProvider.future);
+
       events = myCreatedEvents;
       hasMore = false; // No pagination for my created events for now
       isFirstLoad = false;
