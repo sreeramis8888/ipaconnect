@@ -43,8 +43,8 @@ class CustomIconContainer extends StatelessWidget {
           boxShadow: const [
             BoxShadow(
               color: Color(0x6617B9FF), 
-              blurRadius: 8,
-              offset: Offset(2, 2),
+              blurRadius: 1,
+              // offset: Offset(2, 2),
             ),
           ],
         ),
