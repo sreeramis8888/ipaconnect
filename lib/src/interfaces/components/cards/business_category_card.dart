@@ -21,9 +21,17 @@ class CategoryCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: kCardBackgroundColor,
+        gradient: LinearGradient(
+          begin:Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF275E82), // lighter blue
+            Color(0xFF12284F), // dark navy
+          ],),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: kStrokeColor,
+          color: Color(0x1AFFFFFF),
+          // kStrokeColor,
           width: 1,
         ),
       ),
