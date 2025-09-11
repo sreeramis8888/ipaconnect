@@ -163,7 +163,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
                           order: 1,
                           from: SlideFrom.bottom,
                           child: ListView.builder(
-                            itemCount: 3,
+                            itemCount: companies.length,
                             itemBuilder: (context, index) {
                               if (index == companies.length && isLoading) {
                                 return const Center(
