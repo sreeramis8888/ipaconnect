@@ -22,11 +22,16 @@ class HierarchiesPage extends ConsumerWidget {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: CustomRoundButton(
-              offset: const Offset(4, 0),
-              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: CustomRoundButton(
+                offset: const Offset(4, 0),
+                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              ),
             ),
           ),
         ),
@@ -66,7 +71,7 @@ class HierarchiesPage extends ConsumerWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ClipRRect(
-                  borderRadius: BorderRadiusGeometry.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                   child: Container(
                     decoration: BoxDecoration(
                       color: kCardBackgroundColor,
@@ -80,6 +85,9 @@ class HierarchiesPage extends ConsumerWidget {
                       ],
                     ),
                     child: ListTile(
+                      shape:  RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ), 
                       leading: CircleAvatar(
                         backgroundColor: kStrokeColor,
                         child: Icon(Icons.account_tree, color: kPrimaryColor),

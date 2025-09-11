@@ -16,11 +16,16 @@ class NotificationPage extends StatelessWidget {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            child: CustomRoundButton(
-              offset: Offset(4, 0),
-              iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => Navigator.pop(context),
+              child: CustomRoundButton(
+                offset: Offset(4, 0),
+                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              ),
             ),
           ),
         ),
