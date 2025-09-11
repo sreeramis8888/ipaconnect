@@ -71,9 +71,9 @@ class _AboutUsPageState extends State<AboutUsPage> {
         controller: _scrollController,
         padding: EdgeInsets.zero,
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
-            height: 180,
+            height: MediaQuery.of(context).size.width * (278 / 430),
             child: Image.asset(
               'assets/pngs/aboutus_groupphoto.png',
               fit: BoxFit.cover,
