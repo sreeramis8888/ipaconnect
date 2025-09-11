@@ -129,13 +129,22 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                   child: Text('No clusters available'),
                                 );
                               }
+                                        // Filter unwanted clusters and sort alphabetically
+                              final filteredHierarchies = hierarchies
+                                  .where((h) =>
+                                      h.name != null &&
+                                      h.name!.toLowerCase() != 'admins' &&
+                                      h.name!.toLowerCase() != 'developers')
+                                  .toList()
+                                ..sort((a, b) => (a.name ?? '').toLowerCase().compareTo((b.name ?? '').toLowerCase()));
+
                               return ListView.separated(
                                 controller: scrollController,
-                                itemCount: hierarchies.length > 2 ? hierarchies.length - 2 : 0,
+                                itemCount: filteredHierarchies.length ,//temoporary solution for hiding admins from cluster
                                 separatorBuilder: (_, __) =>
                                     Divider(height: 1, color: kStrokeColor),      
                                 itemBuilder: (context, index) {
-                                  final h = hierarchies[index + 2];
+                                  final h = filteredHierarchies[index];
                                   return ListTile(
                                     contentPadding: EdgeInsets.zero,
                                     leading: CircleAvatar(

@@ -49,47 +49,48 @@ class CompanyCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Company Image
-              Container(
-                height: 120,
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF3A3D4E),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF3A3D4E),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
                   ),
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                  child: Image.network(
-                    imageUrl ?? '',
-                    fit: BoxFit.cover,
-                    height: 120,
-                    width: double.infinity,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Shimmer.fromColors(
-                        baseColor: kCardBackgroundColor,
-                        highlightColor: kStrokeColor,
-                        child: Container(
-                          height: 120,
-                          color: kCardBackgroundColor,
-                        ),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Shimmer.fromColors(
-                        baseColor: kCardBackgroundColor,
-                        highlightColor: kStrokeColor,
-                        child: Container(
-                          height: 120,
-                          color: kCardBackgroundColor,
-                        ),
-                      );
-                    },
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    child: Image.network(
+                      imageUrl ?? '',
+                      fit: BoxFit.cover,
+                      height: 120,
+                      width: double.infinity,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Shimmer.fromColors(
+                          baseColor: kCardBackgroundColor,
+                          highlightColor: kStrokeColor,
+                          child: Container(
+                            height: 120,
+                            color: kCardBackgroundColor,
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Shimmer.fromColors(
+                          baseColor: kCardBackgroundColor,
+                          highlightColor: kStrokeColor,
+                          child: Container(
+                            height: 120,
+                            color: kCardBackgroundColor,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

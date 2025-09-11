@@ -57,7 +57,7 @@ Widget eventWidget({
                   width: double.infinity,
                   //event card height increased to 16:9 ration
                   height: MediaQuery.of(context).size.width * 9 / 16,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.fill,
                   placeholder: (context, url) => Container(
                     width: double.infinity,
                     height: MediaQuery.of(context).size.width * 9 / 16,

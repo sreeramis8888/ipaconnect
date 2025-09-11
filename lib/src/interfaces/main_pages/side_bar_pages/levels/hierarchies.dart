@@ -58,12 +58,21 @@ class HierarchiesPage extends ConsumerWidget {
               style: kSmallTitleL,
             ));
           }
+                    // Filter unwanted clusters and sort alphabetically
+          final filteredHierarchies = hierarchies
+              .where((h) =>
+                  h.name != null &&
+                  h.name!.toLowerCase() != 'admins' &&
+                  h.name!.toLowerCase() != 'developers')
+              .toList()
+            ..sort((a, b) => (a.name ?? '').toLowerCase().compareTo((b.name ?? '').toLowerCase()));
+
           return StartupStagger(
             child: ListView.builder(
-            itemCount: hierarchies.length - 1,
+            itemCount: filteredHierarchies.length ,
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemBuilder: (context, index) {
-              final hierarchy = hierarchies[index + 1];
+              final hierarchy = filteredHierarchies[index ];
               return StaggerItem(
                 order: 1 + (index % 8),
                 from: SlideFrom.bottom,

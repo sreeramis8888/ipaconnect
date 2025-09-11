@@ -58,6 +58,7 @@ class _CategorypageState extends ConsumerState<Categorypage> {
           .read(companiesNotifierProvider.notifier)
           .searchCompanies(query, categoryId: widget.category.id);
     });
+    
   }
 
   void _onSearchSubmitted(String query) {

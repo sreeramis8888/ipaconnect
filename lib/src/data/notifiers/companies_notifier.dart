@@ -30,6 +30,7 @@ class CompaniesNotifier extends _$CompaniesNotifier {
     if (isLoading || !hasMore) return;
 
     isLoading = true;
+    this.categoryId = categoryId; 
 
     try {
       final newCompanies = await ref.read(getCompaniesProvider(
@@ -65,6 +66,7 @@ class CompaniesNotifier extends _$CompaniesNotifier {
     pageNo = 1;
     companies = [];
     searchQuery = query;
+    this.categoryId = categoryId;
 
     try {
       final newCompanies = await ref.read(
