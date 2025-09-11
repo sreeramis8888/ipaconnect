@@ -475,7 +475,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                               label: 'CSR',
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/csr_icon.svg')),
+                                                  'assets/svg/icons/csr_icon1.svg')),
                                           CustomIconContainer(
                                               onTap: () {
                                                 Navigator.pushNamed(
@@ -484,7 +484,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                               label: 'Events',
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/event_icon.svg')),
+                                                  'assets/svg/icons/event_icon1.svg')),
                                           // if (widget.user.phone !=
                                           //     '+919645398555')
                                           CustomIconContainer(
@@ -498,7 +498,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                               },
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/card_icon.svg')),
+                                                  'assets/svg/icons/store_icon1.svg')),
                                           CustomIconContainer(
                                               onTap: () {
                                                 ref
@@ -509,7 +509,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                               label: 'Bussiness',
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/offer_icon.svg')),
+                                                  'assets/svg/icons/bussiness_icon.svg')),
                                         ],
                                       ),
                                     ),

@@ -28,9 +28,9 @@ class CustomIconContainer extends StatelessWidget {
             end: Alignment.bottomRight,
             colors: [
               // Color(0x802EA7FF),
-              Color(0xFF10243F),
+              Color(0xFF275E82),
               // Color(0x331C1B33),
-              Color(0xFF1C3559), 
+              Color(0xFF12284F),  
             ],
             stops: [0.0, .7],
           ),
