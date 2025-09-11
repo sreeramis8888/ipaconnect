@@ -55,59 +55,62 @@ class HierarchiesPage extends ConsumerWidget {
           }
           return StartupStagger(
             child: ListView.builder(
-            itemCount: hierarchies.length,
+            itemCount: hierarchies.length - 1,
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemBuilder: (context, index) {
-              final hierarchy = hierarchies[index];
+              final hierarchy = hierarchies[index + 1];
               return StaggerItem(
                 order: 1 + (index % 8),
                 from: SlideFrom.bottom,
                 child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: kCardBackgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: kStrokeColor,
-                        spreadRadius: .1,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: kStrokeColor,
-                      child: Icon(Icons.account_tree, color: kPrimaryColor),
+                child: ClipRRect(
+                  borderRadius: BorderRadiusGeometry.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: kCardBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: kStrokeColor,
+                          spreadRadius: .1,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
                     ),
-                    title: Text(hierarchy.name ?? '-', style: kBodyTitleR),
-                    subtitle: hierarchy.description != null &&
-                            hierarchy.description!.isNotEmpty
-                        ? Text(
-                            hierarchy.description!,
-                            style: TextStyle(
-                                fontSize: 13, color: Colors.grey[700]),
-                          )
-                        : null,
-                    trailing: user.hierarchy?.id == hierarchy.id
-                        ? const Icon(Icons.arrow_forward_ios,
-                            size: 16, color: kSecondaryTextColor)
-                        : null,
-                    onTap: () {
-                      if (user.hierarchy?.id == hierarchy.id) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HierarchyMembers(
-                              hierarchyName: hierarchy.name ?? '',
-                              hierarchyId: hierarchy.id ?? '',
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: kStrokeColor,
+                        child: Icon(Icons.account_tree, color: kPrimaryColor),
+                      ),
+                      title: Text(hierarchy.name ?? '-', style: kBodyTitleR),
+                      subtitle: hierarchy.description != null &&
+                              hierarchy.description!.isNotEmpty
+                          ? Text(
+                              hierarchy.description!,
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey[700]),
+                            )
+                          : null,
+                      trailing: user.hierarchy?.id == hierarchy.id
+                          ? const Icon(Icons.arrow_forward_ios,
+                              size: 16, color: kSecondaryTextColor)
+                          : null,
+                      onTap: () {
+                        if (user.hierarchy?.id == hierarchy.id) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HierarchyMembers(
+                                hierarchyName: hierarchy.name ?? '',
+                                hierarchyId: hierarchy.id ?? '',
+                              ),
                             ),
-                          ),
-                        );
-                      }
-                    },
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),

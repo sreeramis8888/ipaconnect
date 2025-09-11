@@ -992,34 +992,35 @@ Widget _buildBanners({
   required BuildContext context,
   required Promotion banner,
 }) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 12.0), // optional margin
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.85, // 85 of screen width,
     child: AspectRatio(
-      aspectRatio: 16 / 9,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: Image.network(
-          banner.media ?? '',
-          fit: BoxFit.cover, // prevents stretching
-          errorBuilder: (context, error, stackTrace) {
-            return Shimmer.fromColors(
-              baseColor: kCardBackgroundColor,
-              highlightColor: kStrokeColor,
-              child: Container(color: const Color.fromARGB(255, 24, 34, 13)),
-            );
-          },
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-            return Shimmer.fromColors(
-              baseColor: kCardBackgroundColor,
-              highlightColor: kStrokeColor,
-              child: Container(color: kBackgroundColor),
-            );
-          },
+        aspectRatio: 20 / 11,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: Image.network(
+            banner.media ?? '',
+            fit: BoxFit.cover, // prevents stretching
+            errorBuilder: (context, error, stackTrace) {
+              return Shimmer.fromColors(
+                baseColor: kCardBackgroundColor,
+                highlightColor: kStrokeColor,
+                child: Container(color: const Color.fromARGB(255, 24, 34, 13)),
+              );
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Shimmer.fromColors(
+                baseColor: kCardBackgroundColor,
+                highlightColor: kStrokeColor,
+                child: Container(color: kBackgroundColor),
+              );
+            },
+          ),
         ),
       ),
-    ),
   );
+  
 }
 
 Widget customPoster({
