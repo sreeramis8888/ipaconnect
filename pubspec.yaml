@@ -118,7 +118,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/
+    - assets/gif/
     - assets/svg/
     - assets/pngs/
     - assets/svg/icons/

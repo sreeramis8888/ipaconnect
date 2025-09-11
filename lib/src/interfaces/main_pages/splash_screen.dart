@@ -439,31 +439,43 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 },
               ),
     
-            // Main logo animation
+            // // Main logo animation
+            // Align(
+            //   alignment: Alignment.center,
+            //   child: AnimatedBuilder(
+            //     animation: _controller,
+            //     builder: (context, child) {
+            //       return Opacity(
+            //         opacity: _opacityAnimation.value,
+            //         child: Transform.rotate(
+            //           angle: _rotationAnimation.value,
+            //           child: Transform.scale(
+            //             scale: _scaleAnimation.value,
+            //             child: Container(
+            //               width: 140,
+            //               height: 140,
+            //               child:
+            //                   SvgPicture.asset('assets/svg/icons/ipa_logo.svg'),
+            //             ),
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
+            // Main logo as GIF
             Align(
               alignment: Alignment.center,
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return Opacity(
-                    opacity: _opacityAnimation.value,
-                    child: Transform.rotate(
-                      angle: _rotationAnimation.value,
-                      child: Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: Container(
-                          width: 140,
-                          height: 140,
-                          child:
-                              SvgPicture.asset('assets/svg/icons/ipa_logo.svg'),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+              child: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Image.asset(
+                  'assets/gif/ipa_logo.gif',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-    
+                
             // Welcome text for first-time users
             if (isFirstLaunch == 'false' && !hasVersionCheckError)
               Align(
