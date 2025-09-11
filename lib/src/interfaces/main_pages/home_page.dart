@@ -16,6 +16,7 @@ import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_event
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_icon_container.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/campaign/campaign_card.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/news_bookmark/news_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/digital_card.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -662,9 +663,17 @@ class _HomePageState extends ConsumerState<HomePage>
                                                       onTap: () {
                                                         ref
                                                             .read(
-                                                                selectedIndexProvider
-                                                                    .notifier)
-                                                            .updateIndex(3);
+                                                                currentNewsIndexProvider.notifier).state = index;
+
+                                                        
+                                                         Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (context) => NewsDetailView(news: news),
+                                                            ),
+                                                          );
+
+
                                                       },
                                                       imageUrl:
                                                           individualNewsModel
