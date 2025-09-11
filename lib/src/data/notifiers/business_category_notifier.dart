@@ -15,7 +15,7 @@ class BusinessCategoryNotifier extends _$BusinessCategoryNotifier {
   bool isLoading = false;
   bool isFirstLoad = true;
   int pageNo = 1;
-  final int limit = 50;
+  final int limit = 200;
   bool hasMore = true;
   String? searchQuery;
   @override
