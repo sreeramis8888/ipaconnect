@@ -410,7 +410,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   banner: banner);
                                             }).toList(),
                                             options: CarouselOptions(
-                                              height: 175,
+                                              height: 200,
                                               scrollPhysics: banners.length > 1
                                                   ? null
                                                   : const NeverScrollableScrollPhysics(),
@@ -993,14 +993,14 @@ Widget _buildBanners({
   required Promotion banner,
 }) {
   return SizedBox(
-    width: MediaQuery.of(context).size.width * 0.85, // 85 of screen width,
+    width: MediaQuery.of(context).size.width * 0.90,
     child: AspectRatio(
-        aspectRatio: 20 / 11,
+        aspectRatio: 16/ 19,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12.0),
           child: Image.network(
             banner.media ?? '',
-            fit: BoxFit.cover, // prevents stretching
+            fit: BoxFit.cover, 
             errorBuilder: (context, error, stackTrace) {
               return Shimmer.fromColors(
                 baseColor: kCardBackgroundColor,
