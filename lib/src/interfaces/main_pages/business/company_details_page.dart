@@ -7,6 +7,7 @@ import 'package:ipaconnect/src/data/models/company_model.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
+import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/data/utils/image_viewer.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
@@ -388,8 +389,21 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               StaggerItem(
                 order: 9,
                 from: SlideFrom.bottom,
-                child: Text(company.contactInfo?.website ?? 'Link',
-                    style: TextStyle(color: kSecondaryTextColor)),
+                child: GestureDetector(
+                  onTap:  () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WebViewScreen(
+                              url: company.contactInfo?.website ?? 'Link',
+                              
+                            ),
+                          ),
+                        );
+                      },
+                  child: Text(company.contactInfo?.website ?? 'Link',
+                      style: TextStyle(color: kSecondaryTextColor)),
+                ),
               ),
               const SizedBox(height: 16),
               // Established
