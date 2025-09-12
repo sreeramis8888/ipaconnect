@@ -364,40 +364,44 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                _label('Actual Price', required: true),
+                _label('Actual Price', required: false),
                 const SizedBox(height: 4),
                 CustomTextFormField(
                   labelText: 'Price',
                   backgroundColor: kCardBackgroundColor,
                   textController: actualPriceController,
                   textInputType: TextInputType.number,
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
-                      return "Actual price is required. Don't leave it blank.";
-                    }
-                    if (double.tryParse(v.trim()) == null) {
-                      return 'Actual price Please enter a valid number.';
-                    }
-                    return null;
-                  },
+                  //not mandatory 
+
+                  // validator: (v) {
+                  //   if (v == null || v.trim().isEmpty) {
+                  //     return "Actual price is required. Don't leave it blank.";
+                  //   }
+                  //   if (double.tryParse(v.trim()) == null) {
+                  //     return 'Actual price Please enter a valid number.';
+                  //   }
+                  //   return null;
+                  // },
                 ),
                 const SizedBox(height: 12),
-                _label('Add Offer Price', required: true),
+                _label('Add Offer Price', required: false),
                 const SizedBox(height: 4),
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
                   labelText: 'Price',
                   textController: offerPriceController,
                   textInputType: TextInputType.number,
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
-                      return "Discount price is required. Don't leave it blank.";
-                    }
-                    if (double.tryParse(v.trim()) == null) {
-                      return 'Discount price Please enter a valid number.';
-                    }
-                    return null;
-                  },
+                  //not mandatory 
+                  
+                  // validator: (v) {
+                  //   if (v == null || v.trim().isEmpty) {
+                  //     return "Discount price is required. Don't leave it blank.";
+                  //   }
+                  //   if (double.tryParse(v.trim()) == null) {
+                  //     return 'Discount price Please enter a valid number.';
+                  //   }
+                  //   return null;
+                  // },
                 ),
                 const SizedBox(height: 12),
                 Row(

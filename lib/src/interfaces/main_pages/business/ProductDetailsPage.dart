@@ -225,16 +225,19 @@ class _ProductDetailsPageState extends ConsumerState<ProductDetailsPage> {
                   SizedBox(height: 16),
                   Row(
                     children: [
+                      if (product.actualPrice != null && product.actualPrice != 0)
                       Text(
                         '₹${product.actualPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleR.copyWith(
                           color: kPrimaryColor,
                           fontSize: 16,
-                          decoration: TextDecoration.lineThrough,
+                          decoration: product.discountPrice !=0 ?
+                           TextDecoration.lineThrough:null ,
                           decorationColor: kPrimaryColor,
                         ),
                       ),
                       SizedBox(width: 8),
+                      if (product.discountPrice != null && product.discountPrice != 0)
                       Text(
                         '₹${product.discountPrice?.toStringAsFixed(0)}',
                         style: kBodyTitleB.copyWith(
