@@ -52,7 +52,7 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: InkWell(
+          child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: CustomRoundButton(
               offset: const Offset(4, 0),

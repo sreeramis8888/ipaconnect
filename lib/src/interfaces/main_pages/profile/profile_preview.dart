@@ -418,7 +418,7 @@ class _ProfileHeader extends StatelessWidget {
               left: 0,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: CustomRoundButton(
                     offset: Offset(4, 0),
@@ -860,7 +860,7 @@ class _SocialCard extends StatelessWidget {
             ),
           ),
           if (socialUrl != null)
-            InkWell(
+            GestureDetector(
               onTap: () => _launchURL(context, socialUrl),
               child:
                   Icon(Icons.open_in_new, color: kSecondaryTextColor, size: 20),

@@ -108,7 +108,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                       ],
                                     ),
                                     const SizedBox(height: 16),
-                                    InkWell(
+                                    GestureDetector(
                                       onTap: () => launchURL(
                                           'https://admin.ipaconnect.org/user/${user.id}'),
                                       child: Center(

@@ -89,7 +89,7 @@ class AnalyticsModalSheet extends ConsumerWidget {
               _buildDetailRow('Amount', analytic.amount.toString()),
             if (analytic.status == 'meeting_scheduled' &&
                 analytic.meetingLink != null)
-              InkWell(
+              GestureDetector(
                   onTap: () {
                     launchURL(analytic.meetingLink ?? '');
                   },

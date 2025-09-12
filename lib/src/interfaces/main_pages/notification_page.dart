@@ -20,7 +20,7 @@ class NotificationPage extends StatelessWidget {
             color: Colors.transparent,
             shape: const CircleBorder(),
             clipBehavior: Clip.antiAlias,
-            child: InkWell(
+            child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: CustomRoundButton(
                 offset: Offset(4, 0),

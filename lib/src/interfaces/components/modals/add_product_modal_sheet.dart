@@ -179,7 +179,7 @@ class _AddProductModalSheetState extends ConsumerState<AddProductModalSheet> {
                 ),
                 Row(
                   children: [
-                    InkWell(
+                    GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: CustomRoundButton(
                         offset: Offset(4, 0),

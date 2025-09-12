@@ -21,7 +21,7 @@ class MyOrdersPage extends ConsumerWidget {
         elevation: 0,
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: InkWell(
+          child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: CustomRoundButton(
               offset: Offset(4, 0),

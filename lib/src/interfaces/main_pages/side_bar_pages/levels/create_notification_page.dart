@@ -202,7 +202,7 @@ class _CreateNotificationPageState
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: CustomRoundButton(
                 offset: Offset(4, 0),
@@ -450,7 +450,7 @@ class _CreateNotificationPageState
                                           child:
                                               Image.file(notificationImage!)),
                                     const Spacer(),
-                                    InkWell(
+                                    GestureDetector(
                                       onTap: () {
                                         setState(() {
                                           notificationImage = null;

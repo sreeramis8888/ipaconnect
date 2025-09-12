@@ -121,7 +121,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               expandedHeight: expandedHeight,
               leading: Padding(
                 padding: const EdgeInsets.all(8),
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: CustomRoundButton(
                     offset: Offset(4, 0),
@@ -570,7 +570,7 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
         separatorBuilder: (_, __) => SizedBox(width: 8),
         itemBuilder: (context, index) {
           final photo = photos[index];
-          return InkWell(
+          return GestureDetector(
             onTap: () => showImageViewer(photo.url ?? '', context),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),

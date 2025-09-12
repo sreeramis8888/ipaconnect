@@ -26,7 +26,7 @@ class HierarchiesPage extends ConsumerWidget {
             color: Colors.transparent,
             shape: const CircleBorder(),
             clipBehavior: Clip.antiAlias,
-            child: InkWell(
+            child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: CustomRoundButton(
                 offset: const Offset(4, 0),

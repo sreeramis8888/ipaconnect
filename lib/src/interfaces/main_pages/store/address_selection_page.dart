@@ -76,7 +76,7 @@
 //                       width: 2,
 //                     ),
 //                   ),
-//                   child: InkWell(
+//                   child: GestureDetector(
 //                     onTap: () {
 //                       setState(() {
 //                         selectedAddressIndex = index;

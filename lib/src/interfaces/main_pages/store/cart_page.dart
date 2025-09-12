@@ -42,7 +42,7 @@ class _CartPageState extends ConsumerState<CartPage> {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.all(8),
-          child: InkWell(
+          child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: CustomRoundButton(
               offset: Offset(4, 0),
@@ -202,7 +202,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        InkWell(
+                                                        GestureDetector(
                                                           child: Padding(
                                                             padding:
                                                                 const EdgeInsets
@@ -227,7 +227,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                         Text('$quantity',
                                                             style:
                                                                 kSmallTitleL),
-                                                        InkWell(
+                                                        GestureDetector(
                                                           child: Padding(
                                                             padding:
                                                                 const EdgeInsets

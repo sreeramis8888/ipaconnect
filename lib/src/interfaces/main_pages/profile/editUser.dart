@@ -570,7 +570,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     centerTitle: true,
                                     leading: Padding(
                                       padding: const EdgeInsets.all(8),
-                                      child: InkWell(
+                                      child: GestureDetector(
                                         onTap: () => Navigator.pop(context),
                                         child: CustomRoundButton(
                                           offset: Offset(4, 0),
@@ -631,7 +631,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                               Positioned(
                                                 bottom: 4,
                                                 right: 4,
-                                                child: InkWell(
+                                                child: GestureDetector(
                                                   onTap: () {
                                                     _pickFile(
                                                         imageType: 'profile');
@@ -827,7 +827,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     );
                                   },
                                 ),
-                                InkWell(
+                                GestureDetector(
                                   onTap: () => showWebsiteSheet(
                                     addWebsite: _addNewWebsite,
                                     textController1: websiteNameController,
@@ -896,7 +896,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   },
                                 ),
                                 // + Add Video
-                                InkWell(
+                                GestureDetector(
                                   onTap: () => showVideoLinkSheet(
                                     addVideo: _addNewVideo,
                                     textController1: videoNameController,
@@ -964,7 +964,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       },
                                     ),
                                   ),
-                                InkWell(
+                                GestureDetector(
                                   onTap: () => showModalBottomSheet(
                                     backgroundColor: kCardBackgroundColor,
                                     isScrollControlled: true,
@@ -1026,7 +1026,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       },
                                     ),
                                   ),
-                                InkWell(
+                                GestureDetector(
                                   onTap: () => showModalBottomSheet(
                                       backgroundColor: kCardBackgroundColor,
                                       isScrollControlled: true,
@@ -1089,7 +1089,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                       );
                                     },
                                   ),
-                                InkWell(
+                                GestureDetector(
                                   onTap: () => showModalBottomSheet(
                                     backgroundColor: kCardBackgroundColor,
                                     isScrollControlled: true,

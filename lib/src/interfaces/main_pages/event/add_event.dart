@@ -257,7 +257,7 @@ class _AddEventPageState extends State<AddEventPage> {
           elevation: 0,
           leading: Padding(
             padding: const EdgeInsets.all(8),
-            child: InkWell(
+            child: GestureDetector(
               onTap: () => Navigator.pop(context),
               child: CustomRoundButton(
                 offset: Offset(4, 0),
@@ -358,7 +358,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                             width: 60,
                                             child: Image.network(_existingImageUrl!)),
                                       const Spacer(),
-                                      InkWell(
+                                      GestureDetector(
                                         onTap: () {
                                           setState(() {
                                             _eventImage = null;

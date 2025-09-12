@@ -117,7 +117,7 @@ class _PaginatedDropdownState<T> extends State<PaginatedDropdown<T>> {
                         final isSelected = item == widget.value;
                         return SizedBox(
                           height: itemHeight,
-                          child: InkWell(
+                          child: GestureDetector(
                             onTap: () {
                               widget.onChanged(item);
                               _removeOverlay();

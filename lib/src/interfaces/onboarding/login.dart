@@ -407,7 +407,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                 // Add back button
                 Padding(
                   padding: const EdgeInsets.all(8),
-                  child: InkWell(
+                  child: GestureDetector(
                     onTap: () => navigationService.pushNamed('PhoneNumber'),
                     child: CustomRoundButton(
                       offset: Offset(4, 0),

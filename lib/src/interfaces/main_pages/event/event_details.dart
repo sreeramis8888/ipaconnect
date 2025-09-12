@@ -130,7 +130,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                 backgroundColor: kBackgroundColor,
                 leading: Padding(
                   padding: const EdgeInsets.all(8),
-                  child: InkWell(
+                  child: GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: CustomRoundButton(
                       offset: Offset(4, 0),
@@ -380,7 +380,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                                   const Divider(height: 1),
                               itemBuilder: (context, index) {
                                 final folder = folders[index];
-                                return InkWell(
+                                return GestureDetector(
                                   onTap: () {
                                     Navigator.push(
                                       context,

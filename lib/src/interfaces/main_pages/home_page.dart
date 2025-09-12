@@ -209,7 +209,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        InkWell(
+                                        GestureDetector(
                                             onTap: () {},
                                             child: SizedBox(
                                               width: 80,
@@ -531,7 +531,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                 Text('Event',
                                                     style: kBodyTitleB),
                                                 const Spacer(),
-                                                InkWell(
+                                                GestureDetector(
                                                   onTap: () {
                                                     navigationService.pushNamed(
                                                         'EventsPage');
@@ -627,7 +627,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                                 Text('Latest News',
                                                     style: kBodyTitleB),
                                                 const Spacer(),
-                                                InkWell(
+                                                GestureDetector(
                                                   onTap: () => ref
                                                       .read(
                                                           selectedIndexProvider
@@ -766,7 +766,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     right: 15, top: 10),
-                                                child: InkWell(
+                                                child: GestureDetector(
                                                   onTap: () {
                                                     navigationService.pushNamed(
                                                         'CampaignsMainScreen');
@@ -890,7 +890,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
   // Unused legacy widget retained for potential future analytics integration
   Widget _buildStatCard(String title, String value) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         String? initialTab;
         String? requestType; // reserved for future use

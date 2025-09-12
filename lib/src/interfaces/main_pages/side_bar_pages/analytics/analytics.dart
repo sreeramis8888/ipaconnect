@@ -105,7 +105,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
                   Row(
                     children: [
                       Expanded(
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () async {
                             final picked = await showDatePicker(
                               context: context,
@@ -134,7 +134,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () async {
                             final picked = await showDatePicker(
                               context: context,
@@ -304,7 +304,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
           child: AppBar(
             leading: Padding(
               padding: const EdgeInsets.all(8),
-              child: InkWell(
+              child: GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: CustomRoundButton(
                   offset: Offset(4, 0),
@@ -421,7 +421,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
 
   Widget _buildCard(AnalyticsModel analytic, String tabBarType) {
     log(analytic.receiver?.image ?? '', name: 'User image of analytic');
-    return InkWell(
+    return GestureDetector(
       onTap: () => _showReusableModalSheet(analytic, tabBarType, context),
       child: Container(
         decoration: BoxDecoration(

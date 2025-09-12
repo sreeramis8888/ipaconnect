@@ -1678,7 +1678,7 @@ I'm interested in this feed. Could you provide more information?
           icon: const Icon(Icons.arrow_back_ios, color: kTextColor),
           onPressed: () => Navigator.pop(context),
         ),
-        title: InkWell(
+        title: GestureDetector(
           onTap: () {
             NavigationService navigationService = NavigationService();
             navigationService.pushNamed('ProfilePreviewById',

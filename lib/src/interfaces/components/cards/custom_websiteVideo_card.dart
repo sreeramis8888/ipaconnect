@@ -35,7 +35,7 @@ Padding customWebsiteVideoCard(
           ),
         ),
         const SizedBox(width: 10), // Optional spacing between items
-        InkWell(
+        GestureDetector(
           onTap: () => onRemove!(),
           child: SvgPicture.asset('assets/svg/icons/delete_account.svg'),
         ),
