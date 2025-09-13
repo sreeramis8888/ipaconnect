@@ -23,7 +23,7 @@ import 'package:ipaconnect/src/data/services/api_routes/auth_api/auth_api_servic
 import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/data/notifiers/user_notifier.dart';
 
-final countryCodeProvider = StateProvider<String?>((ref) => '91');
+final countryCodeProvider = StateProvider<String?>((ref) => '971');
 
 class PhoneNumberScreen extends ConsumerStatefulWidget {
   const PhoneNumberScreen({
