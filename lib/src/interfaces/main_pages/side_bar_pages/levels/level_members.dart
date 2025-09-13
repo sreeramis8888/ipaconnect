@@ -185,21 +185,21 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreateNotificationPage(
-                hierarchyId: widget.hierarchyId,
-                hierarchyName: widget.hierarchyName,
-              ),
-            ),
-          );
-        },
-        backgroundColor: kPrimaryColor,
-        child: const Icon(Icons.notifications_active_outlined, color: kWhite),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => CreateNotificationPage(
+      //           hierarchyId: widget.hierarchyId,
+      //           hierarchyName: widget.hierarchyName,
+      //         ),
+      //       ),
+      //     );
+      //   },
+      //   backgroundColor: kPrimaryColor,
+      //   child: const Icon(Icons.notifications_active_outlined, color: kWhite),
+      // ),
     );
   }
 }
