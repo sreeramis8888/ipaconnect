@@ -3,13 +3,18 @@ import 'package:flutter_svg/svg.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/services/save_contact.dart';
+import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 import 'package:ipaconnect/src/data/utils/launch_url.dart';
 import 'package:ipaconnect/src/data/utils/share_qr.dart';
+import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class DigitalCardPage extends StatelessWidget {
   final UserModel user;
@@ -97,7 +102,7 @@ class DigitalCardPage extends StatelessWidget {
                                     'assets/pngs/qr_background.png',
                                     fit: BoxFit.cover,
                                     width: double.infinity,
-                                    height: 320,
+                                    height: 350,
                                   ),
                                 ),
                                 Container(
@@ -396,6 +401,31 @@ class DigitalCardPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
+                                // Added Custom Button
+                                const SizedBox(height: 20),
+                                StaggerItem(
+                                  order: 11,
+                                  from: SlideFrom.bottom,
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: customButton(
+                                      icon: const Icon(Icons.phone, color: kWhite),
+                                      label: 'SAVE CONTACT',
+                                      onPressed: () async {
+                                        if ((user.phone ?? '').isNotEmpty && (user.name ?? '').isNotEmpty) {
+                                          await saveContact(
+                                            firstName: user.name ?? '',
+                                            number: user.phone ?? '',
+                                            email: user.email ?? '',
+                                            context: context,
+                                          );
+                                        } else {
+                                          SnackbarService().showSnackBar("Contact info missing!");
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ), 
                             ],
                           ),
                         ),
