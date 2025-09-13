@@ -476,19 +476,22 @@ class _ProfileHeader extends StatelessWidget {
 
                     if (fitsInOneLine) {
                       // Single row
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.phone, color: kWhite, size: 18),
-                          const SizedBox(width: 6),
-                          Text(user.phone ?? '', style: kSmallTitleL),
-                          const SizedBox(width: 18),
-                          Icon(Icons.email, color: kWhite, size: 18),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(user.email ?? '', style: kSmallTitleL),
-                          ),
-                        ],
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.phone, color: kWhite, size: 18),
+                            const SizedBox(width: 6),
+                            Text(user.phone ?? '', style: kSmallTitleL),
+                            const SizedBox(width: 18),
+                            Icon(Icons.email, color: kWhite, size: 18),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(user.email ?? '', style: kSmallTitleL),
+                            ),
+                          ],
+                        ),
                       );
                     } else {
                       // Column fallback

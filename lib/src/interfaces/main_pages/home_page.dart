@@ -816,23 +816,26 @@ class _HomePageState extends ConsumerState<HomePage>
                                       order: 10,
                                       child: Column(
                                         children: [
-                                          CarouselSlider(
-                                            items: filteredVideos.map((video) {
-                                              return customVideo(
-                                                  context: context,
-                                                  videoUrl: video.link ?? '');
-                                            }).toList(),
-                                            options: CarouselOptions(
-                                              height: 225,
-                                              scrollPhysics: videos.length > 1
-                                                  ? null
-                                                  : const NeverScrollableScrollPhysics(),
-                                              viewportFraction: 1,
-                                              onPageChanged: (index, reason) {
-                                                setState(() {
-                                                  _currentVideoIndex = index;
-                                                });
-                                              },
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                                            child: CarouselSlider(
+                                              items: filteredVideos.map((video) {
+                                                return customVideo(
+                                                    context: context,
+                                                    videoUrl: video.link ?? '');
+                                              }).toList(),
+                                              options: CarouselOptions(
+                                                height: 225,
+                                                scrollPhysics: videos.length > 1
+                                                    ? null
+                                                    : const NeverScrollableScrollPhysics(),
+                                                viewportFraction: 1,
+                                                onPageChanged: (index, reason) {
+                                                  setState(() {
+                                                    _currentVideoIndex = index;
+                                                  });
+                                                },
+                                              ),
                                             ),
                                           ),
                                           if (videos.length > 1)
