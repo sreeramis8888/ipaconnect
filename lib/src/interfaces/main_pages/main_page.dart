@@ -175,113 +175,117 @@ class _MainPageState extends ConsumerState<MainPage> {
           body: Center(
             child: _widgetOptions.elementAt(selectedIndex),
           ),
-          bottomNavigationBar: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                height: .5,
-                color: kPrimaryColor,
-              ),
-              ClipRect(
-                child: Container(
-                  height: 65,
-                  decoration: BoxDecoration(
-                    color: kWhite,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: BottomNavigationBar(
-                    currentIndex: selectedIndex,
-                    selectedItemColor: kWhite,
-                    unselectedItemColor: Colors.white54,
-                    onTap: _onItemTapped,
-                    showSelectedLabels: true,
-                    showUnselectedLabels: false,
-                    backgroundColor: Color(0xFF00031A),
-                    elevation: 0,
-                    type: BottomNavigationBarType.fixed,
-                    items: List.generate(5, (index) {
-                      final isSelected = selectedIndex == index;
-                      Widget iconWidget;
-                      iconWidget = IconResolver(
-                        iconPath: isSelected
-                            ? _activeIcons[index]
-                            : _inactiveIcons[index],
-                        color: isSelected ? kWhite : Colors.grey,
-                      );
-                      return BottomNavigationBarItem(
-                        label: '',
-                        icon: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (isSelected)
-                              Column(
-                                children: [
-                                  Transform.translate(
-                                    offset: Offset(0, -7),
-                                    child: Align(
-                                      alignment: Alignment.topCenter,
-                                      child: Container(
-                                        width: 38,
-                                        height: 5,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.vertical(
-                                            bottom: Radius.circular(6),
-                                          ),
-                                          gradient: LinearGradient(
-                                            colors: [
-                                              kPrimaryColor.withOpacity(0.85),
-                                              kPrimaryColor.withOpacity(0.25),
-                                            ],
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: kPrimaryColor
-                                                  .withOpacity(0.95),
-                                              blurRadius: 28,
-                                              spreadRadius: 10,
-                                              offset: Offset(0, 8),
+          bottomNavigationBar: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: .5,
+                  color: kPrimaryColor,
+                ),
+                ClipRect(
+                  child: Container(
+                    height: 65,
+                    decoration: BoxDecoration(
+                      color: kWhite,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: BottomNavigationBar(
+                      currentIndex: selectedIndex,
+                      selectedItemColor: kWhite,
+                      unselectedItemColor: Colors.white54,
+                      onTap: _onItemTapped,
+                      showSelectedLabels: true,
+                      showUnselectedLabels: false,
+                      backgroundColor: Color(0xFF00031A),
+                      elevation: 0,
+                      type: BottomNavigationBarType.fixed,
+                      items: List.generate(5, (index) {
+                        final isSelected = selectedIndex == index;
+                        Widget iconWidget;
+                        iconWidget = IconResolver(
+                          iconPath: isSelected
+                              ? _activeIcons[index]
+                              : _inactiveIcons[index],
+                          color: isSelected ? kWhite : Colors.grey,
+                        );
+                        return BottomNavigationBarItem(
+                          label: '',
+                          icon: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isSelected)
+                                Column(
+                                  children: [
+                                    Transform.translate(
+                                      offset: Offset(0, -7),
+                                      child: Align(
+                                        alignment: Alignment.topCenter,
+                                        child: Container(
+                                          width: 38,
+                                          height: 5,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.vertical(
+                                              bottom: Radius.circular(6),
                                             ),
-                                          ],
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                kPrimaryColor.withOpacity(0.85),
+                                                kPrimaryColor.withOpacity(0.25),
+                                              ],
+                                              begin: Alignment.topCenter,
+                                              end: Alignment.bottomCenter,
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: kPrimaryColor
+                                                    .withOpacity(0.95),
+                                                blurRadius: 28,
+                                                spreadRadius: 10,
+                                                offset: Offset(0, 8),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  AnimatedScale(
+                                    duration: const Duration(milliseconds: 300),
+                                    scale: isSelected ? 1.2 : 1.0,
+                                    child: iconWidget,
                                   ),
                                 ],
                               ),
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                AnimatedScale(
-                                  duration: const Duration(milliseconds: 300),
-                                  scale: isSelected ? 1.2 : 1.0,
-                                  child: iconWidget,
+                              const SizedBox(height: 2),
+                              Text(
+                                labels[index],
+                                style: TextStyle(
+                                  color:
+                                      isSelected ? kWhite : Color(0xFFAEB9E1),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              labels[index],
-                              style: TextStyle(
-                                color: isSelected ? kWhite : Color(0xFFAEB9E1),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       case 'inactive':
