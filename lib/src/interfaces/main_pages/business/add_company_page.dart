@@ -36,7 +36,7 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
   String? overview;
   String? category;
   String? image;
-  int? establishedDate;
+  String? establishedDate;
   String? companySize;
   List<String> services = [];
 
@@ -547,7 +547,7 @@ if (picked != null) {
 }
 
                     if (picked != null) {
-                      setState(() => establishedDate = picked);
+                      setState(() => establishedDate = picked as String?);
                     }
                   },
                   child: Container(
