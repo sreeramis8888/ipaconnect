@@ -9,6 +9,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/products_notifier.dart';
 import 'package:ipaconnect/src/data/services/webview_service.dart';
 import 'package:ipaconnect/src/data/utils/image_viewer.dart';
+import 'package:ipaconnect/src/data/utils/launch_url.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:ipaconnect/src/interfaces/components/cards/ProductCard.dart';
 import 'package:ipaconnect/src/interfaces/components/custom_widgets/custom_video.dart';
@@ -73,18 +74,19 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
   }
 
   Future<void> _fetchInitialProducts() async {
-    final isCurrentUser = globals.id == widget.company.user?.id ;
-    await ref.read(productsNotifierProvider.notifier).fetchMoreProducts(
-          widget.company.id,isUserProducts: isCurrentUser
-        );
+    final isCurrentUser = globals.id == widget.company.user?.id;
+    await ref
+        .read(productsNotifierProvider.notifier)
+        .fetchMoreProducts(widget.company.id, isUserProducts: isCurrentUser);
   }
 
-  void _onScroll() {final isCurrentUser = globals.id == widget.company.user?.id ;
+  void _onScroll() {
+    final isCurrentUser = globals.id == widget.company.user?.id;
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       ref
           .read(productsNotifierProvider.notifier)
-          .fetchMoreProducts(widget.company.id,isUserProducts: isCurrentUser);
+          .fetchMoreProducts(widget.company.id, isUserProducts: isCurrentUser);
     }
   }
 
@@ -363,23 +365,20 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
               StaggerItem(
                 order: 7,
                 from: SlideFrom.bottom,
-                child: Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: kCardBackgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                child: GestureDetector(
+                  onTap: () {
+                    openGoogleMaps(company.contactInfo?.address ?? '-');
+                  },
                   child: Center(
                     child: Text(
                       company.contactInfo?.address ?? '-',
-                      style: kBodyTitleR,
-                      textAlign: TextAlign.center,
+                      style: kBodyTitleR.copyWith(color: kBlue),
+                      textAlign: TextAlign.start,
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              // Website
               StaggerItem(
                 order: 8,
                 from: SlideFrom.left,
@@ -390,17 +389,16 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
                 order: 9,
                 from: SlideFrom.bottom,
                 child: GestureDetector(
-                  onTap:  () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => WebViewScreen(
-                              url: company.contactInfo?.website ?? 'Link',
-                              
-                            ),
-                          ),
-                        );
-                      },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WebViewScreen(
+                          url: company.contactInfo?.website ?? 'Link',
+                        ),
+                      ),
+                    );
+                  },
                   child: Text(company.contactInfo?.website ?? 'Link',
                       style: TextStyle(color: kSecondaryTextColor)),
                 ),
@@ -596,14 +594,13 @@ class _CompanyDetailsPageState extends ConsumerState<CompanyDetailsPage>
   Widget _buildVideoGallery() {
     final videos = widget.company.gallery?.videos;
     if (videos != null) {
-  for (var i = 0; i < videos.length; i++) {
-    final v = videos[i];
-    // this uses the generated toJson() — make sure build_runner was run
-    log('Parsed MediaItem[$i]: ${v.toJson()}', name: 'CompanyUI');
-  }
-}
+      for (var i = 0; i < videos.length; i++) {
+        final v = videos[i];
+        // this uses the generated toJson() — make sure build_runner was run
+        log('Parsed MediaItem[$i]: ${v.toJson()}', name: 'CompanyUI');
+      }
+    }
     if (videos == null || videos.isEmpty) {
-      
       return Text('No videos available', style: kBodyTitleR);
     }
     // Placeholder: just show video URLs as text

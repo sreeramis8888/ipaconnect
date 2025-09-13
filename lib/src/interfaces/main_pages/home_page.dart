@@ -123,7 +123,7 @@ class _HomePageState extends ConsumerState<HomePage>
         maxHeight = itemHeight + MediaQuery.sizeOf(context).width * 0.05;
       }
     }
-    return maxHeight;
+    return maxHeight + 50;
   }
 
   double _estimateTextHeight(String text, double fontSize) {
@@ -332,18 +332,19 @@ class _HomePageState extends ConsumerState<HomePage>
                                       padding: const EdgeInsets.only(
                                           left: 16, top: 10, right: 16),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                              'Welcome, ${widget.user.name} ',
+                                          Text('Welcome, ${widget.user.name} ',
                                               style: kLargeTitleB.copyWith(
                                                   color: kTextColor)),
-
                                           GestureDetector(
                                             onTap: () {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
-                                                  builder: (context) => DigitalCardPage(user: widget.user),
+                                                  builder: (context) =>
+                                                      DigitalCardPage(
+                                                          user: widget.user),
                                                 ),
                                               );
                                             },
@@ -352,7 +353,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                               height: 38,
                                               alignment: Alignment.center,
                                               decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(8.0),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
                                                 gradient: const RadialGradient(
                                                   center: Alignment.topLeft,
                                                   radius: 1.2,
@@ -432,13 +434,12 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ],
                                       ),
                                     ),
-                                    if (banners.length > 1)
-                                            _buildDotIndicator(
-                                                _currentBannerIndex,
-                                                banners.length,
-                                                // videos.length,
-                                                kWhite),
-
+                                  if (banners.length > 1)
+                                    _buildDotIndicator(
+                                        _currentBannerIndex,
+                                        banners.length,
+                                        // videos.length,
+                                        kWhite),
 
                                   _animateFromBottom(
                                     order: 2,
@@ -559,7 +560,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ),
                                       ),
                                     ),
-                                  
+
                                   if (posters.isNotEmpty)
                                     _animatedSection(
                                       order: 7,
@@ -605,14 +606,14 @@ class _HomePageState extends ConsumerState<HomePage>
                                       ),
                                     ),
 
-                                    if (posters.length > 1)
-                                            _buildDotIndicator(
-                                                _currentPosterIndex,
-                                                posters.length,
-                                                // videos.length,
-                                                kWhite),
+                                  if (posters.length > 1)
+                                    _buildDotIndicator(
+                                        _currentPosterIndex,
+                                        posters.length,
+                                        // videos.length,
+                                        kWhite),
 
-                                    if (news.isNotEmpty)
+                                  if (news.isNotEmpty)
                                     _animatedSection(
                                       order: 8,
                                       child: Column(
@@ -663,17 +664,18 @@ class _HomePageState extends ConsumerState<HomePage>
                                                       onTap: () {
                                                         ref
                                                             .read(
-                                                                currentNewsIndexProvider.notifier).state = index;
+                                                                currentNewsIndexProvider
+                                                                    .notifier)
+                                                            .state = index;
 
-                                                        
-                                                         Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) => NewsDetailView(news: news),
-                                                            ),
-                                                          );
-
-
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                NewsDetailView(
+                                                                    news: news),
+                                                          ),
+                                                        );
                                                       },
                                                       imageUrl:
                                                           individualNewsModel
@@ -688,8 +690,6 @@ class _HomePageState extends ConsumerState<HomePage>
                                               },
                                             ),
                                           ),
-
-                                          
                                         ],
                                       ),
                                     ),
@@ -737,16 +737,10 @@ class _HomePageState extends ConsumerState<HomePage>
                                       ),
                                     ),
 
-                                    if (notices.length > 1)
-                                            _buildDotIndicator(
-                                                _currentNoticeIndex,
-                                                notices.length,
-                                                kWhite
-                                                ),
+                                  if (notices.length > 1)
+                                    _buildDotIndicator(_currentNoticeIndex,
+                                        notices.length, kWhite),
 
-                                    
-                                  
-                                  
                                   if (campaign != null)
                                     _animatedSection(
                                       order: 9,
@@ -817,9 +811,11 @@ class _HomePageState extends ConsumerState<HomePage>
                                       child: Column(
                                         children: [
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 16),
                                             child: CarouselSlider(
-                                              items: filteredVideos.map((video) {
+                                              items:
+                                                  filteredVideos.map((video) {
                                                 return customVideo(
                                                     context: context,
                                                     videoUrl: video.link ?? '');
@@ -978,23 +974,21 @@ class _HomePageState extends ConsumerState<HomePage>
       child: SmoothPageIndicator(
         controller: PageController(initialPage: currentIndex),
         count: itemCount,
-        effect:
-          ExpandingDotsEffect(
-          expansionFactor: 3,   
+        effect: ExpandingDotsEffect(
+          expansionFactor: 3,
           spacing: 8,
           radius: 8,
           dotWidth: 8,
           dotHeight: 8,
           dotColor: Colors.grey,
           activeDotColor: color,
-          ), 
+        ),
         // WormEffect(
         //   dotHeight: 10,
         //   dotWidth: 10,
         //   activeDotColor: color,
         //   dotColor: Colors.grey,
         // ),
-
       ),
     );
   }
@@ -1007,32 +1001,31 @@ Widget _buildBanners({
   return SizedBox(
     width: MediaQuery.of(context).size.width * 0.90,
     child: AspectRatio(
-        aspectRatio: 16/ 19,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0),
-          child: Image.network(
-            banner.media ?? '',
-            fit: BoxFit.cover, 
-            errorBuilder: (context, error, stackTrace) {
-              return Shimmer.fromColors(
-                baseColor: kCardBackgroundColor,
-                highlightColor: kStrokeColor,
-                child: Container(color: const Color.fromARGB(255, 24, 34, 13)),
-              );
-            },
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Shimmer.fromColors(
-                baseColor: kCardBackgroundColor,
-                highlightColor: kStrokeColor,
-                child: Container(color: kBackgroundColor),
-              );
-            },
-          ),
+      aspectRatio: 16 / 19,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: Image.network(
+          banner.media ?? '',
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Shimmer.fromColors(
+              baseColor: kCardBackgroundColor,
+              highlightColor: kStrokeColor,
+              child: Container(color: const Color.fromARGB(255, 24, 34, 13)),
+            );
+          },
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Shimmer.fromColors(
+              baseColor: kCardBackgroundColor,
+              highlightColor: kStrokeColor,
+              child: Container(color: kBackgroundColor),
+            );
+          },
         ),
       ),
+    ),
   );
-  
 }
 
 Widget customPoster({

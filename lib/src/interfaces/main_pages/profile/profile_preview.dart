@@ -294,7 +294,7 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 350,
+      height: 400,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -460,78 +460,107 @@ class _ProfileHeader extends StatelessWidget {
                     ),
                   ],
                 ),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final textPainter = TextPainter(
-                      text:
-                          TextSpan(text: user.email ?? '', style: kSmallTitleL),
-                      maxLines: 1,
-                      textDirection: TextDirection.ltr,
-                    )..layout(
-                        maxWidth: constraints.maxWidth -
-                            100); // subtract icons/padding width
 
-                    final fitsInOneLine =
-                        textPainter.didExceedMaxLines == false;
-                    SizedBox(
-                      height: 15,
-                    );
-
-                    if (fitsInOneLine) {
-                      // Single row
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.phone, color: kWhite, size: 18),
-                            const SizedBox(width: 6),
-                            Text(user.phone ?? '', style: kSmallTitleL),
-                            const SizedBox(width: 18),
-                            Icon(Icons.email, color: kWhite, size: 18),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child:
-                                  Text(user.email ?? '', style: kSmallTitleL),
-                            ),
-                          ],
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.phone, color: kWhite, size: 18),
+                        const SizedBox(width: 6),
+                        Text(user.phone ?? '', style: kSmallTitleL),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.email, color: kWhite, size: 18),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Text(
+                            user.email ?? '',
+                            style: kSmallTitleL,
+                            softWrap: true,
+                          ),
                         ),
-                      );
-                    } else {
-                      // Column fallback
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.phone, color: kWhite, size: 18),
-                              const SizedBox(width: 6),
-                              Text(user.phone ?? '', style: kSmallTitleL),
-                            ],
-                          ),
-                          const SizedBox(height: 25),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.email, color: kWhite, size: 18),
-                              const SizedBox(width: 6),
-                              Flexible(
-                                child: Text(
-                                  user.email ?? '',
-                                  style: kSmallTitleL,
-                                  softWrap: true,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    }
-                  },
+                      ],
+                    ),
+                  ],
                 ),
+                // LayoutBuilder(
+                //   builder: (context, constraints) {
+                //     final textPainter = TextPainter(
+                //       text:
+                //           TextSpan(text: user.email ?? '', style: kSmallTitleL),
+                //       maxLines: 1,
+                //       textDirection: TextDirection.ltr,
+                //     )..layout(
+                //         maxWidth: constraints.maxWidth -
+                //             100); // subtract icons/padding width
+
+                //     final fitsInOneLine =
+                //         textPainter.didExceedMaxLines == false;
+                //     SizedBox(
+                //       height: 15,
+                //     );
+
+                //     if (fitsInOneLine) {
+                //       // Single row
+                //       return Padding(
+                //         padding: const EdgeInsets.symmetric(horizontal: 20),
+                //         child: Row(
+                //           mainAxisAlignment: MainAxisAlignment.center,
+                //           children: [
+                //             Icon(Icons.phone, color: kWhite, size: 18),
+                //             const SizedBox(width: 6),
+                //             Text(user.phone ?? '', style: kSmallTitleL),
+                //             const SizedBox(width: 18),
+                //             Icon(Icons.email, color: kWhite, size: 18),
+                //             const SizedBox(width: 6),
+                //             Expanded(
+                //               child:
+                //                   Text(user.email ?? '', style: kSmallTitleL),
+                //             ),
+                //           ],
+                //         ),
+                //       );
+                //     } else {
+                //       // Column fallback
+                //       return Column(
+                //         crossAxisAlignment: CrossAxisAlignment.center,
+                //         children: [
+                //           Row(
+                //             mainAxisSize: MainAxisSize.min,
+                //             children: [
+                //               Icon(Icons.phone, color: kWhite, size: 18),
+                //               const SizedBox(width: 6),
+                //               Text(user.phone ?? '', style: kSmallTitleL),
+                //             ],
+                //           ),
+                //           const SizedBox(height: 25),
+                //           Row(
+                //             mainAxisSize: MainAxisSize.min,
+                //             children: [
+                //               Icon(Icons.email, color: kWhite, size: 18),
+                //               const SizedBox(width: 6),
+                //               Flexible(
+                //                 child: Text(
+                //                   user.email ?? '',
+                //                   style: kSmallTitleL,
+                //                   softWrap: true,
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ],
+                //       );
+                //     }
+                //   },
+                // ),
                 SizedBox(
-                  height: 5,
+                  height: 20,
                 ),
                 if (user.location != null && user.location!.isNotEmpty)
                   Row(
