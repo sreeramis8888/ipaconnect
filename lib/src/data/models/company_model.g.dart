@@ -13,7 +13,7 @@ CompanyModel _$CompanyModelFromJson(Map<String, dynamic> json) => CompanyModel(
       category: json['category'] as String?,
       image: json['image'] as String?,
       status: json['status'] as String?,
-      establishedDate: (json['established_date'] as String?),
+      establishedDate: (json['established_date'] as num?)?.toInt(),
       companySize: json['company_size'] as String?,
       services: (json['services'] as List<dynamic>?)
           ?.map((e) => e as String)

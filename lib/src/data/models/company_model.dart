@@ -14,7 +14,7 @@ class CompanyModel {
   final String? status;
 
   @JsonKey(name: 'established_date')
-  final String? establishedDate;
+  final int? establishedDate;
 
   @JsonKey(name: 'company_size')
   final String? companySize;
@@ -67,7 +67,7 @@ class CompanyModel {
     String? category,
     String? image,
     String? status,
-    String? establishedDate,
+    int? establishedDate,
     String? companySize,
     List<String>? services,
     List<String>? tags,
