@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -107,74 +108,90 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
                             Text('Please enter your mobile number',
                                 style: kBodyTitleL.copyWith(color: kWhite)),
                             const SizedBox(height: 20),
-                            IntlPhoneField(
-                              validator: (phone) {
-                                if (phone!.number.length > 9) {
-                                  if (phone.number.length > 10) {
-                                    return 'Phone number cannot exceed 10 digits';
-                                  }
-                                }
-                                return null;
-                              },
-                              style: const TextStyle(
-                                color: kWhite,
-                                letterSpacing: 8,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w400,
+                            Theme(
+                              data: Theme.of(context).copyWith(
+                                textTheme: Theme.of(context).textTheme.apply(
+                                      bodyColor:
+                                          Colors.white, // search text color
+                                      displayColor: Colors.white,
+                                    ),
+                                inputDecorationTheme:
+                                    const InputDecorationTheme(
+                                  hintStyle: TextStyle(
+                                      color:
+                                          Colors.white70), // search hint color
+                                ),
                               ),
-                              controller: _mobileController,
-                              disableLengthCheck: true,
-                              showCountryFlag: true,
-                              cursorColor: kWhite,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: kInputFieldcolor,
-                                hintText: 'Enter your phone number',
-                                hintStyle: TextStyle(
+                              child: IntlPhoneField(
+                                validator: (phone) {
+                                  if (phone!.number.length > 9) {
+                                    if (phone.number.length > 10) {
+                                      return 'Phone number cannot exceed 10 digits';
+                                    }
+                                  }
+                                  return null;
+                                },
+                                style: const TextStyle(
+                                  color: kWhite,
+                                  letterSpacing: 8,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                controller: _mobileController,
+                                disableLengthCheck: true,
+                                showCountryFlag: true,
+                                cursorColor: kWhite,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: kInputFieldcolor,
+                                  hintText: 'Enter your phone number',
+                                  hintStyle: TextStyle(
                                     fontSize: 14,
                                     letterSpacing: .2,
                                     fontWeight: FontWeight.w200,
-                                    color: kSecondaryTextColor),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  borderSide:
-                                      BorderSide(color: kInputFieldcolor),
+                                    color: kSecondaryTextColor,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderSide:
+                                        BorderSide(color: kInputFieldcolor),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderSide:
+                                        BorderSide(color: kInputFieldcolor),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    borderSide: const BorderSide(
+                                        color: kInputFieldcolor),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 16.0,
+                                    horizontal: 10.0,
+                                  ),
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  borderSide:
-                                      BorderSide(color: kInputFieldcolor),
+                                onCountryChanged: (value) {
+                                  ref.read(countryCodeProvider.notifier).state =
+                                      value.dialCode;
+                                },
+                                initialCountryCode: 'AE',
+                                onChanged: (phone) {
+                                  print(phone.completeNumber);
+                                },
+                                flagsButtonPadding: const EdgeInsets.only(
+                                    left: 10, right: 10.0),
+                                showDropdownIcon: true,
+                                dropdownIcon: const Icon(
+                                  Icons.arrow_drop_down_outlined,
+                                  color: kWhite,
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  borderSide:
-                                      const BorderSide(color: kInputFieldcolor),
+                                dropdownIconPosition: IconPosition.trailing,
+                                dropdownTextStyle: const TextStyle(
+                                  color: kWhite,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 16.0,
-                                  horizontal: 10.0,
-                                ),
-                              ),
-                              onCountryChanged: (value) {
-                                ref.read(countryCodeProvider.notifier).state =
-                                    value.dialCode;
-                              },
-                              initialCountryCode: 'AE',
-                              onChanged: (PhoneNumber phone) {
-                                print(phone.completeNumber);
-                              },
-                              flagsButtonPadding:
-                                  const EdgeInsets.only(left: 10, right: 10.0),
-                              showDropdownIcon: true,
-                              dropdownIcon: Icon(
-                                Icons.arrow_drop_down_outlined,
-                                color: kWhite,
-                              ),
-                              dropdownIconPosition: IconPosition.trailing,
-                              dropdownTextStyle: const TextStyle(
-                                color: kWhite,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -220,21 +237,21 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
         if (phone.length != 9) {
           snackbarService.showSnackBar('Please Enter valid mobile number');
         } else {
-                final authApiService = ref.watch(authApiServiceProvider);
-      final data = await authApiService.submitPhoneNumber(
-          countryCode == '971' ? '9710' : countryCode ?? '91',
-          context,
-          phone);
-      final verificationId = data['verificationId'];
-      final resendToken = data['resendToken'];
-      // Clear both global variables and SecureStorage
-      id = '';
-      token = '';
-      LoggedIn = false;
-      await SecureStorage.delete('token');
-      await SecureStorage.delete('id');
-      await SecureStorage.delete('LoggedIn');
-      if (verificationId != null && verificationId.isNotEmpty) {
+          final authApiService = ref.watch(authApiServiceProvider);
+          final data = await authApiService.submitPhoneNumber(
+              countryCode == '971' ? '9710' : countryCode ?? '91',
+              context,
+              phone);
+          final verificationId = data['verificationId'];
+          final resendToken = data['resendToken'];
+          // Clear both global variables and SecureStorage
+          id = '';
+          token = '';
+          LoggedIn = false;
+          await SecureStorage.delete('token');
+          await SecureStorage.delete('id');
+          await SecureStorage.delete('LoggedIn');
+          if (verificationId != null && verificationId.isNotEmpty) {
             log('Otp Sent successfully');
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
@@ -537,7 +554,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       String savedId = responseMap['user_id'] ?? '';
       String savedStatus = responseMap['status'] ?? '';
       String currency = responseMap['currency'] ?? '';
-      
+
       if (savedToken.isNotEmpty && savedId.isNotEmpty) {
         // Update both global variables and SecureStorage
         token = savedToken;
@@ -548,13 +565,13 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         await SecureStorage.write('LoggedIn', 'true');
         log('savedToken: $savedToken');
         log('savedId: $savedId');
-        
+
         // Clear any cached user data to ensure fresh data is fetched
         WidgetsBinding.instance.addPostFrameCallback((_) {
           // This will trigger a fresh user fetch when MainPage loads
           ref.read(userProvider.notifier).refreshUser();
         });
-        
+
         // Navigate based on user status
         if ((savedStatus).toLowerCase() == 'inactive') {
           NavigationService().pushNamedReplacement('RegistrationPage',
