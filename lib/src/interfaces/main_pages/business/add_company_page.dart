@@ -166,32 +166,34 @@ class _AddCompanyPageState extends ConsumerState<AddCompanyPage> {
       });
     }
   }
-Future<int?> showYearPickerDialog(BuildContext context, {int? selectedYear}) async {
-  final currentYear = DateTime.now().year;
 
-  return showDialog<int>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Select Year'),
-        content: SizedBox(
-          // Height for the scrollable year list
-          height: 300,
-          width: 300,
-          child: YearPicker(
-            firstDate: DateTime(1900),
-            lastDate: DateTime(currentYear),
-            initialDate: DateTime(selectedYear ?? currentYear),
-            selectedDate: DateTime(selectedYear ?? currentYear),
-            onChanged: (DateTime dateTime) {
-              Navigator.pop(context, dateTime.year);
-            },
+  Future<int?> showYearPickerDialog(BuildContext context,
+      {int? selectedYear}) async {
+    final currentYear = DateTime.now().year;
+
+    return showDialog<int>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Year'),
+          content: SizedBox(
+            // Height for the scrollable year list
+            height: 300,
+            width: 300,
+            child: YearPicker(
+              firstDate: DateTime(1900),
+              lastDate: DateTime(currentYear),
+              initialDate: DateTime(selectedYear ?? currentYear),
+              selectedDate: DateTime(selectedYear ?? currentYear),
+              onChanged: (DateTime dateTime) {
+                Navigator.pop(context, dateTime.year);
+              },
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   Future<void> pickGalleryPhoto() async {
     final picker = ImagePicker();
@@ -541,10 +543,11 @@ Future<int?> showYearPickerDialog(BuildContext context, {int? selectedYear}) asy
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: () async {
-                  final picked = await showYearPickerDialog(context, selectedYear: 2005);
-if (picked != null) {
-  print("Selected Year: $picked");
-}
+                    final picked =
+                        await showYearPickerDialog(context, selectedYear: 2005);
+                    if (picked != null) {
+                      print("Selected Year: $picked");
+                    }
 
                     if (picked != null) {
                       setState(() => establishedDate = picked as int?);
@@ -951,11 +954,10 @@ if (picked != null) {
                               final companyData = {
                                 'name': name,
                                 'overview': overview,
-                                'category': categoryId, 
+                                'category': categoryId,
                                 'image': image,
                                 'status': status,
-                                'established_date':
-                                    establishedDate,
+                                'established_date': establishedDate,
                                 'company_size': companySize,
                                 'services': services,
                                 'tags': tags,
