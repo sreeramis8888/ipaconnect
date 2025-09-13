@@ -303,7 +303,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text('Update Required'),
+        title: Text('Update Required',style: TextStyle(color: kWhite),),
         content: Text(response.updateMessage,
         style: TextStyle(
           color: Colors.white,
