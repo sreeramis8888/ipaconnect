@@ -159,7 +159,7 @@ class _PhoneNumberScreenState extends ConsumerState<PhoneNumberScreen> {
                                 ref.read(countryCodeProvider.notifier).state =
                                     value.dialCode;
                               },
-                              initialCountryCode: 'IN',
+                              initialCountryCode: 'AE',
                               onChanged: (PhoneNumber phone) {
                                 print(phone.completeNumber);
                               },
