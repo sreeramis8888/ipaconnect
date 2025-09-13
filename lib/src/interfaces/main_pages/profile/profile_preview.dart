@@ -294,7 +294,7 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 420,
+      height: 400,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -541,36 +541,38 @@ class _ProfileHeader extends StatelessWidget {
                               color: kSecondaryTextColor)),
                     ],
                   ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                          Color(0xFF1E62B3).withOpacity(.5),
-                          kStrokeColor.withOpacity(.5)
-                        ]),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                              height: 20,
-                              width: 20,
-                              child:
-                                  Image.network(user.hierarchy?.image ?? '')),
-                          const SizedBox(width: 6),
-                          Text(user.memberId ?? '',
-                              style: kSmallTitleB.copyWith(color: kWhite)),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
+                //hided user id
+
+                // const SizedBox(height: 15),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Container(
+                //       padding: const EdgeInsets.symmetric(
+                //           horizontal: 12, vertical: 4),
+                //       decoration: BoxDecoration(
+                //         gradient: LinearGradient(colors: [
+                //           Color(0xFF1E62B3).withOpacity(.5),
+                //           kStrokeColor.withOpacity(.5)
+                //         ]),
+                //         borderRadius: BorderRadius.circular(10),
+                //       ),
+                //       child: Row(
+                //         children: [
+                //           SizedBox(
+                //               height: 20,
+                //               width: 20,
+                //               child:
+                //                   Image.network(user.hierarchy?.image ?? '')),
+                //           const SizedBox(width: 6),
+                //           Text(user.memberId ?? '',
+                //               style: kSmallTitleB.copyWith(color: kWhite)),
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(height: 12),
               ],
             ),
           ),
