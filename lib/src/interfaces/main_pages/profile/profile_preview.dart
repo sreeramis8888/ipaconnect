@@ -294,7 +294,7 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 400,
+      height: 350,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -473,6 +473,9 @@ class _ProfileHeader extends StatelessWidget {
 
                     final fitsInOneLine =
                         textPainter.didExceedMaxLines == false;
+                    SizedBox(
+                      height: 15,
+                    );
 
                     if (fitsInOneLine) {
                       // Single row
@@ -488,7 +491,8 @@ class _ProfileHeader extends StatelessWidget {
                             Icon(Icons.email, color: kWhite, size: 18),
                             const SizedBox(width: 6),
                             Expanded(
-                              child: Text(user.email ?? '', style: kSmallTitleL),
+                              child:
+                                  Text(user.email ?? '', style: kSmallTitleL),
                             ),
                           ],
                         ),
@@ -506,7 +510,7 @@ class _ProfileHeader extends StatelessWidget {
                               Text(user.phone ?? '', style: kSmallTitleL),
                             ],
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 25),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
