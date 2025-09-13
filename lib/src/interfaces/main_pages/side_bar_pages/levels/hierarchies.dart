@@ -115,7 +115,7 @@ class HierarchiesPage extends ConsumerWidget {
                               size: 16, color: kSecondaryTextColor)
                           : null,
                       onTap: () {
-                        if (user.hierarchy?.id == hierarchy.id) {
+                        // if (user.hierarchy?.id == hierarchy.id) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -126,7 +126,7 @@ class HierarchiesPage extends ConsumerWidget {
                             ),
                           );
                         }
-                      },
+                      // },
                     ),
                   ),
                 ),
