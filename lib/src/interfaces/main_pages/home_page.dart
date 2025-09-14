@@ -465,18 +465,17 @@ class _HomePageState extends ConsumerState<HomePage>
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          CustomIconContainer(
+                                                           CustomIconContainer(
                                               onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'CampaignsMainScreen');
+                                                ref
+                                                    .read(selectedIndexProvider
+                                                        .notifier)
+                                                    .updateIndex(1);
                                               },
-                                              label: 'CSR',
+                                              label: 'Business',
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/csr_icon1.svg')),
+                                                  'assets/svg/icons/bussiness_icon.svg')), 
                                           CustomIconContainer(
                                               onTap: () {
                                                 Navigator.pushNamed(
@@ -500,17 +499,19 @@ class _HomePageState extends ConsumerState<HomePage>
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
                                                   'assets/svg/icons/store_icon1.svg')),
-                                          CustomIconContainer(
+                       
+                                                   CustomIconContainer(
                                               onTap: () {
-                                                ref
-                                                    .read(selectedIndexProvider
-                                                        .notifier)
-                                                    .updateIndex(1);
+                                                Navigator.pushNamed(
+                                                    arguments:
+                                                        widget.user.countryCode,
+                                                    context,
+                                                    'CampaignsMainScreen');
                                               },
-                                              label: 'Bussiness',
+                                              label: 'CSR',
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/bussiness_icon.svg')),
+                                                  'assets/svg/icons/csr_icon1.svg')),
                                         ],
                                       ),
                                     ),
