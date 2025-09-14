@@ -148,15 +148,12 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                   arguments: user),
             ),
             _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_events.svg',
-                height: 24,
-              ),
-              label: 'Events',
-              onTap: () => Navigator.pushNamed(
-                  context,
-                  'EventsPage')
-            ),
+                icon: SvgPicture.asset(
+                  'assets/svg/icons/menu_icons/my_events.svg',
+                  height: 24,
+                ),
+                label: 'Events',
+                onTap: () => Navigator.pushNamed(context, 'EventsPage')),
             _menuItem(
               icon: SvgPicture.asset(
                 'assets/svg/icons/menu_icons/about_us.svg',
@@ -295,9 +292,12 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                                 style: TextStyle(fontSize: 12, color: kWhite),
                               ),
                             ),
-                            Image.asset(
-                              scale: 15,
-                              'assets/pngs/skybertechlogo.png',
+                            SizedBox(
+                              height: 70,
+                              width: 70,
+                              child: Image.asset(
+                                'assets/pngs/skybertechlogo.png',
+                              ),
                             ),
                           ],
                         ),
@@ -337,10 +337,13 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Image.asset(
-                                scale: 1.6,
-                                fit: BoxFit.contain,
-                                'assets/pngs/xyvin.png',
+                              SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Image.asset(
+                                  fit: BoxFit.contain,
+                                  'assets/pngs/xyvin.png',
+                                ),
                               ),
                             ],
                           ),
