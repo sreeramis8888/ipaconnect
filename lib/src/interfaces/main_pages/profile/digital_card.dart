@@ -15,7 +15,6 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:ipaconnect/src/interfaces/components/animations/staggered_entrance.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 class DigitalCardPage extends StatelessWidget {
   final UserModel user;
   const DigitalCardPage({Key? key, required this.user}) : super(key: key);
@@ -401,31 +400,46 @@ class DigitalCardPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                // Added Custom Button
-                                const SizedBox(height: 20),
-                                StaggerItem(
-                                  order: 11,
-                                  from: SlideFrom.bottom,
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: customButton(
-                                      icon: const Icon(Icons.phone, color: kWhite),
-                                      label: 'SAVE CONTACT',
-                                      onPressed: () async {
-                                        if ((user.phone ?? '').isNotEmpty && (user.name ?? '').isNotEmpty) {
-                                          await saveContact(
-                                            firstName: user.name ?? '',
-                                            number: user.phone ?? '',
-                                            email: user.email ?? '',
-                                            context: context,
-                                          );
-                                        } else {
-                                          SnackbarService().showSnackBar("Contact info missing!");
-                                        }
-                                      },
-                                    ),
+                              // Added Custom Button
+                              const SizedBox(height: 20),
+                              StaggerItem(
+                                order: 11,
+                                from: SlideFrom.bottom,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: customButton(
+                                    icon:
+                                        const Icon(Icons.phone, color: kWhite),
+                                    label: 'SAVE CONTACT',
+                                    onPressed: () async {
+                                      
+                                      if ((user.phone ?? '').isNotEmpty &&
+                                          (user.name ?? '').isNotEmpty) {
+                                            print('pressed');
+                                        // await saveContact(
+                                        //   firstName: user.name ?? '',
+                                        //   number: user.phone ?? '',
+                                        //   email: user.email ?? '',
+                                        //   context: context,
+
+                                        await saveContactWithSocial(
+                                          firstName: user.name ?? '',
+                                          number: user.phone ?? '',
+                                          email: user.email ?? '',
+                                          socialMediaList:
+                                              (user.socialMedia?.isNotEmpty ??
+                                                      false)
+                                                  ? user.socialMedia
+                                                  : null,
+                                        );
+                                      } else {
+                                        SnackbarService().showSnackBar(
+                                            "Contact info missing!");
+                                      }
+                                    },
                                   ),
-                                ), 
+                                ),
+                              ),
                             ],
                           ),
                         ),
