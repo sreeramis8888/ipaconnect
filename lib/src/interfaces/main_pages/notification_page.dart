@@ -7,8 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class NotificationPage extends StatelessWidget {
   final List<NotificationModel> notifications;
-  const NotificationPage({Key? key, required this.notifications})
-      : super(key: key);
+  const NotificationPage({super.key, required this.notifications});
 
   @override
   Widget build(BuildContext context) {

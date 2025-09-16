@@ -26,12 +26,14 @@
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter/material.dart';
 import 'package:ipaconnect/src/data/models/user_model.dart';
+import 'package:ipaconnect/src/data/services/snackbar_service.dart';
 Future<void> saveContactWithSocial({
   required String number,
   required String firstName,
   String? email,
   List<UserSocialMedia>? socialMediaList,
 }) async {
+  SnackbarService snackbarService = SnackbarService();
   if (!await FlutterContacts.requestPermission()) {
     debugPrint("Permission denied to access contacts");
     return;
@@ -78,6 +80,7 @@ Future<void> saveContactWithSocial({
   try {
     await contact.insert();
     debugPrint("Contact saved: ${contact.name.first}");
+    snackbarService.showSnackBar('Contact saved successfully!');
   } catch (e) {
     debugPrint("Error saving contact: $e");
   }
