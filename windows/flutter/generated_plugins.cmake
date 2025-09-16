@@ -7,12 +7,14 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   connectivity_plus
   emoji_picker_flutter
+  file_saver
   file_selector_windows
   firebase_auth
   firebase_core
   flutter_inappwebview_windows
   flutter_secure_storage_windows
   permission_handler_windows
+  printing
   record_windows
   share_plus
   url_launcher_windows

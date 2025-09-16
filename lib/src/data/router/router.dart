@@ -21,6 +21,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/event/events_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/main_page.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/profile/editUser.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/enquiries.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_certificate.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_events.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/my_reviews.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/privacy.dart';
@@ -155,6 +156,10 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = MyOrdersPage();
     case 'MyEvents':
       page = MyEventsPage();
+    case 'MyCertificate':
+    UserModel user = settings?.arguments as UserModel;
+
+      page = MyCertificatePage(user: user,);
     case 'TermsAndConditionsPage':
       page = TermsAndConditionsPage();
     case 'PrivacyPolicyPage':
