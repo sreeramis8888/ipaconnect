@@ -5,10 +5,15 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_round_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class NotificationPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
   final List<NotificationModel> notifications;
   const NotificationPage({super.key, required this.notifications});
 
+  @override
+  State<NotificationPage> createState() => _NotificationPageState();
+}
+
+class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,71 +40,78 @@ class NotificationPage extends StatelessWidget {
         iconTheme: IconThemeData(color: kSecondaryTextColor),
       ),
       backgroundColor: kBackgroundColor,
-      body: notifications.isEmpty
+      body: widget.notifications.isEmpty
           ? Center(child: Text('No notifications', style: kBodyTitleR))
           : ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemCount: notifications.length,
+              itemCount: widget.notifications.length,
               separatorBuilder: (_, __) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    color: kCardBackgroundColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: kStrokeColor, width: 1),
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (notification.subject != null)
-                        Text(notification.subject!, style: kSmallTitleL),
-                      if (notification.content != null) ...[
-                        const SizedBox(height: 8),
-                        Text(notification.content!,
-                            style: kSmallerTitleR.copyWith(
-                                color: kSecondaryTextColor)),
-                      ],
-                      if (notification.image != null &&
-                          notification.image!.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            notification.image!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              height: 120,
-                              color: kGrey,
-                              child: const Center(
-                                  child: Icon(Icons.broken_image,
-                                      color: kGreyDark)),
+                final notification = widget.notifications[index];
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      widget.notifications.removeAt(index);
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: kCardBackgroundColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: kStrokeColor, width: 1),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (notification.subject != null)
+                          Text(notification.subject!, style: kSmallTitleL),
+                        if (notification.content != null) ...[
+                          const SizedBox(height: 8),
+                          Text(notification.content!,
+                              style: kSmallerTitleR.copyWith(
+                                  color: kSecondaryTextColor)),
+                        ],
+                        if (notification.image != null &&
+                            notification.image!.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              notification.image!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                height: 120,
+                                color: kGrey,
+                                child: const Center(
+                                    child: Icon(Icons.broken_image,
+                                        color: kGreyDark)),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                      if (notification.link != null &&
-                          notification.link!.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        GestureDetector(
-                          onTap: () async {
-                            final url = Uri.parse(notification.link!);
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url,
-                                  mode: LaunchMode.externalApplication);
-                            }
-                          },
-                          child: Text(
-                            notification.link!,
-                            style: kSmallTitleB.copyWith(
-                                color: kPrimaryColor,
-                                decoration: TextDecoration.underline),
+                        ],
+                        if (notification.link != null &&
+                            notification.link!.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          GestureDetector(
+                            onTap: () async {
+                              final url = Uri.parse(notification.link!);
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url,
+                                    mode: LaunchMode.externalApplication);
+                              }
+                            },
+                            child: Text(
+                              notification.link!,
+                              style: kSmallTitleB.copyWith(
+                                  color: kPrimaryColor,
+                                  decoration: TextDecoration.underline),
+                            ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 );
               },
@@ -107,17 +119,3 @@ class NotificationPage extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

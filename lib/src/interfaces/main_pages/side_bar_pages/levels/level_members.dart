@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -159,12 +161,15 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
                                       style: kSmallTitleL,
                                     ),
                                     subtitle: Text(
-                                      member.email ?? '',
-                                      style:
+                                      member.companies != null && member.companies!.isNotEmpty
+                                        ? member.companies!.first.name ?? "No company"
+                                        : "No companyy",
+                                          style:
                                           TextStyle(color: kSecondaryTextColor),
                                     ),
                                     trailing: Icon(Icons.arrow_forward_ios),
                                     onTap: () {
+                                      
                                       navigationService.pushNamed(
                                           'ProfilePreview',
                                           arguments: member);

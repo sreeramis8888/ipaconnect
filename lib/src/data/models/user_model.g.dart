@@ -68,6 +68,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
           ?.map((e) => Award.fromJson(e as Map<String, dynamic>))
           .toList(),
       qrCode: json['qr_code'] as String?,
+      companies: (json['companies'] as List<dynamic>?)
+          ?.map((e) => CompanyModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -113,6 +116,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       if (instance.documents case final value?) 'documents': value,
       if (instance.awards case final value?) 'awards': value,
       if (instance.qrCode case final value?) 'qr_code': value,
+      if (instance.companies case final value?) 'companies': value,
     };
 
 UserSocialMedia _$UserSocialMediaFromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:ipaconnect/src/data/models/heirarchy_model.dart';
+import 'package:ipaconnect/src/data/models/company_model.dart'; 
+
 
 part 'user_model.g.dart';
 @JsonSerializable(includeIfNull: false)
@@ -40,7 +42,12 @@ class UserModel {
   final List<SubData>? websites;
   final List<SubData>? documents;
   final List<Award>? awards;
-  @JsonKey(name: 'qr_code') final String? qrCode;
+  @JsonKey(name: 'qr_code') 
+  final String? qrCode;
+  // ✅ NEW: companies field
+  @JsonKey(name: 'companies')
+  final List<CompanyModel>? companies; 
+  
 
   const UserModel({
     this.name,
@@ -80,6 +87,7 @@ class UserModel {
     this.documents,
     this.awards,
     this.qrCode,
+    this.companies
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
@@ -121,6 +129,7 @@ class UserModel {
     List<Award>? awards,
     bool? isFormActivated,
     String? qrCode,
+    List<CompanyModel>? companies,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -158,6 +167,7 @@ class UserModel {
       awards: awards ?? this.awards,
       isFormActivated: isFormActivated ?? this.isFormActivated,
       qrCode: qrCode ?? this.qrCode,
+      companies: companies ?? this.companies,
     );
   }
 }

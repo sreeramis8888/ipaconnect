@@ -263,10 +263,11 @@ class _ProductCard extends StatelessWidget {
                 Text(
                   product.description ?? 'No description available',
                   style: kSmallerTitleR,
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
+                if (product.price != null && product.price! > 0)
                 Row(
                   children: [
                     FutureBuilder<double?>(
