@@ -65,3 +65,38 @@ Future<String> saveUint8ListToFile(Uint8List bytes, String fileName) async {
   await file.writeAsBytes(bytes);
   return file.path;
 }
+
+Future<String> documentUpload(String documentPath) async {
+  File documentFile = File(documentPath);
+
+  final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  final String apiKey = dotenv.env['API_KEY'] ?? '';
+
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('$baseUrl/upload'),
+  );
+
+  request.headers['x-api-key'] = apiKey;
+  request.headers['Authorization'] = 'Bearer $token';
+
+  request.files
+      .add(await http.MultipartFile.fromPath('document', documentFile.path));
+
+  var response = await request.send();
+
+  if (response.statusCode == 200) {
+    var responseBody = await response.stream.bytesToString();
+    return extractDocumentUrl(responseBody);
+  } else {
+    var responseBody = await response.stream.bytesToString();
+    log(responseBody.toString());
+    throw Exception('Failed to upload document');
+  }
+}
+
+String extractDocumentUrl(String responseBody) {
+  final responseJson = jsonDecode(responseBody);
+  log(name: "document upload response", responseJson.toString());
+  return responseJson['data'];
+}

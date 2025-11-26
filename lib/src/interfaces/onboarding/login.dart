@@ -349,6 +349,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   bool _isButtonDisabled = true;
 
   late TextEditingController _otpController;
+  bool _isDisposed = false;
 
   @override
   void initState() {
@@ -359,6 +360,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   @override
   void dispose() {
+    _isDisposed = true;
     _timer?.cancel();
     _otpController.dispose();
     super.dispose();
@@ -368,6 +370,10 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     _isButtonDisabled = true;
     _start = 59;
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_isDisposed) {
+        timer.cancel();
+        return;
+      }
       if (_start == 0) {
         setState(() {
           _isButtonDisabled = false;
@@ -382,6 +388,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   }
 
   void resendCode() {
+    if (_isDisposed) return;
     startTimer();
     final authApiService = ref.watch(authApiServiceProvider);
     authApiService.resendOTP(
@@ -530,12 +537,20 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   Future<void> _handleOtpVerification(
       BuildContext context, WidgetRef ref) async {
+    if (_isDisposed) return; // Guard against late calls
+
     ref.read(loadingProvider.notifier).startLoading();
     SnackbarService snackbarService = SnackbarService();
     try {
       String phone = widget.fullPhone.trim();
       final countryCode = ref.watch(countryCodeProvider);
       String otp = _otpController.text.trim();
+
+      // Check again inside try block in case widget was disposed during async operation
+      if (_isDisposed || otp.isEmpty) {
+        return;
+      }
+
       if (otp.length != 6) {
         snackbarService.showSnackBar('Please enter a valid 6 digit OTP');
         return;

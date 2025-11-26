@@ -1,96 +1,114 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:ipaconnect/src/data/models/heirarchy_model.dart';
-import 'package:ipaconnect/src/data/models/company_model.dart'; 
-
+import 'package:ipaconnect/src/data/models/company_model.dart';
 
 part 'user_model.g.dart';
+
 @JsonSerializable(includeIfNull: false)
 class UserModel {
   final String? name;
   final String? uid;
-  @JsonKey(name: 'member_id') final String? memberId;
+  @JsonKey(name: 'member_id')
+  final String? memberId;
   final String? email;
   final String? image;
   final String? phone;
   final String? fcm;
   final String? otp;
-  @JsonKey(name: 'proffession') final String? profession;
-  @JsonKey(name: 'blocked_users') final List<String>? blockedUsers;
-  @JsonKey(name: 'country_code') final String? countryCode;
+  @JsonKey(name: 'proffession')
+  final String? profession;
+  @JsonKey(name: 'blocked_users')
+  final List<String>? blockedUsers;
+  @JsonKey(name: 'country_code')
+  final String? countryCode;
   final String? location;
   final String? password;
   final String? status;
-  @JsonKey(name: 'is_ipa_member') final bool? isIpaMember;
-  @JsonKey(name: 'is_admin') final bool? isAdmin;
+  @JsonKey(name: 'is_ipa_member')
+  final bool? isIpaMember;
+  @JsonKey(name: 'is_admin')
+  final bool? isAdmin;
   final HierarchyModel? hierarchy;
   final String? role;
-  @JsonKey(name: 'last_seen') final DateTime? lastSeen;
+  @JsonKey(name: 'last_seen')
+  final DateTime? lastSeen;
   final bool? online;
-  @JsonKey(name: 'is_form_activated') final bool? isFormActivated;
-  @JsonKey(name: 'reject_reason') final String? rejectReason;
+  @JsonKey(name: 'is_form_activated')
+  final bool? isFormActivated;
+  @JsonKey(name: 'reject_reason')
+  final String? rejectReason;
   final String? bio;
-  @JsonKey(name: 'social_media') final List<UserSocialMedia>? socialMedia;
+  @JsonKey(name: 'social_media')
+  final List<UserSocialMedia>? socialMedia;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  @JsonKey(name: '_id') final String? id;
+  @JsonKey(name: '_id')
+  final String? id;
   final DateTime? dob;
   final String? emirates;
-  @JsonKey(name: 'ipa_join_date') final DateTime? ipaJoinDate;
-  @JsonKey(name: 'is_installed') final bool? isInstalled;
+  @JsonKey(name: 'ipa_join_date')
+  final DateTime? ipaJoinDate;
+  @JsonKey(name: 'is_installed')
+  final bool? isInstalled;
   final List<SubData>? videos;
   final List<SubData>? certificates;
   final List<SubData>? websites;
   final List<SubData>? documents;
   final List<Award>? awards;
-  @JsonKey(name: 'qr_code') 
+  @JsonKey(name: 'qr_code')
   final String? qrCode;
+  @JsonKey(name: 'emirates_id_copy')
+  final String? emiratesIdCopy;
+  @JsonKey(name: 'passport_copy')
+  final String? passportCopy;
   // ✅ NEW: companies field
   @JsonKey(name: 'companies')
-  final List<CompanyModel>? companies; 
-  
+  final List<CompanyModel>? companies;
 
-  const UserModel({
-    this.name,
-    this.uid,
-    this.memberId,
-    this.email,
-    this.image,
-    this.phone,
-    this.fcm,
-    this.otp,
-    this.profession,
-    this.blockedUsers,
-    this.countryCode,
-    this.location,
-    this.password,
-    this.status,
-    this.isIpaMember,
-    this.isAdmin,
-    this.isFormActivated,
-    this.hierarchy,
-    this.role,
-    this.lastSeen,
-    this.online,
-    this.rejectReason,
-    this.bio,
-    this.socialMedia,
-    this.createdAt,
-    this.updatedAt,
-    this.id,
-    this.dob,
-    this.emirates,
-    this.ipaJoinDate,
-    this.isInstalled,
-    this.videos,
-    this.certificates,
-    this.websites,
-    this.documents,
-    this.awards,
-    this.qrCode,
-    this.companies
-  });
+  const UserModel(
+      {this.name,
+      this.uid,
+      this.memberId,
+      this.email,
+      this.image,
+      this.phone,
+      this.fcm,
+      this.otp,
+      this.profession,
+      this.blockedUsers,
+      this.countryCode,
+      this.location,
+      this.password,
+      this.status,
+      this.isIpaMember,
+      this.isAdmin,
+      this.isFormActivated,
+      this.hierarchy,
+      this.role,
+      this.lastSeen,
+      this.online,
+      this.rejectReason,
+      this.bio,
+      this.socialMedia,
+      this.createdAt,
+      this.updatedAt,
+      this.id,
+      this.dob,
+      this.emirates,
+      this.ipaJoinDate,
+      this.isInstalled,
+      this.videos,
+      this.certificates,
+      this.websites,
+      this.documents,
+      this.awards,
+      this.qrCode,
+      this.emiratesIdCopy,
+      this.passportCopy,
+      this.companies});
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   UserModel copyWith({
@@ -129,6 +147,8 @@ class UserModel {
     List<Award>? awards,
     bool? isFormActivated,
     String? qrCode,
+    String? emiratesIdCopy,
+    String? passportCopy,
     List<CompanyModel>? companies,
   }) {
     return UserModel(
@@ -167,6 +187,8 @@ class UserModel {
       awards: awards ?? this.awards,
       isFormActivated: isFormActivated ?? this.isFormActivated,
       qrCode: qrCode ?? this.qrCode,
+      emiratesIdCopy: emiratesIdCopy ?? this.emiratesIdCopy,
+      passportCopy: passportCopy ?? this.passportCopy,
       companies: companies ?? this.companies,
     );
   }
@@ -179,7 +201,8 @@ class UserSocialMedia {
 
   UserSocialMedia({this.name, this.url});
 
-  factory UserSocialMedia.fromJson(Map<String, dynamic> json) => _$UserSocialMediaFromJson(json);
+  factory UserSocialMedia.fromJson(Map<String, dynamic> json) =>
+      _$UserSocialMediaFromJson(json);
   Map<String, dynamic> toJson() => _$UserSocialMediaToJson(this);
 
   UserSocialMedia copyWith({String? name, String? url}) {
@@ -197,7 +220,8 @@ class SubData {
 
   SubData({this.name, this.link});
 
-  factory SubData.fromJson(Map<String, dynamic> json) => _$SubDataFromJson(json);
+  factory SubData.fromJson(Map<String, dynamic> json) =>
+      _$SubDataFromJson(json);
   Map<String, dynamic> toJson() => _$SubDataToJson(this);
 }
 
