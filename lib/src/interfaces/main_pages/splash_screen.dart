@@ -261,15 +261,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> checkAppVersion(BuildContext context, WidgetRef ref) async {
     try {
-      log('Checking app version...');
+      log('Starting app version check via API /settings');
       final apiService = ref.read(apiServiceProvider);
       final response = await apiService.get('/settings');
-      log(response.data.toString());
+      log('Received response from /settings API: ${response.data.toString()}');
       if (response.success && response.data != null) {
         final appVersionResponse = AppVersionResponse.fromJson(response.data!);
+        log('Successfully parsed app version response');
         await checkForUpdate(appVersionResponse, context);
       } else {
-        log('Failed to fetch app version: ${response.statusCode}');
+        log('Failed to fetch app version: status code ${response.statusCode}');
         log('Failed to fetch app version: $errorMessage');
         setState(() {
           hasVersionCheckError = true;
@@ -287,18 +288,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> checkForUpdate(AppVersionResponse response, context) async {
+    log('Checking for available updates...');
     PackageInfo packageInfo = await PackageManager.getPackageInfo();
     final currentVersion = int.parse(packageInfo.version.split('.').join());
-    log('Current version: $currentVersion');
-    log('New version: ${response.version}');
+    log('Current app version: $currentVersion');
+    log('Server app version: ${response.version}');
+    log('Force update flag: ${response.force}');
 
     if (currentVersion < response.version && response.force) {
+      log('App update is required. Current version: $currentVersion, New version: ${response.version}');
       isAppUpdateRequired = true;
       showUpdateDialog(response, context);
+      log('Update dialog shown to user');
+    } else if (currentVersion < response.version && !response.force) {
+      log('Update available but not forced. Current: $currentVersion, New: ${response.version}');
+    } else {
+      log('App is up to date. Current: $currentVersion, Server: ${response.version}');
     }
   }
 
   void showUpdateDialog(AppVersionResponse response, BuildContext context) {
+    log('Displaying mandatory update dialog with message: ${response.updateMessage}');
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -311,6 +321,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         actions: [
           TextButton(
             onPressed: () {
+              log('User clicked Update Now, launching URL: ${response.applink}');
               launchURL(response.applink);
             },
             child: Text('Update Now'),

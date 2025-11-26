@@ -1002,7 +1002,7 @@ Widget _buildBanners({
   return SizedBox(
     width: MediaQuery.of(context).size.width * 0.90,
     child: AspectRatio(
-      aspectRatio: 16 / 19,
+      aspectRatio: 16 / 9,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
         child: Image.network(

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'dart:io';
 
-String? extractYouTubeVideoId(String url) {
+String?       extractYouTubeVideoId(String url) {
   final uri = Uri.tryParse(url);
   if (uri == null || uri.host.isEmpty) return null;
 
