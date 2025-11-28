@@ -377,7 +377,7 @@ class _CreateCompanyModernPageState
                           initialValue: name,
                           decoration: InputDecoration(
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             hintText: 'Enter company name',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -404,7 +404,7 @@ class _CreateCompanyModernPageState
                           value: category?.isNotEmpty == true ? category : null,
                           decoration: InputDecoration(
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             hintText: 'Enter Business Activity',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -415,7 +415,7 @@ class _CreateCompanyModernPageState
                           ),
                           style: kSmallTitleL,
                           icon: Icon(Icons.keyboard_arrow_down,
-                              color: kSecondaryTextColor),
+                              color: kGrey),
                           items: categoryItems,
                           onChanged: (String? newValue) {
                             setState(() {
@@ -448,7 +448,7 @@ class _CreateCompanyModernPageState
                           decoration: InputDecoration(
                             hintText: 'Select Year',
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             filled: true,
                             fillColor: kCardBackgroundColor,
                             border: OutlineInputBorder(
@@ -456,7 +456,7 @@ class _CreateCompanyModernPageState
                               borderSide: BorderSide.none,
                             ),
                             suffixIcon: Icon(Icons.calendar_today,
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                           ),
                           readOnly: true,
                           onTap: () async {
@@ -587,55 +587,61 @@ class _CreateCompanyModernPageState
                           ],
                         ),
                         const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Trade License Document', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: pickTradeLicense,
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: kCardBackgroundColor,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.3),
+                        // Conditional Trade License Document field - only visible when "Yes" is selected
+                        if (nameInTradeLicense == true) ...[
+                          Row(
+                            children: [
+                              Text('Trade License Document',
+                                  style: kSmallTitleM),
+                              Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: pickTradeLicense,
+                            child: Container(
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: kCardBackgroundColor,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const SizedBox(width: 12),
+                                  Icon(Icons.upload_file,
+                                      color: Colors.white.withOpacity(0.7)),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      tradeLicenseFile != null
+                                          ? tradeLicenseFile!.path
+                                              .split('/')
+                                              .last
+                                          : 'Upload Document',
+                                      style: TextStyle(
+                                        color: tradeLicenseFile != null
+                                            ? kWhite
+                                            : Colors.white.withOpacity(0.7),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Icon(Icons.cloud_upload_outlined,
+                                      color: Colors.white.withOpacity(0.7)),
+                                  const SizedBox(width: 12),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 12),
-                                Icon(Icons.upload_file,
-                                    color: Colors.white.withOpacity(0.7)),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    tradeLicenseFile != null
-                                        ? tradeLicenseFile!.path.split('/').last
-                                        : 'Upload Document',
-                                    style: TextStyle(
-                                      color: tradeLicenseFile != null
-                                          ? kWhite
-                                          : Colors.white.withOpacity(0.7),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Icon(Icons.cloud_upload_outlined,
-                                    color: Colors.white.withOpacity(0.7)),
-                                const SizedBox(width: 12),
-                              ],
-                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
+                          const SizedBox(height: 24),
+                        ],
 
                         //recommended by
 
@@ -654,7 +660,7 @@ class _CreateCompanyModernPageState
                           initialValue: recommendedBy,
                           decoration: InputDecoration(
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             hintText: 'Enter the name',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -683,7 +689,7 @@ class _CreateCompanyModernPageState
                           initialValue: companySize,
                           decoration: InputDecoration(
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             hintText: 'Company Size',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -708,7 +714,7 @@ class _CreateCompanyModernPageState
                           value: businessEmirate,
                           decoration: InputDecoration(
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             hintText: 'Select Emirates',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -719,7 +725,7 @@ class _CreateCompanyModernPageState
                           ),
                           style: kSmallTitleL,
                           icon: Icon(Icons.keyboard_arrow_down,
-                              color: kSecondaryTextColor),
+                              color: kGrey),
                           items: emirateItems,
                           onChanged: (String? newValue) {
                             setState(() {
@@ -748,7 +754,7 @@ class _CreateCompanyModernPageState
                           decoration: InputDecoration(
                             hintText: 'Enter location',
                             hintStyle: kSmallTitleL.copyWith(
-                                color: kSecondaryTextColor),
+                                color: kGrey),
                             filled: true,
                             fillColor: kCardBackgroundColor,
                             border: OutlineInputBorder(
