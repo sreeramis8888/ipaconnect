@@ -370,7 +370,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     fontSize: 14,
                                     letterSpacing: .2,
                                     fontWeight: FontWeight.w200,
-                                    color: kSecondaryTextColor,
+                                    color: kGrey,
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.0),
@@ -470,7 +470,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     fontSize: 14,
                                     letterSpacing: .2,
                                     fontWeight: FontWeight.w200,
-                                    color: kSecondaryTextColor,
+                                    color: kGrey,
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8.0),
