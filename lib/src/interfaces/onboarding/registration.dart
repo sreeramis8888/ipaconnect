@@ -253,9 +253,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             CustomTextFormField(
                               labelText: 'Enter the email id',
                               textController: _emailController,
-                              validator: (val) => val == null || val.isEmpty
-                                  ? 'Required'
-                                  : null,
+                              validator: (val) {
+                                if (val == null || val.isEmpty) {
+                                  return 'Email is required';
+                                }
+
+                                // Email validation regex pattern
+                                final emailRegex = RegExp(
+                                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+
+                                if (!emailRegex.hasMatch(val)) {
+                                  return 'Please enter a valid email address';
+                                }
+
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 16),
 
@@ -288,9 +300,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                                 child: Row(
                                   children: [
-                                    const SizedBox(width: 12),
-                                    Icon(Icons.calendar_today,
-                                        color: kSecondaryTextColor),
+                                    // const SizedBox(width: 12),
+                                    // Icon(Icons.calendar_today,
+                                    //     color: kGrey),
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
@@ -300,7 +312,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                         style: TextStyle(
                                           color: _dobController.text.isNotEmpty
                                               ? kWhite
-                                              : kSecondaryTextColor,
+                                              : kGrey,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -557,11 +569,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                             ? _emiratesIdDocument!.path
                                                 .split('/')
                                                 .last
-                                            : 'Upload Emirates ID',
+                                            : 'Upload Document',
                                         style: TextStyle(
                                           color: _emiratesIdDocument != null
                                               ? kWhite
-                                              : kSecondaryTextColor,
+                                              : kGrey,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -617,11 +629,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                             ? _passportDocument!.path
                                                 .split('/')
                                                 .last
-                                            : 'Upload Passport',
+                                            : 'Upload Document',
                                         style: TextStyle(
                                           color: _passportDocument != null
                                               ? kWhite
-                                              : kSecondaryTextColor,
+                                              : kGrey,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400,
                                         ),
@@ -804,10 +816,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             //   if (response.success == true) {
                             //     log('Registration successful, navigating to CreateCompanyModernPage',
                             //         name: 'REGISTRATION_LOG');
-                                NavigationService navigationService =
-                                    NavigationService();
-                                navigationService.pushNamedReplacement(
-                                    'CreateCompanyModernPage');
+                            NavigationService navigationService =
+                                NavigationService();
+                            navigationService.pushNamedReplacement(
+                                'CreateCompanyModernPage');
                             //   } else {
                             //     log('Registration failed: ${response.message}',
                             //         name: 'REGISTRATION_LOG');
