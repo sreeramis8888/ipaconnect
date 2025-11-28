@@ -100,6 +100,11 @@ class _CreateCompanyModernPageState
     DropdownMenuItem(value: 'Fujairah', child: Text('Fujairah')),
   ];
 
+  // Search functionality for business activity dropdown
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearchExpanded = false;
+  String? _selectedCategoryDisplay;
+
   @override
   void initState() {
     super.initState();
@@ -120,6 +125,7 @@ class _CreateCompanyModernPageState
       category = (found.id != null && found.id.toString().isNotEmpty)
           ? found.id.toString()
           : company.category;
+      _selectedCategoryDisplay = found.name;
       image = company.image;
       establishedDate = company.establishedDate;
       companySize = company.companySize;
@@ -164,6 +170,7 @@ class _CreateCompanyModernPageState
   @override
   void dispose() {
     establishedDateController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -308,6 +315,16 @@ class _CreateCompanyModernPageState
     });
   }
 
+  // Helper method to close search when tapping outside
+  void _closeSearch() {
+    if (_isSearchExpanded) {
+      setState(() {
+        _isSearchExpanded = false;
+        _searchController.clear();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final businessCategoryNotifier =
@@ -316,29 +333,11 @@ class _CreateCompanyModernPageState
     final hasMore = businessCategoryNotifier.hasMore;
     final isLoading = businessCategoryNotifier.isLoading;
 
-    List<DropdownMenuItem<String>> categoryItems = [
-      ...categories.map((cat) => DropdownMenuItem(
-            value: cat.id?.toString() ?? cat.name,
-            child: Text(cat.name),
-          )),
-      if (hasMore || isLoading)
-        DropdownMenuItem(
-          value: '__load_more__',
-          enabled: !isLoading,
-          child: isLoading
-              ? Row(
-                  children: [
-                    SizedBox(width: 16, height: 16, child: LoadingAnimation()),
-                    SizedBox(width: 8),
-                    Text('Loading...'),
-                  ],
-                )
-              : Text('Load more...'),
-        ),
-    ];
-
     return GestureDetector(
-      onTap: FocusScope.of(context).unfocus,
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        _closeSearch();
+      },
       child: Scaffold(
         backgroundColor: kBackgroundColor,
         body: SafeArea(
@@ -376,8 +375,7 @@ class _CreateCompanyModernPageState
                           style: kSmallTitleL,
                           initialValue: name,
                           decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
                             hintText: 'Enter company name',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -387,8 +385,9 @@ class _CreateCompanyModernPageState
                             ),
                           ),
                           onChanged: (val) => setState(() => name = val),
-                          validator: (val) =>
-                              val == null || val.isEmpty ? '' : null,
+                          validator: (val) => val == null || val.isEmpty
+                              ? 'Company name is required'
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         Row(
@@ -400,44 +399,174 @@ class _CreateCompanyModernPageState
                           ],
                         ),
                         const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          value: category?.isNotEmpty == true ? category : null,
-                          decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
-                            hintText: 'Enter Business Activity',
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: kSmallTitleL,
-                          icon: Icon(Icons.keyboard_arrow_down,
-                              color: kGrey),
-                          items: categoryItems,
-                          onChanged: (String? newValue) {
+                        // Searchable Dropdown for Business Activity
+                        GestureDetector(
+                          onTap: () {
                             setState(() {
-                              if (newValue == '__load_more__') {
-                                if (!businessCategoryNotifier.isLoading) {
-                                  businessCategoryNotifier
-                                      .fetchMoreCategories();
-                                }
-                              } else {
-                                category = newValue;
+                              _isSearchExpanded = !_isSearchExpanded;
+                              if (_isSearchExpanded) {
+                                _searchController.clear();
                               }
                             });
                           },
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty ||
-                                value == '__load_more__') {
-                              return 'Please select a category';
-                            }
-                            return null;
-                          },
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: kCardBackgroundColor,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: _isSearchExpanded
+                                    ? kPrimaryColor
+                                    : Colors.transparent,
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _selectedCategoryDisplay ??
+                                        'Enter Business Activity',
+                                    style: kSmallTitleL.copyWith(
+                                      color: _selectedCategoryDisplay != null
+                                          ? kWhite
+                                          : kGrey,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  _isSearchExpanded
+                                      ? Icons.keyboard_arrow_up
+                                      : Icons.keyboard_arrow_down,
+                                  color: kGrey,
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                            ),
+                          ),
                         ),
+                        // Search field and filtered list
+                        if (_isSearchExpanded) ...[
+                          const SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: kCardBackgroundColor,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: kPrimaryColor.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                TextFormField(
+                                  controller: _searchController,
+                                  style: kSmallTitleL.copyWith(color: kWhite),
+                                  decoration: InputDecoration(
+                                    hintText: 'Search business activity...',
+                                    hintStyle:
+                                        kSmallTitleL.copyWith(color: kGrey),
+                                    prefixIcon:
+                                        Icon(Icons.search, color: kGrey),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {});
+                                  },
+                                ),
+                                Container(
+                                  constraints: BoxConstraints(
+                                    maxHeight: 200,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        // Filtered categories based on search
+                                        ...categories.where((cat) {
+                                          final searchTerm = _searchController
+                                              .text
+                                              .toLowerCase();
+                                          return searchTerm.isEmpty ||
+                                              cat.name
+                                                  .toLowerCase()
+                                                  .contains(searchTerm);
+                                        }).map((cat) {
+                                          return ListTile(
+                                            dense: true,
+                                            title: Text(
+                                              cat.name,
+                                              style: kSmallTitleL.copyWith(
+                                                color: kWhite,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              setState(() {
+                                                category = cat.id?.toString() ??
+                                                    cat.name;
+                                                _selectedCategoryDisplay =
+                                                    cat.name;
+                                                _isSearchExpanded = false;
+                                                _searchController.clear();
+                                              });
+                                            },
+                                          );
+                                        }),
+                                        // Load more option
+                                        if (hasMore || isLoading)
+                                          ListTile(
+                                            dense: true,
+                                            leading: isLoading
+                                                ? SizedBox(
+                                                    width: 16,
+                                                    height: 16,
+                                                    child: LoadingAnimation(),
+                                                  )
+                                                : Icon(Icons.more_horiz,
+                                                    color: kGrey),
+                                            title: Text(
+                                              isLoading
+                                                  ? 'Loading...'
+                                                  : 'Load more...',
+                                              style: kSmallTitleL.copyWith(
+                                                color: kGrey,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                            onTap: isLoading
+                                                ? null
+                                                : () {
+                                                    businessCategoryNotifier
+                                                        .fetchMoreCategories();
+                                                  },
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        // Validation error display
+                        if (category == null || category!.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              'Please select a category',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                         const SizedBox(height: 16),
                         Text('Company Establishment Year ',
                             style: kSmallTitleM),
@@ -447,16 +576,15 @@ class _CreateCompanyModernPageState
                           style: kSmallTitleL,
                           decoration: InputDecoration(
                             hintText: 'Select Year',
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
                             filled: true,
                             fillColor: kCardBackgroundColor,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
                             ),
-                            suffixIcon: Icon(Icons.calendar_today,
-                                color: kGrey),
+                            suffixIcon:
+                                Icon(Icons.calendar_today, color: kGrey),
                           ),
                           readOnly: true,
                           onTap: () async {
@@ -659,8 +787,7 @@ class _CreateCompanyModernPageState
                           style: kSmallTitleL,
                           initialValue: recommendedBy,
                           decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
                             hintText: 'Enter the name',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -688,8 +815,7 @@ class _CreateCompanyModernPageState
                           style: kSmallTitleL,
                           initialValue: companySize,
                           decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
                             hintText: 'Company Size',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -713,8 +839,7 @@ class _CreateCompanyModernPageState
                         DropdownButtonFormField<String>(
                           value: businessEmirate,
                           decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
                             hintText: 'Select Emirates',
                             filled: true,
                             fillColor: kCardBackgroundColor,
@@ -724,8 +849,7 @@ class _CreateCompanyModernPageState
                             ),
                           ),
                           style: kSmallTitleL,
-                          icon: Icon(Icons.keyboard_arrow_down,
-                              color: kGrey),
+                          icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
                           items: emirateItems,
                           onChanged: (String? newValue) {
                             setState(() {
@@ -753,8 +877,7 @@ class _CreateCompanyModernPageState
                           style: kSmallTitleL,
                           decoration: InputDecoration(
                             hintText: 'Enter location',
-                            hintStyle: kSmallTitleL.copyWith(
-                                color: kGrey),
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
                             filled: true,
                             fillColor: kCardBackgroundColor,
                             border: OutlineInputBorder(
@@ -1144,6 +1267,12 @@ class _CreateCompanyModernPageState
 
                           if (name == null || name!.isEmpty) {
                             validationError = 'Company name is required';
+                            isValid = false;
+                          }
+
+                          if (category == null || category!.isEmpty) {
+                            validationError =
+                                'Please select a business activity';
                             isValid = false;
                           }
 
