@@ -41,6 +41,7 @@ class _CreateCompanyModernPageState
   String? category;
   String? image;
   int? establishedDate;
+  TextEditingController establishedDateController = TextEditingController();
   String? companySize;
   List<String> services = [];
   String? location;
@@ -150,10 +151,20 @@ class _CreateCompanyModernPageState
               .toList() ??
           [];
     }
+    // Initialize established date controller with existing value
+    if (establishedDate != null) {
+      establishedDateController.text = establishedDate.toString();
+    }
     // Fetch initial categories
     Future.microtask(() {
       ref.read(businessCategoryNotifierProvider.notifier).fetchMoreCategories();
     });
+  }
+
+  @override
+  void dispose() {
+    establishedDateController.dispose();
+    super.dispose();
   }
 
   Future<void> pickAndUploadImage() async {
@@ -420,8 +431,8 @@ class _CreateCompanyModernPageState
                 Text('Company Establishment Year ', style: kSmallTitleM),
                 const SizedBox(height: 8),
                 TextFormField(
+                  controller: establishedDateController,
                   style: kSmallTitleL,
-                  initialValue: establishedDate?.toString(),
                   decoration: InputDecoration(
                     hintText: 'Select Year',
                     hintStyle:
@@ -437,14 +448,16 @@ class _CreateCompanyModernPageState
                   ),
                   readOnly: true,
                   onTap: () async {
-                    final picked =
-                        await showYearPickerDialog(context, selectedYear: 2005);
+                    final currentSelectedYear =
+                        establishedDate ?? DateTime.now().year;
+                    final picked = await showYearPickerDialog(context,
+                        selectedYear: currentSelectedYear);
                     if (picked != null) {
-                      setState(() => establishedDate = picked as int?);
+                      setState(() {
+                        establishedDate = picked as int?;
+                        establishedDateController.text = picked.toString();
+                      });
                     }
-                  },
-                  onChanged: (val) {
-                    // Keep the field read-only, but allow state updates
                   },
                 ),
                 const SizedBox(height: 16),
