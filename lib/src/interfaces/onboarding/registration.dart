@@ -19,6 +19,7 @@ import 'package:ipaconnect/src/data/utils/secure_storage.dart';
 import 'package:ipaconnect/src/interfaces/components/buttons/custom_button.dart';
 import 'package:ipaconnect/src/interfaces/components/textFormFields/custom_text_form_field.dart';
 import 'package:ipaconnect/src/interfaces/onboarding/login.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../data/constants/color_constants.dart';
 import '../../data/services/navigation_service.dart';
 import '../additional_screens/crop_image_screen.dart';
@@ -656,192 +657,198 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
 
                   // Fixed button at bottom
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    // decoration: BoxDecoration(
-                    //   color: kBackgroundColor,
-                    //   border: Border(
-                    //     top: BorderSide(
-                    //         color: kSecondaryTextColor.withOpacity(0.2)),
-                    //   ),
-                    // ),
-                    child: Consumer(
-                      builder: (context, ref, child) {
-                        return customButton(
-                          isLoading: loading,
-                          label: 'Next',
-                          onPressed: () async {
-                            // Log form data before validation
-                            log('=== REGISTRATION FORM DATA ===',
-                                name: 'REGISTRATION_LOG');
-                            log('Name: ${_nameController.text}',
-                                name: 'REGISTRATION_LOG');
-                            log('Email: ${_emailController.text}',
-                                name: 'REGISTRATION_LOG');
-                            log('Phone: ${_phoneController.text}',
-                                name: 'REGISTRATION_LOG');
-                            log('WhatsApp: ${_whatsAppController.text}',
-                                name: 'REGISTRATION_LOG');
-                            log('Designation: ${_designationController.text}',
-                                name: 'REGISTRATION_LOG');
-                            log('Location: ${_locationController.text}',
-                                name: 'REGISTRATION_LOG');
-                            log('Profile Image: ${_profileImage != null ? "Selected (${_profileImage!.length} bytes)" : "Not selected"}',
-                                name: 'REGISTRATION_LOG');
-                            log('Emirates ID Document: ${_emiratesIdDocument != null ? _emiratesIdDocument!.path : "Not uploaded"}',
-                                name: 'REGISTRATION_LOG');
-                            log('Passport Document: ${_passportDocument != null ? _passportDocument!.path : "Not uploaded"}',
-                                name: 'REGISTRATION_LOG');
-                            log('================================',
-                                name: 'REGISTRATION_LOG');
-
-                            // Validate required fields
-                            if (_nameController.text.isEmpty ||
-                                _emailController.text.isEmpty ||
-                                _selectedDateOfBirth == null ||
-                                _phoneController.text.isEmpty ||
-                                _whatsAppController.text.isEmpty ||
-                                _emiratesIdDocument == null ||
-                                _passportDocument == null) {
-                              log('VALIDATION FAILED: Missing required fields',
-                                  name: 'REGISTRATION_LOG');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Please fill all required fields and upload documents'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-
-                            String? profileUrl;
-                            String? emiratesIdUrl;
-                            String? passportUrl;
-                            ref.read(loadingProvider.notifier).startLoading();
-
-                            try {
-                              // Upload profile image
-                              if (_profileImage != null) {
-                                log('Starting profile image upload...',
+                  Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            return customButton(
+                              isLoading: loading,
+                              label: 'Next',
+                              onPressed: () async {
+                                // Log form data before validation
+                                log('=== REGISTRATION FORM DATA ===',
                                     name: 'REGISTRATION_LOG');
-                                String tempImagePath =
-                                    await saveUint8ListToFile(
-                                        _profileImage!, 'profile.png');
-                                log('Profile image saved to temp path: $tempImagePath',
+                                log('Name: ${_nameController.text}',
                                     name: 'REGISTRATION_LOG');
-                                profileUrl = await imageUpload(tempImagePath);
-                                log('Profile image uploaded successfully. URL: $profileUrl',
+                                log('Email: ${_emailController.text}',
                                     name: 'REGISTRATION_LOG');
-                              } else {
-                                log('No profile image to upload',
+                                log('Phone: ${_phoneController.text}',
                                     name: 'REGISTRATION_LOG');
-                              }
-
-                              // Upload Emirates ID document
-                              log('Starting Emirates ID document upload...',
-                                  name: 'REGISTRATION_LOG');
-                              emiratesIdUrl = await documentUpload(
-                                  _emiratesIdDocument!.path);
-                              log('Emirates ID document uploaded successfully. URL: $emiratesIdUrl',
-                                  name: 'REGISTRATION_LOG');
-
-                              // Upload Passport document
-                              log('Starting Passport document upload...',
-                                  name: 'REGISTRATION_LOG');
-                              passportUrl =
-                                  await documentUpload(_passportDocument!.path);
-                              log('Passport document uploaded successfully. URL: $passportUrl',
-                                  name: 'REGISTRATION_LOG');
-
-                              // Create UserModel with all data
-                              final userModel = UserModel(
-                                  name: _nameController.text,
-                                  email: _emailController.text,
-                                  dob: _selectedDateOfBirth,
-                                  image: profileUrl,
-                                  phone: _phoneController.text,
-                                  emiratesIdCopy: emiratesIdUrl,
-                                  passportCopy: passportUrl,
-                                  profession: _designationController.text,
-                                  location: _locationController.text,
-                                  status: 'pending');
-
-                              // Log the complete UserModel data being sent
-                              log('=== USERMODEL DATA TO SEND ===',
-                                  name: 'REGISTRATION_LOG');
-                              log('User ID: $id', name: 'REGISTRATION_LOG');
-                              log('Name: ${userModel.name}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Email: ${userModel.email}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Image URL: ${userModel.image}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Phone: ${userModel.phone}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Emirates ID Copy URL: ${userModel.emiratesIdCopy}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Passport Copy URL: ${userModel.passportCopy}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Profession: ${userModel.profession}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Location: ${userModel.location}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Status: ${userModel.status}',
-                                  name: 'REGISTRATION_LOG');
-                              log('================================',
-                                  name: 'REGISTRATION_LOG');
-
-                              UserDataApiService userDataApiService =
-                                  ref.watch(userDataApiServiceProvider);
-
-                              log('Sending API request to update user...',
-                                  name: 'REGISTRATION_LOG');
-                              final response = await userDataApiService
-                                  .updateUser(id, userModel);
-
-                              // Log the complete API response
-                              log('=== API RESPONSE ===',
-                                  name: 'REGISTRATION_LOG');
-                              log('Success: ${response.success}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Message: ${response.message}',
-                                  name: 'REGISTRATION_LOG');
-                              log('Data: ${response.data.toString()}',
-                                  name: 'REGISTRATION_LOG');
-                              log('========================',
-                                  name: 'REGISTRATION_LOG');
-
-                              log(response.data.toString(), name: 'EDIT USER');
-                              if (response.success == true) {
-                                log('Registration successful, navigating to CreateCompanyModernPage',
+                                log('WhatsApp: ${_whatsAppController.text}',
                                     name: 'REGISTRATION_LOG');
-                            NavigationService navigationService =
-                                NavigationService();
-                            navigationService.pushNamedReplacement(
-                                'CreateCompanyModernPage');
-                              } else {
-                                log('Registration failed: ${response.message}',
+                                log('Designation: ${_designationController.text}',
                                     name: 'REGISTRATION_LOG');
-                              }
-                            } catch (e) {
-                              log('ERROR during registration: ${e.toString()}',
-                                  name: 'REGISTRATION_LOG');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Error: ${e.toString()}'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            } finally {
-                              ref.read(loadingProvider.notifier).stopLoading();
-                              log('Registration process completed',
-                                  name: 'REGISTRATION_LOG');
-                            }
+                                log('Location: ${_locationController.text}',
+                                    name: 'REGISTRATION_LOG');
+                                log('Profile Image: ${_profileImage != null ? "Selected (${_profileImage!.length} bytes)" : "Not selected"}',
+                                    name: 'REGISTRATION_LOG');
+                                log('Emirates ID Document: ${_emiratesIdDocument != null ? _emiratesIdDocument!.path : "Not uploaded"}',
+                                    name: 'REGISTRATION_LOG');
+                                log('Passport Document: ${_passportDocument != null ? _passportDocument!.path : "Not uploaded"}',
+                                    name: 'REGISTRATION_LOG');
+                                log('================================',
+                                    name: 'REGISTRATION_LOG');
+
+                                // Validate required fields
+                                if (_nameController.text.isEmpty ||
+                                    _emailController.text.isEmpty ||
+                                    _selectedDateOfBirth == null ||
+                                    _phoneController.text.isEmpty ||
+                                    _whatsAppController.text.isEmpty ||
+                                    _emiratesIdDocument == null ||
+                                    _passportDocument == null) {
+                                  log('VALIDATION FAILED: Missing required fields',
+                                      name: 'REGISTRATION_LOG');
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          'Please fill all required fields and upload documents'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                String? profileUrl;
+                                String? emiratesIdUrl;
+                                String? passportUrl;
+                                ref
+                                    .read(loadingProvider.notifier)
+                                    .startLoading();
+
+                                try {
+                                  // Upload profile image
+                                  if (_profileImage != null) {
+                                    log('Starting profile image upload...',
+                                        name: 'REGISTRATION_LOG');
+                                    String tempImagePath =
+                                        await saveUint8ListToFile(
+                                            _profileImage!, 'profile.png');
+                                    log('Profile image saved to temp path: $tempImagePath',
+                                        name: 'REGISTRATION_LOG');
+                                    profileUrl =
+                                        await imageUpload(tempImagePath);
+                                    log('Profile image uploaded successfully. URL: $profileUrl',
+                                        name: 'REGISTRATION_LOG');
+                                  } else {
+                                    log('No profile image to upload',
+                                        name: 'REGISTRATION_LOG');
+                                  }
+
+                                  // Upload Emirates ID document
+                                  log('Starting Emirates ID document upload...',
+                                      name: 'REGISTRATION_LOG');
+                                  emiratesIdUrl = await documentUpload(
+                                      _emiratesIdDocument!.path);
+                                  log('Emirates ID document uploaded successfully. URL: $emiratesIdUrl',
+                                      name: 'REGISTRATION_LOG');
+
+                                  // Upload Passport document
+                                  log('Starting Passport document upload...',
+                                      name: 'REGISTRATION_LOG');
+                                  passportUrl = await documentUpload(
+                                      _passportDocument!.path);
+                                  log('Passport document uploaded successfully. URL: $passportUrl',
+                                      name: 'REGISTRATION_LOG');
+
+                                  // Create UserModel with all data
+                                  final userModel = UserModel(
+                                      name: _nameController.text,
+                                      email: _emailController.text,
+                                      dob: _selectedDateOfBirth,
+                                      image: profileUrl,
+                                      phone: _phoneController.text,
+                                      emiratesIdCopy: emiratesIdUrl,
+                                      passportCopy: passportUrl,
+                                      profession: _designationController.text,
+                                      location: _locationController.text,
+                                      status: 'pending');
+
+                                  // Log the complete UserModel data being sent
+                                  log('=== USERMODEL DATA TO SEND ===',
+                                      name: 'REGISTRATION_LOG');
+                                  log('User ID: $id', name: 'REGISTRATION_LOG');
+                                  log('Name: ${userModel.name}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Email: ${userModel.email}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Image URL: ${userModel.image}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Phone: ${userModel.phone}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Emirates ID Copy URL: ${userModel.emiratesIdCopy}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Passport Copy URL: ${userModel.passportCopy}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Profession: ${userModel.profession}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Location: ${userModel.location}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Status: ${userModel.status}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('================================',
+                                      name: 'REGISTRATION_LOG');
+
+                                  UserDataApiService userDataApiService =
+                                      ref.watch(userDataApiServiceProvider);
+
+                                  log('Sending API request to update user...',
+                                      name: 'REGISTRATION_LOG');
+                                  final response = await userDataApiService
+                                      .updateUser(id, userModel);
+
+                                  // Log the complete API response
+                                  log('=== API RESPONSE ===',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Success: ${response.success}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Message: ${response.message}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('Data: ${response.data.toString()}',
+                                      name: 'REGISTRATION_LOG');
+                                  log('========================',
+                                      name: 'REGISTRATION_LOG');
+
+                                  log(response.data.toString(),
+                                      name: 'EDIT USER');
+                                  if (response.success == true) {
+                                    log('Registration successful, navigating to CreateCompanyModernPage',
+                                        name: 'REGISTRATION_LOG');
+                                    NavigationService navigationService =
+                                        NavigationService();
+                                    navigationService.pushNamedReplacement(
+                                        'CreateCompanyModernPage');
+                                  } else {
+                                    log('Registration failed: ${response.message}',
+                                        name: 'REGISTRATION_LOG');
+                                  }
+                                } catch (e) {
+                                  log('ERROR during registration: ${e.toString()}',
+                                      name: 'REGISTRATION_LOG');
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.toString()}'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                } finally {
+                                  ref
+                                      .read(loadingProvider.notifier)
+                                      .stopLoading();
+                                  log('Registration process completed',
+                                      name: 'REGISTRATION_LOG');
+                                }
+                              },
+                            );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                      // Dot indicator for registration step (1st step)
+                      _buildDotIndicator(0, 2, kWhite),
+                      const SizedBox(height: 8),
+                    ],
                   ),
                 ],
               ),
@@ -849,6 +856,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
         );
       },
+    );
+  }
+
+  // Method to build a dot indicator for steps
+  Widget _buildDotIndicator(int currentIndex, int itemCount, Color color) {
+    return Center(
+      child: SmoothPageIndicator(
+        controller: PageController(initialPage: currentIndex),
+        count: itemCount,
+        effect: ExpandingDotsEffect(
+          expansionFactor: 3,
+          spacing: 8,
+          radius: 8,
+          dotWidth: 8,
+          dotHeight: 8,
+          dotColor: Colors.grey,
+          activeDotColor: color,
+        ),
+      ),
     );
   }
 }

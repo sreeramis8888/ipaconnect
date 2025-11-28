@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/user_companies_notifier.dart';
@@ -340,6 +341,29 @@ class _CreateCompanyModernPageState
       },
       child: Scaffold(
         backgroundColor: kBackgroundColor,
+        
+        appBar: AppBar(
+          leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Material(
+            color: Colors.transparent,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                'RegistrationPage',
+                (route) => route.settings.name == 'RegistrationPage',
+              );
+              },
+              child: CustomRoundButton(
+                offset: const Offset(4, 0),
+                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+              ),
+            ),
+          ),
+        ),
+        ),
         body: SafeArea(
           child: Column(
             children: [
@@ -352,9 +376,6 @@ class _CreateCompanyModernPageState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 60,
-                        ),
                         Text(
                           'Company Details',
                           style: kBodyTitleB,
@@ -1250,165 +1271,192 @@ class _CreateCompanyModernPageState
               ),
 
               // Fixed button at bottom
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: customButton(
-                  label: isSubmitting
-                      ? 'Submitting...'
-                      : (widget.companyToEdit != null
-                          ? 'Update'
-                          : 'Send Request'),
-                  onPressed: isSubmitting
-                      ? null
-                      : () async {
-                          // Validate mandatory fields first
-                          bool isValid = true;
-                          String? validationError;
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: customButton(
+                      label: isSubmitting
+                          ? 'Submitting...'
+                          : (widget.companyToEdit != null
+                              ? 'Update'
+                              : 'Send Request'),
+                      onPressed: isSubmitting
+                          ? null
+                          : () async {
+                              // Validate mandatory fields first
+                              bool isValid = true;
+                              String? validationError;
 
-                          if (name == null || name!.isEmpty) {
-                            validationError = 'Company name is required';
-                            isValid = false;
-                          }
-
-                          if (category == null || category!.isEmpty) {
-                            validationError =
-                                'Please select a business activity';
-                            isValid = false;
-                          }
-
-                          if (!isValid) {
-                            if (mounted) {
-                              setState(() {
-                                submitError = validationError;
-                              });
-                            }
-                            return;
-                          }
-
-                          if (_formKey.currentState?.validate() ?? false) {
-                            if (!mounted) return;
-
-                            setState(() {
-                              isSubmitting = true;
-                              submitError = null;
-                            });
-                            try {
-                              final newGalleryPhotoUrls =
-                                  List<String>.from(galleryPhotoUrls);
-                              for (final file in localPhotoFiles) {
-                                final url = await imageUpload(file.path);
-                                newGalleryPhotoUrls.add(url);
+                              if (name == null || name!.isEmpty) {
+                                validationError = 'Company name is required';
+                                isValid = false;
                               }
-                              galleryPhotoUrls = newGalleryPhotoUrls;
-                              localPhotoFiles
-                                  .clear(); // Clear after successful upload
 
-                              // Always resolve category to ID
-                              final found = categories.firstWhere(
-                                (cat) =>
-                                    cat.id.toString() == category ||
-                                    cat.name == category,
-                                orElse: () =>
-                                    BusinessCategoryModel(id: '', name: ''),
-                              );
-                              final categoryId = (found.id != null &&
-                                      found.id.toString().isNotEmpty)
-                                  ? found.id.toString()
-                                  : null;
-                              if (categoryId == null || categoryId.isEmpty) {
+                              if (category == null || category!.isEmpty) {
+                                validationError =
+                                    'Please select a business activity';
+                                isValid = false;
+                              }
+
+                              if (!isValid) {
                                 if (mounted) {
                                   setState(() {
-                                    isSubmitting = false;
-                                    submitError =
-                                        'Please select a valid category.';
+                                    submitError = validationError;
                                   });
                                 }
                                 return;
                               }
 
-                              final companyData = {
-                                'name': name,
-                                'overview': overview ?? "",
-                                'category': categoryId,
-                                'image': image,
-                                'status': status,
-                                'established_date': establishedDate,
-                                'company_size': companySize,
-                                'services': services,
-                                'tags': tags,
-                                'opening_hours': {
-                                  'sunday': sunday,
-                                  'monday': monday,
-                                  'tuesday': tuesday,
-                                  'wednesday': wednesday,
-                                  'thursday': thursday,
-                                  'friday': friday,
-                                  'saturday': saturday,
-                                },
-                                'contact_info': {
-                                  'address': address,
-                                  'phone': phone,
-                                  'email': email,
-                                  'website': website,
-                                },
-                                'gallery': {
-                                  'photos': galleryPhotoUrls
-                                      .map((url) => {'url': url})
-                                      .toList(),
-                                  'videos': videoUrls
-                                      .map((url) => {'url': url})
-                                      .toList(),
-                                },
-                                'location': location,
-                                'trade_license_copy': tradeLicenseUrl,
-                                'business_emirates': businessEmirate,
-                                'name_in_trade_license': nameInTradeLicense,
-                                'recommended_by': recommendedBy,
-                              };
-                              final container =
-                                  ProviderScope.containerOf(context);
-                              final companyApi =
-                                  container.read(companyApiServiceProvider);
-                              bool result;
-                              if (widget.companyToEdit != null &&
-                                  widget.companyToEdit!.id != null) {
-                                result = await companyApi.updateCompany(
-                                    widget.companyToEdit!.id!, companyData);
-                              } else {
-                                result =
-                                    await companyApi.createCompany(companyData);
-                              }
-                              if (result != false) {
-                                if (mounted) {
-                                  // Navigate to approval waiting page after successful submission
-                                  NavigationService navigationService =
-                                      NavigationService();
-                                  navigationService.pushNamedReplacement(
-                                      'ApprovalWaitingPage');
+                              if (_formKey.currentState?.validate() ?? false) {
+                                if (!mounted) return;
+
+                                setState(() {
+                                  isSubmitting = true;
+                                  submitError = null;
+                                });
+                                try {
+                                  final newGalleryPhotoUrls =
+                                      List<String>.from(galleryPhotoUrls);
+                                  for (final file in localPhotoFiles) {
+                                    final url = await imageUpload(file.path);
+                                    newGalleryPhotoUrls.add(url);
+                                  }
+                                  galleryPhotoUrls = newGalleryPhotoUrls;
+                                  localPhotoFiles
+                                      .clear(); // Clear after successful upload
+
+                                  // Always resolve category to ID
+                                  final found = categories.firstWhere(
+                                    (cat) =>
+                                        cat.id.toString() == category ||
+                                        cat.name == category,
+                                    orElse: () =>
+                                        BusinessCategoryModel(id: '', name: ''),
+                                  );
+                                  final categoryId = (found.id != null &&
+                                          found.id.toString().isNotEmpty)
+                                      ? found.id.toString()
+                                      : null;
+                                  if (categoryId == null ||
+                                      categoryId.isEmpty) {
+                                    if (mounted) {
+                                      setState(() {
+                                        isSubmitting = false;
+                                        submitError =
+                                            'Please select a valid category.';
+                                      });
+                                    }
+                                    return;
+                                  }
+
+                                  final companyData = {
+                                    'name': name,
+                                    'overview': overview ?? "",
+                                    'category': categoryId,
+                                    'image': image,
+                                    'status': status,
+                                    'established_date': establishedDate,
+                                    'company_size': companySize,
+                                    'services': services,
+                                    'tags': tags,
+                                    'opening_hours': {
+                                      'sunday': sunday,
+                                      'monday': monday,
+                                      'tuesday': tuesday,
+                                      'wednesday': wednesday,
+                                      'thursday': thursday,
+                                      'friday': friday,
+                                      'saturday': saturday,
+                                    },
+                                    'contact_info': {
+                                      'address': address,
+                                      'phone': phone,
+                                      'email': email,
+                                      'website': website,
+                                    },
+                                    'gallery': {
+                                      'photos': galleryPhotoUrls
+                                          .map((url) => {'url': url})
+                                          .toList(),
+                                      'videos': videoUrls
+                                          .map((url) => {'url': url})
+                                          .toList(),
+                                    },
+                                    'location': location,
+                                    'trade_license_copy': tradeLicenseUrl,
+                                    'business_emirates': businessEmirate,
+                                    'name_in_trade_license': nameInTradeLicense,
+                                    'recommended_by': recommendedBy,
+                                  };
+                                  final container =
+                                      ProviderScope.containerOf(context);
+                                  final companyApi =
+                                      container.read(companyApiServiceProvider);
+                                  bool result;
+                                  if (widget.companyToEdit != null &&
+                                      widget.companyToEdit!.id != null) {
+                                    result = await companyApi.updateCompany(
+                                        widget.companyToEdit!.id!, companyData);
+                                  } else {
+                                    result = await companyApi
+                                        .createCompany(companyData);
+                                  }
+                                  if (result != false) {
+                                    if (mounted) {
+                                      // Navigate to approval waiting page after successful submission
+                                      NavigationService navigationService =
+                                          NavigationService();
+                                      navigationService.pushNamedReplacement(
+                                          'ApprovalWaitingPage');
+                                    }
+                                  } else {
+                                    if (mounted) {
+                                      setState(() => submitError =
+                                          widget.companyToEdit != null
+                                              ? 'Failed to update company.'
+                                              : 'Failed to create company.');
+                                    }
+                                  }
+                                } catch (e) {
+                                  if (mounted) {
+                                    setState(() => submitError = 'Error: $e');
+                                  }
+                                } finally {
+                                  if (mounted) {
+                                    setState(() => isSubmitting = false);
+                                  }
                                 }
-                              } else {
-                                if (mounted) {
-                                  setState(() => submitError =
-                                      widget.companyToEdit != null
-                                          ? 'Failed to update company.'
-                                          : 'Failed to create company.');
-                                }
                               }
-                            } catch (e) {
-                              if (mounted) {
-                                setState(() => submitError = 'Error: $e');
-                              }
-                            } finally {
-                              if (mounted) {
-                                setState(() => isSubmitting = false);
-                              }
-                            }
-                          }
-                        },
-                ),
+                            },
+                    ),
+                  ),
+                  // Dot indicator for company creation step (2nd step)
+                  _buildDotIndicator(1, 2, kWhite),
+                  const SizedBox(height: 8),
+                ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Method to build a dot indicator for steps
+  Widget _buildDotIndicator(int currentIndex, int itemCount, Color color) {
+    return Center(
+      child: SmoothPageIndicator(
+        controller: PageController(initialPage: currentIndex),
+        count: itemCount,
+        effect: ExpandingDotsEffect(
+          expansionFactor: 3,
+          spacing: 8,
+          radius: 8,
+          dotWidth: 8,
+          dotHeight: 8,
+          dotColor: Colors.grey,
+          activeDotColor: color,
         ),
       ),
     );
