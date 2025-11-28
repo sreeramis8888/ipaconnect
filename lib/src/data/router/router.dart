@@ -39,6 +39,7 @@ import '../../interfaces/onboarding/registration.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/levels/hierarchies.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/about_us.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/business/create_company_modern_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   Widget? page;
@@ -157,9 +158,11 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'MyEvents':
       page = MyEventsPage();
     case 'MyCertificate':
-    UserModel user = settings?.arguments as UserModel;
+      UserModel user = settings?.arguments as UserModel;
 
-      page = MyCertificatePage(user: user,);
+      page = MyCertificatePage(
+        user: user,
+      );
     case 'TermsAndConditionsPage':
       page = TermsAndConditionsPage();
     case 'PrivacyPolicyPage':
@@ -221,6 +224,9 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       page = AboutUsPage();
     case 'OnboardingScreen':
       page = OnboardingScreen();
+      break;
+    case 'CreateCompanyModernPage':
+      page = CreateCompanyModernPage();
       break;
     default:
       return MaterialPageRoute(

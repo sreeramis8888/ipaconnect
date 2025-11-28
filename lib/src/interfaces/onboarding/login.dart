@@ -350,6 +350,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   late TextEditingController _otpController;
   bool _isDisposed = false;
+  bool _isTimerActive = false;
 
   @override
   void initState() {
@@ -361,7 +362,15 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   @override
   void dispose() {
     _isDisposed = true;
+    _isTimerActive = false;
+
     _timer?.cancel();
+    _timer = null;
+
+    if (_otpController.text.isNotEmpty) {
+      _otpController.clear();
+    }
+
     _otpController.dispose();
     super.dispose();
   }
@@ -369,26 +378,47 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   void startTimer() {
     _isButtonDisabled = true;
     _start = 59;
+
+    _timer?.cancel();
+    _timer = null;
+
+    _isTimerActive = true;
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_isDisposed) {
+      if (_isDisposed || !mounted || !_isTimerActive) {
         timer.cancel();
+        _timer = null;
+        _isTimerActive = false;
         return;
       }
+
       if (_start == 0) {
-        setState(() {
-          _isButtonDisabled = false;
-        });
+        if (mounted && _isTimerActive) {
+          setState(() {
+            _isButtonDisabled = false;
+          });
+        }
         timer.cancel();
+        _timer = null;
+        _isTimerActive = false;
       } else {
-        setState(() {
-          _start--;
-        });
+        if (mounted && _isTimerActive) {
+          setState(() {
+            _start--;
+          });
+        }
       }
     });
   }
 
   void resendCode() {
-    if (_isDisposed) return;
+    if (_isDisposed || !mounted) return;
+
+    // Cancel any existing timer
+    _timer?.cancel();
+    _timer = null;
+    _isTimerActive = false;
+
     startTimer();
     final authApiService = ref.watch(authApiServiceProvider);
     authApiService.resendOTP(
@@ -537,22 +567,28 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   Future<void> _handleOtpVerification(
       BuildContext context, WidgetRef ref) async {
-    if (_isDisposed) return; // Guard against late calls
+    if (_isDisposed || !mounted) return; // Guard against late calls
 
     ref.read(loadingProvider.notifier).startLoading();
     SnackbarService snackbarService = SnackbarService();
     try {
       String phone = widget.fullPhone.trim();
       final countryCode = ref.watch(countryCodeProvider);
+
+      if (_otpController.text.isEmpty) {
+        return;
+      }
+
       String otp = _otpController.text.trim();
 
-      // Check again inside try block in case widget was disposed during async operation
-      if (_isDisposed || otp.isEmpty) {
+      if (_isDisposed || !mounted || otp.isEmpty) {
         return;
       }
 
       if (otp.length != 6) {
-        snackbarService.showSnackBar('Please enter a valid 6 digit OTP');
+        if (mounted && !_isDisposed) {
+          snackbarService.showSnackBar('Please enter a valid 6 digit OTP');
+        }
         return;
       }
       final authApiService = ref.read(authApiServiceProvider);
@@ -587,26 +623,34 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           ref.read(userProvider.notifier).refreshUser();
         });
 
-        // Navigate based on user status
-        if ((savedStatus).toLowerCase() == 'inactive') {
-          NavigationService().pushNamedReplacement('RegistrationPage',
-              arguments: '+${countryCode ?? '91'}$phone');
-        } else if ((savedStatus).toLowerCase() == 'pending') {
-          NavigationService().pushNamedReplacement('ApprovalWaitingPage');
-        } else if ((savedStatus).toLowerCase() == 'awaiting-payment') {
-          NavigationService()
-              .pushNamedReplacement('SubscriptionPage', arguments: currency);
-        } else {
-          NavigationService().pushNamedReplacement('MainPage');
+        // Navigate based on user status (only if still mounted)
+        if (mounted && !_isDisposed) {
+          if ((savedStatus).toLowerCase() == 'inactive') {
+            NavigationService().pushNamedReplacement('RegistrationPage',
+                arguments: '+${countryCode ?? '91'}$phone');
+          } else if ((savedStatus).toLowerCase() == 'pending') {
+            NavigationService().pushNamedReplacement('ApprovalWaitingPage');
+          } else if ((savedStatus).toLowerCase() == 'awaiting-payment') {
+            NavigationService()
+                .pushNamedReplacement('SubscriptionPage', arguments: currency);
+          } else {
+            NavigationService().pushNamedReplacement('MainPage');
+          }
         }
       } else {
-        snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
+        if (mounted && !_isDisposed) {
+          snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
+        }
       }
     } catch (e) {
       log(e.toString());
-      snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
+      if (mounted && !_isDisposed) {
+        snackbarService.showSnackBar('Wrong OTP', type: SnackbarType.error);
+      }
     } finally {
-      ref.read(loadingProvider.notifier).stopLoading();
+      if (!_isDisposed) {
+        ref.read(loadingProvider.notifier).stopLoading();
+      }
     }
   }
 }

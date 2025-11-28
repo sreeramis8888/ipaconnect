@@ -12,6 +12,20 @@ class CompanyModel {
   final String? category;
   final String? image;
   final String? status;
+  final String? location;
+
+  @JsonKey(name: 'trade_license_copy')
+  final String? tradeLicenseCopy;
+
+  @JsonKey(name: 'business_emirates')
+  final BusinessEmirates? businessEmirates;
+
+  @JsonKey(name: 'recommended_by')
+  final String? recommendedBy;
+
+  @JsonKey(name: 'name_in_trade_license')
+  final bool? nameInTradeLicense;
+
 
   @JsonKey(name: 'established_date')
   final int? establishedDate;
@@ -37,6 +51,11 @@ class CompanyModel {
   final Gallery? gallery;
 
   CompanyModel({
+    this.location, 
+    this.tradeLicenseCopy, 
+    this.businessEmirates, 
+    this.recommendedBy, 
+    this.nameInTradeLicense, 
     this.id,
     this.name,
     this.overview,
@@ -77,6 +96,14 @@ class CompanyModel {
     OpeningHours? openingHours,
     ContactInfo? contactInfo,
     Gallery? gallery,
+    String? location,
+    String? tradeLicenseCopy,
+    String? recommendedBy,
+    bool? nameInTradeLicense,
+    BusinessEmirates? businessEmirates,
+
+
+
   }) {
     return CompanyModel(
       id: id ?? this.id,
@@ -95,10 +122,29 @@ class CompanyModel {
       openingHours: openingHours ?? this.openingHours,
       contactInfo: contactInfo ?? this.contactInfo,
       gallery: gallery ?? this.gallery,
+      location: location ?? this.location,
+      businessEmirates: businessEmirates ?? businessEmirates,
+      nameInTradeLicense: nameInTradeLicense ?? nameInTradeLicense,
+      tradeLicenseCopy: tradeLicenseCopy ?? tradeLicenseCopy,
+      recommendedBy: recommendedBy ?? recommendedBy,
     );
   }
 }
 
+
+
+enum BusinessEmirates {
+  dubai('Dubai'),
+  abudhabi('Abudhabi'),
+  sharjah('Sharjah'),
+  ummAlQuwain('Umm Al Quwain'),
+  ajman('Ajman'),
+  rasAlKhaimah('Ras Al Khaimah'),
+  fujairah('Fujairah');
+
+  const BusinessEmirates(this.value);
+  final String value;
+}
 @JsonSerializable()
 class SocialMedia {
   final String? twitter;

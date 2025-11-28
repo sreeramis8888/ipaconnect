@@ -194,7 +194,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             const SizedBox(height: 24),
                             Text('Personal Details', style: kHeadTitleB),
                             const SizedBox(height: 24),
-                            Text('Full Name *', style: kBodyTitleR),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Full Name ',
+                                    style: kBodyTitleR,
+                                  ),
+                                  TextSpan(
+                                    text: '*',
+                                    style: kBodyTitleR.copyWith(color: kRed),
+                                  ),
+                                ],
+                              ),
+                            ),
                             CustomTextFormField(
                               labelText: 'Enter the full name',
                               textController: _nameController,
@@ -203,7 +216,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   : null,
                             ),
                             const SizedBox(height: 16),
-                            Text('Email ID *', style: kBodyTitleR),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Email ID ',
+                                    style: kBodyTitleR,
+                                  ),
+                                  TextSpan(
+                                    text: '*',
+                                    style: kBodyTitleR.copyWith(color: kRed),
+                                  ),
+                                ],
+                              ),
+                            ),
                             CustomTextFormField(
                               labelText: 'Enter the email id',
                               textController: _emailController,
@@ -214,7 +240,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             const SizedBox(height: 16),
 
                             //Phone number
-                            Text('Phone Number *', style: kBodyTitleR),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Phone Number ',
+                                    style: kBodyTitleR,
+                                  ),
+                                  TextSpan(
+                                    text: '*',
+                                    style: kBodyTitleR.copyWith(color: kRed),
+                                  ),
+                                ],
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             Theme(
                               data: Theme.of(context).copyWith(
@@ -301,7 +340,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             ),
 
                             //Whatsapp number
-                            Text('WhatsApp Number *', style: kBodyTitleR),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'WhatsApp Number ',
+                                    style: kBodyTitleR,
+                                  ),
+                                  TextSpan(
+                                    text: '*',
+                                    style: kBodyTitleR.copyWith(color: kRed),
+                                  ),
+                                ],
+                              ),
+                            ),
                             const SizedBox(height: 16),
                             Theme(
                               data: Theme.of(context).copyWith(
@@ -388,10 +440,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             ),
 
                             //Emirates id Copy (document upload)
-                            Text('Emirates ID Copy *', style: kBodyTitleR),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Emirates ID Copy ',
+                                    style: kBodyTitleR,
+                                  ),
+                                  TextSpan(
+                                    text: '*',
+                                    style: kBodyTitleR.copyWith(color: kRed),
+                                  ),
+                                ],
+                              ),
+                            ),
                             const SizedBox(height: 16),
-                            Text('Upload Document (PDF only)',
-                                style: kSmallerTitleR),
+
                             const SizedBox(height: 8),
                             GestureDetector(
                               onTap: _pickEmiratesIdDocument,
@@ -437,10 +501,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             const SizedBox(height: 24),
 
                             //Passport copy (document upload)
-                            Text('Passport Copy *', style: kBodyTitleR),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Passport Copy ',
+                                    style: kBodyTitleR,
+                                  ),
+                                  TextSpan(
+                                    text: '*',
+                                    style: kBodyTitleR.copyWith(color: kRed),
+                                  ),
+                                ],
+                              ),
+                            ),
                             const SizedBox(height: 16),
-                            Text('Upload Document (PDF only)',
-                                style: kSmallerTitleR),
                             const SizedBox(height: 8),
                             GestureDetector(
                               onTap: _pickPassportDocument,
@@ -505,8 +580,32 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       builder: (context, ref, child) {
                         return customButton(
                           isLoading: loading,
-                          label: 'Send Request',
+                          label: 'Next',
                           onPressed: () async {
+                            // Log form data before validation
+                            log('=== REGISTRATION FORM DATA ===',
+                                name: 'REGISTRATION_LOG');
+                            log('Name: ${_nameController.text}',
+                                name: 'REGISTRATION_LOG');
+                            log('Email: ${_emailController.text}',
+                                name: 'REGISTRATION_LOG');
+                            log('Phone: ${_phoneController.text}',
+                                name: 'REGISTRATION_LOG');
+                            log('WhatsApp: ${_whatsAppController.text}',
+                                name: 'REGISTRATION_LOG');
+                            log('Designation: ${_designationController.text}',
+                                name: 'REGISTRATION_LOG');
+                            log('Location: ${_locationController.text}',
+                                name: 'REGISTRATION_LOG');
+                            log('Profile Image: ${_profileImage != null ? "Selected (${_profileImage!.length} bytes)" : "Not selected"}',
+                                name: 'REGISTRATION_LOG');
+                            log('Emirates ID Document: ${_emiratesIdDocument != null ? _emiratesIdDocument!.path : "Not uploaded"}',
+                                name: 'REGISTRATION_LOG');
+                            log('Passport Document: ${_passportDocument != null ? _passportDocument!.path : "Not uploaded"}',
+                                name: 'REGISTRATION_LOG');
+                            log('================================',
+                                name: 'REGISTRATION_LOG');
+
                             // Validate required fields
                             if (_nameController.text.isEmpty ||
                                 _emailController.text.isEmpty ||
@@ -514,6 +613,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 _whatsAppController.text.isEmpty ||
                                 _emiratesIdDocument == null ||
                                 _passportDocument == null) {
+                              log('VALIDATION FAILED: Missing required fields',
+                                  name: 'REGISTRATION_LOG');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -532,44 +633,109 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             try {
                               // Upload profile image
                               if (_profileImage != null) {
+                                log('Starting profile image upload...',
+                                    name: 'REGISTRATION_LOG');
                                 String tempImagePath =
                                     await saveUint8ListToFile(
                                         _profileImage!, 'profile.png');
+                                log('Profile image saved to temp path: $tempImagePath',
+                                    name: 'REGISTRATION_LOG');
                                 profileUrl = await imageUpload(tempImagePath);
+                                log('Profile image uploaded successfully. URL: $profileUrl',
+                                    name: 'REGISTRATION_LOG');
+                              } else {
+                                log('No profile image to upload',
+                                    name: 'REGISTRATION_LOG');
                               }
 
                               // Upload Emirates ID document
+                              log('Starting Emirates ID document upload...',
+                                  name: 'REGISTRATION_LOG');
                               emiratesIdUrl = await documentUpload(
                                   _emiratesIdDocument!.path);
+                              log('Emirates ID document uploaded successfully. URL: $emiratesIdUrl',
+                                  name: 'REGISTRATION_LOG');
 
                               // Upload Passport document
+                              log('Starting Passport document upload...',
+                                  name: 'REGISTRATION_LOG');
                               passportUrl =
                                   await documentUpload(_passportDocument!.path);
+                              log('Passport document uploaded successfully. URL: $passportUrl',
+                                  name: 'REGISTRATION_LOG');
+
+                              // Create UserModel with all data
+                              final userModel = UserModel(
+                                  name: _nameController.text,
+                                  email: _emailController.text,
+                                  image: profileUrl,
+                                  phone: _phoneController.text,
+                                  emiratesIdCopy: emiratesIdUrl,
+                                  passportCopy: passportUrl,
+                                  profession: _designationController.text,
+                                  location: _locationController.text,
+                                  status: 'pending');
+
+                              // Log the complete UserModel data being sent
+                              log('=== USERMODEL DATA TO SEND ===',
+                                  name: 'REGISTRATION_LOG');
+                              log('User ID: $id', name: 'REGISTRATION_LOG');
+                              log('Name: ${userModel.name}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Email: ${userModel.email}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Image URL: ${userModel.image}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Phone: ${userModel.phone}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Emirates ID Copy URL: ${userModel.emiratesIdCopy}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Passport Copy URL: ${userModel.passportCopy}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Profession: ${userModel.profession}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Location: ${userModel.location}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Status: ${userModel.status}',
+                                  name: 'REGISTRATION_LOG');
+                              log('================================',
+                                  name: 'REGISTRATION_LOG');
 
                               UserDataApiService userDataApiService =
                                   ref.watch(userDataApiServiceProvider);
-                              final response =
-                                  await userDataApiService.updateUser(
-                                      id,
-                                      UserModel(
-                                          name: _nameController.text,
-                                          email: _emailController.text,
-                                          image: profileUrl,
-                                          phone: _phoneController.text,
-                                          emiratesIdCopy: emiratesIdUrl,
-                                          passportCopy: passportUrl,
-                                          profession:
-                                              _designationController.text,
-                                          location: _locationController.text,
-                                          status: 'pending'));
+
+                              log('Sending API request to update user...',
+                                  name: 'REGISTRATION_LOG');
+                              final response = await userDataApiService
+                                  .updateUser(id, userModel);
+
+                              // Log the complete API response
+                              log('=== API RESPONSE ===',
+                                  name: 'REGISTRATION_LOG');
+                              log('Success: ${response.success}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Message: ${response.message}',
+                                  name: 'REGISTRATION_LOG');
+                              log('Data: ${response.data.toString()}',
+                                  name: 'REGISTRATION_LOG');
+                              log('========================',
+                                  name: 'REGISTRATION_LOG');
+
                               log(response.data.toString(), name: 'EDIT USER');
                               if (response.success == true) {
+                                log('Registration successful, navigating to CreateCompanyModernPage',
+                                    name: 'REGISTRATION_LOG');
                                 NavigationService navigationService =
                                     NavigationService();
                                 navigationService.pushNamedReplacement(
-                                    'ApprovalWaitingPage');
+                                    'CreateCompanyModernPage');
+                              } else {
+                                log('Registration failed: ${response.message}',
+                                    name: 'REGISTRATION_LOG');
                               }
                             } catch (e) {
+                              log('ERROR during registration: ${e.toString()}',
+                                  name: 'REGISTRATION_LOG');
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('Error: ${e.toString()}'),
@@ -578,6 +744,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               );
                             } finally {
                               ref.read(loadingProvider.notifier).stopLoading();
+                              log('Registration process completed',
+                                  name: 'REGISTRATION_LOG');
                             }
                           },
                         );
