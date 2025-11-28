@@ -341,28 +341,28 @@ class _CreateCompanyModernPageState
       },
       child: Scaffold(
         backgroundColor: kBackgroundColor,
-        
         appBar: AppBar(
+          backgroundColor: kBackgroundColor,
           leading: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Material(
-            color: Colors.transparent,
-            shape: const CircleBorder(),
-            clipBehavior: Clip.antiAlias,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                'RegistrationPage',
-                (route) => route.settings.name == 'RegistrationPage',
-              );
-              },
-              child: CustomRoundButton(
-                offset: const Offset(4, 0),
-                iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+            padding: const EdgeInsets.all(8),
+            child: Material(
+              color: kBackgroundColor,
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    'RegistrationPage',
+                    (route) => route.settings.name == 'RegistrationPage',
+                  );
+                },
+                child: CustomRoundButton(
+                  offset: const Offset(4, 0),
+                  iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+                ),
               ),
             ),
           ),
-        ),
         ),
         body: SafeArea(
           child: Column(
@@ -761,9 +761,9 @@ class _CreateCompanyModernPageState
                               ),
                               child: Row(
                                 children: [
-                                  const SizedBox(width: 12),
-                                  Icon(Icons.upload_file,
-                                      color: Colors.white.withOpacity(0.7)),
+                                  // const SizedBox(width: 12),
+                                  // Icon(Icons.upload_file,
+                                  //     color: Colors.white.withOpacity(0.7)),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
