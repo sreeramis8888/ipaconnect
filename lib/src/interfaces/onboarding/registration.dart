@@ -760,6 +760,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                       dob: _selectedDateOfBirth,
                                       image: profileUrl,
                                       phone: _phoneController.text,
+                                      whatsapp_no: _whatsAppController.text,
                                       emiratesIdCopy: emiratesIdUrl,
                                       passportCopy: passportUrl,
                                       profession: _designationController.text,

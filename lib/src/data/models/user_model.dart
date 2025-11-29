@@ -13,6 +13,7 @@ class UserModel {
   final String? email;
   final String? image;
   final String? phone;
+  final String? whatsapp_no;
   final String? fcm;
   final String? otp;
   @JsonKey(name: 'proffession')
@@ -72,6 +73,7 @@ class UserModel {
       this.email,
       this.image,
       this.phone,
+      this.whatsapp_no,
       this.fcm,
       this.otp,
       this.profession,
@@ -118,6 +120,7 @@ class UserModel {
     String? email,
     String? image,
     String? phone,
+    String? whatsapp_no,
     String? fcm,
     String? otp,
     String? profession,
@@ -158,6 +161,7 @@ class UserModel {
       email: email ?? this.email,
       image: image ?? this.image,
       phone: phone ?? this.phone,
+      whatsapp_no: whatsapp_no ?? this.whatsapp_no,
       fcm: fcm ?? this.fcm,
       otp: otp ?? this.otp,
       profession: profession ?? this.profession,
