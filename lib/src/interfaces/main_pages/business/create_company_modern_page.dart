@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
@@ -280,33 +281,46 @@ class _CreateCompanyModernPageState
     return youtubeRegex.hasMatch(url);
   }
 
-  Future<void> pickTradeLicense() async {
-    setState(() {
-      isUploadingTradeLicense = true;
-      tradeLicenseUploadError = null;
-    });
-    try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(source: ImageSource.gallery);
-      if (picked == null) {
-        setState(() => isUploadingTradeLicense = false);
-        return;
-      }
 
-      tradeLicenseFile = File(picked.path);
-      final url = await imageUpload(picked.path);
+   File? _tradelicenseDocument;
 
+ Future<void> pickTradeLicense() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+    if (result != null && result.files.single.path != null) {
       setState(() {
-        tradeLicenseUrl = url;
-        isUploadingTradeLicense = false;
-      });
-    } catch (e) {
-      setState(() {
-        tradeLicenseUploadError = 'Trade license upload failed';
-        isUploadingTradeLicense = false;
+        tradeLicenseFile = File(result.files.single.path!);
       });
     }
   }
+
+  // Future<void> pickTradeLicense() async {
+  //   setState(() {
+  //     isUploadingTradeLicense = true;
+  //     tradeLicenseUploadError = null;
+  //   });
+  //   try {
+  //     final picker = ImagePicker();
+  //     final picked = await picker.pickImage(source: ImageSource.gallery);
+  //     if (picked == null) {
+  //       setState(() => isUploadingTradeLicense = false);
+  //       return;
+  //     }
+
+  //     tradeLicenseFile = File(picked.path);
+  //     final url = await imageUpload(picked.path);
+
+  //     setState(() {
+  //       tradeLicenseUrl = url;
+  //       isUploadingTradeLicense = false;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       tradeLicenseUploadError = 'Trade license upload failed';
+  //       isUploadingTradeLicense = false;
+  //     });
+  //   }
+  // }
 
   void removeTradeLicense() {
     setState(() {
