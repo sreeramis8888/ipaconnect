@@ -630,7 +630,8 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                       )),
                 ),
                 title: Text(
-                  widget.event.organiserName ?? 'TBA',
+                  // widget.event.organiserName ?? 'TBA',
+                  speaker.name!,
                   style: kSmallTitleB,
                 ),
                 subtitle: Text(

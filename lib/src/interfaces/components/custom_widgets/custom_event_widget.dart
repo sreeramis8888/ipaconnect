@@ -89,7 +89,7 @@ Widget eventWidget({
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                   child: Text(
-                    '${event.eventName}',
+                    '${event.description}',
                     style: kSmallerTitleR,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
