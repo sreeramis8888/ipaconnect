@@ -6,6 +6,7 @@ import 'package:ipaconnect/src/data/constants/style_constants.dart';
 class SelectionDropDown extends StatefulWidget {
   final String? hintText;
   final String? label;
+  final Widget? labelWidget; // Add support for RichText widgets
   final List<DropdownMenuItem<String>> items;
   final String? value;
   final ValueChanged<String?> onChanged;
@@ -14,6 +15,7 @@ class SelectionDropDown extends StatefulWidget {
 
   const SelectionDropDown({
     this.label,
+    this.labelWidget, // Add support for RichText widgets
     required this.items,
     this.value,
     required this.onChanged,
@@ -74,10 +76,11 @@ class _SelectionDropDownState extends State<SelectionDropDown>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.label != null)
+              if (widget.label != null || widget.labelWidget != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(widget.label ?? "", style: kSmallTitleM),
+                  child: widget.labelWidget ??
+                      Text(widget.label ?? "", style: kSmallTitleM),
                 ),
               DropdownButtonFormField2<String>(
                 iconStyleData: IconStyleData(

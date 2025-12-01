@@ -19,6 +19,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? title;
   final TextInputType textInputType;
   final Color backgroundColor;
+  final Widget? titleWidget; // Add support for RichText widgets
   const CustomTextFormField({
     super.key,
     required this.labelText,
@@ -30,6 +31,7 @@ class CustomTextFormField extends StatelessWidget {
     this.enabled,
     this.isAward,
     this.title,
+    this.titleWidget, // Add support for RichText widgets
     this.textInputType = TextInputType.text,
     this.companyIndex,
     this.backgroundColor = kInputFieldcolor,
@@ -41,13 +43,14 @@ class CustomTextFormField extends StatelessWidget {
       builder: (context, ref, child) {
         return Column(
           children: [
-            if (title != null)
+            if (title != null || titleWidget != null)
               Row(
                 children: [
-                  Text(
-                    title ?? '',
-                    style: kSmallTitleM,
-                  ),
+                  titleWidget ??
+                      Text(
+                        title ?? '',
+                        style: kSmallTitleM,
+                      ),
                 ],
               ),
             SizedBox(

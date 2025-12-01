@@ -211,7 +211,8 @@ class _AddEventPageState extends State<AddEventPage> {
       _endDate = event.eventEndDate;
       if (_startDate != null) {
         _startTime = TimeOfDay.fromDateTime(_startDate!);
-        _startDateController.text = _startDate!.toLocal().toString().split(' ')[0];
+        _startDateController.text =
+            _startDate!.toLocal().toString().split(' ')[0];
         _startTimeController.text = _startTime!.format(context);
       }
       if (_endDate != null) {
@@ -229,18 +230,22 @@ class _AddEventPageState extends State<AddEventPage> {
       _posterVisibilityStartDate = event.posterVisibilityStartDate;
       _posterVisibilityEndDate = event.posterVisibilityEndDate;
       if (_posterVisibilityStartDate != null) {
-        _posterVisibilityStartDateController.text = _posterVisibilityStartDate!.toLocal().toString().split(' ')[0];
+        _posterVisibilityStartDateController.text =
+            _posterVisibilityStartDate!.toLocal().toString().split(' ')[0];
       }
       if (_posterVisibilityEndDate != null) {
-        _posterVisibilityEndDateController.text = _posterVisibilityEndDate!.toLocal().toString().split(' ')[0];
+        _posterVisibilityEndDateController.text =
+            _posterVisibilityEndDate!.toLocal().toString().split(' ')[0];
       }
       if (event.speakers != null) {
-        _speakers = event.speakers!.map((speaker) => {
-          'name': speaker.name ?? '',
-          'designation': speaker.designation ?? '',
-          'role': speaker.role ?? '',
-          if (speaker.image != null) 'image': speaker.image,
-        }).toList();
+        _speakers = event.speakers!
+            .map((speaker) => {
+                  'name': speaker.name ?? '',
+                  'designation': speaker.designation ?? '',
+                  'role': speaker.role ?? '',
+                  if (speaker.image != null) 'image': speaker.image,
+                })
+            .toList();
       }
       // Note: coordinators will need to be fetched separately as they are just IDs
     }
@@ -265,7 +270,8 @@ class _AddEventPageState extends State<AddEventPage> {
               ),
             ),
           ),
-          title: Text(widget.eventToEdit != null ? 'Edit Event' : 'Add New Event',
+          title: Text(
+              widget.eventToEdit != null ? 'Edit Event' : 'Add New Event',
               style: kBodyTitleR.copyWith(
                   fontSize: 16, color: kSecondaryTextColor)),
           centerTitle: false,
@@ -279,7 +285,16 @@ class _AddEventPageState extends State<AddEventPage> {
               children: [
                 SelectionDropDown(
                   backgroundColor: kCardBackgroundColor,
-                  label: 'Type of Event',
+                  labelWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: 'Type of Event ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   value: _eventType,
                   hintText: 'Select',
                   items: [
@@ -292,16 +307,30 @@ class _AddEventPageState extends State<AddEventPage> {
 
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
-                  title: 'Name',
+                  titleWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: 'Name ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   labelText: 'Enter the name of event',
                   textController: _eventNameController,
                   validator: (val) =>
                       val == null || val.isEmpty ? 'Enter event name' : null,
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  'Event Image',
-                  style: kSmallTitleB,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(text: 'Event Image ', style: kSmallTitleB),
+                      TextSpan(
+                          text: '*', style: kSmallTitleB.copyWith(color: kRed)),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 10,
@@ -319,7 +348,8 @@ class _AddEventPageState extends State<AddEventPage> {
                       height: 120,
                       color: kCardBackgroundColor,
                       child: Center(
-                          child: _eventImage == null && _existingImageUrl == null
+                          child: _eventImage == null &&
+                                  _existingImageUrl == null
                               ? const Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -356,7 +386,8 @@ class _AddEventPageState extends State<AddEventPage> {
                                                     BorderRadius.circular(10)),
                                             height: double.infinity,
                                             width: 60,
-                                            child: Image.network(_existingImageUrl!)),
+                                            child: Image.network(
+                                                _existingImageUrl!)),
                                       const Spacer(),
                                       GestureDetector(
                                         onTap: () {
@@ -378,7 +409,16 @@ class _AddEventPageState extends State<AddEventPage> {
                 const SizedBox(height: 10),
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
-                  title: 'Description',
+                  titleWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: 'Description ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   labelText: 'Enter the content here',
                   textController: _descriptionController,
                   maxLines: 4,
@@ -391,7 +431,16 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: AbsorbPointer(
                     child: CustomTextFormField(
                       backgroundColor: kCardBackgroundColor,
-                      title: 'Start Date',
+                      titleWidget: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(text: 'Start Date ', style: kSmallTitleB),
+                            TextSpan(
+                                text: '*',
+                                style: kSmallTitleB.copyWith(color: kRed)),
+                          ],
+                        ),
+                      ),
                       labelText: 'Select Start Date from Calendar',
                       textController: _startDateController,
                       readOnly: true,
@@ -407,7 +456,16 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: AbsorbPointer(
                     child: CustomTextFormField(
                       backgroundColor: kCardBackgroundColor,
-                      title: 'End Date',
+                      titleWidget: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(text: 'End Date ', style: kSmallTitleB),
+                            TextSpan(
+                                text: '*',
+                                style: kSmallTitleB.copyWith(color: kRed)),
+                          ],
+                        ),
+                      ),
                       labelText: 'Select End Date from Calendar',
                       textController: _endDateController,
                       readOnly: true,
@@ -422,7 +480,16 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: AbsorbPointer(
                     child: CustomTextFormField(
                       backgroundColor: kCardBackgroundColor,
-                      title: 'Start Time',
+                      titleWidget: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(text: 'Start Time ', style: kSmallTitleB),
+                            TextSpan(
+                                text: '*',
+                                style: kSmallTitleB.copyWith(color: kRed)),
+                          ],
+                        ),
+                      ),
                       labelText: 'Select Start Time',
                       textController: _startTimeController,
                       readOnly: true,
@@ -438,7 +505,16 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: AbsorbPointer(
                     child: CustomTextFormField(
                       backgroundColor: kCardBackgroundColor,
-                      title: 'End Time',
+                      titleWidget: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(text: 'End Time ', style: kSmallTitleB),
+                            TextSpan(
+                                text: '*',
+                                style: kSmallTitleB.copyWith(color: kRed)),
+                          ],
+                        ),
+                      ),
                       labelText: 'Select End Time',
                       textController: _endTimeController,
                       readOnly: true,
@@ -450,7 +526,17 @@ class _AddEventPageState extends State<AddEventPage> {
                 const SizedBox(height: 10),
                 SelectionDropDown(
                   backgroundColor: kCardBackgroundColor,
-                  label: 'Virtual Platform',
+                  labelWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: 'Virtual Platform ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   value: _platform,
                   hintText: 'Choose the Virtual Platform',
                   items: [
@@ -474,7 +560,16 @@ class _AddEventPageState extends State<AddEventPage> {
                 const SizedBox(height: 10),
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
-                  title: 'Venue',
+                  titleWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: 'Venue ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   labelText: 'Enter the venue',
                   textController: _venueController,
                   validator: (val) =>
@@ -483,7 +578,16 @@ class _AddEventPageState extends State<AddEventPage> {
                 const SizedBox(height: 10),
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
-                  title: 'Organiser Name',
+                  titleWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: 'Organiser Name ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   labelText: 'Enter the organiser name',
                   textController: _organiserNameController,
                   validator: (val) => val == null || val.isEmpty
@@ -493,7 +597,16 @@ class _AddEventPageState extends State<AddEventPage> {
                 const SizedBox(height: 10),
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
-                  title: 'Limit',
+                  titleWidget: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: 'Limit ', style: kSmallTitleB),
+                        TextSpan(
+                            text: '*',
+                            style: kSmallTitleB.copyWith(color: kRed)),
+                      ],
+                    ),
+                  ),
                   labelText: 'Enter participant limit',
                   textController: _limitController,
                   textInputType: TextInputType.number,
@@ -533,7 +646,18 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: AbsorbPointer(
                     child: CustomTextFormField(
                       backgroundColor: kCardBackgroundColor,
-                      title: 'Poster Visibility Start Date',
+                      titleWidget: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: 'Poster Visibility Start Date ',
+                                style: kSmallTitleB),
+                            TextSpan(
+                                text: '*',
+                                style: kSmallTitleB.copyWith(color: kRed)),
+                          ],
+                        ),
+                      ),
                       labelText: 'Select Poster Visibility Start Date',
                       textController: _posterVisibilityStartDateController,
                       readOnly: true,
@@ -566,7 +690,18 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: AbsorbPointer(
                     child: CustomTextFormField(
                       backgroundColor: kCardBackgroundColor,
-                      title: 'Poster Visibility End Date',
+                      titleWidget: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: 'Poster Visibility End Date ',
+                                style: kSmallTitleB),
+                            TextSpan(
+                                text: '*',
+                                style: kSmallTitleB.copyWith(color: kRed)),
+                          ],
+                        ),
+                      ),
                       labelText: 'Select Poster Visibility End Date',
                       textController: _posterVisibilityEndDateController,
                       readOnly: true,
@@ -614,9 +749,22 @@ class _AddEventPageState extends State<AddEventPage> {
                 ),
                 // Speaker Section
                 const SizedBox(height: 20),
-                Text('Speakers',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, color: kWhite)),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: 'Speakers ',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: kWhite)),
+                      TextSpan(
+                          text: '*',
+                          style: TextStyle(
+                              color: kRed,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
                 ..._speakers.asMap().entries.map((entry) => ListTile(
                       leading: entry.value['image'] != null
                           ? CircleAvatar(
@@ -637,7 +785,17 @@ class _AddEventPageState extends State<AddEventPage> {
                     Expanded(
                       child: CustomTextFormField(
                         backgroundColor: kCardBackgroundColor,
-                        title: 'Speaker Name',
+                        titleWidget: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: 'Speaker Name ', style: kSmallTitleB),
+                              TextSpan(
+                                  text: '*',
+                                  style: kSmallTitleB.copyWith(color: kRed)),
+                            ],
+                          ),
+                        ),
                         labelText: 'Enter speaker name',
                         textController: _speakerNameController,
                       ),
@@ -743,7 +901,9 @@ class _AddEventPageState extends State<AddEventPage> {
                   builder: (context, ref, child) {
                     final eventApiService = ref.watch(eventsApiServiceProvider);
                     return customButton(
-                      label: widget.eventToEdit != null ? 'Update Event' : 'Create Event',
+                      label: widget.eventToEdit != null
+                          ? 'Update Event'
+                          : 'Create Event',
                       isLoading: ref.watch(loadingProvider),
                       onPressed: ref.watch(loadingProvider)
                           ? null
