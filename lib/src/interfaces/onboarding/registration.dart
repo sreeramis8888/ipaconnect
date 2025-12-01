@@ -231,7 +231,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 8),
+                            Center(
+                              child: Text(
+                                'Max file size: 5MB • Supported formats: JPG, PNG',
+                                style: kBodyTitleR.copyWith(
+                                  color: kSecondaryTextColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
                             if (_profileImage == null)
                               Center(
                                 child: Text(
