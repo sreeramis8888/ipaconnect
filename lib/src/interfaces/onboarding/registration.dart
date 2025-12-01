@@ -585,8 +585,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 16),
-
+                            const SizedBox(height: 8),
+                            Text(
+                              'Max file size: 5MB • Supported format: PDF only',
+                              style: kBodyTitleR.copyWith(
+                                color: kSecondaryTextColor,
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             GestureDetector(
                               onTap: _pickEmiratesIdDocument,
@@ -646,7 +652,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Max file size: 5MB • Supported format: PDF only',
+                              style: kBodyTitleR.copyWith(
+                                color: kSecondaryTextColor,
+                                fontSize: 12,
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             GestureDetector(
                               onTap: _pickPassportDocument,
