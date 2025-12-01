@@ -301,7 +301,18 @@ class _AddEventPageState extends State<AddEventPage> {
                     DropdownMenuItem(value: 'Offline', child: Text('Offline')),
                     DropdownMenuItem(value: 'Online', child: Text('Online')),
                   ],
-                  onChanged: (val) => setState(() => _eventType = val),
+                  onChanged: (val) {
+                    setState(() {
+                      _eventType = val;
+                      // Clear fields based on event type change
+                      if (val == 'Offline') {
+                        _platform = null;
+                        _linkController.clear();
+                      } else if (val == 'Online') {
+                        _venueController.clear();
+                      }
+                    });
+                  },
                   validator: (val) => val == null ? 'Please select type' : null,
                 ),
 
@@ -524,57 +535,66 @@ class _AddEventPageState extends State<AddEventPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                SelectionDropDown(
-                  backgroundColor: kCardBackgroundColor,
-                  labelWidget: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: 'Virtual Platform ', style: kSmallTitleB),
-                        TextSpan(
-                            text: '*',
-                            style: kSmallTitleB.copyWith(color: kRed)),
-                      ],
+                // Virtual Platform field - only show for online events
+                if (_eventType == 'Online') ...[
+                  SelectionDropDown(
+                    backgroundColor: kCardBackgroundColor,
+                    labelWidget: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                              text: 'Virtual Platform ', style: kSmallTitleB),
+                          TextSpan(
+                              text: '*',
+                              style: kSmallTitleB.copyWith(color: kRed)),
+                        ],
+                      ),
                     ),
+                    value: _platform,
+                    hintText: 'Choose the Virtual Platform',
+                    items: [
+                      DropdownMenuItem(value: 'Zoom', child: Text('Zoom')),
+                      DropdownMenuItem(
+                          value: 'Google Meet', child: Text('Google Meet')),
+                      DropdownMenuItem(value: 'Teams', child: Text('Teams')),
+                      DropdownMenuItem(value: 'Other', child: Text('Other')),
+                    ],
+                    onChanged: (val) => setState(() => _platform = val),
+                    validator: (val) =>
+                        val == null ? 'Please select platform' : null,
                   ),
-                  value: _platform,
-                  hintText: 'Choose the Virtual Platform',
-                  items: [
-                    DropdownMenuItem(value: 'Zoom', child: Text('Zoom')),
-                    DropdownMenuItem(
-                        value: 'Google Meet', child: Text('Google Meet')),
-                    DropdownMenuItem(value: 'Teams', child: Text('Teams')),
-                    DropdownMenuItem(value: 'Other', child: Text('Other')),
-                  ],
-                  onChanged: (val) => setState(() => _platform = val),
-                  validator: (val) =>
-                      val == null ? 'Please select platform' : null,
-                ),
-                CustomTextFormField(
-                  backgroundColor: kCardBackgroundColor,
-                  title: 'Link',
-                  labelText: 'Add Meeting Link here',
-                  textController: _linkController,
-                  validator: (val) => null,
-                ),
-                const SizedBox(height: 10),
-                CustomTextFormField(
-                  backgroundColor: kCardBackgroundColor,
-                  titleWidget: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(text: 'Venue ', style: kSmallTitleB),
-                        TextSpan(
-                            text: '*',
-                            style: kSmallTitleB.copyWith(color: kRed)),
-                      ],
+                  const SizedBox(height: 10),
+                  CustomTextFormField(
+                    backgroundColor: kCardBackgroundColor,
+                    title: 'Link',
+                    labelText: 'Add Meeting Link here',
+                    textController: _linkController,
+                    validator: (val) => null,
+                  ),
+                  const SizedBox(height: 10),
+                ],
+
+                // Venue field - only show for offline events
+                if (_eventType == 'Offline') ...[
+                  CustomTextFormField(
+                    backgroundColor: kCardBackgroundColor,
+                    titleWidget: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(text: 'Venue ', style: kSmallTitleB),
+                          TextSpan(
+                              text: '*',
+                              style: kSmallTitleB.copyWith(color: kRed)),
+                        ],
+                      ),
                     ),
+                    labelText: 'Enter the venue',
+                    textController: _venueController,
+                    validator: (val) =>
+                        val == null || val.isEmpty ? 'Enter venue' : null,
                   ),
-                  labelText: 'Enter the venue',
-                  textController: _venueController,
-                  validator: (val) =>
-                      val == null || val.isEmpty ? 'Enter venue' : null,
-                ),
+                  const SizedBox(height: 10),
+                ],
                 const SizedBox(height: 10),
                 CustomTextFormField(
                   backgroundColor: kCardBackgroundColor,
@@ -952,6 +972,32 @@ class _AddEventPageState extends State<AddEventPage> {
                                     limit == null) {
                                   SnackbarService().showSnackBar(
                                     'Please fill all required fields and add at least one speaker.',
+                                    type: SnackbarType.error,
+                                  );
+                                  ref
+                                      .read(loadingProvider.notifier)
+                                      .stopLoading();
+                                  return;
+                                }
+
+                                // Validate platform for online events
+                                if (_eventType == 'Online' &&
+                                    (platform == null || platform.isEmpty)) {
+                                  SnackbarService().showSnackBar(
+                                    'Please select a virtual platform for online events.',
+                                    type: SnackbarType.error,
+                                  );
+                                  ref
+                                      .read(loadingProvider.notifier)
+                                      .stopLoading();
+                                  return;
+                                }
+
+                                // Validate venue for offline events
+                                if (_eventType == 'Offline' &&
+                                    (venue == null || venue.isEmpty)) {
+                                  SnackbarService().showSnackBar(
+                                    'Please enter a venue for offline events.',
                                     type: SnackbarType.error,
                                   );
                                   ref
