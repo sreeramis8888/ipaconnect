@@ -65,6 +65,7 @@ class _AddEventPageState extends State<AddEventPage> {
   List<Map<String, dynamic>> _speakers = [];
   List<UserModel> _selectedCoordinators = [];
 
+  bool _isIpaOfficial = false;
   int? _limit;
   DateTime? _posterVisibilityStartDate;
   DateTime? _posterVisibilityEndDate;
@@ -247,7 +248,8 @@ class _AddEventPageState extends State<AddEventPage> {
                 })
             .toList();
       }
-      // Note: coordinators will need to be fetched separately as they are just IDs
+      // Set isIpaOfficial from existing event data
+      _isIpaOfficial = event.isIpaOfficial ?? false;
     }
   }
 
@@ -767,6 +769,47 @@ class _AddEventPageState extends State<AddEventPage> {
                   buttonColor: kStrokeColor,
                   labelColor: kWhite,
                 ),
+                // IPA Official Toggle
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: kCardBackgroundColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'IPA Official Event',
+                              style: kSmallTitleB,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Mark this event as an official IPA event',
+                              style: kSmallTitleL.copyWith(
+                                  color: kSecondaryTextColor),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: _isIpaOfficial,
+                        onChanged: (value) {
+                          setState(() {
+                            _isIpaOfficial = value;
+                          });
+                        },
+                        activeColor: kPrimaryColor,
+                      ),
+                    ],
+                  ),
+                ),
+
                 // Speaker Section
                 const SizedBox(height: 20),
                 RichText(
@@ -1027,6 +1070,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                       platform: platform,
                                       link: link,
                                       venue: venue,
+                                      isIpaOfficial: _isIpaOfficial,
                                       coordinators: _selectedCoordinators
                                           .map((u) => u.id ?? '')
                                           .toList(),
@@ -1050,6 +1094,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                       platform: platform,
                                       link: link,
                                       venue: venue,
+                                      isIpaOfficial: _isIpaOfficial,
                                       coordinators: _selectedCoordinators
                                           .map((u) => u.id ?? '')
                                           .toList(),
