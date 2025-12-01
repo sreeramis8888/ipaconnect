@@ -281,46 +281,37 @@ class _CreateCompanyModernPageState
     return youtubeRegex.hasMatch(url);
   }
 
+  Future<void> pickTradeLicense() async {
+    setState(() {
+      isUploadingTradeLicense = true;
+      tradeLicenseUploadError = null;
+    });
 
-   File? _tradelicenseDocument;
+    try {
+      FilePickerResult? result = await FilePicker.platform
+          .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      if (result != null && result.files.single.path != null) {
+        final filePath = result.files.single.path!;
+        setState(() {
+          tradeLicenseFile = File(filePath);
+        });
 
- Future<void> pickTradeLicense() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
-    if (result != null && result.files.single.path != null) {
+        // Upload the document and get the URL
+        final url = await documentUpload(filePath);
+        setState(() {
+          tradeLicenseUrl = url;
+          isUploadingTradeLicense = false;
+        });
+      } else {
+        setState(() => isUploadingTradeLicense = false);
+      }
+    } catch (e) {
       setState(() {
-        tradeLicenseFile = File(result.files.single.path!);
+        tradeLicenseUploadError = 'Trade license upload failed: $e';
+        isUploadingTradeLicense = false;
       });
     }
   }
-
-  // Future<void> pickTradeLicense() async {
-  //   setState(() {
-  //     isUploadingTradeLicense = true;
-  //     tradeLicenseUploadError = null;
-  //   });
-  //   try {
-  //     final picker = ImagePicker();
-  //     final picked = await picker.pickImage(source: ImageSource.gallery);
-  //     if (picked == null) {
-  //       setState(() => isUploadingTradeLicense = false);
-  //       return;
-  //     }
-
-  //     tradeLicenseFile = File(picked.path);
-  //     final url = await imageUpload(picked.path);
-
-  //     setState(() {
-  //       tradeLicenseUrl = url;
-  //       isUploadingTradeLicense = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       tradeLicenseUploadError = 'Trade license upload failed';
-  //       isUploadingTradeLicense = false;
-  //     });
-  //   }
-  // }
 
   void removeTradeLicense() {
     setState(() {
@@ -763,7 +754,9 @@ class _CreateCompanyModernPageState
                           ),
                           const SizedBox(height: 8),
                           GestureDetector(
-                            onTap: pickTradeLicense,
+                            onTap: isUploadingTradeLicense
+                                ? null
+                                : pickTradeLicense,
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
@@ -775,34 +768,87 @@ class _CreateCompanyModernPageState
                               ),
                               child: Row(
                                 children: [
-                                  // const SizedBox(width: 12),
-                                  // Icon(Icons.upload_file,
-                                  //     color: Colors.white.withOpacity(0.7)),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: Text(
-                                      tradeLicenseFile != null
-                                          ? tradeLicenseFile!.path
-                                              .split('/')
-                                              .last
-                                          : 'Upload Document',
-                                      style: TextStyle(
-                                        color: tradeLicenseFile != null
-                                            ? kWhite
-                                            : Colors.white.withOpacity(0.7),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    child: isUploadingTradeLicense
+                                        ? Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: LoadingAnimation(),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                'Uploading...',
+                                                style: TextStyle(
+                                                  color: kWhite,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            tradeLicenseUrl != null
+                                                ? 'Document uploaded successfully'
+                                                : (tradeLicenseFile != null
+                                                    ? tradeLicenseFile!.path
+                                                        .split('/')
+                                                        .last
+                                                    : 'Upload Document'),
+                                            style: TextStyle(
+                                              color: tradeLicenseUrl != null
+                                                  ? Colors.green
+                                                  : (tradeLicenseFile != null
+                                                      ? kWhite
+                                                      : Colors.white
+                                                          .withOpacity(0.7)),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                   ),
-                                  Icon(Icons.cloud_upload_outlined,
-                                      color: Colors.white.withOpacity(0.7)),
+                                  if (!isUploadingTradeLicense)
+                                    Icon(
+                                      tradeLicenseUrl != null
+                                          ? Icons.check_circle
+                                          : Icons.cloud_upload_outlined,
+                                      color: tradeLicenseUrl != null
+                                          ? Colors.green
+                                          : Colors.white.withOpacity(0.7),
+                                    ),
                                   const SizedBox(width: 12),
                                 ],
                               ),
                             ),
                           ),
+                          // Show upload error if any
+                          if (tradeLicenseUploadError != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              tradeLicenseUploadError!,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                          // Show validation error if document is not uploaded
+                          if (nameInTradeLicense == true &&
+                              (tradeLicenseUrl == null ||
+                                  tradeLicenseUrl!.isEmpty) &&
+                              !isUploadingTradeLicense) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Trade License Document is required',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 24),
                         ],
 
@@ -1310,6 +1356,15 @@ class _CreateCompanyModernPageState
                               if (category == null || category!.isEmpty) {
                                 validationError =
                                     'Please select a business activity';
+                                isValid = false;
+                              }
+
+                              // Validate trade license document if required
+                              if (nameInTradeLicense == true &&
+                                  (tradeLicenseUrl == null ||
+                                      tradeLicenseUrl!.isEmpty)) {
+                                validationError =
+                                    'Trade License Document is required when "Name in Trade License" is selected';
                                 isValid = false;
                               }
 

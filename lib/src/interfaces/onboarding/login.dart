@@ -367,11 +367,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     _timer?.cancel();
     _timer = null;
 
-    if (_otpController.text.isNotEmpty) {
-      _otpController.clear();
+    try {
+      _otpController.dispose();
+    } catch (e) {
+      // Controller might already be disposed, ignore the error
+      log('Error disposing OTP controller: $e');
     }
-
-    _otpController.dispose();
     super.dispose();
   }
 
@@ -575,7 +576,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       String phone = widget.fullPhone.trim();
       final countryCode = ref.watch(countryCodeProvider);
 
-      if (_otpController.text.isEmpty) {
+      if (_isDisposed || _otpController.text.isEmpty) {
         return;
       }
 
