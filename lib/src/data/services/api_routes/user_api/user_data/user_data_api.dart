@@ -69,7 +69,26 @@ class UserDataApiService {
 
     if (response.success && response.data != null) {
       final List<dynamic> data = response.data!['data'];
-      return data.map((json) => UserModel.fromJson(json)).toList();
+      try {
+        return data
+            .map((json) => UserModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        print('Error parsing user data: $e');
+        // Return only the users that parsed successfully
+        final List<UserModel> validUsers = [];
+        for (var json in data) {
+          try {
+            if (json is Map<String, dynamic>) {
+              validUsers.add(UserModel.fromJson(json));
+            }
+          } catch (userError) {
+            print('Failed to parse individual user: $userError');
+            // Continue with next user
+          }
+        }
+        return validUsers;
+      }
     } else {
       return [];
     }

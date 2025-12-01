@@ -13,6 +13,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       email: json['email'] as String?,
       image: json['image'] as String?,
       phone: json['phone'] as String?,
+      whatsapp_no: json['whatsapp_no'] as String?,
       fcm: json['fcm'] as String?,
       otp: json['otp'] as String?,
       profession: json['proffession'] as String?,
@@ -68,6 +69,8 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
           ?.map((e) => Award.fromJson(e as Map<String, dynamic>))
           .toList(),
       qrCode: json['qr_code'] as String?,
+      emiratesIdCopy: json['emirates_id_copy'] as String?,
+      passportCopy: json['passport_copy'] as String?,
       companies: (json['companies'] as List<dynamic>?)
           ?.map((e) => CompanyModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -80,6 +83,7 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       if (instance.email case final value?) 'email': value,
       if (instance.image case final value?) 'image': value,
       if (instance.phone case final value?) 'phone': value,
+      if (instance.whatsapp_no case final value?) 'whatsapp_no': value,
       if (instance.fcm case final value?) 'fcm': value,
       if (instance.otp case final value?) 'otp': value,
       if (instance.profession case final value?) 'proffession': value,
@@ -116,6 +120,8 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       if (instance.documents case final value?) 'documents': value,
       if (instance.awards case final value?) 'awards': value,
       if (instance.qrCode case final value?) 'qr_code': value,
+      if (instance.emiratesIdCopy case final value?) 'emirates_id_copy': value,
+      if (instance.passportCopy case final value?) 'passport_copy': value,
       if (instance.companies case final value?) 'companies': value,
     };
 

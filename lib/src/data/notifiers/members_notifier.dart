@@ -19,6 +19,8 @@ class MembersNotifier extends _$MembersNotifier {
 
   @override
   List<UserModel> build() {
+    // Automatically fetch users when the provider is built
+    Future.microtask(() => fetchMoreUsers());
     return [];
   }
 

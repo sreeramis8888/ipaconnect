@@ -38,11 +38,6 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _fetchInitialUsers();
-  }
-
-  Future<void> _fetchInitialUsers() async {
-    await ref.read(membersNotifierProvider.notifier).fetchMoreUsers();
   }
 
   void _onScroll() {
@@ -129,20 +124,23 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                   child: Text('No clusters available'),
                                 );
                               }
-                                        // Filter unwanted clusters and sort alphabetically
+                              // Filter unwanted clusters and sort alphabetically
                               final filteredHierarchies = hierarchies
                                   .where((h) =>
                                       h.name != null &&
                                       h.name!.toLowerCase() != 'admins' &&
                                       h.name!.toLowerCase() != 'developers')
                                   .toList()
-                                ..sort((a, b) => (a.name ?? '').toLowerCase().compareTo((b.name ?? '').toLowerCase()));
+                                ..sort((a, b) => (a.name ?? '')
+                                    .toLowerCase()
+                                    .compareTo((b.name ?? '').toLowerCase()));
 
                               return ListView.separated(
                                 controller: scrollController,
-                                itemCount: filteredHierarchies.length ,//temoporary solution for hiding admins from cluster
+                                itemCount: filteredHierarchies
+                                    .length, //temoporary solution for hiding admins from cluster
                                 separatorBuilder: (_, __) =>
-                                    Divider(height: 1, color: kStrokeColor),      
+                                    Divider(height: 1, color: kStrokeColor),
                                 itemBuilder: (context, index) {
                                   final h = filteredHierarchies[index];
                                   return ListTile(
@@ -198,8 +196,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   @override
   Widget build(BuildContext context) {
     final users = ref.watch(membersNotifierProvider);
-    final isLoading = ref.read(membersNotifierProvider.notifier).isLoading;
-    final isFirstLoad = ref.read(membersNotifierProvider.notifier).isFirstLoad;
+    final isLoading = ref.watch(membersNotifierProvider.notifier).isLoading;
+    final isFirstLoad = ref.watch(membersNotifierProvider.notifier).isFirstLoad;
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
@@ -306,29 +304,25 @@ class _MembersPageState extends ConsumerState<MembersPage> {
             //   );
             // }
 
-
             // Show loader while searching/filtering
-              if (isLoading && users.isEmpty) {
-                return const Center(child: LoadingAnimation());
-              }
+            if (isLoading && users.isEmpty) {
+              return const Center(child: LoadingAnimation());
+            }
 
-              // No members found (after loading finishes)
-              if (!isFirstLoad && !isLoading && users.isEmpty && index == 1) {
-                return Column(
-                  children: [
-                    SizedBox(height: 100),
-                    Center(
-                      child: Text(
-                        'No Members Found',
-                        style: kSubHeadingL,
-                      ),
+            // No members found (after loading finishes)
+            if (!isFirstLoad && !isLoading && users.isEmpty && index == 1) {
+              return Column(
+                children: [
+                  SizedBox(height: 100),
+                  Center(
+                    child: Text(
+                      'No Members Found',
+                      style: kSubHeadingL,
                     ),
-                  ],
-                );
-              }
-
-
-
+                  ),
+                ],
+              );
+            }
 
             // User list
             final userIndex = index - 1;

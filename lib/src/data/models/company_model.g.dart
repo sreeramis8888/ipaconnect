@@ -7,6 +7,12 @@ part of 'company_model.dart';
 // **************************************************************************
 
 CompanyModel _$CompanyModelFromJson(Map<String, dynamic> json) => CompanyModel(
+      location: json['location'] as String?,
+      tradeLicenseCopy: json['trade_license_copy'] as String?,
+      businessEmirates: $enumDecodeNullable(
+          _$BusinessEmiratesEnumMap, json['business_emirates']),
+      recommendedBy: json['recommended_by'] as String?,
+      nameInTradeLicense: json['name_in_trade_license'] as bool?,
       id: json['_id'] as String?,
       name: json['name'] as String?,
       overview: json['overview'] as String?,
@@ -46,6 +52,11 @@ Map<String, dynamic> _$CompanyModelToJson(CompanyModel instance) =>
       'category': instance.category,
       'image': instance.image,
       'status': instance.status,
+      'location': instance.location,
+      'trade_license_copy': instance.tradeLicenseCopy,
+      'business_emirates': _$BusinessEmiratesEnumMap[instance.businessEmirates],
+      'recommended_by': instance.recommendedBy,
+      'name_in_trade_license': instance.nameInTradeLicense,
       'established_date': instance.establishedDate,
       'company_size': instance.companySize,
       'services': instance.services,
@@ -57,6 +68,16 @@ Map<String, dynamic> _$CompanyModelToJson(CompanyModel instance) =>
       'contact_info': instance.contactInfo?.toJson(),
       'gallery': instance.gallery?.toJson(),
     };
+
+const _$BusinessEmiratesEnumMap = {
+  BusinessEmirates.dubai: 'dubai',
+  BusinessEmirates.abudhabi: 'abudhabi',
+  BusinessEmirates.sharjah: 'sharjah',
+  BusinessEmirates.ummAlQuwain: 'ummAlQuwain',
+  BusinessEmirates.ajman: 'ajman',
+  BusinessEmirates.rasAlKhaimah: 'rasAlKhaimah',
+  BusinessEmirates.fujairah: 'fujairah',
+};
 
 SocialMedia _$SocialMediaFromJson(Map<String, dynamic> json) => SocialMedia(
       twitter: json['twitter'] as String?,

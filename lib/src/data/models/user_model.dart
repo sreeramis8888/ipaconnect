@@ -109,8 +109,25 @@ class UserModel {
       this.passportCopy,
       this.companies});
 
-  factory UserModel.fromJson(Map<String, dynamic> json) =>
-      _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return _$UserModelFromJson(json);
+    } catch (e) {
+      // Log the error and provide a fallback UserModel with minimal data
+      print('Error parsing UserModel from JSON: $e');
+      print('JSON data: $json');
+
+      // Return a minimal UserModel with safe defaults
+      return UserModel(
+        name: json['name'] as String?,
+        id: json['_id'] as String?,
+        email: json['email'] as String?,
+        image: json['image'] as String?,
+        phone: json['phone'] as String?,
+        status: json['status'] as String?,
+      );
+    }
+  }
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   UserModel copyWith({
