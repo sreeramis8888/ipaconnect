@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
+import 'package:ipaconnect/src/data/notifiers/registration_data_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/user_companies_notifier.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
@@ -19,6 +20,8 @@ import 'package:ipaconnect/src/interfaces/additional_screens/crop_image_screen.d
 import 'package:ipaconnect/src/data/services/image_upload.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ipaconnect/src/data/services/api_routes/company_api/company_api_service.dart';
+import 'package:ipaconnect/src/data/services/api_routes/user_api/user_data/user_data_api.dart';
+import 'package:ipaconnect/src/data/models/user_model.dart';
 import 'package:ipaconnect/src/interfaces/components/loading/loading_indicator.dart';
 import 'package:ipaconnect/src/data/notifiers/business_category_notifier.dart';
 import 'package:ipaconnect/src/data/models/business_category_model.dart';
@@ -1344,9 +1347,20 @@ class _CreateCompanyModernPageState
                       onPressed: isSubmitting
                           ? null
                           : () async {
+                              // Get registration data from provider
+                              final registrationData =
+                                  ref.read(registrationDataProvider);
+
                               // Validate mandatory fields first
                               bool isValid = true;
                               String? validationError;
+
+                              if (registrationData.name == null ||
+                                  registrationData.name!.isEmpty) {
+                                validationError =
+                                    'Please complete the registration form first';
+                                isValid = false;
+                              }
 
                               if (name == null || name!.isEmpty) {
                                 validationError = 'Company name is required';
@@ -1385,6 +1399,43 @@ class _CreateCompanyModernPageState
                                   submitError = null;
                                 });
                                 try {
+                                  // Upload profile image if available
+                                  String? profileImageUrl;
+                                  if (registrationData.profileImage != null) {
+                                    final tempPath = await saveUint8ListToFile(
+                                        registrationData.profileImage!,
+                                        'profile.png');
+                                    profileImageUrl =
+                                        await imageUpload(tempPath);
+                                  }
+
+                                  // Submit user data first
+                                  final userModel = UserModel(
+                                      name: registrationData.name,
+                                      email: registrationData.email,
+                                      dob: registrationData.dob,
+                                      image: profileImageUrl,
+                                      phone: registrationData.phone,
+                                      whatsapp_no: registrationData.whatsappNo,
+                                      emiratesIdCopy:
+                                          registrationData.emiratesIdCopy,
+                                      passportCopy:
+                                          registrationData.passportCopy,
+                                      profession: registrationData.profession,
+                                      location: registrationData.location,
+                                      status: 'pending');
+
+                                  final userDataApiService =
+                                      ref.read(userDataApiServiceProvider);
+                                  final userResponse = await userDataApiService
+                                      .updateUser(id, userModel);
+
+                                  if (userResponse.success == false) {
+                                    throw Exception(
+                                        'Failed to submit user data: ${userResponse.message}');
+                                  }
+
+                                  // Upload gallery photos
                                   final newGalleryPhotoUrls =
                                       List<String>.from(galleryPhotoUrls);
                                   for (final file in localPhotoFiles) {
@@ -1392,8 +1443,7 @@ class _CreateCompanyModernPageState
                                     newGalleryPhotoUrls.add(url);
                                   }
                                   galleryPhotoUrls = newGalleryPhotoUrls;
-                                  localPhotoFiles
-                                      .clear(); // Clear after successful upload
+                                  localPhotoFiles.clear();
 
                                   // Always resolve category to ID
                                   final found = categories.firstWhere(
@@ -1458,10 +1508,9 @@ class _CreateCompanyModernPageState
                                     'name_in_trade_license': nameInTradeLicense,
                                     'recommended_by': recommendedBy,
                                   };
-                                  final container =
-                                      ProviderScope.containerOf(context);
+
                                   final companyApi =
-                                      container.read(companyApiServiceProvider);
+                                      ref.read(companyApiServiceProvider);
                                   bool result;
                                   if (widget.companyToEdit != null &&
                                       widget.companyToEdit!.id != null) {
@@ -1471,7 +1520,13 @@ class _CreateCompanyModernPageState
                                     result = await companyApi
                                         .createCompany(companyData);
                                   }
+
                                   if (result != false) {
+                                    // Clear registration data after successful submission
+                                    ref
+                                        .read(registrationDataProvider.notifier)
+                                        .clear();
+
                                     if (mounted) {
                                       // Navigate to approval waiting page after successful submission
                                       NavigationService navigationService =
