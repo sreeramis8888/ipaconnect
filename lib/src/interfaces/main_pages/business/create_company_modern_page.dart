@@ -799,7 +799,7 @@ class _CreateCompanyModernPageState
                                                     ? tradeLicenseFile!.path
                                                         .split('/')
                                                         .last
-                                                    : 'Upload Document'),
+                                                    : 'Upload Document (.pdf only)'),
                                             style: TextStyle(
                                               color: tradeLicenseUrl != null
                                                   ? Colors.green

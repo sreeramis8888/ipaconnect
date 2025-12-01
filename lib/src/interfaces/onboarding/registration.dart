@@ -59,7 +59,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
-  final TextEditingController _phoneController = TextEditingController();
+  // final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _whatsAppController = TextEditingController();
 
   Uint8List? _profileImage;
@@ -214,6 +214,34 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 8),
+                            Center(
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Profile Picture ',
+                                      style: kBodyTitleR,
+                                    ),
+                                    TextSpan(
+                                      text: '*',
+                                      style: kBodyTitleR.copyWith(color: kRed),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            if (_profileImage == null)
+                              Center(
+                                child: Text(
+                                  'Profile picture is required',
+                                  style: kBodyTitleR.copyWith(
+                                    color: kRed,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
                             const SizedBox(height: 24),
                             Text('Personal Details', style: kHeadTitleB),
                             const SizedBox(height: 24),
@@ -332,104 +360,104 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             const SizedBox(height: 16),
 
                             //Phone number
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Phone Number ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Theme(
-                              data: Theme.of(context).copyWith(
-                                textTheme: Theme.of(context).textTheme.apply(
-                                      bodyColor: Colors.white,
-                                      displayColor: Colors.white,
-                                    ),
-                                inputDecorationTheme:
-                                    const InputDecorationTheme(
-                                  hintStyle: TextStyle(color: Colors.white70),
-                                ),
-                              ),
-                              child: IntlPhoneField(
-                                validator: (phone) {
-                                  if (phone!.number.length > 9) {
-                                    if (phone.number.length > 10) {
-                                      return 'Phone number cannot exceed 10 digits';
-                                    }
-                                  }
-                                  return null;
-                                },
-                                style: const TextStyle(
-                                  color: kWhite,
-                                  letterSpacing: 8,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                controller: _phoneController,
-                                disableLengthCheck: true,
-                                showCountryFlag: true,
-                                cursorColor: kWhite,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: kInputFieldcolor,
-                                  hintText: 'Enter your phone number',
-                                  hintStyle: TextStyle(
-                                    fontSize: 14,
-                                    letterSpacing: .2,
-                                    fontWeight: FontWeight.w200,
-                                    color: kGrey,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide:
-                                        BorderSide(color: kInputFieldcolor),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide:
-                                        BorderSide(color: kInputFieldcolor),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: const BorderSide(
-                                        color: kInputFieldcolor),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 16.0,
-                                    horizontal: 10.0,
-                                  ),
-                                ),
-                                onCountryChanged: (value) {
-                                  ref.read(countryCodeProvider.notifier).state =
-                                      value.dialCode;
-                                },
-                                initialCountryCode: 'AE',
-                                onChanged: (phone) {
-                                  print(phone.completeNumber);
-                                },
-                                flagsButtonPadding: const EdgeInsets.only(
-                                    left: 10, right: 10.0),
-                                showDropdownIcon: true,
-                                dropdownIcon: const Icon(
-                                  Icons.arrow_drop_down_outlined,
-                                  color: kWhite,
-                                ),
-                                dropdownIconPosition: IconPosition.trailing,
-                                dropdownTextStyle: const TextStyle(
-                                  color: kWhite,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
+                            // RichText(
+                            //   text: TextSpan(
+                            //     children: [
+                            //       TextSpan(
+                            //         text: 'Phone Number ',
+                            //         style: kBodyTitleR,
+                            //       ),
+                            //       TextSpan(
+                            //         text: '*',
+                            //         style: kBodyTitleR.copyWith(color: kRed),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 16),
+                            // Theme(
+                            //   data: Theme.of(context).copyWith(
+                            //     textTheme: Theme.of(context).textTheme.apply(
+                            //           bodyColor: Colors.white,
+                            //           displayColor: Colors.white,
+                            //         ),
+                            //     inputDecorationTheme:
+                            //         const InputDecorationTheme(
+                            //       hintStyle: TextStyle(color: Colors.white70),
+                            //     ),
+                            //   ),
+                            //   child: IntlPhoneField(
+                            //     validator: (phone) {
+                            //       if (phone!.number.length > 9) {
+                            //         if (phone.number.length > 10) {
+                            //           return 'Phone number cannot exceed 10 digits';
+                            //         }
+                            //       }
+                            //       return null;
+                            //     },
+                            //     style: const TextStyle(
+                            //       color: kWhite,
+                            //       letterSpacing: 8,
+                            //       fontSize: 18,
+                            //       fontWeight: FontWeight.w400,
+                            //     ),
+                            //     controller: _phoneController,
+                            //     disableLengthCheck: true,
+                            //     showCountryFlag: true,
+                            //     cursorColor: kWhite,
+                            //     decoration: InputDecoration(
+                            //       filled: true,
+                            //       fillColor: kInputFieldcolor,
+                            //       hintText: 'Enter your phone number',
+                            //       hintStyle: TextStyle(
+                            //         fontSize: 14,
+                            //         letterSpacing: .2,
+                            //         fontWeight: FontWeight.w200,
+                            //         color: kGrey,
+                            //       ),
+                            //       border: OutlineInputBorder(
+                            //         borderRadius: BorderRadius.circular(8.0),
+                            //         borderSide:
+                            //             BorderSide(color: kInputFieldcolor),
+                            //       ),
+                            //       enabledBorder: OutlineInputBorder(
+                            //         borderRadius: BorderRadius.circular(8.0),
+                            //         borderSide:
+                            //             BorderSide(color: kInputFieldcolor),
+                            //       ),
+                            //       focusedBorder: OutlineInputBorder(
+                            //         borderRadius: BorderRadius.circular(8.0),
+                            //         borderSide: const BorderSide(
+                            //             color: kInputFieldcolor),
+                            //       ),
+                            //       contentPadding: const EdgeInsets.symmetric(
+                            //         vertical: 16.0,
+                            //         horizontal: 10.0,
+                            //       ),
+                            //     ),
+                            //     onCountryChanged: (value) {
+                            //       ref.read(countryCodeProvider.notifier).state =
+                            //           value.dialCode;
+                            //     },
+                            //     initialCountryCode: 'AE',
+                            //     onChanged: (phone) {
+                            //       print(phone.completeNumber);
+                            //     },
+                            //     flagsButtonPadding: const EdgeInsets.only(
+                            //         left: 10, right: 10.0),
+                            //     showDropdownIcon: true,
+                            //     dropdownIcon: const Icon(
+                            //       Icons.arrow_drop_down_outlined,
+                            //       color: kWhite,
+                            //     ),
+                            //     dropdownIconPosition: IconPosition.trailing,
+                            //     dropdownTextStyle: const TextStyle(
+                            //       color: kWhite,
+                            //       fontSize: 15,
+                            //       fontWeight: FontWeight.w400,
+                            //     ),
+                            //   ),
+                            // ),
 
                             //Whatsapp number
                             RichText(
@@ -530,6 +558,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 16),
 
                             //Emirates id Copy (document upload)
                             RichText(
@@ -572,7 +601,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                             ? _emiratesIdDocument!.path
                                                 .split('/')
                                                 .last
-                                            : 'Upload Document',
+                                            : 'Upload Document(/pdf only)',
                                         style: TextStyle(
                                           color: _emiratesIdDocument != null
                                               ? kWhite
@@ -632,7 +661,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                             ? _passportDocument!.path
                                                 .split('/')
                                                 .last
-                                            : 'Upload Document',
+                                            : 'Upload Document(.pdf only)',
                                         style: TextStyle(
                                           color: _passportDocument != null
                                               ? kWhite
@@ -670,10 +699,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               label: 'Next',
                               onPressed: () async {
                                 // Validate required fields
+                                if (_profileImage == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                          Text('Profile picture is required'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
                                 if (_nameController.text.isEmpty ||
                                     _emailController.text.isEmpty ||
                                     _selectedDateOfBirth == null ||
-                                    _phoneController.text.isEmpty ||
                                     _whatsAppController.text.isEmpty ||
                                     _emiratesIdDocument == null ||
                                     _passportDocument == null) {
@@ -721,7 +760,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                         email: _emailController.text,
                                         dob: _selectedDateOfBirth,
                                         profileImage: _profileImage,
-                                        phone: _phoneController.text,
+                                        // phone: _phoneController.text,
                                         whatsappNo: _whatsAppController.text,
                                         emiratesIdCopy: emiratesIdUrl,
                                         passportCopy: passportUrl,
