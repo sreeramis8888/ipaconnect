@@ -313,11 +313,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text('Update Required',style: TextStyle(color: kWhite),),
-        content: Text(response.updateMessage,
-        style: TextStyle(
-          color: Colors.white,
-        ),),
+        title: Text(
+          'Update Required',
+          style: TextStyle(color: kWhite),
+        ),
+        content: Text(
+          response.updateMessage,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -397,14 +402,40 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> checktoken() async {
     String? savedtoken = await SecureStorage.read('token') ?? '';
     String? savedId = await SecureStorage.read('id') ?? '';
+    String? savedLoggedIn = await SecureStorage.read('LoggedIn');
     log('token:$savedtoken');
     log('userId:$savedId');
-    if (savedtoken != '' && savedtoken.isNotEmpty) {
+    log('LoggedIn:$savedLoggedIn');
+
+    // Only authenticate if we have valid token, ID, and the LoggedIn flag
+    if (savedtoken != '' &&
+        savedtoken.isNotEmpty &&
+        savedId != '' &&
+        savedId.isNotEmpty &&
+        savedLoggedIn == 'true') {
       setState(() {
         LoggedIn = true;
         token = savedtoken;
         id = savedId;
       });
+      log('Authentication restored successfully');
+    } else {
+      // Clear any stale authentication data
+      setState(() {
+        LoggedIn = false;
+        token = '';
+        id = '';
+      });
+
+      // If we have stale data in storage, clean it up
+      if (savedtoken.isNotEmpty ||
+          savedId.isNotEmpty ||
+          savedLoggedIn == 'true') {
+        await SecureStorage.write('token', '');
+        await SecureStorage.write('id', '');
+        await SecureStorage.write('LoggedIn', 'false');
+        log('Cleared invalid authentication data');
+      }
     }
   }
 
@@ -452,7 +483,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   );
                 },
               ),
-    
+
             // // Main logo animation
             // Align(
             //   alignment: Alignment.center,
@@ -489,7 +520,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 ),
               ),
             ),
-                
+
             // Welcome text for first-time users
             if (isFirstLaunch == 'false' && !hasVersionCheckError)
               Align(
@@ -519,7 +550,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   ),
                 ),
               ),
-    
+
             // Error message overlay - positioned above welcome text when both exist
             if (hasVersionCheckError)
               Align(

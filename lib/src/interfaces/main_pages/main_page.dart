@@ -72,14 +72,14 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   void initState() {
     super.initState();
-    // Connect socket only
-    SocketService().connect();
-    // Ensure global variables are in sync with SecureStorage
+
+    // Ensure global variables are in sync with SecureStorage first
     _loadSecureDataIfNeeded();
 
-    // Add a listener to watch for token changes
+    // Connect socket and fetch user data only if authenticated
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (token.isNotEmpty && id.isNotEmpty) {
+      if (isAuthenticated) {
+        SocketService().connect();
         ref.read(userProvider.notifier).refreshUser();
       }
     });
@@ -90,11 +90,16 @@ class _MainPageState extends ConsumerState<MainPage> {
     await loadSecureData();
     log('MainPage - After loadSecureData - token: $token, id: $id, LoggedIn: $LoggedIn');
 
-    // If we have a valid token, refresh the user provider to fetch fresh data
-    if (token.isNotEmpty && id.isNotEmpty) {
+    // Only fetch user data if we have a valid authentication state
+    if (isAuthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(userProvider.notifier).refreshUser();
       });
+    } else {
+      // Clear any stale authentication data if any component is invalid
+      if (token.isNotEmpty || id.isNotEmpty || LoggedIn) {
+        _clearInvalidToken();
+      }
     }
   }
 
@@ -320,9 +325,9 @@ class _MainPageState extends ConsumerState<MainPage> {
     return Consumer(builder: (context, ref, child) {
       final selectedIndex = ref.watch(selectedIndexProvider);
 
-      // Only watch userProvider if we have a valid token
-      log('MainPage - Current token: $token, id: $id');
-      final asyncUser = token.isNotEmpty && id.isNotEmpty
+      // Only watch userProvider if we have a valid authentication state
+      log('MainPage - Current token: $token, id: $id, LoggedIn: $LoggedIn');
+      final asyncUser = isAuthenticated
           ? ref.watch(userProvider)
           : const AsyncValue<UserModel>.loading();
 

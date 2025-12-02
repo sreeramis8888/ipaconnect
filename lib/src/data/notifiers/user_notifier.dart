@@ -32,24 +32,33 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
     try {
       log('Fetching user details');
       log('Fetch user token:$token');
-      
-      // Check if token is available before making API call
-      if (token.isEmpty) {
-        log('Token is empty, cannot fetch user details');
+
+      // Check if we have valid authentication state before making API call
+      if (!isAuthenticated) {
+        log('Invalid authentication state, cannot fetch user details');
         state = const AsyncValue.data(UserModel());
         return;
       }
-      
+
       final user = await ref.read(getUserDetailsProvider.future);
       if (_initialUser == null && user != null) {
         _initialUser = user;
       }
       state = AsyncValue.data(user ?? UserModel());
+      log('User details fetched successfully');
     } catch (e, stackTrace) {
-      state = AsyncValue.error(e, stackTrace);
-      log('Error fetching user details: '
-          ' $e ');
-      log(stackTrace.toString());
+      log('Error fetching user details: $e');
+      log('Stack trace: $stackTrace');
+
+      // If we get an authentication error, clear the state and return empty user
+      if (e.toString().contains('401') ||
+          e.toString().contains('unauthorized') ||
+          e.toString().contains('token')) {
+        log('Authentication error detected, clearing user state');
+        state = const AsyncValue.data(UserModel());
+      } else {
+        state = AsyncValue.error(e, stackTrace);
+      }
     }
   }
 

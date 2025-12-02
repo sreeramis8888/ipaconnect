@@ -31,10 +31,22 @@ class SecureStorage {
 }
 
 Future<void> loadSecureData() async {
-  token = await SecureStorage.read('token') ?? '';
-  LoggedIn = (await SecureStorage.read('LoggedIn')) == 'true';
-  id = await SecureStorage.read('id') ?? '';
-  fcmToken = await SecureStorage.read('fcmToken') ?? '';
+  final savedToken = await SecureStorage.read('token') ?? '';
+  final savedLoggedIn = (await SecureStorage.read('LoggedIn')) == 'true';
+  final savedId = await SecureStorage.read('id') ?? '';
+  final savedFcmToken = await SecureStorage.read('fcmToken') ?? '';
+
+  // Only set LoggedIn to true if we have valid token, id, and LoggedIn flag
+  token = savedToken;
+  id = savedId;
+  fcmToken = savedFcmToken;
+  LoggedIn = savedLoggedIn && token.isNotEmpty && id.isNotEmpty;
+
+  // If LoggedIn is true but token or id is empty, sync the LoggedIn flag
+  if (LoggedIn && (token.isEmpty || id.isEmpty)) {
+    LoggedIn = false;
+    await SecureStorage.write('LoggedIn', 'false');
+  }
 }
 
 Future<void> saveSecureData() async {
