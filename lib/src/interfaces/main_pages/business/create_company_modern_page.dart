@@ -6,6 +6,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:ipaconnect/src/data/constants/color_constants.dart';
 import 'package:ipaconnect/src/data/constants/style_constants.dart';
 import 'package:ipaconnect/src/data/notifiers/registration_data_notifier.dart';
+import 'package:ipaconnect/src/data/notifiers/company_data_notifier.dart';
 import 'package:ipaconnect/src/data/notifiers/user_companies_notifier.dart';
 import 'package:ipaconnect/src/data/services/navigation_service.dart';
 import 'package:ipaconnect/src/data/utils/globals.dart';
@@ -47,6 +48,11 @@ class _CreateCompanyModernPageState
   String? image;
   int? establishedDate;
   TextEditingController establishedDateController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController overviewController = TextEditingController();
+  TextEditingController companySizeController = TextEditingController();
+  TextEditingController recommendedByController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
   String? companySize;
   List<String> services = [];
   String? location;
@@ -109,11 +115,109 @@ class _CreateCompanyModernPageState
   final TextEditingController _searchController = TextEditingController();
   bool _isSearchExpanded = false;
   String? _selectedCategoryDisplay;
+  bool _isDataLoaded = false; // Flag to prevent double loading
+
+  void _setupFormListeners() {
+    // Only setup listeners if not already set up to avoid duplicates
+    if (_isDataLoaded) return;
+
+    // Set up listeners for auto-saving form data
+    nameController.addListener(_autoSaveData);
+    overviewController.addListener(_autoSaveData);
+    companySizeController.addListener(_autoSaveData);
+    recommendedByController.addListener(_autoSaveData);
+    locationController.addListener(_autoSaveData);
+  }
+
+  void _autoSaveData() {
+    if (!_isDataLoaded) return;
+
+    ref.read(companyDataProvider.notifier).updateAllData(
+          name: nameController.text.isNotEmpty ? nameController.text : null,
+          overview: overviewController.text.isNotEmpty
+              ? overviewController.text
+              : null,
+          companySize: companySizeController.text.isNotEmpty
+              ? companySizeController.text
+              : null,
+          recommendedBy: recommendedByController.text.isNotEmpty
+              ? recommendedByController.text
+              : null,
+          location: locationController.text.isNotEmpty
+              ? locationController.text
+              : null,
+          establishedDate: establishedDate,
+          businessEmirate: businessEmirate,
+          nameInTradeLicense: nameInTradeLicense,
+          tradeLicenseUrl: tradeLicenseUrl,
+          services: services.isNotEmpty ? services : null,
+          tags: tags.isNotEmpty ? tags : null,
+          galleryPhotoUrls:
+              galleryPhotoUrls.isNotEmpty ? galleryPhotoUrls : null,
+          videoUrls: videoUrls.isNotEmpty ? videoUrls : null,
+        );
+  }
+
+  void _restoreFormData() {
+    if (_isDataLoaded) return;
+
+    final companyData = ref.read(companyDataProvider);
+
+    // Only load saved data if we're NOT editing an existing company
+    if (widget.companyToEdit == null) {
+      // Update variables and text controllers with saved data
+      if (companyData.name != null && companyData.name!.isNotEmpty) {
+        name = companyData.name;
+        nameController.text = companyData.name!;
+      }
+
+      if (companyData.overview != null && companyData.overview!.isNotEmpty) {
+        overview = companyData.overview;
+        overviewController.text = companyData.overview!;
+      }
+
+      if (companyData.companySize != null &&
+          companyData.companySize!.isNotEmpty) {
+        companySize = companyData.companySize;
+        companySizeController.text = companyData.companySize!;
+      }
+
+      if (companyData.recommendedBy != null &&
+          companyData.recommendedBy!.isNotEmpty) {
+        recommendedBy = companyData.recommendedBy;
+        recommendedByController.text = companyData.recommendedBy!;
+      }
+
+      if (companyData.location != null && companyData.location!.isNotEmpty) {
+        location = companyData.location;
+        locationController.text = companyData.location!;
+      }
+// Set other variables (excluding category for auto-fill)
+      image = companyData.image;
+      establishedDate = companyData.establishedDate;
+      services = companyData.services ?? [];
+      tags = companyData.tags ?? [];
+      businessEmirate = companyData.businessEmirate;
+      nameInTradeLicense = companyData.nameInTradeLicense;
+      tradeLicenseUrl = companyData.tradeLicenseUrl;
+      galleryPhotoUrls = companyData.galleryPhotoUrls ?? [];
+      videoUrls = companyData.videoUrls ?? [];
+
+// Update established date controller
+      if (establishedDate != null) {
+        establishedDateController.text = establishedDate.toString();
+      }
+    }
+
+    _isDataLoaded = true;
+// Controllers will automatically trigger UI updates when their text changes
+  }
 
   @override
   void initState() {
     super.initState();
-    // Prefill fields if editing
+
+    // Prefill fields if editing existing company
     final company = widget.companyToEdit;
     if (company != null) {
       name = company.name;
@@ -161,11 +265,33 @@ class _CreateCompanyModernPageState
               .where((u) => u.isNotEmpty)
               .toList() ??
           [];
+
+      // Initialize controllers with existing values for editing
+      if (name != null) {
+        nameController.text = name!;
+      }
+      if (overview != null) {
+        overviewController.text = overview!;
+      }
+      if (companySize != null) {
+        companySizeController.text = companySize!;
+      }
+      if (recommendedBy != null) {
+        recommendedByController.text = recommendedBy!;
+      }
+      if (location != null) {
+        locationController.text = location!;
+      }
+      if (establishedDate != null) {
+        establishedDateController.text = establishedDate.toString();
+      }
+
+      _isDataLoaded = true; // Mark as loaded for editing mode
     }
-    // Initialize established date controller with existing value
-    if (establishedDate != null) {
-      establishedDateController.text = establishedDate.toString();
-    }
+
+    // Setup form listeners
+    _setupFormListeners();
+
     // Fetch initial categories
     Future.microtask(() {
       ref.read(businessCategoryNotifierProvider.notifier).fetchMoreCategories();
@@ -175,6 +301,12 @@ class _CreateCompanyModernPageState
   @override
   void dispose() {
     establishedDateController.dispose();
+    nameController.dispose();
+    overviewController.dispose();
+    companySizeController.dispose();
+    recommendedByController.dispose();
+    locationController.dispose();
+    videoController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -299,12 +431,13 @@ class _CreateCompanyModernPageState
           tradeLicenseFile = File(filePath);
         });
 
-        // Upload the document and get the URL
+// Upload the document and get the URL
         final url = await documentUpload(filePath);
         setState(() {
           tradeLicenseUrl = url;
           isUploadingTradeLicense = false;
         });
+        _autoSaveData();
       } else {
         setState(() => isUploadingTradeLicense = false);
       }
@@ -322,6 +455,7 @@ class _CreateCompanyModernPageState
       tradeLicenseUrl = null;
       tradeLicenseUploadError = null;
     });
+    _autoSaveData();
   }
 
   // Helper method to close search when tapping outside
@@ -342,1233 +476,1250 @@ class _CreateCompanyModernPageState
     final hasMore = businessCategoryNotifier.hasMore;
     final isLoading = businessCategoryNotifier.isLoading;
 
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        _closeSearch();
+    // Restore saved data when not editing an existing company
+    if (widget.companyToEdit == null && !_isDataLoaded) {
+      _restoreFormData();
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        // Save all data before navigating back
+        _autoSaveData();
+        return true;
       },
-      child: Scaffold(
-        backgroundColor: kBackgroundColor,
-        appBar: AppBar(
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+          _closeSearch();
+        },
+        child: Scaffold(
           backgroundColor: kBackgroundColor,
-          leading: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Material(
-              color: kBackgroundColor,
-              shape: const CircleBorder(),
-              clipBehavior: Clip.antiAlias,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    'RegistrationPage',
-                    (route) => route.settings.name == 'RegistrationPage',
-                  );
-                },
-                child: CustomRoundButton(
-                  offset: const Offset(4, 0),
-                  iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+          appBar: AppBar(
+            backgroundColor: kBackgroundColor,
+            leading: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Material(
+                color: kBackgroundColor,
+                shape: const CircleBorder(),
+                clipBehavior: Clip.antiAlias,
+                child: GestureDetector(
+                  onTap: () {
+                    // Save all current form data before navigation
+                    _autoSaveData();
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      'RegistrationPage',
+                      (route) => route.settings.name == 'RegistrationPage',
+                    );
+                  },
+                  child: CustomRoundButton(
+                    offset: const Offset(4, 0),
+                    iconPath: 'assets/svg/icons/arrow_back_ios.svg',
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        body: SafeArea(
-          child: Column(
-            children: [
-              // Scrollable form content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Company Details',
-                          style: kBodyTitleB,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Text('Company Name', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          style: kSmallTitleL,
-                          initialValue: name,
-                          decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            hintText: 'Enter company name',
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
+          body: SafeArea(
+            child: Column(
+              children: [
+                // Scrollable form content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Company Details',
+                            style: kBodyTitleB,
                           ),
-                          onChanged: (val) => setState(() => name = val),
-                          validator: (val) => val == null || val.isEmpty
-                              ? 'Company name is required'
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Business Activity', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        // Searchable Dropdown for Business Activity
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isSearchExpanded = !_isSearchExpanded;
-                              if (_isSearchExpanded) {
-                                _searchController.clear();
-                              }
-                            });
-                          },
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: kCardBackgroundColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: _isSearchExpanded
-                                    ? kPrimaryColor
-                                    : Colors.transparent,
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    _selectedCategoryDisplay ??
-                                        'Enter Business Activity',
-                                    style: kSmallTitleL.copyWith(
-                                      color: _selectedCategoryDisplay != null
-                                          ? kWhite
-                                          : kGrey,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Icon(
-                                  _isSearchExpanded
-                                      ? Icons.keyboard_arrow_up
-                                      : Icons.keyboard_arrow_down,
-                                  color: kGrey,
-                                ),
-                                const SizedBox(width: 12),
-                              ],
-                            ),
+                          SizedBox(
+                            height: 10,
                           ),
-                        ),
-                        // Search field and filtered list
-                        if (_isSearchExpanded) ...[
-                          const SizedBox(height: 8),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: kCardBackgroundColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: kPrimaryColor.withOpacity(0.3),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  controller: _searchController,
-                                  style: kSmallTitleL.copyWith(color: kWhite),
-                                  decoration: InputDecoration(
-                                    hintText: 'Search business activity...',
-                                    hintStyle:
-                                        kSmallTitleL.copyWith(color: kGrey),
-                                    prefixIcon:
-                                        Icon(Icons.search, color: kGrey),
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {});
-                                  },
-                                ),
-                                Container(
-                                  constraints: BoxConstraints(
-                                    maxHeight: 200,
-                                  ),
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      children: [
-                                        // Filtered categories based on search
-                                        ...categories.where((cat) {
-                                          final searchTerm = _searchController
-                                              .text
-                                              .toLowerCase();
-                                          return searchTerm.isEmpty ||
-                                              cat.name
-                                                  .toLowerCase()
-                                                  .contains(searchTerm);
-                                        }).map((cat) {
-                                          return ListTile(
-                                            dense: true,
-                                            title: Text(
-                                              cat.name,
-                                              style: kSmallTitleL.copyWith(
-                                                color: kWhite,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              setState(() {
-                                                category = cat.id?.toString() ??
-                                                    cat.name;
-                                                _selectedCategoryDisplay =
-                                                    cat.name;
-                                                _isSearchExpanded = false;
-                                                _searchController.clear();
-                                              });
-                                            },
-                                          );
-                                        }),
-                                        // Load more option
-                                        if (hasMore || isLoading)
-                                          ListTile(
-                                            dense: true,
-                                            leading: isLoading
-                                                ? SizedBox(
-                                                    width: 16,
-                                                    height: 16,
-                                                    child: LoadingAnimation(),
-                                                  )
-                                                : Icon(Icons.more_horiz,
-                                                    color: kGrey),
-                                            title: Text(
-                                              isLoading
-                                                  ? 'Loading...'
-                                                  : 'Load more...',
-                                              style: kSmallTitleL.copyWith(
-                                                color: kGrey,
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            onTap: isLoading
-                                                ? null
-                                                : () {
-                                                    businessCategoryNotifier
-                                                        .fetchMoreCategories();
-                                                  },
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        // Validation error display
-                        if (category == null || category!.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              'Please select a category',
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 16),
-                        Text('Company Establishment Year ',
-                            style: kSmallTitleM),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          controller: establishedDateController,
-                          style: kSmallTitleL,
-                          decoration: InputDecoration(
-                            hintText: 'Select Year',
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon:
-                                Icon(Icons.calendar_today, color: kGrey),
-                          ),
-                          readOnly: true,
-                          onTap: () async {
-                            final currentSelectedYear =
-                                establishedDate ?? DateTime.now().year;
-                            final picked = await showYearPickerDialog(context,
-                                selectedYear: currentSelectedYear);
-                            if (picked != null) {
-                              setState(() {
-                                establishedDate = picked as int?;
-                                establishedDateController.text =
-                                    picked.toString();
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Text('Name in Trade License', style: kSmallTitleM),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 120,
-                              child: GestureDetector(
-                                onTap: () =>
-                                    setState(() => nameInTradeLicense = true),
-                                child: Container(
-                                  height: 48,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12),
-                                  decoration: BoxDecoration(
-                                    color: kCardBackgroundColor,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 18,
-                                        height: 18,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: nameInTradeLicense == true
-                                              ? kPrimaryColor
-                                              : Colors.transparent,
-                                          border: Border.all(
-                                            color: nameInTradeLicense == true
-                                                ? kPrimaryColor
-                                                : Colors.white.withOpacity(0.5),
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: nameInTradeLicense == true
-                                            ? const Icon(
-                                                Icons.check,
-                                                size: 11,
-                                                color: kWhite,
-                                              )
-                                            : null,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Text(
-                                        'Yes',
-                                        style: kSmallTitleL.copyWith(
-                                          color: nameInTradeLicense == true
-                                              ? kWhite
-                                              : Colors.white.withOpacity(0.7),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            SizedBox(
-                              width: 120,
-                              child: GestureDetector(
-                                onTap: () =>
-                                    setState(() => nameInTradeLicense = false),
-                                child: Container(
-                                  height: 48,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12),
-                                  decoration: BoxDecoration(
-                                    color: kCardBackgroundColor,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 18,
-                                        height: 18,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: nameInTradeLicense == false
-                                              ? Colors.red
-                                              : Colors.transparent,
-                                          border: Border.all(
-                                            color: nameInTradeLicense == false
-                                                ? Colors.red
-                                                : Colors.white.withOpacity(0.5),
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                        child: nameInTradeLicense == false
-                                            ? const Icon(
-                                                Icons.check,
-                                                size: 11,
-                                                color: kWhite,
-                                              )
-                                            : null,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Text(
-                                        'No',
-                                        style: kSmallTitleL.copyWith(
-                                          color: nameInTradeLicense == false
-                                              ? kWhite
-                                              : Colors.white.withOpacity(0.7),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Conditional Trade License Document field - only visible when "Yes" is selected
-                        if (nameInTradeLicense == true) ...[
                           Row(
                             children: [
-                              Text('Trade License Document',
-                                  style: kSmallTitleM),
+                              Text('Company Name', style: kSmallTitleM),
                               Text(' *',
                                   style:
                                       kSmallTitleM.copyWith(color: Colors.red)),
                             ],
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            'Max file size: 5MB • Supported format: PDF only',
-                            style: kSmallTitleM.copyWith(
-                              color: kSecondaryTextColor,
-                              fontSize: 12,
+                          TextFormField(
+                            controller: nameController,
+                            style: kSmallTitleL,
+                            decoration: InputDecoration(
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              hintText: 'Enter company name',
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
+                            validator: (val) => val == null || val.isEmpty
+                                ? 'Company name is required'
+                                : null,
+                          ),
+
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Text('Business Activity', style: kSmallTitleM),
+                              Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
                           ),
                           const SizedBox(height: 8),
+                          // Searchable Dropdown for Business Activity
                           GestureDetector(
-                            onTap: isUploadingTradeLicense
-                                ? null
-                                : pickTradeLicense,
+                            onTap: () {
+                              setState(() {
+                                _isSearchExpanded = !_isSearchExpanded;
+                                if (_isSearchExpanded) {
+                                  _searchController.clear();
+                                }
+                              });
+                            },
                             child: Container(
                               height: 48,
                               decoration: BoxDecoration(
                                 color: kCardBackgroundColor,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: _isSearchExpanded
+                                      ? kPrimaryColor
+                                      : Colors.transparent,
+                                  width: 1,
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: isUploadingTradeLicense
-                                        ? Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child: LoadingAnimation(),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Text(
-                                                'Uploading...',
-                                                style: TextStyle(
-                                                  color: kWhite,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : Text(
-                                            tradeLicenseUrl != null
-                                                ? 'Document uploaded successfully'
-                                                : (tradeLicenseFile != null
-                                                    ? tradeLicenseFile!.path
-                                                        .split('/')
-                                                        .last
-                                                    : 'Upload Document (.pdf only)'),
-                                            style: TextStyle(
-                                              color: tradeLicenseUrl != null
-                                                  ? Colors.green
-                                                  : (tradeLicenseFile != null
-                                                      ? kWhite
-                                                      : Colors.white
-                                                          .withOpacity(0.7)),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                  ),
-                                  if (!isUploadingTradeLicense)
-                                    Icon(
-                                      tradeLicenseUrl != null
-                                          ? Icons.check_circle
-                                          : Icons.cloud_upload_outlined,
-                                      color: tradeLicenseUrl != null
-                                          ? Colors.green
-                                          : Colors.white.withOpacity(0.7),
+                                    child: Text(
+                                      _selectedCategoryDisplay ??
+                                          'Enter Business Activity',
+                                      style: kSmallTitleL.copyWith(
+                                        color: _selectedCategoryDisplay != null
+                                            ? kWhite
+                                            : kGrey,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                  ),
+                                  Icon(
+                                    _isSearchExpanded
+                                        ? Icons.keyboard_arrow_up
+                                        : Icons.keyboard_arrow_down,
+                                    color: kGrey,
+                                  ),
                                   const SizedBox(width: 12),
                                 ],
                               ),
                             ),
                           ),
-                          // Show upload error if any
-                          if (tradeLicenseUploadError != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              tradeLicenseUploadError!,
-                              style: TextStyle(
-                                color: Colors.red,
-                                fontSize: 12,
+                          // Search field and filtered list
+                          if (_isSearchExpanded) ...[
+                            const SizedBox(height: 8),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: kCardBackgroundColor,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: kPrimaryColor.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    controller: _searchController,
+                                    style: kSmallTitleL.copyWith(color: kWhite),
+                                    decoration: InputDecoration(
+                                      hintText: 'Search business activity...',
+                                      hintStyle:
+                                          kSmallTitleL.copyWith(color: kGrey),
+                                      prefixIcon:
+                                          Icon(Icons.search, color: kGrey),
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                  ),
+                                  Container(
+                                    constraints: BoxConstraints(
+                                      maxHeight: 200,
+                                    ),
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          // Filtered categories based on search
+                                          ...categories.where((cat) {
+                                            final searchTerm = _searchController
+                                                .text
+                                                .toLowerCase();
+                                            return searchTerm.isEmpty ||
+                                                cat.name
+                                                    .toLowerCase()
+                                                    .contains(searchTerm);
+                                          }).map((cat) {
+                                            return ListTile(
+                                              dense: true,
+                                              title: Text(
+                                                cat.name,
+                                                style: kSmallTitleL.copyWith(
+                                                  color: kWhite,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  category =
+                                                      cat.id?.toString() ??
+                                                          cat.name;
+                                                  _selectedCategoryDisplay =
+                                                      cat.name;
+                                                  _isSearchExpanded = false;
+                                                  _searchController.clear();
+                                                });
+                                                _autoSaveData();
+                                              },
+                                            );
+                                          }),
+                                          // Load more option
+                                          if (hasMore || isLoading)
+                                            ListTile(
+                                              dense: true,
+                                              leading: isLoading
+                                                  ? SizedBox(
+                                                      width: 16,
+                                                      height: 16,
+                                                      child: LoadingAnimation(),
+                                                    )
+                                                  : Icon(Icons.more_horiz,
+                                                      color: kGrey),
+                                              title: Text(
+                                                isLoading
+                                                    ? 'Loading...'
+                                                    : 'Load more...',
+                                                style: kSmallTitleL.copyWith(
+                                                  color: kGrey,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              onTap: isLoading
+                                                  ? null
+                                                  : () {
+                                                      businessCategoryNotifier
+                                                          .fetchMoreCategories();
+                                                    },
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                          // Show validation error if document is not uploaded
-                          if (nameInTradeLicense == true &&
-                              (tradeLicenseUrl == null ||
-                                  tradeLicenseUrl!.isEmpty) &&
-                              !isUploadingTradeLicense) ...[
-                            const SizedBox(height: 4),
+                          // Validation error display
+                          if (category == null || category!.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                'Please select a category',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          Text('Company Establishment Year ',
+                              style: kSmallTitleM),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: establishedDateController,
+                            style: kSmallTitleL,
+                            decoration: InputDecoration(
+                              hintText: 'Select Year',
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                              suffixIcon:
+                                  Icon(Icons.calendar_today, color: kGrey),
+                            ),
+                            readOnly: true,
+                            onTap: () async {
+                              final currentSelectedYear =
+                                  establishedDate ?? DateTime.now().year;
+                              final picked = await showYearPickerDialog(context,
+                                  selectedYear: currentSelectedYear);
+                              if (picked != null) {
+                                setState(() {
+                                  establishedDate = picked as int?;
+                                  establishedDateController.text =
+                                      picked.toString();
+                                });
+                                _autoSaveData();
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Text('Name in Trade License', style: kSmallTitleM),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 120,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() => nameInTradeLicense = true);
+                                    _autoSaveData();
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      color: kCardBackgroundColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 18,
+                                          height: 18,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: nameInTradeLicense == true
+                                                ? kPrimaryColor
+                                                : Colors.transparent,
+                                            border: Border.all(
+                                              color: nameInTradeLicense == true
+                                                  ? kPrimaryColor
+                                                  : Colors.white
+                                                      .withOpacity(0.5),
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: nameInTradeLicense == true
+                                              ? const Icon(
+                                                  Icons.check,
+                                                  size: 11,
+                                                  color: kWhite,
+                                                )
+                                              : null,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          'Yes',
+                                          style: kSmallTitleL.copyWith(
+                                            color: nameInTradeLicense == true
+                                                ? kWhite
+                                                : Colors.white.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              SizedBox(
+                                width: 120,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() => nameInTradeLicense = false);
+                                    _autoSaveData();
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12),
+                                    decoration: BoxDecoration(
+                                      color: kCardBackgroundColor,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 18,
+                                          height: 18,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: nameInTradeLicense == false
+                                                ? Colors.red
+                                                : Colors.transparent,
+                                            border: Border.all(
+                                              color: nameInTradeLicense == false
+                                                  ? Colors.red
+                                                  : Colors.white
+                                                      .withOpacity(0.5),
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: nameInTradeLicense == false
+                                              ? const Icon(
+                                                  Icons.check,
+                                                  size: 11,
+                                                  color: kWhite,
+                                                )
+                                              : null,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Text(
+                                          'No',
+                                          style: kSmallTitleL.copyWith(
+                                            color: nameInTradeLicense == false
+                                                ? kWhite
+                                                : Colors.white.withOpacity(0.7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Conditional Trade License Document field - only visible when "Yes" is selected
+                          if (nameInTradeLicense == true) ...[
+                            Row(
+                              children: [
+                                Text('Trade License Document',
+                                    style: kSmallTitleM),
+                                Text(' *',
+                                    style: kSmallTitleM.copyWith(
+                                        color: Colors.red)),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
                             Text(
-                              'Trade License Document is required',
-                              style: TextStyle(
-                                color: Colors.red,
+                              'Max file size: 5MB • Supported format: PDF only',
+                              style: kSmallTitleM.copyWith(
+                                color: kSecondaryTextColor,
                                 fontSize: 12,
                               ),
                             ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: isUploadingTradeLicense
+                                  ? null
+                                  : pickTradeLicense,
+                              child: Container(
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: kCardBackgroundColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: isUploadingTradeLicense
+                                          ? Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 16,
+                                                  height: 16,
+                                                  child: LoadingAnimation(),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'Uploading...',
+                                                  style: TextStyle(
+                                                    color: kWhite,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : Text(
+                                              tradeLicenseUrl != null
+                                                  ? 'Document uploaded successfully'
+                                                  : (tradeLicenseFile != null
+                                                      ? tradeLicenseFile!.path
+                                                          .split('/')
+                                                          .last
+                                                      : 'Upload Document (.pdf only)'),
+                                              style: TextStyle(
+                                                color: tradeLicenseUrl != null
+                                                    ? Colors.green
+                                                    : (tradeLicenseFile != null
+                                                        ? kWhite
+                                                        : Colors.white
+                                                            .withOpacity(0.7)),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                    ),
+                                    if (!isUploadingTradeLicense)
+                                      Icon(
+                                        tradeLicenseUrl != null
+                                            ? Icons.check_circle
+                                            : Icons.cloud_upload_outlined,
+                                        color: tradeLicenseUrl != null
+                                            ? Colors.green
+                                            : Colors.white.withOpacity(0.7),
+                                      ),
+                                    const SizedBox(width: 12),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            // Show upload error if any
+                            if (tradeLicenseUploadError != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                tradeLicenseUploadError!,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 24),
                           ],
+
+                          //recommended by
+
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Text('Recommended by', style: kSmallTitleM),
+                              Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: recommendedByController,
+                            style: kSmallTitleL,
+                            decoration: InputDecoration(
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              hintText: 'Enter the name',
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Text('Company Size', style: kSmallTitleM),
+                              Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: companySizeController,
+                            style: kSmallTitleL,
+                            decoration: InputDecoration(
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              hintText: 'Company Size',
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Text('Business Emirates', style: kSmallTitleM),
+                              Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            value: businessEmirate,
+                            decoration: InputDecoration(
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              hintText: 'Select Emirates',
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            style: kSmallTitleL,
+                            icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
+                            items: emirateItems,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                businessEmirate = newValue;
+                              });
+                              _autoSaveData();
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select an emirate';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Text('Location', style: kSmallTitleM),
+                              Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: locationController,
+                            style: kSmallTitleL,
+                            decoration: InputDecoration(
+                              hintText: 'Enter location',
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const SizedBox(height: 16),
+                          // Row(
+                          //   children: [
+                          //     Text('Services (comma separated)', style: kSmallTitleM),
+                          //     Text(' *', style: kSmallTitleM.copyWith(color: Colors.red)),
+                          //   ],
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue:
+                          //       services.isNotEmpty ? services.join(', ') : null,
+                          //   decoration: InputDecoration(
+                          //     hintText: 'e.g. Consulting, Design',
+                          //     filled: true,
+                          //     fillColor: kCardBackgroundColor,
+                          //     border: OutlineInputBorder(
+                          //       borderRadius: BorderRadius.circular(8),
+                          //       borderSide: BorderSide.none,
+                          //     ),
+                          //   ),
+                          //   onChanged: (val) => setState(() =>
+                          //       services = val.split(',').map((e) => e.trim()).toList()),
+                          //   validator: (val) {
+                          //     if (val == null || val.isEmpty) return '';
+                          //     final serviceList =
+                          //         val.split(',').map((e) => e.trim()).toList();
+                          //     if (serviceList.isEmpty ||
+                          //         (serviceList.length == 1 && serviceList[0].isEmpty)) {
+                          //       return '';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+
+                          // Text('Opening Hours', style: kSmallTitleM),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: sunday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Sunday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => sunday = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: monday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Monday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => monday = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: tuesday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Tuesday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => tuesday = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: wednesday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Wednesday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => wednesday = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: thursday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Thursday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => thursday = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: friday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Friday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => friday = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: saturday,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Saturday',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => saturday = val),
+                          // ),
+                          // const SizedBox(height: 24),
+                          // Text('Contact Info', style: kSmallTitleM),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: address,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Address',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => address = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: phone,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Phone',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => phone = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: email,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Email',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => email = val),
+                          // ),
+                          // const SizedBox(height: 8),
+                          // TextFormField(
+                          //   style: kSmallTitleL,
+                          //   initialValue: website,
+                          //   decoration: InputDecoration(
+                          //       hintText: 'Website',
+                          //       filled: true,
+                          //       fillColor: kCardBackgroundColor,
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         borderSide: BorderSide.none,
+                          //       )),
+                          //   onChanged: (val) => setState(() => website = val),
+                          // ),
+                          // const SizedBox(height: 24),
+                          // Text('Gallery', style: kSmallTitleM),
+                          // const SizedBox(height: 8),
+                          // Text(
+                          //   'Add Image',
+                          //   style: kSmallerTitleR,
+                          // ),
+                          // SizedBox(
+                          //   height: 10,
+                          // ),
+                          // Row(
+                          //   children: [
+                          //     // Show remote gallery images
+                          //     ...List.generate(galleryPhotoUrls.length, (index) {
+                          //       return Stack(
+                          //         alignment: Alignment.topRight,
+                          //         children: [
+                          //           Container(
+                          //             margin: const EdgeInsets.only(right: 8),
+                          //             width: 64,
+                          //             height: 64,
+                          //             decoration: BoxDecoration(
+                          //               borderRadius: BorderRadius.circular(8),
+                          //               image: DecorationImage(
+                          //                 image: NetworkImage(galleryPhotoUrls[index]),
+                          //                 fit: BoxFit.cover,
+                          //               ),
+                          //             ),
+                          //           ),
+                          //           GestureDetector(
+                          //             onTap: () {
+                          //               setState(() {
+                          //                 galleryPhotoUrls.removeAt(index);
+                          //               });
+                          //             },
+                          //             child: Container(
+                          //               decoration: BoxDecoration(
+                          //                 color: Colors.black54,
+                          //                 shape: BoxShape.circle,
+                          //               ),
+                          //               child: const Icon(Icons.close,
+                          //                   color: kWhite, size: 18),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       );
+                          //     }),
+                          //     // Show local gallery images
+                          //     ...List.generate(localPhotoFiles.length, (index) {
+                          //       return Stack(
+                          //         alignment: Alignment.topRight,
+                          //         children: [
+                          //           Container(
+                          //             margin: const EdgeInsets.only(right: 8),
+                          //             width: 64,
+                          //             height: 64,
+                          //             decoration: BoxDecoration(
+                          //               borderRadius: BorderRadius.circular(8),
+                          //               image: DecorationImage(
+                          //                 image: FileImage(localPhotoFiles[index]),
+                          //                 fit: BoxFit.cover,
+                          //               ),
+                          //             ),
+                          //           ),
+                          //           GestureDetector(
+                          //             onTap: () => removeGalleryPhoto(index),
+                          //             child: Container(
+                          //               decoration: BoxDecoration(
+                          //                 color: Colors.black54,
+                          //                 shape: BoxShape.circle,
+                          //               ),
+                          //               child: const Icon(Icons.close,
+                          //                   color: kWhite, size: 18),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       );
+                          //     }),
+                          //     // Add image button
+                          //     Column(
+                          //       children: [
+                          //         Tooltip(
+                          //           message: 'Add Image',
+                          //           child: GestureDetector(
+                          //             onTap: pickGalleryPhoto,
+                          //             child: Container(
+                          //               width: 64,
+                          //               height: 64,
+                          //               decoration: BoxDecoration(
+                          //                 color: kCardBackgroundColor,
+                          //                 borderRadius: BorderRadius.circular(8),
+                          //                 border: Border.all(color: kPrimaryColor),
+                          //               ),
+                          //               child: const Icon(Icons.add,
+                          //                   color: kPrimaryColor, size: 32),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ],
+                          // ),
+                          // SizedBox(
+                          //   height: 15,
+                          // ),
+                          // // Videos section
+                          // Column(
+                          //   crossAxisAlignment: CrossAxisAlignment.start,
+                          //   children: [
+                          //     Row(
+                          //       children: [
+                          //         Expanded(
+                          //           child: TextFormField(
+                          //             controller: videoController,
+                          //             style: kSmallTitleL,
+                          //             decoration: InputDecoration(
+                          //               hintText: 'YouTube Video URL',
+                          //               filled: true,
+                          //               fillColor: kCardBackgroundColor,
+                          //               border: OutlineInputBorder(
+                          //                 borderRadius: BorderRadius.circular(8),
+                          //                 borderSide: BorderSide.none,
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //         const SizedBox(width: 8),
+                          //         ElevatedButton(
+                          //           onPressed: addVideoUrl,
+                          //           child: const Icon(
+                          //             Icons.add,
+                          //             color: kPrimaryColor,
+                          //           ),
+                          //           style: ElevatedButton.styleFrom(
+                          //             shape: const CircleBorder(),
+                          //             padding: const EdgeInsets.all(12),
+                          //             backgroundColor: kCardBackgroundColor,
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //     const SizedBox(height: 8),
+                          //     ...List.generate(videoUrls.length, (index) {
+                          //       return ListTile(
+                          //         contentPadding: EdgeInsets.zero,
+                          //         title: Text(videoUrls[index], style: kSmallTitleL),
+                          //         trailing: IconButton(
+                          //           icon: const Icon(Icons.close, color: Colors.red),
+                          //           onPressed: () => removeVideoUrl(index),
+                          //         ),
+                          //       );
+                          //     }),
+                          //   ],
+                          // ),
                           const SizedBox(height: 24),
+                          if (submitError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Text(submitError!,
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          const SizedBox(
+                              height: 80), // Extra space before fixed button
                         ],
-
-                        //recommended by
-
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Recommended by', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          style: kSmallTitleL,
-                          initialValue: recommendedBy,
-                          decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            hintText: 'Enter the name',
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (val) =>
-                              setState(() => recommendedBy = val),
-                        ),
-                        const SizedBox(height: 16),
-
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Company Size', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          style: kSmallTitleL,
-                          initialValue: companySize,
-                          decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            hintText: 'Company Size',
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (val) => setState(() => companySize = val),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Business Emirates', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          value: businessEmirate,
-                          decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            hintText: 'Select Emirates',
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: kSmallTitleL,
-                          icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
-                          items: emirateItems,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              businessEmirate = newValue;
-                            });
-                          },
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select an emirate';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Location', style: kSmallTitleM),
-                            Text(' *',
-                                style:
-                                    kSmallTitleM.copyWith(color: Colors.red)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                          style: kSmallTitleL,
-                          decoration: InputDecoration(
-                            hintText: 'Enter location',
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          onChanged: (val) => setState(() => location = val),
-                        ),
-                        const SizedBox(height: 16),
-                        const SizedBox(height: 16),
-                        // Row(
-                        //   children: [
-                        //     Text('Services (comma separated)', style: kSmallTitleM),
-                        //     Text(' *', style: kSmallTitleM.copyWith(color: Colors.red)),
-                        //   ],
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue:
-                        //       services.isNotEmpty ? services.join(', ') : null,
-                        //   decoration: InputDecoration(
-                        //     hintText: 'e.g. Consulting, Design',
-                        //     filled: true,
-                        //     fillColor: kCardBackgroundColor,
-                        //     border: OutlineInputBorder(
-                        //       borderRadius: BorderRadius.circular(8),
-                        //       borderSide: BorderSide.none,
-                        //     ),
-                        //   ),
-                        //   onChanged: (val) => setState(() =>
-                        //       services = val.split(',').map((e) => e.trim()).toList()),
-                        //   validator: (val) {
-                        //     if (val == null || val.isEmpty) return '';
-                        //     final serviceList =
-                        //         val.split(',').map((e) => e.trim()).toList();
-                        //     if (serviceList.isEmpty ||
-                        //         (serviceList.length == 1 && serviceList[0].isEmpty)) {
-                        //       return '';
-                        //     }
-                        //     return null;
-                        //   },
-                        // ),
-
-                        // Text('Opening Hours', style: kSmallTitleM),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: sunday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Sunday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => sunday = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: monday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Monday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => monday = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: tuesday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Tuesday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => tuesday = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: wednesday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Wednesday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => wednesday = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: thursday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Thursday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => thursday = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: friday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Friday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => friday = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: saturday,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Saturday',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => saturday = val),
-                        // ),
-                        // const SizedBox(height: 24),
-                        // Text('Contact Info', style: kSmallTitleM),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: address,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Address',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => address = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: phone,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Phone',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => phone = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: email,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Email',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => email = val),
-                        // ),
-                        // const SizedBox(height: 8),
-                        // TextFormField(
-                        //   style: kSmallTitleL,
-                        //   initialValue: website,
-                        //   decoration: InputDecoration(
-                        //       hintText: 'Website',
-                        //       filled: true,
-                        //       fillColor: kCardBackgroundColor,
-                        //       border: OutlineInputBorder(
-                        //         borderRadius: BorderRadius.circular(8),
-                        //         borderSide: BorderSide.none,
-                        //       )),
-                        //   onChanged: (val) => setState(() => website = val),
-                        // ),
-                        // const SizedBox(height: 24),
-                        // Text('Gallery', style: kSmallTitleM),
-                        // const SizedBox(height: 8),
-                        // Text(
-                        //   'Add Image',
-                        //   style: kSmallerTitleR,
-                        // ),
-                        // SizedBox(
-                        //   height: 10,
-                        // ),
-                        // Row(
-                        //   children: [
-                        //     // Show remote gallery images
-                        //     ...List.generate(galleryPhotoUrls.length, (index) {
-                        //       return Stack(
-                        //         alignment: Alignment.topRight,
-                        //         children: [
-                        //           Container(
-                        //             margin: const EdgeInsets.only(right: 8),
-                        //             width: 64,
-                        //             height: 64,
-                        //             decoration: BoxDecoration(
-                        //               borderRadius: BorderRadius.circular(8),
-                        //               image: DecorationImage(
-                        //                 image: NetworkImage(galleryPhotoUrls[index]),
-                        //                 fit: BoxFit.cover,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //           GestureDetector(
-                        //             onTap: () {
-                        //               setState(() {
-                        //                 galleryPhotoUrls.removeAt(index);
-                        //               });
-                        //             },
-                        //             child: Container(
-                        //               decoration: BoxDecoration(
-                        //                 color: Colors.black54,
-                        //                 shape: BoxShape.circle,
-                        //               ),
-                        //               child: const Icon(Icons.close,
-                        //                   color: kWhite, size: 18),
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       );
-                        //     }),
-                        //     // Show local gallery images
-                        //     ...List.generate(localPhotoFiles.length, (index) {
-                        //       return Stack(
-                        //         alignment: Alignment.topRight,
-                        //         children: [
-                        //           Container(
-                        //             margin: const EdgeInsets.only(right: 8),
-                        //             width: 64,
-                        //             height: 64,
-                        //             decoration: BoxDecoration(
-                        //               borderRadius: BorderRadius.circular(8),
-                        //               image: DecorationImage(
-                        //                 image: FileImage(localPhotoFiles[index]),
-                        //                 fit: BoxFit.cover,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //           GestureDetector(
-                        //             onTap: () => removeGalleryPhoto(index),
-                        //             child: Container(
-                        //               decoration: BoxDecoration(
-                        //                 color: Colors.black54,
-                        //                 shape: BoxShape.circle,
-                        //               ),
-                        //               child: const Icon(Icons.close,
-                        //                   color: kWhite, size: 18),
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       );
-                        //     }),
-                        //     // Add image button
-                        //     Column(
-                        //       children: [
-                        //         Tooltip(
-                        //           message: 'Add Image',
-                        //           child: GestureDetector(
-                        //             onTap: pickGalleryPhoto,
-                        //             child: Container(
-                        //               width: 64,
-                        //               height: 64,
-                        //               decoration: BoxDecoration(
-                        //                 color: kCardBackgroundColor,
-                        //                 borderRadius: BorderRadius.circular(8),
-                        //                 border: Border.all(color: kPrimaryColor),
-                        //               ),
-                        //               child: const Icon(Icons.add,
-                        //                   color: kPrimaryColor, size: 32),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
-                        // SizedBox(
-                        //   height: 15,
-                        // ),
-                        // // Videos section
-                        // Column(
-                        //   crossAxisAlignment: CrossAxisAlignment.start,
-                        //   children: [
-                        //     Row(
-                        //       children: [
-                        //         Expanded(
-                        //           child: TextFormField(
-                        //             controller: videoController,
-                        //             style: kSmallTitleL,
-                        //             decoration: InputDecoration(
-                        //               hintText: 'YouTube Video URL',
-                        //               filled: true,
-                        //               fillColor: kCardBackgroundColor,
-                        //               border: OutlineInputBorder(
-                        //                 borderRadius: BorderRadius.circular(8),
-                        //                 borderSide: BorderSide.none,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         const SizedBox(width: 8),
-                        //         ElevatedButton(
-                        //           onPressed: addVideoUrl,
-                        //           child: const Icon(
-                        //             Icons.add,
-                        //             color: kPrimaryColor,
-                        //           ),
-                        //           style: ElevatedButton.styleFrom(
-                        //             shape: const CircleBorder(),
-                        //             padding: const EdgeInsets.all(12),
-                        //             backgroundColor: kCardBackgroundColor,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //     const SizedBox(height: 8),
-                        //     ...List.generate(videoUrls.length, (index) {
-                        //       return ListTile(
-                        //         contentPadding: EdgeInsets.zero,
-                        //         title: Text(videoUrls[index], style: kSmallTitleL),
-                        //         trailing: IconButton(
-                        //           icon: const Icon(Icons.close, color: Colors.red),
-                        //           onPressed: () => removeVideoUrl(index),
-                        //         ),
-                        //       );
-                        //     }),
-                        //   ],
-                        // ),
-                        const SizedBox(height: 24),
-                        if (submitError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: Text(submitError!,
-                                style: TextStyle(color: Colors.red)),
-                          ),
-                        const SizedBox(
-                            height: 80), // Extra space before fixed button
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              // Fixed button at bottom
-              Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    child: customButton(
-                      label: isSubmitting
-                          ? 'Submitting...'
-                          : (widget.companyToEdit != null
-                              ? 'Update'
-                              : 'Send Request'),
-                      onPressed: isSubmitting
-                          ? null
-                          : () async {
-                              // Get registration data from provider
-                              final registrationData =
-                                  ref.read(registrationDataProvider);
+                // Fixed button at bottom
+                Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: customButton(
+                        label: isSubmitting
+                            ? 'Submitting...'
+                            : (widget.companyToEdit != null
+                                ? 'Update'
+                                : 'Send Request'),
+                        onPressed: isSubmitting
+                            ? null
+                            : () async {
+                                // Get registration data from provider
+                                final registrationData =
+                                    ref.read(registrationDataProvider);
 
-                              // Validate mandatory fields first
-                              bool isValid = true;
-                              String? validationError;
+                                // Validate mandatory fields first
+                                bool isValid = true;
+                                String? validationError;
 
-                              if (registrationData.name == null ||
-                                  registrationData.name!.isEmpty) {
-                                validationError =
-                                    'Please complete the registration form first';
-                                isValid = false;
-                              }
+                                if (registrationData.name == null ||
+                                    registrationData.name!.isEmpty) {
+                                  validationError =
+                                      'Please complete the registration form first';
+                                  isValid = false;
+                                }
 
-                              if (name == null || name!.isEmpty) {
-                                validationError = 'Company name is required';
-                                isValid = false;
-                              }
+                                if (nameController.text.isEmpty) {
+                                  validationError = 'Company name is required';
+                                  isValid = false;
+                                }
 
-                              if (category == null || category!.isEmpty) {
-                                validationError =
-                                    'Please select a business activity';
-                                isValid = false;
-                              }
+                                if (category == null || category!.isEmpty) {
+                                  validationError =
+                                      'Please select a business activity';
+                                  isValid = false;
+                                }
 
-                              // Validate trade license document if required
-                              if (nameInTradeLicense == true &&
-                                  (tradeLicenseUrl == null ||
-                                      tradeLicenseUrl!.isEmpty)) {
-                                validationError =
-                                    'Trade License Document is required when "Name in Trade License" is selected';
-                                isValid = false;
-                              }
+                                if (!isValid) {
+                                  if (mounted) {
+                                    setState(() {
+                                      submitError = validationError;
+                                    });
+                                  }
+                                  return;
+                                }
 
-                              if (!isValid) {
-                                if (mounted) {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  if (!mounted) return;
+
                                   setState(() {
-                                    submitError = validationError;
+                                    isSubmitting = true;
+                                    submitError = null;
                                   });
+                                  try {
+                                    // Upload profile image if available
+                                    String? profileImageUrl;
+                                    if (registrationData.profileImage != null) {
+                                      final tempPath =
+                                          await saveUint8ListToFile(
+                                              registrationData.profileImage!,
+                                              'profile.png');
+                                      profileImageUrl =
+                                          await imageUpload(tempPath);
+                                    }
+
+                                    // Submit user data first
+                                    final userModel = UserModel(
+                                        name: registrationData.name,
+                                        email: registrationData.email,
+                                        dob: registrationData.dob,
+                                        image: profileImageUrl,
+                                        phone: registrationData.phone,
+                                        whatsapp_no:
+                                            registrationData.whatsappNo,
+                                        emiratesIdCopy:
+                                            registrationData.emiratesIdCopy,
+                                        passportCopy:
+                                            registrationData.passportCopy,
+                                        profession: registrationData.profession,
+                                        location: registrationData.location,
+                                        status: 'pending');
+
+                                    final userDataApiService =
+                                        ref.read(userDataApiServiceProvider);
+                                    final userResponse =
+                                        await userDataApiService.updateUser(
+                                            id, userModel);
+
+                                    if (userResponse.success == false) {
+                                      throw Exception(
+                                          'Failed to submit user data: ${userResponse.message}');
+                                    }
+
+                                    // Upload gallery photos
+                                    final newGalleryPhotoUrls =
+                                        List<String>.from(galleryPhotoUrls);
+                                    for (final file in localPhotoFiles) {
+                                      final url = await imageUpload(file.path);
+                                      newGalleryPhotoUrls.add(url);
+                                    }
+                                    galleryPhotoUrls = newGalleryPhotoUrls;
+                                    localPhotoFiles.clear();
+
+                                    // Always resolve category to ID
+                                    final found = categories.firstWhere(
+                                      (cat) =>
+                                          cat.id.toString() == category ||
+                                          cat.name == category,
+                                      orElse: () => BusinessCategoryModel(
+                                          id: '', name: ''),
+                                    );
+                                    final categoryId = (found.id != null &&
+                                            found.id.toString().isNotEmpty)
+                                        ? found.id.toString()
+                                        : null;
+                                    if (categoryId == null ||
+                                        categoryId.isEmpty) {
+                                      if (mounted) {
+                                        setState(() {
+                                          isSubmitting = false;
+                                          submitError =
+                                              'Please select a valid category.';
+                                        });
+                                      }
+                                      return;
+                                    }
+
+                                    final companyData = {
+                                      'name': nameController.text,
+                                      'overview':
+                                          overviewController.text.isNotEmpty
+                                              ? overviewController.text
+                                              : "",
+                                      'category': categoryId,
+                                      'image': image,
+                                      'status': status,
+                                      'established_date': establishedDate,
+                                      'company_size':
+                                          companySizeController.text.isNotEmpty
+                                              ? companySizeController.text
+                                              : null,
+                                      'services': services,
+                                      'tags': tags,
+                                      'opening_hours': {
+                                        'sunday': sunday,
+                                        'monday': monday,
+                                        'tuesday': tuesday,
+                                        'wednesday': wednesday,
+                                        'thursday': thursday,
+                                        'friday': friday,
+                                        'saturday': saturday,
+                                      },
+                                      'contact_info': {
+                                        'address': address,
+                                        'phone': phone,
+                                        'email': email,
+                                        'website': website,
+                                      },
+                                      'gallery': {
+                                        'photos': galleryPhotoUrls
+                                            .map((url) => {'url': url})
+                                            .toList(),
+                                        'videos': videoUrls
+                                            .map((url) => {'url': url})
+                                            .toList(),
+                                      },
+                                      'location': locationController.text,
+                                      'trade_license_copy':
+                                          tradeLicenseUrl ?? "",
+                                      'business_emirates': businessEmirate,
+                                      'name_in_trade_license':
+                                          nameInTradeLicense,
+                                      'recommended_by':
+                                          recommendedByController.text,
+                                    };
+
+                                    final companyApi =
+                                        ref.read(companyApiServiceProvider);
+                                    bool result;
+                                    if (widget.companyToEdit != null &&
+                                        widget.companyToEdit!.id != null) {
+                                      result = await companyApi.updateCompany(
+                                          widget.companyToEdit!.id!,
+                                          companyData);
+                                    } else {
+                                      result = await companyApi
+                                          .createCompany(companyData);
+                                    }
+
+                                    if (result != false) {
+                                      // Clear both registration and company data after successful submission
+                                      ref
+                                          .read(
+                                              registrationDataProvider.notifier)
+                                          .clear();
+                                      ref
+                                          .read(companyDataProvider.notifier)
+                                          .clear();
+
+                                      if (mounted) {
+                                        // Navigate to approval waiting page after successful submission
+                                        NavigationService navigationService =
+                                            NavigationService();
+                                        navigationService.pushNamedReplacement(
+                                            'ApprovalWaitingPage');
+                                      }
+                                    } else {
+                                      if (mounted) {
+                                        setState(() => submitError =
+                                            widget.companyToEdit != null
+                                                ? 'Failed to update company.'
+                                                : 'Failed to create company.');
+                                      }
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      setState(() => submitError = 'Error: $e');
+                                    }
+                                  } finally {
+                                    if (mounted) {
+                                      setState(() => isSubmitting = false);
+                                    }
+                                  }
                                 }
-                                return;
-                              }
-
-                              if (_formKey.currentState?.validate() ?? false) {
-                                if (!mounted) return;
-
-                                setState(() {
-                                  isSubmitting = true;
-                                  submitError = null;
-                                });
-                                try {
-                                  // Upload profile image if available
-                                  String? profileImageUrl;
-                                  if (registrationData.profileImage != null) {
-                                    final tempPath = await saveUint8ListToFile(
-                                        registrationData.profileImage!,
-                                        'profile.png');
-                                    profileImageUrl =
-                                        await imageUpload(tempPath);
-                                  }
-
-                                  // Submit user data first
-                                  final userModel = UserModel(
-                                      name: registrationData.name,
-                                      email: registrationData.email,
-                                      dob: registrationData.dob,
-                                      image: profileImageUrl,
-                                      phone: registrationData.phone,
-                                      whatsapp_no: registrationData.whatsappNo,
-                                      emiratesIdCopy:
-                                          registrationData.emiratesIdCopy,
-                                      passportCopy:
-                                          registrationData.passportCopy,
-                                      profession: registrationData.profession,
-                                      location: registrationData.location,
-                                      status: 'pending');
-
-                                  final userDataApiService =
-                                      ref.read(userDataApiServiceProvider);
-                                  final userResponse = await userDataApiService
-                                      .updateUser(id, userModel);
-
-                                  if (userResponse.success == false) {
-                                    throw Exception(
-                                        'Failed to submit user data: ${userResponse.message}');
-                                  }
-
-                                  // Upload gallery photos
-                                  final newGalleryPhotoUrls =
-                                      List<String>.from(galleryPhotoUrls);
-                                  for (final file in localPhotoFiles) {
-                                    final url = await imageUpload(file.path);
-                                    newGalleryPhotoUrls.add(url);
-                                  }
-                                  galleryPhotoUrls = newGalleryPhotoUrls;
-                                  localPhotoFiles.clear();
-
-                                  // Always resolve category to ID
-                                  final found = categories.firstWhere(
-                                    (cat) =>
-                                        cat.id.toString() == category ||
-                                        cat.name == category,
-                                    orElse: () =>
-                                        BusinessCategoryModel(id: '', name: ''),
-                                  );
-                                  final categoryId = (found.id != null &&
-                                          found.id.toString().isNotEmpty)
-                                      ? found.id.toString()
-                                      : null;
-                                  if (categoryId == null ||
-                                      categoryId.isEmpty) {
-                                    if (mounted) {
-                                      setState(() {
-                                        isSubmitting = false;
-                                        submitError =
-                                            'Please select a valid category.';
-                                      });
-                                    }
-                                    return;
-                                  }
-
-                                  final companyData = {
-                                    'name': name,
-                                    'overview': overview ?? "",
-                                    'category': categoryId,
-                                    'image': image,
-                                    'status': status,
-                                    'established_date': establishedDate,
-                                    'company_size': companySize,
-                                    'services': services,
-                                    'tags': tags,
-                                    'opening_hours': {
-                                      'sunday': sunday,
-                                      'monday': monday,
-                                      'tuesday': tuesday,
-                                      'wednesday': wednesday,
-                                      'thursday': thursday,
-                                      'friday': friday,
-                                      'saturday': saturday,
-                                    },
-                                    'contact_info': {
-                                      'address': address,
-                                      'phone': phone,
-                                      'email': email,
-                                      'website': website,
-                                    },
-                                    'gallery': {
-                                      'photos': galleryPhotoUrls
-                                          .map((url) => {'url': url})
-                                          .toList(),
-                                      'videos': videoUrls
-                                          .map((url) => {'url': url})
-                                          .toList(),
-                                    },
-                                    'location': location,
-                                    'trade_license_copy': tradeLicenseUrl,
-                                    'business_emirates': businessEmirate,
-                                    'name_in_trade_license': nameInTradeLicense,
-                                    'recommended_by': recommendedBy,
-                                  };
-
-                                  final companyApi =
-                                      ref.read(companyApiServiceProvider);
-                                  bool result;
-                                  if (widget.companyToEdit != null &&
-                                      widget.companyToEdit!.id != null) {
-                                    result = await companyApi.updateCompany(
-                                        widget.companyToEdit!.id!, companyData);
-                                  } else {
-                                    result = await companyApi
-                                        .createCompany(companyData);
-                                  }
-
-                                  if (result != false) {
-                                    // Clear registration data after successful submission
-                                    ref
-                                        .read(registrationDataProvider.notifier)
-                                        .clear();
-
-                                    if (mounted) {
-                                      // Navigate to approval waiting page after successful submission
-                                      NavigationService navigationService =
-                                          NavigationService();
-                                      navigationService.pushNamedReplacement(
-                                          'ApprovalWaitingPage');
-                                    }
-                                  } else {
-                                    if (mounted) {
-                                      setState(() => submitError =
-                                          widget.companyToEdit != null
-                                              ? 'Failed to update company.'
-                                              : 'Failed to create company.');
-                                    }
-                                  }
-                                } catch (e) {
-                                  if (mounted) {
-                                    setState(() => submitError = 'Error: $e');
-                                  }
-                                } finally {
-                                  if (mounted) {
-                                    setState(() => isSubmitting = false);
-                                  }
-                                }
-                              }
-                            },
+                              },
+                      ),
                     ),
-                  ),
-                  // Dot indicator for company creation step (2nd step)
-                  _buildDotIndicator(1, 2, kWhite),
-                  const SizedBox(height: 8),
-                ],
-              ),
-            ],
+                    // Dot indicator for company creation step (2nd step)
+                    _buildDotIndicator(1, 2, kWhite),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
