@@ -25,21 +25,133 @@ import '../../data/constants/color_constants.dart';
 import '../../data/services/navigation_service.dart';
 import '../additional_screens/crop_image_screen.dart';
 
-class RegistrationPage extends StatefulWidget {
+class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key});
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  ConsumerState<RegistrationPage> createState() => _RegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _designationController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
+  final TextEditingController _whatsAppController = TextEditingController();
   DateTime? _selectedDateOfBirth;
+  Uint8List? _profileImage;
+  List<_DocumentUpload> _documents = [];
+  File? _emiratesIdDocument;
+  String? _emiratesIdDocumentName; // Store document name for display
+  File? _passportDocument;
+  String? _passportDocumentName; // Store document name for display
+  bool _isDataLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load saved registration data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSavedData();
+      _setupFormListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _designationController.dispose();
+    _locationController.dispose();
+    _dobController.dispose();
+    _whatsAppController.dispose();
+    super.dispose();
+  }
+
+  void _loadSavedData() {
+    if (_isDataLoaded) return;
+
+    final registrationData = ref.read(registrationDataProvider);
+
+    // Populate form fields with saved data
+    if (registrationData.name != null && registrationData.name!.isNotEmpty) {
+      _nameController.text = registrationData.name!;
+    }
+    if (registrationData.email != null && registrationData.email!.isNotEmpty) {
+      _emailController.text = registrationData.email!;
+    }
+    if (registrationData.profession != null &&
+        registrationData.profession!.isNotEmpty) {
+      _designationController.text = registrationData.profession!;
+    }
+    if (registrationData.location != null &&
+        registrationData.location!.isNotEmpty) {
+      _locationController.text = registrationData.location!;
+    }
+    if (registrationData.dob != null) {
+      _selectedDateOfBirth = registrationData.dob;
+      _dobController.text =
+          "${registrationData.dob!.day}/${registrationData.dob!.month}/${registrationData.dob!.year}";
+    }
+    if (registrationData.whatsappNo != null &&
+        registrationData.whatsappNo!.isNotEmpty) {
+      _whatsAppController.text = registrationData.whatsappNo!;
+    }
+    if (registrationData.profileImage != null) {
+      setState(() {
+        _profileImage = registrationData.profileImage;
+      });
+    }
+
+    // Load saved document URLs and set display names
+    if (registrationData.emiratesIdCopy != null &&
+        registrationData.emiratesIdCopy!.isNotEmpty) {
+      setState(() {
+        _emiratesIdDocumentName = 'Emirates ID uploaded ✓';
+      });
+    }
+
+    if (registrationData.passportCopy != null &&
+        registrationData.passportCopy!.isNotEmpty) {
+      setState(() {
+        _passportDocumentName = 'Passport uploaded ✓';
+      });
+    }
+
+    _isDataLoaded = true;
+  }
+
+  void _setupFormListeners() {
+    // Set up listeners for auto-saving form data
+    _nameController.addListener(_autoSaveData);
+    _emailController.addListener(_autoSaveData);
+    _designationController.addListener(_autoSaveData);
+    _locationController.addListener(_autoSaveData);
+    _whatsAppController.addListener(_autoSaveData);
+  }
+
+  void _autoSaveData() {
+    if (!_isDataLoaded) return;
+
+    ref.read(registrationDataProvider.notifier).updateAllData(
+          name: _nameController.text.isNotEmpty ? _nameController.text : null,
+          email:
+              _emailController.text.isNotEmpty ? _emailController.text : null,
+          profession: _designationController.text.isNotEmpty
+              ? _designationController.text
+              : null,
+          location: _locationController.text.isNotEmpty
+              ? _locationController.text
+              : null,
+          dob: _selectedDateOfBirth,
+          profileImage: _profileImage,
+          whatsappNo: _whatsAppController.text.isNotEmpty
+              ? _whatsAppController.text
+              : null,
+        );
+  }
 
   Future<void> _pickDateOfBirth() async {
     final DateTime? picked = await showDatePicker(
@@ -56,16 +168,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _selectedDateOfBirth = picked;
         _dobController.text = "${picked.day}/${picked.month}/${picked.year}";
       });
+      _autoSaveData();
     }
   }
-
-  // final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _whatsAppController = TextEditingController();
-
-  Uint8List? _profileImage;
-  List<_DocumentUpload> _documents = [];
-  File? _emiratesIdDocument;
-  File? _passportDocument;
 
   Future<void> _pickImage() async {
     try {
@@ -89,7 +194,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           setState(() {
             _profileImage = cropped;
           });
-          // Store in registration data provider - will be handled by Consumer
+          _autoSaveData();
         }
       }
     } catch (e) {
@@ -118,7 +223,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (result != null && result.files.single.path != null) {
       setState(() {
         _emiratesIdDocument = File(result.files.single.path!);
+        _emiratesIdDocumentName =
+            result.files.single.name; // Store the document name
       });
+      _autoSaveData();
     }
   }
 
@@ -128,702 +236,615 @@ class _RegistrationPageState extends State<RegistrationPage> {
     if (result != null && result.files.single.path != null) {
       setState(() {
         _passportDocument = File(result.files.single.path!);
+        _passportDocumentName =
+            result.files.single.name; // Store the document name
       });
+      _autoSaveData();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final loading = ref.watch(loadingProvider);
-        return GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: Scaffold(
-            backgroundColor: kBackgroundColor,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  // Scrollable form content
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: TextButton.icon(
-                                onPressed: () async {
-                                  await SecureStorage.delete('token');
-                                  await SecureStorage.delete('id');
+    final loading = ref.watch(loadingProvider);
 
-                                  NavigationService()
-                                      .pushNamedReplacement('PhoneNumber');
-                                },
-                                icon: Icon(Icons.logout, color: kPrimaryColor),
-                                label: Text(
-                                  'Logout',
-                                  style: kSmallTitleB.copyWith(
-                                      color: kPrimaryColor),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 30),
-                            Center(
-                              child: Stack(
-                                children: [
-                                  DottedBorder(
-                                    borderType: BorderType.Circle,
-                                    color: Colors.grey,
-                                    dashPattern: [6, 3],
-                                    strokeWidth: 2,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: CircleAvatar(
-                                        radius: 44,
-                                        backgroundColor: kInputFieldcolor,
-                                        backgroundImage: _profileImage != null
-                                            ? MemoryImage(_profileImage!)
-                                            : null,
-                                        child: _profileImage == null
-                                            ? Icon(Icons.person,
-                                                size: 44, color: kWhite)
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: GestureDetector(
-                                      onTap: _pickImage,
-                                      child: CircleAvatar(
-                                        radius: 16,
-                                        backgroundColor: Colors.black,
-                                        child: Icon(Icons.camera_alt,
-                                            color: kWhite, size: 18),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Center(
-                              child: RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Profile Picture ',
-                                      style: kBodyTitleR,
-                                    ),
-                                    TextSpan(
-                                      text: '*',
-                                      style: kBodyTitleR.copyWith(color: kRed),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Center(
-                              child: Text(
-                                'Max file size: 5MB • Supported formats: JPG, PNG',
-                                style: kBodyTitleR.copyWith(
-                                  color: kSecondaryTextColor,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            if (_profileImage == null)
-                              Center(
-                                child: Text(
-                                  'Profile picture is required',
-                                  style: kBodyTitleR.copyWith(
-                                    color: kRed,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            const SizedBox(height: 24),
-                            Text('Personal Details', style: kHeadTitleB),
-                            const SizedBox(height: 24),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Full Name ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            CustomTextFormField(
-                              labelText: 'Enter the full name',
-                              textController: _nameController,
-                              validator: (val) => val == null || val.isEmpty
-                                  ? 'Required'
-                                  : null,
-                            ),
-                            const SizedBox(height: 16),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Email ID ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            CustomTextFormField(
-                              labelText: 'Enter the email id',
-                              textController: _emailController,
-                              validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return 'Email is required';
-                                }
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: kBackgroundColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Scrollable form content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: TextButton.icon(
+                            onPressed: () async {
+                              await SecureStorage.delete('token');
+                              await SecureStorage.delete('id');
 
-                                // Email validation regex pattern
-                                final emailRegex = RegExp(
-                                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-
-                                if (!emailRegex.hasMatch(val)) {
-                                  return 'Please enter a valid email address';
-                                }
-
-                                return null;
-                              },
+                              NavigationService()
+                                  .pushNamedReplacement('PhoneNumber');
+                            },
+                            icon: Icon(Icons.logout, color: kPrimaryColor),
+                            label: Text(
+                              'Logout',
+                              style:
+                                  kSmallTitleB.copyWith(color: kPrimaryColor),
                             ),
-                            const SizedBox(height: 16),
-
-                            // Date of Birth
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Date of Birth ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            GestureDetector(
-                              onTap: _pickDateOfBirth,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: kInputFieldcolor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color:
-                                          kSecondaryTextColor.withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    // const SizedBox(width: 12),
-                                    // Icon(Icons.calendar_today,
-                                    //     color: kGrey),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        _dobController.text.isNotEmpty
-                                            ? _dobController.text
-                                            : 'Select Date of Birth',
-                                        style: TextStyle(
-                                          color: _dobController.text.isNotEmpty
-                                              ? kWhite
-                                              : kGrey,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Icon(Icons.arrow_drop_down,
-                                        color: kSecondaryTextColor),
-                                    const SizedBox(width: 12),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            //Phone number
-                            // RichText(
-                            //   text: TextSpan(
-                            //     children: [
-                            //       TextSpan(
-                            //         text: 'Phone Number ',
-                            //         style: kBodyTitleR,
-                            //       ),
-                            //       TextSpan(
-                            //         text: '*',
-                            //         style: kBodyTitleR.copyWith(color: kRed),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 16),
-                            // Theme(
-                            //   data: Theme.of(context).copyWith(
-                            //     textTheme: Theme.of(context).textTheme.apply(
-                            //           bodyColor: Colors.white,
-                            //           displayColor: Colors.white,
-                            //         ),
-                            //     inputDecorationTheme:
-                            //         const InputDecorationTheme(
-                            //       hintStyle: TextStyle(color: Colors.white70),
-                            //     ),
-                            //   ),
-                            //   child: IntlPhoneField(
-                            //     validator: (phone) {
-                            //       if (phone!.number.length > 9) {
-                            //         if (phone.number.length > 10) {
-                            //           return 'Phone number cannot exceed 10 digits';
-                            //         }
-                            //       }
-                            //       return null;
-                            //     },
-                            //     style: const TextStyle(
-                            //       color: kWhite,
-                            //       letterSpacing: 8,
-                            //       fontSize: 18,
-                            //       fontWeight: FontWeight.w400,
-                            //     ),
-                            //     controller: _phoneController,
-                            //     disableLengthCheck: true,
-                            //     showCountryFlag: true,
-                            //     cursorColor: kWhite,
-                            //     decoration: InputDecoration(
-                            //       filled: true,
-                            //       fillColor: kInputFieldcolor,
-                            //       hintText: 'Enter your phone number',
-                            //       hintStyle: TextStyle(
-                            //         fontSize: 14,
-                            //         letterSpacing: .2,
-                            //         fontWeight: FontWeight.w200,
-                            //         color: kGrey,
-                            //       ),
-                            //       border: OutlineInputBorder(
-                            //         borderRadius: BorderRadius.circular(8.0),
-                            //         borderSide:
-                            //             BorderSide(color: kInputFieldcolor),
-                            //       ),
-                            //       enabledBorder: OutlineInputBorder(
-                            //         borderRadius: BorderRadius.circular(8.0),
-                            //         borderSide:
-                            //             BorderSide(color: kInputFieldcolor),
-                            //       ),
-                            //       focusedBorder: OutlineInputBorder(
-                            //         borderRadius: BorderRadius.circular(8.0),
-                            //         borderSide: const BorderSide(
-                            //             color: kInputFieldcolor),
-                            //       ),
-                            //       contentPadding: const EdgeInsets.symmetric(
-                            //         vertical: 16.0,
-                            //         horizontal: 10.0,
-                            //       ),
-                            //     ),
-                            //     onCountryChanged: (value) {
-                            //       ref.read(countryCodeProvider.notifier).state =
-                            //           value.dialCode;
-                            //     },
-                            //     initialCountryCode: 'AE',
-                            //     onChanged: (phone) {
-                            //       print(phone.completeNumber);
-                            //     },
-                            //     flagsButtonPadding: const EdgeInsets.only(
-                            //         left: 10, right: 10.0),
-                            //     showDropdownIcon: true,
-                            //     dropdownIcon: const Icon(
-                            //       Icons.arrow_drop_down_outlined,
-                            //       color: kWhite,
-                            //     ),
-                            //     dropdownIconPosition: IconPosition.trailing,
-                            //     dropdownTextStyle: const TextStyle(
-                            //       color: kWhite,
-                            //       fontSize: 15,
-                            //       fontWeight: FontWeight.w400,
-                            //     ),
-                            //   ),
-                            // ),
-
-                            //Whatsapp number
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'WhatsApp Number ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Theme(
-                              data: Theme.of(context).copyWith(
-                                textTheme: Theme.of(context).textTheme.apply(
-                                      bodyColor: Colors.white,
-                                      displayColor: Colors.white,
-                                    ),
-                                inputDecorationTheme:
-                                    const InputDecorationTheme(
-                                  hintStyle: TextStyle(color: Colors.white70),
-                                ),
-                              ),
-                              child: IntlPhoneField(
-                                validator: (phone) {
-                                  if (phone!.number.length > 9) {
-                                    if (phone.number.length > 10) {
-                                      return 'Phone number cannot exceed 10 digits';
-                                    }
-                                  }
-                                  return null;
-                                },
-                                style: const TextStyle(
-                                  color: kWhite,
-                                  letterSpacing: 8,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                controller: _whatsAppController,
-                                disableLengthCheck: true,
-                                showCountryFlag: true,
-                                cursorColor: kWhite,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: kInputFieldcolor,
-                                  hintText: 'Enter your WhatsApp number',
-                                  hintStyle: TextStyle(
-                                    fontSize: 14,
-                                    letterSpacing: .2,
-                                    fontWeight: FontWeight.w200,
-                                    color: kGrey,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide:
-                                        BorderSide(color: kInputFieldcolor),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide:
-                                        BorderSide(color: kInputFieldcolor),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: const BorderSide(
-                                        color: kInputFieldcolor),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 16.0,
-                                    horizontal: 10.0,
-                                  ),
-                                ),
-                                onCountryChanged: (value) {
-                                  ref.read(countryCodeProvider.notifier).state =
-                                      value.dialCode;
-                                },
-                                initialCountryCode: 'AE',
-                                onChanged: (phone) {
-                                  print(phone.completeNumber);
-                                },
-                                flagsButtonPadding: const EdgeInsets.only(
-                                    left: 10, right: 10.0),
-                                showDropdownIcon: true,
-                                dropdownIcon: const Icon(
-                                  Icons.arrow_drop_down_outlined,
-                                  color: kWhite,
-                                ),
-                                dropdownIconPosition: IconPosition.trailing,
-                                dropdownTextStyle: const TextStyle(
-                                  color: kWhite,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            //Emirates id Copy (document upload)
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Emirates ID Copy ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Max file size: 5MB • Supported format: PDF only',
-                              style: kBodyTitleR.copyWith(
-                                color: kSecondaryTextColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: _pickEmiratesIdDocument,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: kInputFieldcolor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color:
-                                          kSecondaryTextColor.withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 12),
-                                    Icon(Icons.upload_file,
-                                        color: kSecondaryTextColor),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        _emiratesIdDocument != null
-                                            ? _emiratesIdDocument!.path
-                                                .split('/')
-                                                .last
-                                            : 'Upload Document(/pdf only)',
-                                        style: TextStyle(
-                                          color: _emiratesIdDocument != null
-                                              ? kWhite
-                                              : kGrey,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Icon(Icons.cloud_upload_outlined,
-                                        color: kSecondaryTextColor),
-                                    const SizedBox(width: 12),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-
-                            //Passport copy (document upload)
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Passport Copy ',
-                                    style: kBodyTitleR,
-                                  ),
-                                  TextSpan(
-                                    text: '*',
-                                    style: kBodyTitleR.copyWith(color: kRed),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Max file size: 5MB • Supported format: PDF only',
-                              style: kBodyTitleR.copyWith(
-                                color: kSecondaryTextColor,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: _pickPassportDocument,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: kInputFieldcolor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color:
-                                          kSecondaryTextColor.withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: 12),
-                                    Icon(Icons.upload_file,
-                                        color: kSecondaryTextColor),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        _passportDocument != null
-                                            ? _passportDocument!.path
-                                                .split('/')
-                                                .last
-                                            : 'Upload Document(.pdf only)',
-                                        style: TextStyle(
-                                          color: _passportDocument != null
-                                              ? kWhite
-                                              : kGrey,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Icon(Icons.cloud_upload_outlined,
-                                        color: kSecondaryTextColor),
-                                    const SizedBox(width: 12),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                                height: 100), // Extra space before fixed button
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
+                        const SizedBox(height: 30),
+                        Center(
+                          child: Stack(
+                            children: [
+                              DottedBorder(
+                                borderType: BorderType.Circle,
+                                color: Colors.grey,
+                                dashPattern: [6, 3],
+                                strokeWidth: 2,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: CircleAvatar(
+                                    radius: 44,
+                                    backgroundColor: kInputFieldcolor,
+                                    backgroundImage: _profileImage != null
+                                        ? MemoryImage(_profileImage!)
+                                        : null,
+                                    child: _profileImage == null
+                                        ? Icon(Icons.person,
+                                            size: 44, color: kWhite)
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: _pickImage,
+                                  child: CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.black,
+                                    child: Icon(Icons.camera_alt,
+                                        color: kWhite, size: 18),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Profile Picture ',
+                                  style: kBodyTitleR,
+                                ),
+                                TextSpan(
+                                  text: '*',
+                                  style: kBodyTitleR.copyWith(color: kRed),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: Text(
+                            'Max file size: 5MB • Supported formats: JPG, PNG',
+                            style: kBodyTitleR.copyWith(
+                              color: kSecondaryTextColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (_profileImage == null)
+                          Center(
+                            child: Text(
+                              'Profile picture is required',
+                              style: kBodyTitleR.copyWith(
+                                color: kRed,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 24),
+                        Text('Personal Details', style: kHeadTitleB),
+                        const SizedBox(height: 24),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Full Name ',
+                                style: kBodyTitleR,
+                              ),
+                              TextSpan(
+                                text: '*',
+                                style: kBodyTitleR.copyWith(color: kRed),
+                              ),
+                            ],
+                          ),
+                        ),
+                        CustomTextFormField(
+                          labelText: 'Enter the full name',
+                          textController: _nameController,
+                          validator: (val) =>
+                              val == null || val.isEmpty ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Email ID ',
+                                style: kBodyTitleR,
+                              ),
+                              TextSpan(
+                                text: '*',
+                                style: kBodyTitleR.copyWith(color: kRed),
+                              ),
+                            ],
+                          ),
+                        ),
+                        CustomTextFormField(
+                          labelText: 'Enter the email id',
+                          textController: _emailController,
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Email is required';
+                            }
 
-                  // Fixed button at bottom
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            return customButton(
-                              isLoading: loading,
-                              label: 'Next',
-                              onPressed: () async {
-                                // Validate required fields
-                                if (_profileImage == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content:
-                                          Text('Profile picture is required'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                  return;
-                                }
+                            // Email validation regex pattern
+                            final emailRegex = RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
-                                if (_nameController.text.isEmpty ||
-                                    _emailController.text.isEmpty ||
-                                    _selectedDateOfBirth == null ||
-                                    _whatsAppController.text.isEmpty ||
-                                    _emiratesIdDocument == null ||
-                                    _passportDocument == null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Please fill all required fields and upload documents'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                  return;
-                                }
+                            if (!emailRegex.hasMatch(val)) {
+                              return 'Please enter a valid email address';
+                            }
 
-                                ref
-                                    .read(loadingProvider.notifier)
-                                    .startLoading();
-
-                                try {
-                                  String? profileUrl;
-                                  String? emiratesIdUrl;
-                                  String? passportUrl;
-
-                                  // Upload profile image if selected
-                                  if (_profileImage != null) {
-                                    String tempImagePath =
-                                        await saveUint8ListToFile(
-                                            _profileImage!, 'profile.png');
-                                    profileUrl =
-                                        await imageUpload(tempImagePath);
-                                  }
-
-                                  // Upload Emirates ID document
-                                  emiratesIdUrl = await documentUpload(
-                                      _emiratesIdDocument!.path);
-
-                                  // Upload Passport document
-                                  passportUrl = await documentUpload(
-                                      _passportDocument!.path);
-
-                                  // Store data in registration provider
-                                  ref
-                                      .read(registrationDataProvider.notifier)
-                                      .updateAllData(
-                                        name: _nameController.text,
-                                        email: _emailController.text,
-                                        dob: _selectedDateOfBirth,
-                                        profileImage: _profileImage,
-                                        // phone: _phoneController.text,
-                                        whatsappNo: _whatsAppController.text,
-                                        emiratesIdCopy: emiratesIdUrl,
-                                        passportCopy: passportUrl,
-                                        profession: _designationController.text,
-                                        location: _locationController.text,
-                                      );
-
-                                  // Navigate to CreateCompanyModernPage
-                                  NavigationService navigationService =
-                                      NavigationService();
-                                  navigationService.pushNamedReplacement(
-                                      'CreateCompanyModernPage');
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error: ${e.toString()}'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                } finally {
-                                  ref
-                                      .read(loadingProvider.notifier)
-                                      .stopLoading();
-                                }
-                              },
-                            );
+                            return null;
                           },
                         ),
-                      ),
-                      // Dot indicator for registration step (1st step)
-                      _buildDotIndicator(0, 2, kWhite),
-                      const SizedBox(height: 8),
-                    ],
+                        const SizedBox(height: 16),
+
+                        // Date of Birth
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Date of Birth ',
+                                style: kBodyTitleR,
+                              ),
+                              TextSpan(
+                                text: '*',
+                                style: kBodyTitleR.copyWith(color: kRed),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: _pickDateOfBirth,
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: kInputFieldcolor,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: kSecondaryTextColor.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _dobController.text.isNotEmpty
+                                        ? _dobController.text
+                                        : 'Select Date of Birth',
+                                    style: TextStyle(
+                                      color: _dobController.text.isNotEmpty
+                                          ? kWhite
+                                          : kGrey,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(Icons.arrow_drop_down,
+                                    color: kSecondaryTextColor),
+                                const SizedBox(width: 12),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // WhatsApp number
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'WhatsApp Number ',
+                                style: kBodyTitleR,
+                              ),
+                              TextSpan(
+                                text: '*',
+                                style: kBodyTitleR.copyWith(color: kRed),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Theme(
+                          data: Theme.of(context).copyWith(
+                            textTheme: Theme.of(context).textTheme.apply(
+                                  bodyColor: Colors.white,
+                                  displayColor: Colors.white,
+                                ),
+                            inputDecorationTheme: const InputDecorationTheme(
+                              hintStyle: TextStyle(color: Colors.white70),
+                            ),
+                          ),
+                          child: IntlPhoneField(
+                            validator: (phone) {
+                              if (phone!.number.length > 9) {
+                                if (phone.number.length > 10) {
+                                  return 'Phone number cannot exceed 10 digits';
+                                }
+                              }
+                              return null;
+                            },
+                            style: const TextStyle(
+                              color: kWhite,
+                              letterSpacing: 8,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            controller: _whatsAppController,
+                            disableLengthCheck: true,
+                            showCountryFlag: true,
+                            cursorColor: kWhite,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: kInputFieldcolor,
+                              hintText: 'Enter your WhatsApp number',
+                              hintStyle: TextStyle(
+                                fontSize: 14,
+                                letterSpacing: .2,
+                                fontWeight: FontWeight.w200,
+                                color: kGrey,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide(color: kInputFieldcolor),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide(color: kInputFieldcolor),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide:
+                                    const BorderSide(color: kInputFieldcolor),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16.0,
+                                horizontal: 10.0,
+                              ),
+                            ),
+                            onCountryChanged: (value) {
+                              ref.read(countryCodeProvider.notifier).state =
+                                  value.dialCode;
+                            },
+                            initialCountryCode: 'AE',
+                            onChanged: (phone) {
+                              print(phone.completeNumber);
+                            },
+                            flagsButtonPadding:
+                                const EdgeInsets.only(left: 10, right: 10.0),
+                            showDropdownIcon: true,
+                            dropdownIcon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: kWhite,
+                            ),
+                            dropdownIconPosition: IconPosition.trailing,
+                            dropdownTextStyle: const TextStyle(
+                              color: kWhite,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Emirates ID Copy (document upload)
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Emirates ID Copy ',
+                                style: kBodyTitleR,
+                              ),
+                              TextSpan(
+                                text: '*',
+                                style: kBodyTitleR.copyWith(color: kRed),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Max file size: 5MB • Supported format: PDF only',
+                          style: kBodyTitleR.copyWith(
+                            color: kSecondaryTextColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: _pickEmiratesIdDocument,
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: kInputFieldcolor,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: kSecondaryTextColor.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Icon(Icons.upload_file,
+                                    color: kSecondaryTextColor),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _emiratesIdDocument != null ||
+                                            _emiratesIdDocumentName != null
+                                        ? (_emiratesIdDocumentName ??
+                                            'Emirates ID uploaded')
+                                        : 'Upload Document(.pdf only)',
+                                    style: TextStyle(
+                                      color: (_emiratesIdDocument != null ||
+                                              _emiratesIdDocumentName != null)
+                                          ? kWhite
+                                          : kGrey,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  _emiratesIdDocumentName != null
+                                      ? Icons.check_circle
+                                      : Icons.cloud_upload_outlined,
+                                  color: _emiratesIdDocumentName != null
+                                      ? Colors.green
+                                      : kSecondaryTextColor,
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Passport copy (document upload)
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Passport Copy ',
+                                style: kBodyTitleR,
+                              ),
+                              TextSpan(
+                                text: '*',
+                                style: kBodyTitleR.copyWith(color: kRed),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Max file size: 5MB • Supported format: PDF only',
+                          style: kBodyTitleR.copyWith(
+                            color: kSecondaryTextColor,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: _pickPassportDocument,
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: kInputFieldcolor,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: kSecondaryTextColor.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Icon(Icons.upload_file,
+                                    color: kSecondaryTextColor),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _passportDocument != null ||
+                                            _passportDocumentName != null
+                                        ? (_passportDocumentName ??
+                                            'Passport uploaded')
+                                        : 'Upload Document(.pdf only)',
+                                    style: TextStyle(
+                                      color: (_passportDocument != null ||
+                                              _passportDocumentName != null)
+                                          ? kWhite
+                                          : kGrey,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  _passportDocumentName != null
+                                      ? Icons.check_circle
+                                      : Icons.cloud_upload_outlined,
+                                  color: _passportDocumentName != null
+                                      ? Colors.green
+                                      : kSecondaryTextColor,
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                            height: 100), // Extra space before fixed button
+                      ],
+                    ),
                   ),
+                ),
+              ),
+
+              // Fixed button at bottom
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: customButton(
+                      isLoading: loading,
+                      label: 'Next',
+                      onPressed: () async {
+                        // Validate required fields
+                        if (_profileImage == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Profile picture is required'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_nameController.text.isEmpty ||
+                            _emailController.text.isEmpty ||
+                            _selectedDateOfBirth == null ||
+                            _whatsAppController.text.isEmpty ||
+                            (_emiratesIdDocument == null &&
+                                _emiratesIdDocumentName == null) ||
+                            (_passportDocument == null &&
+                                _passportDocumentName == null)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Please fill all required fields and upload documents'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        ref.read(loadingProvider.notifier).startLoading();
+
+                        try {
+                          String? profileUrl;
+                          String? emiratesIdUrl;
+                          String? passportUrl;
+
+                          // Get current registration data to check for existing document URLs
+                          final currentRegistrationData =
+                              ref.read(registrationDataProvider);
+
+                          // Upload profile image if selected
+                          if (_profileImage != null) {
+                            String tempImagePath = await saveUint8ListToFile(
+                                _profileImage!, 'profile.png');
+                            profileUrl = await imageUpload(tempImagePath);
+                          }
+
+                          // Upload Emirates ID document - if we already have a URL, use it; otherwise upload the file
+                          if (_emiratesIdDocumentName != null &&
+                              _emiratesIdDocument == null) {
+                            // Document was previously uploaded, use existing URL
+                            emiratesIdUrl =
+                                currentRegistrationData.emiratesIdCopy;
+                          } else if (_emiratesIdDocument != null) {
+                            // Upload new document
+                            emiratesIdUrl =
+                                await documentUpload(_emiratesIdDocument!.path);
+                          }
+
+                          // Upload Passport document - if we already have a URL, use it; otherwise upload the file
+                          if (_passportDocumentName != null &&
+                              _passportDocument == null) {
+                            // Document was previously uploaded, use existing URL
+                            passportUrl = currentRegistrationData.passportCopy;
+                          } else if (_passportDocument != null) {
+                            // Upload new document
+                            passportUrl =
+                                await documentUpload(_passportDocument!.path);
+                          }
+
+                          // Store data in registration provider
+                          ref
+                              .read(registrationDataProvider.notifier)
+                              .updateAllData(
+                                name: _nameController.text,
+                                email: _emailController.text,
+                                dob: _selectedDateOfBirth,
+                                profileImage: _profileImage,
+                                whatsappNo: _whatsAppController.text,
+                                emiratesIdCopy: emiratesIdUrl,
+                                passportCopy: passportUrl,
+                                profession: _designationController.text,
+                                location: _locationController.text,
+                              );
+
+                          // Navigate to CreateCompanyModernPage
+                          NavigationService navigationService =
+                              NavigationService();
+                          navigationService
+                              .pushNamedReplacement('CreateCompanyModernPage');
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        } finally {
+                          ref.read(loadingProvider.notifier).stopLoading();
+                        }
+                      },
+                    ),
+                  ),
+                  // Dot indicator for registration step (1st step)
+                  _buildDotIndicator(0, 2, kWhite),
+                  const SizedBox(height: 8),
                 ],
               ),
-            ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
