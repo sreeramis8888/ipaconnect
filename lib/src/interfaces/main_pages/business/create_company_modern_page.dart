@@ -756,6 +756,14 @@ class _CreateCompanyModernPageState
                             ],
                           ),
                           const SizedBox(height: 8),
+                          Text(
+                            'Max file size: 5MB • Supported format: PDF only',
+                            style: kSmallTitleM.copyWith(
+                              color: kSecondaryTextColor,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           GestureDetector(
                             onTap: isUploadingTradeLicense
                                 ? null
