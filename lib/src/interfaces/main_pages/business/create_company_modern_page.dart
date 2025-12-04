@@ -747,8 +747,15 @@ class _CreateCompanyModernPageState
                               ),
                             ),
                           const SizedBox(height: 16),
-                          Text('Company Establishment Year ',
-                              style: kSmallTitleM),
+                          Row(
+                            children: [
+                              Text('Company Establishment Year ',
+                                style: kSmallTitleM),
+                                Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            ],
+                          ),
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: establishedDateController,
@@ -782,7 +789,12 @@ class _CreateCompanyModernPageState
                             },
                           ),
                           const SizedBox(height: 16),
-                          Text('Name in Trade License', style: kSmallTitleM),
+                          Row(children: [
+                            Text('Name in Trade License', style: kSmallTitleM),
+                          Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                          ],),
                           const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1009,14 +1021,9 @@ class _CreateCompanyModernPageState
                           //recommended by
 
                           const SizedBox(height: 16),
-                          Row(
-                            children: [
+                          
                               Text('Recommended by', style: kSmallTitleM),
-                              Text(' *',
-                                  style:
-                                      kSmallTitleM.copyWith(color: Colors.red)),
-                            ],
-                          ),
+                              
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: recommendedByController,
@@ -1057,46 +1064,55 @@ class _CreateCompanyModernPageState
                                 borderSide: BorderSide.none,
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Text('Business Emirates', style: kSmallTitleM),
-                              Text(' *',
-                                  style:
-                                      kSmallTitleM.copyWith(color: Colors.red)),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          DropdownButtonFormField<String>(
-                            value: businessEmirate,
-                            decoration: InputDecoration(
-                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                              hintText: 'Select Emirates',
-                              filled: true,
-                              fillColor: kCardBackgroundColor,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            style: kSmallTitleL,
-                            icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
-                            items: emirateItems,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                businessEmirate = newValue;
-                              });
-                              _autoSaveData();
-                            },
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select an emirate';
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter company size';
                               }
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
+                                                    const SizedBox(height: 16),
+                          Row(children: [
+                            Text('Business Emirates', style: kSmallTitleM),
+                             Text(' *',
+                                  style:
+                                      kSmallTitleM.copyWith(color: Colors.red)),
+                            
+
+                          ],),
+                          const SizedBox(height: 10),
+                             
+                          DropdownButtonFormField<String>(
+                          value: businessEmirate,
+                          decoration: InputDecoration(
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                            hintText: 'Select Emirates',
+                            filled: true,
+                            fillColor: kCardBackgroundColor,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          style: kSmallTitleL,
+                          icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
+                          items: emirateItems,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              businessEmirate = newValue;
+                            });
+                            _autoSaveData();
+                          },
+
+                          /// ✅ ADD VALIDATOR HERE
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select an emirate';
+                            }
+                            return null;
+                          },
+                        ),
+                                                  const SizedBox(height: 16),
                           Row(
                             children: [
                               Text('Location', style: kSmallTitleM),
@@ -1107,20 +1123,26 @@ class _CreateCompanyModernPageState
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
-                            controller: locationController,
-                            style: kSmallTitleL,
-                            decoration: InputDecoration(
-                              hintText: 'Enter location',
-                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                              filled: true,
-                              fillColor: kCardBackgroundColor,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
+                          controller: locationController,
+                          style: kSmallTitleL,
+                          decoration: InputDecoration(
+                            hintText: 'Enter location',
+                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                            filled: true,
+                            fillColor: kCardBackgroundColor,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter a location';
+                            }
+                            return null;
+                          },
+                        ),
+                                                  const SizedBox(height: 16),
                           const SizedBox(height: 16),
                           // Row(
                           //   children: [
@@ -1511,16 +1533,16 @@ class _CreateCompanyModernPageState
                                   isValid = false;
                                 }
 
-                                if (nameController.text.isEmpty) {
-                                  validationError = 'Company name is required';
-                                  isValid = false;
-                                }
+                                // if (nameController.text.isEmpty) {
+                                //   validationError = 'Company name is required';
+                                //   isValid = false;
+                                // }
 
-                                if (category == null || category!.isEmpty) {
-                                  validationError =
-                                      'Please select a business activity';
-                                  isValid = false;
-                                }
+                                // if (category == null || category!.isEmpty) {
+                                //   validationError =
+                                //       'Please select a business activity';
+                                //   isValid = false;
+                                // }
 
                                 if (!isValid) {
                                   if (mounted) {
@@ -1654,7 +1676,7 @@ class _CreateCompanyModernPageState
                                       },
                                       'location': locationController.text,
                                       'trade_license_copy':
-                                          tradeLicenseUrl ?? "",
+                                          tradeLicenseUrl,
                                       'business_emirates': businessEmirate,
                                       'name_in_trade_license':
                                           nameInTradeLicense,

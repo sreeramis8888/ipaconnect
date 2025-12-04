@@ -297,7 +297,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     if (currentVersion < response.version && response.force) {
       log('App update is required. Current version: $currentVersion, New version: ${response.version}');
-      isAppUpdateRequired = true;
+      // isAppUpdateRequired = true;
       showUpdateDialog(response, context);
       log('Update dialog shown to user');
     } else if (currentVersion < response.version && !response.force) {

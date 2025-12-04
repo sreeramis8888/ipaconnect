@@ -109,14 +109,14 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     if (registrationData.emiratesIdCopy != null &&
         registrationData.emiratesIdCopy!.isNotEmpty) {
       setState(() {
-        _emiratesIdDocumentName = 'Emirates ID uploaded ✓';
+        _emiratesIdDocumentName = 'Emirates ID uploaded  ';
       });
     }
 
     if (registrationData.passportCopy != null &&
         registrationData.passportCopy!.isNotEmpty) {
       setState(() {
-        _passportDocumentName = 'Passport uploaded ✓';
+        _passportDocumentName = 'Passport uploaded  ';
       });
     }
 
