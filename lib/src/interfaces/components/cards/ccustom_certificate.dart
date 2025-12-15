@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CertificateWidget extends StatelessWidget {
   final String userName;
   final String memberId;
-  
+  final String dateofjoining;
 
   const CertificateWidget({
     required this.userName,
     required this.memberId,
-    
-    
-    super.key, 
+    required this.dateofjoining,
+    super.key,
   });
 
   @override
@@ -33,8 +31,6 @@ class CertificateWidget extends StatelessWidget {
               ),
             ),
 
-            
-
             Positioned(
               top: height * 0.44,
               left: width * 0.35,
@@ -44,7 +40,7 @@ class CertificateWidget extends StatelessWidget {
                   textStyle: TextStyle(
                     fontSize: width * 0.045,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF081058), 
+                    color: Color(0xFF081058),
                   ),
                 ),
               ),
@@ -53,14 +49,30 @@ class CertificateWidget extends StatelessWidget {
             // Overlay Membership ID
             Positioned(
               top: height * 0.730,
-              left: width * 0.57,
+              left: width * 0.52,
               child: Text(
                 memberId,
                 style: GoogleFonts.frankRuhlLibre(
                   textStyle: TextStyle(
                     fontSize: width * 0.017,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF081058), 
+                    color: Color(0xFF081058),
+                  ),
+                ),
+              ),
+            ),
+
+            //joined date
+            Positioned(
+              top: height * 0.730,
+              left: width * 0.71,
+              child: Text(
+                dateofjoining,
+                style: GoogleFonts.frankRuhlLibre(
+                  textStyle: TextStyle(
+                    fontSize: width * 0.017,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF081058),
                   ),
                 ),
               ),

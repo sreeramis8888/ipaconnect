@@ -15,11 +15,11 @@ Future<void> captureAndShareCertificate(
   BuildContext context, {
   required String userName,
   required String memberId,
+  required String dateofjoining,
   bool download = false,
 }) async {
   final boundaryKey = GlobalKey();
 
-  
   final widgetToCapture = RepaintBoundary(
     key: boundaryKey,
     child: MaterialApp(
@@ -27,41 +27,38 @@ Future<void> captureAndShareCertificate(
       home: Scaffold(
         backgroundColor: kBackgroundColor,
         body: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-          
-              
-              StaggerItem(
-                order: 0,
-                child: Center(
-                  child: Text(
-                    '',
-                    style: kHeadTitleB.copyWith(color: kTextColor),
-                    textAlign: TextAlign.center,
-                  ),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            StaggerItem(
+              order: 0,
+              child: Center(
+                child: Text(
+                  '',
+                  style: kHeadTitleB.copyWith(color: kTextColor),
+                  textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 24),
-              StaggerItem(
-                order: 1,
-                child: Padding(
+            ),
+            const SizedBox(height: 24),
+            StaggerItem(
+              order: 1,
+              child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: CertificateWidget(userName: userName ?? '', memberId: memberId?? "",)
-                ),
-              ),
-          
-              const SizedBox(height: 32),
-          
-              
-            ],
-          ),
+                  child: CertificateWidget(
+                    userName: userName ?? '',
+                    memberId: memberId ?? "",
+                    dateofjoining: dateofjoining ?? "",
+                  )),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     ),
   );
 
-  
   final overlay = Overlay.of(context);
   final overlayEntry = OverlayEntry(
     builder: (_) => Material(

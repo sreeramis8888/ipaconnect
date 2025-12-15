@@ -16,43 +16,45 @@ import 'package:ipaconnect/src/interfaces/components/cards/certificate_card.dart
 import 'package:pdf/widgets.dart' as pw;
 
 class MyCertificatePage extends ConsumerStatefulWidget {
-   final UserModel user;
-  const MyCertificatePage({super.key,required this.user});
+  final UserModel user;
+  const MyCertificatePage({super.key, required this.user});
 
   @override
   ConsumerState<MyCertificatePage> createState() => _MyCertificatePageState();
 }
 
 class _MyCertificatePageState extends ConsumerState<MyCertificatePage> {
-
-
-  
 // Function to create PDF bytes
-Future<Uint8List> generateCertificatePdf(String userName, String memberId) async {
-  final pdf = pw.Document();
+  Future<Uint8List> generateCertificatePdf(
+      String userName, String memberId) async {
+    final pdf = pw.Document();
 
-  pdf.addPage(
-    pw.Page(
-      build: (pw.Context context) => pw.Center(
-        child: pw.Column(
-          mainAxisAlignment: pw.MainAxisAlignment.center,
-          children: [
-            pw.Text("Membership Certificate", style: pw.TextStyle(fontSize: 28)),
-            pw.SizedBox(height: 20),
-            pw.Text("This is to certify that:", style: pw.TextStyle(fontSize: 18)),
-            pw.SizedBox(height: 10),
-            pw.Text(userName, style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 10),
-            pw.Text("Member ID: $memberId", style: pw.TextStyle(fontSize: 16)),
-          ],
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) => pw.Center(
+          child: pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: [
+              pw.Text("Membership Certificate",
+                  style: pw.TextStyle(fontSize: 28)),
+              pw.SizedBox(height: 20),
+              pw.Text("This is to certify that:",
+                  style: pw.TextStyle(fontSize: 18)),
+              pw.SizedBox(height: 10),
+              pw.Text(userName,
+                  style: pw.TextStyle(
+                      fontSize: 22, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
+              pw.Text("Member ID: $memberId",
+                  style: pw.TextStyle(fontSize: 16)),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
 
-  return pdf.save();
-}
-
+    return pdf.save();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +86,7 @@ Future<Uint8List> generateCertificatePdf(String userName, String memberId) async
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-          
+
               /// Title
               StaggerItem(
                 order: 0,
@@ -97,19 +99,22 @@ Future<Uint8List> generateCertificatePdf(String userName, String memberId) async
                 ),
               ),
               const SizedBox(height: 24),
-          
-              
+
               StaggerItem(
                 order: 1,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: CertificateWidget(userName: widget.user.name ?? '', memberId: widget.user.memberId ?? "",)
+                  child: CertificateWidget(
+                    userName: widget.user.name ?? '',
+                    memberId: widget.user.memberId ?? "",
+                    dateofjoining:
+                        widget.user.ipaJoinDate?.toString().split(' ')[0] ?? "",
+                  ),
                 ),
               ),
-          
+
               const SizedBox(height: 32),
-          
-              
+
               StaggerItem(
                 order: 2,
                 child: Padding(
@@ -117,40 +122,53 @@ Future<Uint8List> generateCertificatePdf(String userName, String memberId) async
                   child: Column(
                     children: [
                       customButton(
-                        label: 'Download PNG', 
+                        label: 'Download PNG',
                         icon: const Icon(Icons.image, color: kWhite),
                         onPressed: () => captureAndShareCertificate(
-                        context,
-                        userName: widget.user.name ?? '',
-                        memberId: widget.user.memberId ?? '',
-                        download: true, 
+                          context,
+                          userName: widget.user.name ?? '',
+                          memberId: widget.user.memberId ?? '',
+                          dateofjoining: widget.user.ipaJoinDate
+                                  ?.toString()
+                                  .split(' ')[0] ??
+                              "",
+                          download: true,
+                        ),
                       ),
-                        ),
                       const SizedBox(height: 12),
                       customButton(
-                        label: 'Download PDF', 
+                        label: 'Download PDF',
                         icon: const Icon(Icons.picture_as_pdf, color: kWhite),
-                        onPressed:() async {
-                        final pdfBytes = await generateCertificatePdf(
-                          widget.user.name ?? '',
-                          widget.user.memberId ?? '',
-                        );
+                        onPressed: () async {
+                          final pdfBytes = await generateCertificatePdf(
+                            widget.user.name ?? '',
+                            widget.user.memberId ?? '',
+                          );
 
-                        await savePdf(pdfBytes, "certificate_${widget.user.name}",);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("PDF saved to Downloads")),
-                        );
-                      },
-                        ),
+                          await savePdf(
+                            pdfBytes,
+                            "certificate_${widget.user.name}",
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("PDF saved to Downloads")),
+                          );
+                        },
+                      ),
                       const SizedBox(height: 12),
                       customButton(
-                        label: 'Share', 
+                        label: 'Share',
                         icon: const Icon(Icons.share, color: kWhite),
                         onPressed: () => captureAndShareCertificate(
-                                                context,
-                                                 userName: widget.user.name ?? '',
-                                                 memberId: widget.user.memberId ?? '',
-                                              ),),
+                          context,
+                          userName: widget.user.name ?? '',
+                          memberId: widget.user.memberId ?? '',
+                          dateofjoining: widget.user.ipaJoinDate
+                                  ?.toString()
+                                  .split(' ')[0] ??
+                              "",
+                        ),
+                      ),
                     ],
                   ),
                 ),
