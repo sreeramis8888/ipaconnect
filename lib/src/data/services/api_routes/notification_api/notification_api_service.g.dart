@@ -27,7 +27,7 @@ final notificationApiServiceProvider =
 typedef NotificationApiServiceRef
     = AutoDisposeProviderRef<NotificationApiService>;
 String _$fetchNotificationsHash() =>
-    r'92c60811ee22b00f3166e6e79d0d876ffaf8574b';
+    r'a018bb3956acbec1a40523f0622b0769352f642d';
 
 /// See also [fetchNotifications].
 @ProviderFor(fetchNotifications)

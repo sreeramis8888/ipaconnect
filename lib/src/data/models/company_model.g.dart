@@ -7,27 +7,25 @@ part of 'company_model.dart';
 // **************************************************************************
 
 CompanyModel _$CompanyModelFromJson(Map<String, dynamic> json) => CompanyModel(
-      location: json['location'] as String?,
-      tradeLicenseCopy: json['trade_license_copy'] as String?,
-      businessEmirates: $enumDecodeNullable(
-          _$BusinessEmiratesEnumMap, json['business_emirates']),
-      recommendedBy: json['recommended_by'] as String?,
-      nameInTradeLicense: json['name_in_trade_license'] as bool?,
       id: json['_id'] as String?,
       name: json['name'] as String?,
       overview: json['overview'] as String?,
       category: json['category'] as String?,
       image: json['image'] as String?,
       status: json['status'] as String?,
+      location: json['location'] as String?,
+      tradeLicenseCopy: json['trade_license_copy'] as String?,
+      businessEmirates: $enumDecodeNullable(
+          _$BusinessEmiratesEnumMap, json['business_emirates']),
+      recommendedBy: json['recommended_by'] as String?,
+      nameInTradeLicense: json['name_in_trade_license'] as bool?,
       establishedDate: (json['established_date'] as num?)?.toInt(),
       companySize: json['company_size'] as String?,
       services: (json['services'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      user: json['user'] == null
-          ? null
-          : UserModel.fromJson(json['user'] as Map<String, dynamic>),
+      user: CompanyModel._userFromJson(json['user']),
       rating: (json['rating'] as num?)?.toDouble(),
       socialMedia: json['socialMedia'] == null
           ? null

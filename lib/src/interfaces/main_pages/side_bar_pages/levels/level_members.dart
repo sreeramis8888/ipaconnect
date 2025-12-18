@@ -161,15 +161,19 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
                                       style: kSmallTitleL,
                                     ),
                                     subtitle: Text(
-                                      member.companies != null && member.companies!.isNotEmpty
-                                        ? member.companies!.first.name ?? "No company"
-                                        : "No companyy",
-                                          style:
-                                          TextStyle(color: kSecondaryTextColor),
+                                      (member.companies != null &&
+                                              member.companies!.isNotEmpty)
+                                          ? (member.companies!.first.name ??
+                                              'true')
+                                          : "false ",
+                                      style: TextStyle(
+                                          color: kSecondaryTextColor,
+                                          fontSize: 12),
                                     ),
                                     trailing: Icon(Icons.arrow_forward_ios),
                                     onTap: () {
-                                      
+                                      print(member.companies);
+
                                       navigationService.pushNamed(
                                           'ProfilePreview',
                                           arguments: member);

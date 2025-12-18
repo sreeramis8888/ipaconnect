@@ -7,6 +7,7 @@ part 'company_model.g.dart';
 class CompanyModel {
   @JsonKey(name: '_id')
   final String? id;
+
   final String? name;
   final String? overview;
   final String? category;
@@ -26,7 +27,6 @@ class CompanyModel {
   @JsonKey(name: 'name_in_trade_license')
   final bool? nameInTradeLicense;
 
-
   @JsonKey(name: 'established_date')
   final int? establishedDate;
 
@@ -36,10 +36,11 @@ class CompanyModel {
   final List<String>? services;
   final List<String>? tags;
 
+  /// ✅ FIX: backend may send user as String OR object
+  @JsonKey(fromJson: _userFromJson)
   final UserModel? user;
 
   final double? rating;
-
   final SocialMedia? socialMedia;
 
   @JsonKey(name: 'opening_hours')
@@ -51,17 +52,17 @@ class CompanyModel {
   final Gallery? gallery;
 
   CompanyModel({
-    this.location, 
-    this.tradeLicenseCopy, 
-    this.businessEmirates, 
-    this.recommendedBy, 
-    this.nameInTradeLicense, 
     this.id,
     this.name,
     this.overview,
     this.category,
     this.image,
     this.status,
+    this.location,
+    this.tradeLicenseCopy,
+    this.businessEmirates,
+    this.recommendedBy,
+    this.nameInTradeLicense,
     this.establishedDate,
     this.companySize,
     this.services,
@@ -73,6 +74,14 @@ class CompanyModel {
     this.contactInfo,
     this.gallery,
   });
+
+  /// ✅ SAFE user parser
+  static UserModel? _userFromJson(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      return UserModel.fromJson(json);
+    }
+    return null; // when backend sends user ID as String
+  }
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) =>
       _$CompanyModelFromJson(json);
@@ -101,9 +110,6 @@ class CompanyModel {
     String? recommendedBy,
     bool? nameInTradeLicense,
     BusinessEmirates? businessEmirates,
-
-
-
   }) {
     return CompanyModel(
       id: id ?? this.id,
@@ -123,15 +129,16 @@ class CompanyModel {
       contactInfo: contactInfo ?? this.contactInfo,
       gallery: gallery ?? this.gallery,
       location: location ?? this.location,
-      businessEmirates: businessEmirates ?? businessEmirates,
-      nameInTradeLicense: nameInTradeLicense ?? nameInTradeLicense,
-      tradeLicenseCopy: tradeLicenseCopy ?? tradeLicenseCopy,
-      recommendedBy: recommendedBy ?? recommendedBy,
+      businessEmirates: businessEmirates ?? this.businessEmirates,
+      nameInTradeLicense:
+          nameInTradeLicense ?? this.nameInTradeLicense,
+      tradeLicenseCopy:
+          tradeLicenseCopy ?? this.tradeLicenseCopy,
+      recommendedBy:
+          recommendedBy ?? this.recommendedBy,
     );
   }
 }
-
-
 
 enum BusinessEmirates {
   dubai('Dubai'),
@@ -145,6 +152,7 @@ enum BusinessEmirates {
   const BusinessEmirates(this.value);
   final String value;
 }
+
 @JsonSerializable()
 class SocialMedia {
   final String? twitter;
@@ -229,7 +237,6 @@ class MediaItem {
   @JsonKey(name: '_id')
   final String? id;
   final String? url;
-  
 
   MediaItem({this.id, this.url});
 
