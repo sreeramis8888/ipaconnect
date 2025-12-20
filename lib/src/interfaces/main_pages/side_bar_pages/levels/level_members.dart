@@ -164,8 +164,8 @@ class _HierarchyMembersState extends ConsumerState<HierarchyMembers> {
                                       (member.companies != null &&
                                               member.companies!.isNotEmpty)
                                           ? (member.companies!.first.name ??
-                                              'true')
-                                          : "false ",
+                                              ' ')
+                                          : " ",
                                       style: TextStyle(
                                           color: kSecondaryTextColor,
                                           fontSize: 12),
