@@ -122,15 +122,15 @@ class CustomAdvancedDrawerMenu extends ConsumerWidget {
               label: 'My Reviews',
               onTap: () => navigationService.pushNamed('MyReviews'),
             ),
-            _menuItem(
-              icon: SvgPicture.asset(
-                'assets/svg/icons/menu_icons/my_certificate.svg',
-                height: 24,
-              ),
-              label: 'My Certificate',
-              onTap: () => navigationService.pushNamed('MyCertificate',
-              arguments: user),
-            ),
+            // _menuItem(
+            //   icon: SvgPicture.asset(
+            //     'assets/svg/icons/menu_icons/my_certificate.svg',
+            //     height: 24,
+            //   ),
+            //   label: 'My Certificate',
+            //   onTap: () => navigationService.pushNamed('MyCertificate',
+            //   arguments: user),
+            // ),
             // _menuItem(
             //   icon: SvgPicture.asset(
             //     'assets/svg/icons/menu_icons/my_transactions.svg',

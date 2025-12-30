@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class CertificateWidget extends StatelessWidget {
   final String userName;
@@ -15,6 +16,18 @@ class CertificateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Format date from YYYY-MM-DD to DD-MM-YYYY
+    String formatDate(String dateString) {
+      try {
+        final dateTime = DateTime.parse(dateString);
+        return DateFormat('dd-MM-yyyy').format(dateTime);
+      } catch (e) {
+        return dateString; // Return original if parsing fails
+      }
+    }
+
+    final formattedDate = formatDate(dateofjoining);
+
     return AspectRatio(
       aspectRatio: 1.4,
       child: LayoutBuilder(builder: (context, constraints) {
@@ -67,7 +80,7 @@ class CertificateWidget extends StatelessWidget {
               top: height * 0.730,
               left: width * 0.71,
               child: Text(
-                dateofjoining,
+                formattedDate,
                 style: GoogleFonts.frankRuhlLibre(
                   textStyle: TextStyle(
                     fontSize: width * 0.017,
