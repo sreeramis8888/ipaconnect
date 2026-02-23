@@ -130,23 +130,27 @@ class CompanyModel {
       gallery: gallery ?? this.gallery,
       location: location ?? this.location,
       businessEmirates: businessEmirates ?? this.businessEmirates,
-      nameInTradeLicense:
-          nameInTradeLicense ?? this.nameInTradeLicense,
-      tradeLicenseCopy:
-          tradeLicenseCopy ?? this.tradeLicenseCopy,
-      recommendedBy:
-          recommendedBy ?? this.recommendedBy,
+      nameInTradeLicense: nameInTradeLicense ?? this.nameInTradeLicense,
+      tradeLicenseCopy: tradeLicenseCopy ?? this.tradeLicenseCopy,
+      recommendedBy: recommendedBy ?? this.recommendedBy,
     );
   }
 }
 
 enum BusinessEmirates {
+  @JsonValue('Dubai')
   dubai('Dubai'),
+  @JsonValue('Abudhabi')
   abudhabi('Abudhabi'),
+  @JsonValue('Sharjah')
   sharjah('Sharjah'),
+  @JsonValue('Umm Al Quwain')
   ummAlQuwain('Umm Al Quwain'),
+  @JsonValue('Ajman')
   ajman('Ajman'),
+  @JsonValue('Ras Al Khaimah')
   rasAlKhaimah('Ras Al Khaimah'),
+  @JsonValue('Fujairah')
   fujairah('Fujairah');
 
   const BusinessEmirates(this.value);

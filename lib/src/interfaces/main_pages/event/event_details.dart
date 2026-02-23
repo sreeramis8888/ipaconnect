@@ -73,7 +73,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
     if (registered || widget.event.status == 'cancelled') return false;
 
     final int limit = widget.event.limit ?? 0;
-    if (limit == 0) return true;
+    if (limit == 0) return true;    // No limit set
 
     final int registeredCount = widget.event.rsvp?.length ?? 0;
     return registeredCount < limit;
@@ -461,7 +461,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
           ),
         ),
       ),
-      bottomNavigationBar: widget.event.status != 'completed'
+      bottomNavigationBar: widget.event.status == 'completed'
           ? Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
@@ -493,7 +493,7 @@ class _EventDetailsPageState extends ConsumerState<EventDetailsPage>
                           );
                         } finally {
                           setState(() => isRegistering = false);
-                        }
+                        } 
                       }
                     : null,
                 label: _getRegistrationButtonLabel(),

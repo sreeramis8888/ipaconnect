@@ -68,13 +68,13 @@ Map<String, dynamic> _$CompanyModelToJson(CompanyModel instance) =>
     };
 
 const _$BusinessEmiratesEnumMap = {
-  BusinessEmirates.dubai: 'dubai',
-  BusinessEmirates.abudhabi: 'abudhabi',
-  BusinessEmirates.sharjah: 'sharjah',
-  BusinessEmirates.ummAlQuwain: 'ummAlQuwain',
-  BusinessEmirates.ajman: 'ajman',
-  BusinessEmirates.rasAlKhaimah: 'rasAlKhaimah',
-  BusinessEmirates.fujairah: 'fujairah',
+  BusinessEmirates.dubai: 'Dubai',
+  BusinessEmirates.abudhabi: 'Abudhabi',
+  BusinessEmirates.sharjah: 'Sharjah',
+  BusinessEmirates.ummAlQuwain: 'Umm Al Quwain',
+  BusinessEmirates.ajman: 'Ajman',
+  BusinessEmirates.rasAlKhaimah: 'Ras Al Khaimah',
+  BusinessEmirates.fujairah: 'Fujairah',
 };
 
 SocialMedia _$SocialMediaFromJson(Map<String, dynamic> json) => SocialMedia(
