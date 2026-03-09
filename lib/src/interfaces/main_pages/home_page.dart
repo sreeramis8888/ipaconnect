@@ -857,7 +857,8 @@ class _HomePageState extends ConsumerState<HomePage>
                                       child: BoardMemberSection(
                                         boardMembers: homeData.boardMembers,
                                         onViewAll: () {
-                                          // TODO: Implement navigation to board members list page
+                                          Navigator.pushNamed(
+                                              context, 'LeadershipPage');
                                         },
                                       ),
                                     ),

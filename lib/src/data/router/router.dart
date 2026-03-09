@@ -40,6 +40,7 @@ import 'package:ipaconnect/src/interfaces/main_pages/business/ProductDetailsPage
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/levels/hierarchies.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/side_bar_pages/about_us.dart';
 import 'package:ipaconnect/src/interfaces/main_pages/business/create_company_modern_page.dart';
+import 'package:ipaconnect/src/interfaces/main_pages/leadership_page.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
   Widget? page;
@@ -227,6 +228,9 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       break;
     case 'CreateCompanyModernPage':
       page = CreateCompanyModernPage();
+      break;
+    case 'LeadershipPage':
+      page = const LeadershipPage();
       break;
     default:
       return MaterialPageRoute(
