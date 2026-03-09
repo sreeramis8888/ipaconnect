@@ -29,6 +29,7 @@ import 'package:ipaconnect/src/data/services/api_routes/home_api/home_api_servic
 import 'package:ipaconnect/src/data/services/api_routes/notification_api/notification_api_service.dart';
 // Unused imports removed
 import 'campaigns/campaign_detail_page.dart';
+import '../components/custom_widgets/board_member_section.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final UserModel user;
@@ -465,7 +466,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                                           CustomIconContainer(
+                                          CustomIconContainer(
                                               onTap: () {
                                                 ref
                                                     .read(selectedIndexProvider
@@ -475,7 +476,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                               label: 'Business',
                                               icon: SvgPicture.asset(
                                                   color: kWhite,
-                                                  'assets/svg/icons/bussiness_icon.svg')), 
+                                                  'assets/svg/icons/bussiness_icon.svg')),
                                           CustomIconContainer(
                                               onTap: () {
                                                 Navigator.pushNamed(
@@ -487,20 +488,19 @@ class _HomePageState extends ConsumerState<HomePage>
                                                   'assets/svg/icons/event_icon1.svg')),
                                           if (widget.user.phone !=
                                               '+919645398555')
+                                            CustomIconContainer(
+                                                label: 'Store',
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      arguments: widget
+                                                          .user.countryCode,
+                                                      context,
+                                                      'StorePage');
+                                                },
+                                                icon: SvgPicture.asset(
+                                                    color: kWhite,
+                                                    'assets/svg/icons/store_icon1.svg')),
                                           CustomIconContainer(
-                                              label: 'Store',
-                                              onTap: () {
-                                                Navigator.pushNamed(
-                                                    arguments:
-                                                        widget.user.countryCode,
-                                                    context,
-                                                    'StorePage');
-                                              },
-                                              icon: SvgPicture.asset(
-                                                  color: kWhite,
-                                                  'assets/svg/icons/store_icon1.svg')),
-                       
-                                                   CustomIconContainer(
                                               onTap: () {
                                                 Navigator.pushNamed(
                                                     arguments:
@@ -805,6 +805,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                   // SizedBox(
                                   //   height: 20,
                                   // ),
+
                                   // Videos Carousel
                                   if (filteredVideos.isNotEmpty)
                                     _animatedSection(
@@ -844,6 +845,23 @@ class _HomePageState extends ConsumerState<HomePage>
                                         ],
                                       ),
                                     ),
+
+                                  //founders section here
+
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  if (homeData.boardMembers.isNotEmpty)
+                                    _animatedSection(
+                                      order: 10,
+                                      child: BoardMemberSection(
+                                        boardMembers: homeData.boardMembers,
+                                        onViewAll: () {
+                                          // TODO: Implement navigation to board members list page
+                                        },
+                                      ),
+                                    ),
+
                                   const SizedBox(
                                     height: 20,
                                   ),

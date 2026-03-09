@@ -1,8 +1,8 @@
+import 'package:ipaconnect/src/data/models/board_member_model.dart';
 import 'package:ipaconnect/src/data/models/campaign_model.dart';
 import 'package:ipaconnect/src/data/models/events_model.dart';
 import 'package:ipaconnect/src/data/models/news_model.dart';
 import 'package:ipaconnect/src/data/models/promotions_model.dart';
-
 
 class HomeModel {
   final List<Promotion> banners;
@@ -12,6 +12,7 @@ class HomeModel {
   final List<Promotion> notices;
   final CampaignModel? campaign;
   final List<Promotion> videos;
+  final List<BoardMember> boardMembers;
 
   HomeModel({
     required this.banners,
@@ -21,18 +22,34 @@ class HomeModel {
     required this.notices,
     required this.campaign,
     required this.videos,
+    required this.boardMembers,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     final data = json['data'] ?? {};
     return HomeModel(
-      banners: (data['banners'] as List<dynamic>? ?? []).map((e) => Promotion.fromJson(e)).toList(),
+      banners: (data['banners'] as List<dynamic>? ?? [])
+          .map((e) => Promotion.fromJson(e))
+          .toList(),
       event: data['event'] != null ? EventsModel.fromJson(data['event']) : null,
-      posters: (data['posters'] as List<dynamic>? ?? []).map((e) => Promotion.fromJson(e)).toList(),
-      news: (data['news'] as List<dynamic>? ?? []).map((e) => NewsModel.fromJson(e)).toList(),
-      notices: (data['notices'] as List<dynamic>? ?? []).map((e) => Promotion.fromJson(e)).toList(),
-      campaign: data['campaign'] != null ? CampaignModel.fromJson(data['campaign']) : null,
-      videos: (data['videos'] as List<dynamic>? ?? []).map((e) => Promotion.fromJson(e)).toList(),
+      posters: (data['posters'] as List<dynamic>? ?? [])
+          .map((e) => Promotion.fromJson(e))
+          .toList(),
+      news: (data['news'] as List<dynamic>? ?? [])
+          .map((e) => NewsModel.fromJson(e))
+          .toList(),
+      notices: (data['notices'] as List<dynamic>? ?? [])
+          .map((e) => Promotion.fromJson(e))
+          .toList(),
+      campaign: data['campaign'] != null
+          ? CampaignModel.fromJson(data['campaign'])
+          : null,
+      videos: (data['videos'] as List<dynamic>? ?? [])
+          .map((e) => Promotion.fromJson(e))
+          .toList(),
+      boardMembers: (data['board_members'] as List<dynamic>? ?? [])
+          .map((e) => BoardMember.fromJson(e))
+          .toList(),
     );
   }
-} 
+}
