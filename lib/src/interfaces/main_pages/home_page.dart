@@ -635,8 +635,11 @@ class _HomePageState extends ConsumerState<HomePage>
                                                           selectedIndexProvider
                                                               .notifier)
                                                       .updateIndex(3),
-                                                  child: Text('see all',
-                                                      style: kSmallTitleL),
+                                                  child: Text(
+                                                    'see all',
+                                                    style: kSmallTitleL
+                                                        .copyWith(color: kBlue),
+                                                  ),
                                                 )
                                               ],
                                             ),

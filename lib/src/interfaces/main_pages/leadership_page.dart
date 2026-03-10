@@ -237,41 +237,28 @@ class _MemberCard extends StatelessWidget {
                 ),
                 Text(
                   member.company ?? '',
-                  style: kSmallerTitleR.copyWith(color: kSecondaryTextColor),
+                  style: kSmallerTitleR.copyWith(color: kGrey
+                      //  const Color(0xFFB3B5BE)
+                      ),
                 ),
-                Text(
-                  member.role ?? '',
-                  style: kSmallerTitleR.copyWith(color: kSecondaryTextColor),
-                ),
+                // SizedBox(
+                //   height: 10,
+                // ),
+                // Text(
+                //   member.role ?? '',
+                //   style: kSmallerTitleR.copyWith(color: kSecondaryTextColor),
+                // ),
               ],
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              if (member.id != null) {
-                Navigator.pushNamed(context, 'ProfilePreviewById',
-                    arguments: member.id);
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: kPrimaryColor.withOpacity(0.5)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                member.role ?? '',
+                style: kSmallerTitleM.copyWith(color: kWhite),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'View profile',
-                    style: kSmallerTitleR.copyWith(color: kPrimaryColor),
-                  ),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.arrow_forward_ios,
-                      size: 10, color: kPrimaryColor),
-                ],
-              ),
-            ),
+            ],
           ),
         ],
       ),
