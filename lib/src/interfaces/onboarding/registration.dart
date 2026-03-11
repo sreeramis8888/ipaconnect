@@ -382,8 +382,28 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                         CustomTextFormField(
                           labelText: 'Enter the full name',
                           textController: _nameController,
-                          validator: (val) =>
-                              val == null || val.isEmpty ? 'Required' : null,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) {
+                              return 'Name is required.';
+                            }
+                            final trimmedVal = val.trim();
+                            if (trimmedVal.length < 2) {
+                              return 'Name must contain at least 2 characters.';
+                            }
+                            if (trimmedVal.length > 50) {
+                              return 'Name cannot exceed 50 characters.';
+                            }
+                            if (RegExp(r'[0-9]').hasMatch(trimmedVal)) {
+                              if (RegExp(r'[a-zA-Z]').hasMatch(trimmedVal)) {
+                                return 'Name cannot contain numbers.';
+                              }
+                              return 'Numbers are not allowed in the name.';
+                            }
+                            if (RegExp(r'[^a-zA-Z\s]').hasMatch(trimmedVal)) {
+                              return 'Special characters are not allowed.';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 16),
                         RichText(
@@ -404,16 +424,35 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           labelText: 'Enter the email id',
                           textController: _emailController,
                           validator: (val) {
-                            if (val == null || val.isEmpty) {
-                              return 'Email is required';
+                            if (val == null || val.trim().isEmpty) {
+                              return 'Email address is required.';
+                            }
+                            final trimmedVal = val.trim();
+
+                            // Check for spaces in the email
+                            if (trimmedVal.contains(' ')) {
+                              return 'Invalid email format.';
                             }
 
-                            // Email validation regex pattern
+                            // Comprehensive email validation regex pattern
                             final emailRegex = RegExp(
                                 r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
-                            if (!emailRegex.hasMatch(val)) {
-                              return 'Please enter a valid email address';
+                            if (!emailRegex.hasMatch(trimmedVal)) {
+                              // Detailed checks for specific error scenarios requested
+                              if (!trimmedVal.contains('@')) {
+                                return 'Invalid email format.';
+                              }
+                              final parts = trimmedVal.split('@');
+                              if (parts.length != 2 ||
+                                  parts[0].isEmpty ||
+                                  parts[1].isEmpty) {
+                                return 'Invalid email format.';
+                              }
+                              if (!parts[1].contains('.')) {
+                                return 'Invalid email format.';
+                              }
+                              return 'Please enter a valid email address.';
                             }
 
                             return null;
@@ -733,7 +772,81 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                       isLoading: loading,
                       label: 'Next',
                       onPressed: () async {
-                        // Validate required fields
+                        // Validate required fields individually
+                        if (_nameController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Name is required.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_emailController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Email address is required.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_selectedDateOfBirth == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please select your date of birth.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_selectedDateOfBirth!.isAfter(DateTime.now())) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Not Allowed'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_whatsAppController.text.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Phone number is required.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Assuming 9 and 10 digit checks as in original
+                        if (_whatsAppController.text.trim().length < 9) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please enter a valid phone number.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_whatsAppController.text.trim().length > 10) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please enter a valid phone number.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
                         if (_profileImage == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -744,21 +857,47 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           return;
                         }
 
-                        if (_nameController.text.isEmpty ||
-                            _emailController.text.isEmpty ||
-                            _selectedDateOfBirth == null ||
-                            _whatsAppController.text.isEmpty ||
-                            (_emiratesIdDocument == null &&
+                        if ((_emiratesIdDocument == null &&
                                 _emiratesIdDocumentName == null) ||
                             (_passportDocument == null &&
                                 _passportDocumentName == null)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text(
-                                  'Please fill all required fields and upload documents'),
+                              content: Text('Please upload a document.'),
                               backgroundColor: Colors.red,
                             ),
                           );
+                          return;
+                        }
+
+                        // Validate file sizes (Max 5MB = 5 * 1024 * 1024 bytes)
+                        const int maxFileSize = 5 * 1024 * 1024;
+                        if (_emiratesIdDocument != null &&
+                            _emiratesIdDocument!.lengthSync() > maxFileSize) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('File size exceeds the allowed limit.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (_passportDocument != null &&
+                            _passportDocument!.lengthSync() > maxFileSize) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('File size exceeds the allowed limit.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Re-run form validation to catch specific field errors like name regex
+                        if (!(_formKey.currentState?.validate() ?? false)) {
                           return;
                         }
 
