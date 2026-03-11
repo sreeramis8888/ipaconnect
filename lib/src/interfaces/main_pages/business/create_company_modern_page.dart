@@ -750,8 +750,8 @@ class _CreateCompanyModernPageState
                           Row(
                             children: [
                               Text('Company Establishment Year ',
-                                style: kSmallTitleM),
-                                Text(' *',
+                                  style: kSmallTitleM),
+                              Text(' *',
                                   style:
                                       kSmallTitleM.copyWith(color: Colors.red)),
                             ],
@@ -787,130 +787,186 @@ class _CreateCompanyModernPageState
                                 _autoSaveData();
                               }
                             },
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Company Establishment Year is mandatory';
+                              }
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 16),
-                          Row(children: [
-                            Text('Name in Trade License', style: kSmallTitleM),
-                          Text(' *',
+                          Row(
+                            children: [
+                              Text('Name in Trade License',
+                                  style: kSmallTitleM),
+                              Text(' *',
                                   style:
                                       kSmallTitleM.copyWith(color: Colors.red)),
-                          ],),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 120,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() => nameInTradeLicense = true);
-                                    _autoSaveData();
-                                  },
-                                  child: Container(
-                                    height: 48,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: kCardBackgroundColor,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 18,
-                                          height: 18,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: nameInTradeLicense == true
-                                                ? kPrimaryColor
-                                                : Colors.transparent,
-                                            border: Border.all(
-                                              color: nameInTradeLicense == true
-                                                  ? kPrimaryColor
-                                                  : Colors.white
-                                                      .withOpacity(0.5),
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: nameInTradeLicense == true
-                                              ? const Icon(
-                                                  Icons.check,
-                                                  size: 11,
-                                                  color: kWhite,
-                                                )
-                                              : null,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          'Yes',
-                                          style: kSmallTitleL.copyWith(
-                                            color: nameInTradeLicense == true
-                                                ? kWhite
-                                                : Colors.white.withOpacity(0.7),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              SizedBox(
-                                width: 120,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() => nameInTradeLicense = false);
-                                    _autoSaveData();
-                                  },
-                                  child: Container(
-                                    height: 48,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
-                                    decoration: BoxDecoration(
-                                      color: kCardBackgroundColor,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 18,
-                                          height: 18,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: nameInTradeLicense == false
-                                                ? Colors.red
-                                                : Colors.transparent,
-                                            border: Border.all(
-                                              color: nameInTradeLicense == false
-                                                  ? Colors.red
-                                                  : Colors.white
-                                                      .withOpacity(0.5),
-                                              width: 1.5,
-                                            ),
-                                          ),
-                                          child: nameInTradeLicense == false
-                                              ? const Icon(
-                                                  Icons.check,
-                                                  size: 11,
-                                                  color: kWhite,
-                                                )
-                                              : null,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Text(
-                                          'No',
-                                          style: kSmallTitleL.copyWith(
-                                            color: nameInTradeLicense == false
-                                                ? kWhite
-                                                : Colors.white.withOpacity(0.7),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
                             ],
+                          ),
+                          const SizedBox(height: 8),
+                          FormField<bool>(
+                            validator: (value) {
+                              if (nameInTradeLicense == null) {
+                                return 'Name in Trade License is mandatory';
+                              }
+                              return null;
+                            },
+                            builder: (FormFieldState<bool> state) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: 120,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() =>
+                                                nameInTradeLicense = true);
+                                            state.didChange(true);
+                                            _autoSaveData();
+                                          },
+                                          child: Container(
+                                            height: 48,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              color: kCardBackgroundColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 18,
+                                                  height: 18,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: nameInTradeLicense ==
+                                                            true
+                                                        ? kPrimaryColor
+                                                        : Colors.transparent,
+                                                    border: Border.all(
+                                                      color:
+                                                          nameInTradeLicense ==
+                                                                  true
+                                                              ? kPrimaryColor
+                                                              : Colors.white
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                      width: 1.5,
+                                                    ),
+                                                  ),
+                                                  child:
+                                                      nameInTradeLicense == true
+                                                          ? const Icon(
+                                                              Icons.check,
+                                                              size: 11,
+                                                              color: kWhite,
+                                                            )
+                                                          : null,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'Yes',
+                                                  style: kSmallTitleL.copyWith(
+                                                    color: nameInTradeLicense ==
+                                                            true
+                                                        ? kWhite
+                                                        : Colors.white
+                                                            .withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      SizedBox(
+                                        width: 120,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() =>
+                                                nameInTradeLicense = false);
+                                            state.didChange(false);
+                                            _autoSaveData();
+                                          },
+                                          child: Container(
+                                            height: 48,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              color: kCardBackgroundColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 18,
+                                                  height: 18,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: nameInTradeLicense ==
+                                                            false
+                                                        ? Colors.red
+                                                        : Colors.transparent,
+                                                    border: Border.all(
+                                                      color:
+                                                          nameInTradeLicense ==
+                                                                  false
+                                                              ? Colors.red
+                                                              : Colors.white
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                      width: 1.5,
+                                                    ),
+                                                  ),
+                                                  child: nameInTradeLicense ==
+                                                          false
+                                                      ? const Icon(
+                                                          Icons.check,
+                                                          size: 11,
+                                                          color: kWhite,
+                                                        )
+                                                      : null,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'No',
+                                                  style: kSmallTitleL.copyWith(
+                                                    color: nameInTradeLicense ==
+                                                            false
+                                                        ? kWhite
+                                                        : Colors.white
+                                                            .withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (state.hasError)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, left: 4.0),
+                                      child: Text(
+                                        state.errorText ?? '',
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
                           ),
                           const SizedBox(height: 16),
                           // Conditional Trade License Document field - only visible when "Yes" is selected
@@ -933,76 +989,122 @@ class _CreateCompanyModernPageState
                               ),
                             ),
                             const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: isUploadingTradeLicense
-                                  ? null
-                                  : pickTradeLicense,
-                              child: Container(
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: kCardBackgroundColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
-                                  ),
-                                ),
-                                child: Row(
+                            FormField<String>(
+                              validator: (value) {
+                                if (tradeLicenseUrl == null &&
+                                    nameInTradeLicense == true) {
+                                  return 'Trade License Document is mandatory';
+                                }
+                                return null;
+                              },
+                              builder: (FormFieldState<String> state) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: isUploadingTradeLicense
-                                          ? Row(
-                                              children: [
-                                                SizedBox(
-                                                  width: 16,
-                                                  height: 16,
-                                                  child: LoadingAnimation(),
-                                                ),
-                                                const SizedBox(width: 12),
-                                                Text(
-                                                  'Uploading...',
-                                                  style: TextStyle(
-                                                    color: kWhite,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : Text(
-                                              tradeLicenseUrl != null
-                                                  ? 'Document uploaded successfully'
-                                                  : (tradeLicenseFile != null
-                                                      ? tradeLicenseFile!.path
-                                                          .split('/')
-                                                          .last
-                                                      : 'Upload Document (.pdf only)'),
-                                              style: TextStyle(
+                                    GestureDetector(
+                                      onTap: () {
+                                        if (!isUploadingTradeLicense) {
+                                          pickTradeLicense().then((_) {
+                                            state.didChange(tradeLicenseUrl);
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          color: kCardBackgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color:
+                                                Colors.white.withOpacity(0.3),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: isUploadingTradeLicense
+                                                  ? Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 16,
+                                                          height: 16,
+                                                          child:
+                                                              LoadingAnimation(),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 12),
+                                                        Text(
+                                                          'Uploading...',
+                                                          style: TextStyle(
+                                                            color: kWhite,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : Text(
+                                                      tradeLicenseUrl != null
+                                                          ? 'Document uploaded successfully'
+                                                          : (tradeLicenseFile !=
+                                                                  null
+                                                              ? tradeLicenseFile!
+                                                                  .path
+                                                                  .split('/')
+                                                                  .last
+                                                              : 'Upload Document (.pdf only)'),
+                                                      style: TextStyle(
+                                                        color: tradeLicenseUrl !=
+                                                                null
+                                                            ? Colors.green
+                                                            : (tradeLicenseFile !=
+                                                                    null
+                                                                ? kWhite
+                                                                : Colors.white
+                                                                    .withOpacity(
+                                                                        0.7)),
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                            ),
+                                            if (!isUploadingTradeLicense)
+                                              Icon(
+                                                tradeLicenseUrl != null
+                                                    ? Icons.check_circle
+                                                    : Icons
+                                                        .cloud_upload_outlined,
                                                 color: tradeLicenseUrl != null
                                                     ? Colors.green
-                                                    : (tradeLicenseFile != null
-                                                        ? kWhite
-                                                        : Colors.white
-                                                            .withOpacity(0.7)),
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
+                                                    : Colors.white
+                                                        .withOpacity(0.7),
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                    ),
-                                    if (!isUploadingTradeLicense)
-                                      Icon(
-                                        tradeLicenseUrl != null
-                                            ? Icons.check_circle
-                                            : Icons.cloud_upload_outlined,
-                                        color: tradeLicenseUrl != null
-                                            ? Colors.green
-                                            : Colors.white.withOpacity(0.7),
+                                            const SizedBox(width: 12),
+                                          ],
+                                        ),
                                       ),
-                                    const SizedBox(width: 12),
+                                    ),
+                                    if (state.hasError)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 8.0, left: 4.0),
+                                        child: Text(
+                                          state.errorText ?? '',
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
                                   ],
-                                ),
-                              ),
+                                );
+                              },
                             ),
                             // Show upload error if any
                             if (tradeLicenseUploadError != null) ...[
@@ -1021,9 +1123,9 @@ class _CreateCompanyModernPageState
                           //recommended by
 
                           const SizedBox(height: 16),
-                          
-                              Text('Recommended by', style: kSmallTitleM),
-                              
+
+                          Text('Recommended by', style: kSmallTitleM),
+
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: recommendedByController,
@@ -1068,51 +1170,55 @@ class _CreateCompanyModernPageState
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter company size';
                               }
+                              final RegExp numericRegExp = RegExp(r'^\d+$');
+                              if (!numericRegExp.hasMatch(value.trim())) {
+                                return 'Invalid input.';
+                              }
                               return null;
                             },
                           ),
-                                                    const SizedBox(height: 16),
-                          Row(children: [
-                            Text('Business Emirates', style: kSmallTitleM),
-                             Text(' *',
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Text('Business Emirates', style: kSmallTitleM),
+                              Text(' *',
                                   style:
                                       kSmallTitleM.copyWith(color: Colors.red)),
-                            
-
-                          ],),
-                          const SizedBox(height: 10),
-                             
-                          DropdownButtonFormField<String>(
-                          value: businessEmirate,
-                          decoration: InputDecoration(
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            hintText: 'Select Emirates',
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
-                            ),
+                            ],
                           ),
-                          style: kSmallTitleL,
-                          icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
-                          items: emirateItems,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              businessEmirate = newValue;
-                            });
-                            _autoSaveData();
-                          },
+                          const SizedBox(height: 10),
 
-                          /// ✅ ADD VALIDATOR HERE
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select an emirate';
-                            }
-                            return null;
-                          },
-                        ),
-                                                  const SizedBox(height: 16),
+                          DropdownButtonFormField<String>(
+                            value: businessEmirate,
+                            decoration: InputDecoration(
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              hintText: 'Select Emirates',
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            style: kSmallTitleL,
+                            icon: Icon(Icons.keyboard_arrow_down, color: kGrey),
+                            items: emirateItems,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                businessEmirate = newValue;
+                              });
+                              _autoSaveData();
+                            },
+
+                            /// ✅ ADD VALIDATOR HERE
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select an emirate';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
                           Row(
                             children: [
                               Text('Location', style: kSmallTitleM),
@@ -1123,26 +1229,26 @@ class _CreateCompanyModernPageState
                           ),
                           const SizedBox(height: 8),
                           TextFormField(
-                          controller: locationController,
-                          style: kSmallTitleL,
-                          decoration: InputDecoration(
-                            hintText: 'Enter location',
-                            hintStyle: kSmallTitleL.copyWith(color: kGrey),
-                            filled: true,
-                            fillColor: kCardBackgroundColor,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide.none,
+                            controller: locationController,
+                            style: kSmallTitleL,
+                            decoration: InputDecoration(
+                              hintText: 'Enter location',
+                              hintStyle: kSmallTitleL.copyWith(color: kGrey),
+                              filled: true,
+                              fillColor: kCardBackgroundColor,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Please enter a location';
+                              }
+                              return null;
+                            },
                           ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Please enter a location';
-                            }
-                            return null;
-                          },
-                        ),
-                                                  const SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           const SizedBox(height: 16),
                           // Row(
                           //   children: [
@@ -1675,8 +1781,7 @@ class _CreateCompanyModernPageState
                                             .toList(),
                                       },
                                       'location': locationController.text,
-                                      'trade_license_copy':
-                                          tradeLicenseUrl,
+                                      'trade_license_copy': tradeLicenseUrl,
                                       'business_emirates': businessEmirate,
                                       'name_in_trade_license':
                                           nameInTradeLicense,

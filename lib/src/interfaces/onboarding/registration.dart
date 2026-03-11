@@ -387,8 +387,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                               return 'Name is required.';
                             }
                             final trimmedVal = val.trim();
-                            if (trimmedVal.length < 2) {
-                              return 'Name must contain at least 2 characters.';
+                            if (trimmedVal.length < 3) {
+                              return 'Name must contain at least 3 characters.';
                             }
                             if (trimmedVal.length > 50) {
                               return 'Name cannot exceed 50 characters.';
